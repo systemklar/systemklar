@@ -4,7 +4,7 @@ import Link from "next/link";
 import { FormEvent, useCallback, useEffect, useMemo, useState } from "react";
 import { PortalLayout } from "@/components/portal/PortalLayout";
 import { TicketUnreadCountBadge } from "@/components/tickets/TicketUnreadCountBadge";
-import { formatDanishDateTime, StatusBadge, type TicketStatus } from "@/components/tickets/StatusBadge";
+import { formatDanishDateTime, StatusBadge } from "@/components/tickets/StatusBadge";
 import {
   companyFromTicketRow,
   normalizeTicketWithProfile,
@@ -86,7 +86,7 @@ export default function PortalSupportPage() {
     const { error } = await supabase.from("tickets").insert({
       title: title.trim(),
       description: description.trim() || null,
-      status: "open" as const,
+      status: "active" as const,
       user_id: user.id,
     });
 
@@ -218,7 +218,7 @@ export default function PortalSupportPage() {
                         {formatDanishDateTime(ticket.created_at)}
                       </p>
                     </div>
-                    <StatusBadge status={ticket.status as TicketStatus} />
+                    <StatusBadge status={ticket.status} />
                   </Link>
                 </li>
               ))}

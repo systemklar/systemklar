@@ -6,8 +6,8 @@ import { createClient } from "@/lib/supabase";
 
 type DashboardStats = {
   customers: number | null;
-  ticketsOpen: number | null;
-  ticketsInProgress: number | null;
+  ticketsActive: number | null;
+  ticketsResolved: number | null;
 };
 
 function StatCard({
@@ -46,34 +46,34 @@ export default function AdminDashboardPage() {
   const supabase = useMemo(() => createClient(), []);
   const [stats, setStats] = useState<DashboardStats>({
     customers: null,
-    ticketsOpen: null,
-    ticketsInProgress: null,
+    ticketsActive: null,
+    ticketsResolved: null,
   });
   const [loading, setLoading] = useState(true);
 
   const load = useCallback(async () => {
     setLoading(true);
 
-    const [customersRes, openRes, progressRes] = await Promise.all([
+    const [customersRes, activeRes, resolvedRes] = await Promise.all([
       supabase.from("profiles").select("id", { count: "exact", head: true }),
-      supabase.from("tickets").select("id", { count: "exact", head: true }).eq("status", "open"),
-      supabase.from("tickets").select("id", { count: "exact", head: true }).eq("status", "in_progress"),
+      supabase.from("tickets").select("id", { count: "exact", head: true }).eq("status", "active"),
+      supabase.from("tickets").select("id", { count: "exact", head: true }).eq("status", "resolved"),
     ]);
 
     if (customersRes.error) {
       console.error("[admin/dashboard] profiles count", customersRes.error);
     }
-    if (openRes.error) {
-      console.error("[admin/dashboard] tickets open", openRes.error);
+    if (activeRes.error) {
+      console.error("[admin/dashboard] tickets active", activeRes.error);
     }
-    if (progressRes.error) {
-      console.error("[admin/dashboard] tickets in_progress", progressRes.error);
+    if (resolvedRes.error) {
+      console.error("[admin/dashboard] tickets resolved", resolvedRes.error);
     }
 
     setStats({
       customers: customersRes.error ? null : (customersRes.count ?? 0),
-      ticketsOpen: openRes.error ? null : (openRes.count ?? 0),
-      ticketsInProgress: progressRes.error ? null : (progressRes.count ?? 0),
+      ticketsActive: activeRes.error ? null : (activeRes.count ?? 0),
+      ticketsResolved: resolvedRes.error ? null : (resolvedRes.count ?? 0),
     });
     setLoading(false);
   }, [supabase]);
@@ -102,23 +102,19 @@ export default function AdminDashboardPage() {
             href="/admin/customers"
           />
           <StatCard
-            title="Åbne tickets"
-            value={stats.ticketsOpen}
-            hint="Status: åben"
+            title="Aktive sager"
+            value={stats.ticketsActive}
+            hint="Status: aktiv"
             href="/admin/tickets"
           />
           <StatCard
-            title="I gang"
-            value={stats.ticketsInProgress}
-            hint="Status: i gang"
+            title="Løste sager"
+            value={stats.ticketsResolved}
+            hint="Status: løst"
             href="/admin/tickets"
           />
         </div>
       )}
-
-      <div className="mt-12 rounded-2xl border border-dashed border-slate-200 bg-white/60 p-6 text-sm text-slate-500">
-        Brug menuen til venstre for at administrere kunder og supportsager.
-      </div>
     </div>
   );
 }

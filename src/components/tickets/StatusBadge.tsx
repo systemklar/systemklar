@@ -1,4 +1,11 @@
-export type TicketStatus = "open" | "in_progress" | "closed";
+export type TicketStatus = "active" | "resolved";
+
+/** Kortlæg gamle DB-værdier og ukendte til active/resolved. */
+export function normalizeTicketStatus(raw: string | null | undefined): TicketStatus {
+  const s = (raw ?? "").trim();
+  if (s === "resolved" || s === "closed") return "resolved";
+  return "active";
+}
 
 export function formatDanishDateTime(iso: string) {
   return new Intl.DateTimeFormat("da-DK", {
@@ -8,15 +15,11 @@ export function formatDanishDateTime(iso: string) {
 }
 
 export function StatusBadge({ status }: { status: string }) {
+  const normalized = normalizeTicketStatus(status);
   const styles: Record<TicketStatus, { bg: string; text: string; label: string }> = {
-    open: { bg: "#DCFCE7", text: "#166534", label: "Åben" },
-    in_progress: { bg: "#FEF9C3", text: "#854D0E", label: "I gang" },
-    closed: { bg: "#F1F5F9", text: "#475569", label: "Lukket" },
+    active: { bg: "#FEF3C7", text: "#C2410C", label: "Aktiv" },
+    resolved: { bg: "#DCFCE7", text: "#166534", label: "Løst" },
   };
-  const normalized =
-    status === "open" || status === "in_progress" || status === "closed"
-      ? status
-      : "closed";
   const s = styles[normalized];
   return (
     <span

@@ -45,6 +45,10 @@ export default function AdminReportsPage() {
   const [resolved, setResolved] = useState("");
   const [recommendations, setRecommendations] = useState("");
 
+  const [editingReport, setEditingReport] = useState<ReportAdminRow | null>(null);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [listActionError, setListActionError] = useState<string | null>(null);
+
   const loadReports = useCallback(async () => {
     setLoading(true);
     setListError(null);
@@ -138,6 +142,7 @@ export default function AdminReportsPage() {
 
   const closeModal = () => {
     setModalOpen(false);
+    setEditingReport(null);
     setFormError(null);
     setCustomerUserId("");
     setTitle("");
@@ -148,9 +153,58 @@ export default function AdminReportsPage() {
     setRecommendations("");
   };
 
+  const openCreateModal = () => {
+    setEditingReport(null);
+    setFormError(null);
+    setCustomerUserId("");
+    setTitle("");
+    setPeriod("");
+    setStatusSummary("");
+    setIncidents("");
+    setResolved("");
+    setRecommendations("");
+    setModalOpen(true);
+  };
+
+  const openEditModal = (r: ReportAdminRow) => {
+    setEditingReport(r);
+    setFormError(null);
+    setCustomerUserId(r.user_id);
+    setTitle(r.title);
+    setPeriod(r.period);
+    setStatusSummary(r.status_summary);
+    setIncidents(r.incidents);
+    setResolved(r.resolved);
+    setRecommendations(r.recommendations);
+    setModalOpen(true);
+  };
+
+  const handleDeleteReport = async (r: ReportAdminRow) => {
+    const ok = window.confirm(`Er du sikker på at du vil slette rapporten "${r.title}"?`);
+    if (!ok) return;
+
+    setListActionError(null);
+    setDeletingId(r.id);
+
+    const res = await fetch(`/api/admin/reports/${r.id}`, {
+      method: "DELETE",
+      credentials: "same-origin",
+    });
+
+    const payload = (await res.json().catch(() => ({}))) as { error?: string };
+    setDeletingId(null);
+
+    if (!res.ok) {
+      setListActionError(payload.error ?? "Sletning mislykkedes.");
+      return;
+    }
+
+    void loadReports();
+  };
+
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    if (!customerUserId) {
+    if (!editingReport && !customerUserId) {
       setFormError("Vælg en kunde.");
       return;
     }
@@ -161,6 +215,35 @@ export default function AdminReportsPage() {
 
     setSubmitting(true);
     setFormError(null);
+
+    if (editingReport) {
+      const res = await fetch(`/api/admin/reports/${editingReport.id}`, {
+        method: "PATCH",
+        credentials: "same-origin",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          title: title.trim(),
+          period: period.trim(),
+          status_summary: statusSummary.trim(),
+          incidents: incidents.trim(),
+          resolved: resolved.trim(),
+          recommendations: recommendations.trim(),
+        }),
+      });
+
+      const payload = (await res.json().catch(() => ({}))) as { error?: string };
+
+      if (!res.ok) {
+        setFormError(payload.error ?? "Kunne ikke gemme ændringer.");
+        setSubmitting(false);
+        return;
+      }
+
+      setSubmitting(false);
+      closeModal();
+      void loadReports();
+      return;
+    }
 
     const { error } = await supabase.from("reports").insert({
       user_id: customerUserId,
@@ -198,13 +281,19 @@ export default function AdminReportsPage() {
         </div>
         <button
           type="button"
-          onClick={() => setModalOpen(true)}
+          onClick={openCreateModal}
           className="shrink-0 rounded-full px-5 py-2.5 text-sm font-semibold text-white transition hover:opacity-90"
           style={{ backgroundColor: "#1D9E75" }}
         >
           Opret rapport
         </button>
       </div>
+
+      {listActionError && (
+        <p className="mt-4 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">
+          {listActionError}
+        </p>
+      )}
 
       {listError && (
         <p className="mt-6 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">{listError}</p>
@@ -220,19 +309,42 @@ export default function AdminReportsPage() {
             const cust = profileByUserId.get(r.user_id);
             const companyLabel = r.company_name?.trim() || cust?.company_name?.trim() || "—";
             return (
-              <li key={r.id}>
-                <Link
-                  href={`/admin/reports/${r.id}`}
-                  className="block px-5 py-4 transition hover:bg-slate-50"
-                >
-                  <p className="font-semibold text-emerald-900 hover:underline">{r.title}</p>
+              <li
+                key={r.id}
+                className="flex flex-col gap-4 px-5 py-4 transition hover:bg-slate-50/80 md:flex-row md:items-start md:justify-between"
+              >
+                <div className="min-w-0 flex-1">
+                  <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Kunde</p>
+                  <p className="mt-0.5 text-base font-semibold text-slate-900">{companyLabel}</p>
+                  {cust?.email ? (
+                    <p className="mt-0.5 text-sm text-slate-600">{cust.email}</p>
+                  ) : null}
+                  <Link
+                    href={`/admin/reports/${r.id}`}
+                    className="mt-2 inline-block font-semibold text-emerald-800 hover:underline"
+                  >
+                    {r.title}
+                  </Link>
                   <p className="mt-1 text-sm text-slate-700">{r.period}</p>
-                  <p className="mt-1 text-xs text-slate-500">
-                    {companyLabel}
-                    {cust?.email ? ` · ${cust.email}` : ""}
-                  </p>
                   <p className="mt-1 text-xs text-slate-500">{formatDanishDateTime(r.created_at)}</p>
-                </Link>
+                </div>
+                <div className="flex shrink-0 flex-wrap gap-2 md:flex-col md:items-stretch">
+                  <button
+                    type="button"
+                    onClick={() => openEditModal(r)}
+                    className="rounded-full border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-800 hover:bg-slate-50"
+                  >
+                    Rediger
+                  </button>
+                  <button
+                    type="button"
+                    disabled={deletingId === r.id}
+                    onClick={() => void handleDeleteReport(r)}
+                    className="rounded-full border border-red-200 bg-red-50 px-4 py-2 text-sm font-semibold text-red-800 hover:bg-red-100 disabled:opacity-50"
+                  >
+                    {deletingId === r.id ? "Sletter..." : "Slet"}
+                  </button>
+                </div>
               </li>
             );
           })}
@@ -254,7 +366,7 @@ export default function AdminReportsPage() {
             onClick={(e) => e.stopPropagation()}
           >
             <h2 id="report-modal-title" className="text-lg font-semibold text-slate-900">
-              Opret rapport
+              {editingReport ? "Rediger rapport" : "Opret rapport"}
             </h2>
 
             <form className="mt-5 space-y-4" onSubmit={(ev) => void handleSubmit(ev)}>
@@ -264,10 +376,11 @@ export default function AdminReportsPage() {
                 </label>
                 <select
                   id="rep-customer"
-                  required
+                  required={!editingReport}
+                  disabled={!!editingReport}
                   value={customerUserId}
                   onChange={(e) => setCustomerUserId(e.target.value)}
-                  className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-emerald-600"
+                  className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-emerald-600 disabled:cursor-not-allowed disabled:bg-slate-100"
                 >
                   <option value="">Vælg kunde…</option>
                   {profiles.map((p) => (
@@ -372,7 +485,7 @@ export default function AdminReportsPage() {
                   className="rounded-full px-5 py-2 text-sm font-semibold text-white transition hover:opacity-90 disabled:opacity-50"
                   style={{ backgroundColor: "#1D9E75" }}
                 >
-                  {submitting ? "Gemmer..." : "Gem rapport"}
+                  {submitting ? "Gemmer..." : editingReport ? "Gem ændringer" : "Gem rapport"}
                 </button>
               </div>
             </form>

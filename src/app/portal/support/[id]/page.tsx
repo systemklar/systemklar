@@ -9,7 +9,8 @@ import {
   fetchTicketWithProfileForUser,
   type TicketWithProfileRow,
 } from "@/lib/tickets-with-profile";
-import { formatDanishDateTime, StatusBadge, type TicketStatus } from "@/components/tickets/StatusBadge";
+import { formatDanishDateTime } from "@/components/tickets/StatusBadge";
+import { TicketStatusToggle } from "@/components/tickets/TicketStatusToggle";
 import { TicketMessageThread } from "@/components/tickets/TicketMessageThread";
 import { setTicketLastViewedToNow } from "@/lib/ticket-last-viewed";
 import { createClient } from "@/lib/supabase";
@@ -118,7 +119,13 @@ export default function PortalSupportTicketPage() {
                 Oprettet {formatDanishDateTime(ticket.created_at)}
               </p>
             </div>
-            <StatusBadge status={ticket.status as TicketStatus} />
+            <TicketStatusToggle
+              ticketId={ticket.id}
+              status={ticket.status}
+              onUpdated={(next) =>
+                setTicket((t) => (t ? { ...t, status: next } : null))
+              }
+            />
           </div>
           {ticket.description ? (
             <p className="mt-4 whitespace-pre-wrap text-slate-700">{ticket.description}</p>

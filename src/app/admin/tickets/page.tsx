@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { TicketUnreadCountBadge } from "@/components/tickets/TicketUnreadCountBadge";
-import { formatDanishDateTime, StatusBadge, type TicketStatus } from "@/components/tickets/StatusBadge";
+import { formatDanishDateTime, StatusBadge } from "@/components/tickets/StatusBadge";
 import {
   companyFromTicketRow,
   normalizeTicketWithProfile,
@@ -77,7 +77,7 @@ export default function AdminTicketsPage() {
                   <p className="mt-1 text-xs text-slate-500">{companyFromTicketRow(t)}</p>
                   <p className="mt-0.5 text-sm text-slate-500">{formatDanishDateTime(t.created_at)}</p>
                 </div>
-                <StatusBadge status={t.status as TicketStatus} />
+                <StatusBadge status={t.status} />
               </Link>
             </li>
           ))}

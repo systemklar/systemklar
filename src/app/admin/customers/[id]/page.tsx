@@ -5,7 +5,7 @@ import { useParams } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { CustomerStatusBadge } from "@/components/admin/CustomerStatusBadge";
 import { PlanBadge, type ProfilePlan } from "@/components/admin/PlanBadge";
-import { formatDanishDateTime, StatusBadge, type TicketStatus } from "@/components/tickets/StatusBadge";
+import { formatDanishDateTime, StatusBadge } from "@/components/tickets/StatusBadge";
 import { createClient } from "@/lib/supabase";
 
 type ProfileRow = {
@@ -21,7 +21,7 @@ type ProfileRow = {
 type TicketRow = {
   id: string;
   title: string;
-  status: TicketStatus;
+  status: string;
   created_at: string;
 };
 

@@ -58,7 +58,7 @@ export function normalizeTicketWithProfile(raw: Record<string, unknown>): Ticket
     id,
     title,
     description,
-    status: typeof status === "string" ? status : "open",
+    status: typeof status === "string" ? status : "active",
     user_id,
     created_at: typeof created_at === "string" ? created_at : "",
     profiles: normalizeProfileEmbed(raw.profiles),
