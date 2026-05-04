@@ -1,65 +1,396 @@
-import Image from "next/image";
+"use client";
+
+import Link from "next/link";
+import { useEffect, useRef, useState } from "react";
 
 export default function Home() {
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const mobileMenuContainerRef = useRef<HTMLDivElement>(null);
+  const platformFeatures = [
+    {
+      title: "IT-overblik",
+      description:
+        "Se alle systemer og status i ét dashboard.",
+    },
+    {
+      title: "Support & sager",
+      description:
+        "Opret og følg IT-supportsager direkte i platformen.",
+    },
+    {
+      title: "IT-rapport",
+      description:
+        "Automatisk månedlig rapport over drift og status.",
+    },
+  ];
+
+  const aiTools = [
+    {
+      title: "AI-tilbudsgenerator",
+      description:
+        "Generer professionelle IT-tilbud på minutter med klare anbefalinger.",
+    },
+    {
+      title: "Månedlig IT-rapport",
+      description:
+        "Få en automatisk status over drift, sikkerhed og forbedringsområder.",
+    },
+    {
+      title: "AI-assistent",
+      description:
+        "Stil spørgsmål om jeres setup og få konkrete forslag med det samme.",
+    },
+  ];
+
+  const plans = [
+    {
+      name: "Basis",
+      price: "499 kr./md.",
+      features: [
+        "Grundlæggende IT-overblik",
+        "E-mail support",
+        "Op til 10 brugere",
+      ],
+    },
+    {
+      name: "Standard",
+      price: "1.299 kr./md.",
+      features: ["Alt i Basis", "Prioriteret support", "Op til 50 brugere"],
+      highlighted: true,
+    },
+    {
+      name: "Plus",
+      price: "2.499 kr./md.",
+      features: ["Alt i Standard", "AI-værktøjer inkluderet", "Ubegrænset brug"],
+    },
+  ];
+
+  useEffect(() => {
+    if (!isMobileMenuOpen) {
+      return;
+    }
+
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        mobileMenuContainerRef.current &&
+        !mobileMenuContainerRef.current.contains(event.target as Node)
+      ) {
+        setIsMobileMenuOpen(false);
+      }
+    };
+
+    const handleEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setIsMobileMenuOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener("keydown", handleEscape);
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("keydown", handleEscape);
+    };
+  }, [isMobileMenuOpen]);
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
+    <div className="min-h-screen bg-white text-slate-900">
+      <header className="sticky top-0 z-10 border-b border-slate-100 bg-white/95 backdrop-blur">
+        <div ref={mobileMenuContainerRef}>
+          <div className="mx-auto flex w-full max-w-6xl items-center justify-between px-6 py-4">
+            <a href="#" className="text-2xl font-bold" style={{ color: "#1D9E75" }}>
+              Systemklar
+            </a>
+            <nav className="hidden items-center gap-7 text-sm font-medium md:flex">
+              <Link href="/platformen" className="transition hover:text-slate-600">
+                Platformen
+              </Link>
+              <Link
+                href="/ai-vaerktoejer"
+                className="transition hover:text-slate-600"
+              >
+                AI-værktøjer
+              </Link>
+              <a href="#priser" className="transition hover:text-slate-600">
+                Priser
+              </a>
+              <Link href="/login" className="transition hover:text-slate-600">
+                Log ind
+              </Link>
+              <a
+                href="#cta"
+                className="rounded-full px-5 py-2 text-sm font-semibold text-white shadow-sm transition hover:opacity-90"
+                style={{ backgroundColor: "#1D9E75" }}
+              >
+                Kom i gang
+              </a>
+            </nav>
+            <button
+              type="button"
+              className="inline-flex items-center rounded-lg border border-slate-200 p-2 text-slate-700 md:hidden"
+              onClick={() => setIsMobileMenuOpen((prev) => !prev)}
+              aria-label={isMobileMenuOpen ? "Luk menu" : "Åbn menu"}
+              aria-expanded={isMobileMenuOpen}
+              aria-controls="mobil-menu"
             >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                className="h-5 w-5"
+              >
+                {isMobileMenuOpen ? (
+                  <path d="M6 6l12 12M6 18L18 6" />
+                ) : (
+                  <path d="M4 7h16M4 12h16M4 17h16" />
+                )}
+              </svg>
+            </button>
+          </div>
+          <nav
+            id="mobil-menu"
+            className={`mx-auto w-full max-w-6xl overflow-hidden border-t border-slate-100 px-6 text-sm font-medium transition-all duration-300 ease-out md:hidden ${
+              isMobileMenuOpen
+                ? "max-h-96 translate-y-0 py-4 opacity-100"
+                : "max-h-0 -translate-y-1 py-0 opacity-0"
+            }`}
+            aria-hidden={!isMobileMenuOpen}
+          >
+            <div className="flex flex-col gap-2">
+              <Link
+                href="/platformen"
+                className="rounded-lg px-3 py-2 hover:bg-slate-50"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                Platformen
+              </Link>
+              <Link
+                href="/ai-vaerktoejer"
+                className="rounded-lg px-3 py-2 hover:bg-slate-50"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                AI-værktøjer
+              </Link>
+              <a
+                href="#priser"
+                className="rounded-lg px-3 py-2 hover:bg-slate-50"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                Priser
+              </a>
+              <Link
+                href="/login"
+                className="rounded-lg px-3 py-2 hover:bg-slate-50"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                Log ind
+              </Link>
+              <a
+                href="#cta"
+                className="mt-2 rounded-full px-5 py-2 text-center font-semibold text-white"
+                style={{ backgroundColor: "#1D9E75" }}
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                Kom i gang
+              </a>
+            </div>
+          </nav>
+        </div>
+      </header>
+
+      <main>
+        <section className="mx-auto max-w-6xl px-6 pb-16 pt-12">
+          <p
+            className="mb-5 inline-block rounded-full px-4 py-2 text-sm font-medium"
+            style={{ backgroundColor: "#E7F6F1", color: "#1D9E75" }}
+          >
+            IT-platform til SMV&apos;er
           </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+          <h1 className="max-w-4xl text-4xl font-bold leading-tight tracking-tight md:text-5xl">
+            Få overblik over din virksomheds IT - uden en IT-afdeling
+          </h1>
+          <p className="mt-6 max-w-2xl text-lg text-slate-600">
+            Systemklar samler dine systemer, support og administration et sted -
+            med AI-værktøjer der gør IT-arbejdet lettere.
+          </p>
+          <div className="mt-9 flex flex-wrap gap-4">
+            <a
+              href="#cta"
+              className="rounded-full px-6 py-3 font-semibold text-white transition hover:opacity-90"
+              style={{ backgroundColor: "#1D9E75" }}
+            >
+              Kom i gang
+            </a>
+            <a
+              href="#priser"
+              className="rounded-full border border-slate-300 px-6 py-3 font-semibold text-slate-700 transition hover:bg-slate-50"
+            >
+              Se priser
+            </a>
+          </div>
+        </section>
+
+        <section className="mx-auto max-w-6xl px-6 py-14">
+          <h2 className="text-2xl font-bold md:text-3xl">Platformen</h2>
+          <p className="mt-3 max-w-2xl text-slate-600">
+            Tre centrale funktioner, der giver dig styr på IT fra dag et.
+          </p>
+          <div className="mt-8 grid gap-5 md:grid-cols-3">
+            {platformFeatures.map((feature) => (
+              <Link
+                key={feature.title}
+                href="/platformen"
+                className="group rounded-2xl border border-slate-200 p-6 transition hover:-translate-y-0.5 hover:border-slate-300 hover:shadow-md"
+              >
+                <h3 className="text-xl font-semibold">{feature.title}</h3>
+                <p className="mt-3 text-slate-600">{feature.description}</p>
+                <p
+                  className="mt-5 text-sm font-semibold transition group-hover:opacity-80"
+                  style={{ color: "#1D9E75" }}
+                >
+                  Læs mere om platformen -&gt;
+                </p>
+              </Link>
+            ))}
+          </div>
+        </section>
+
+        <section className="mx-auto max-w-6xl px-6 py-14">
+          <h2 className="text-2xl font-bold md:text-3xl">AI-værktøjer</h2>
+          <p className="mt-3 max-w-2xl text-slate-600">
+            Brug AI til at automatisere opgaver og få bedre beslutningsgrundlag.
+          </p>
+          <div className="mt-8 grid gap-5 md:grid-cols-3">
+            {aiTools.map((tool) => (
+              <Link
+                key={tool.title}
+                href="/ai-vaerktoejer"
+                className="group rounded-2xl border p-6 transition hover:-translate-y-0.5 hover:shadow-md"
+                style={{ borderColor: "#DCD8F6" }}
+              >
+                <h3 className="text-xl font-semibold" style={{ color: "#534AB7" }}>
+                  {tool.title}
+                </h3>
+                <p className="mt-3 text-slate-600">{tool.description}</p>
+                <p
+                  className="mt-5 text-sm font-semibold transition group-hover:opacity-80"
+                  style={{ color: "#534AB7" }}
+                >
+                  Se AI-værktøjerne -&gt;
+                </p>
+              </Link>
+            ))}
+          </div>
+        </section>
+
+        <section className="mx-auto max-w-6xl px-6 py-14">
+          <h2 className="text-2xl font-bold md:text-3xl">Sådan fungerer det</h2>
+          <div className="mt-8 grid gap-5 md:grid-cols-3">
+            {[
+              {
+                step: "1",
+                title: "Forbind jeres setup",
+                text: "Tilslut systemer og brugere på få minutter med guidet onboarding.",
+              },
+              {
+                step: "2",
+                title: "Få overblik og anbefalinger",
+                text: "Se status, risici og næste skridt i et klart og handlingsorienteret view.",
+              },
+              {
+                step: "3",
+                title: "Automatiser den daglige drift",
+                text: "Lad platformen og AI-værktøjerne tage de gentagne opgaver.",
+              },
+            ].map((item) => (
+              <article key={item.step} className="rounded-2xl border border-slate-200 p-6">
+                <span
+                  className="inline-flex h-8 w-8 items-center justify-center rounded-full text-sm font-bold text-white"
+                  style={{ backgroundColor: "#1D9E75" }}
+                >
+                  {item.step}
+                </span>
+                <h3 className="mt-4 text-xl font-semibold">{item.title}</h3>
+                <p className="mt-3 text-slate-600">{item.text}</p>
+              </article>
+            ))}
+          </div>
+        </section>
+
+        <section id="priser" className="mx-auto max-w-6xl px-6 py-14">
+          <h2 className="text-2xl font-bold md:text-3xl">Priser</h2>
+          <p className="mt-3 max-w-2xl text-slate-600">
+            Vælg den pakke, der passer til jeres behov i dag - og opgrader, når
+            I vokser.
+          </p>
+          <div className="mt-8 grid gap-5 md:grid-cols-3">
+            {plans.map((plan) => (
+              <article
+                key={plan.name}
+                className={`rounded-2xl border p-6 ${
+                  plan.highlighted
+                    ? "border-transparent shadow-md"
+                    : "border-slate-200"
+                }`}
+                style={
+                  plan.highlighted
+                    ? { boxShadow: "0 10px 24px rgba(29, 158, 117, 0.18)" }
+                    : undefined
+                }
+              >
+                <h3 className="text-xl font-semibold">{plan.name}</h3>
+                <p
+                  className="mt-3 text-3xl font-bold"
+                  style={plan.highlighted ? { color: "#1D9E75" } : undefined}
+                >
+                  {plan.price}
+                </p>
+                <ul className="mt-5 space-y-2 text-slate-600">
+                  {plan.features.map((feature) => (
+                    <li key={feature}>- {feature}</li>
+                  ))}
+                </ul>
+                <a
+                  href="#cta"
+                  className="mt-8 inline-block rounded-full px-5 py-2 font-semibold text-white transition hover:opacity-90"
+                  style={{ backgroundColor: "#1D9E75" }}
+                >
+                  Vælg {plan.name}
+                </a>
+              </article>
+            ))}
+          </div>
+        </section>
+
+        <section id="cta" className="mx-auto max-w-6xl px-6 pb-20 pt-8">
+          <div
+            className="rounded-3xl px-8 py-12 text-center"
+            style={{ backgroundColor: "#F2FBF8" }}
           >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
+            <h2 className="text-3xl font-bold md:text-4xl">
+              Klar til at få styr på jeres IT?
+            </h2>
+            <p className="mx-auto mt-4 max-w-2xl text-slate-600">
+              Start med en uforpligtende demo og se, hvordan Systemklar kan gøre
+              jeres IT-drift enkel og effektiv.
+            </p>
+            <a
+              href="#"
+              className="mt-8 inline-block rounded-full px-6 py-3 font-semibold text-white transition hover:opacity-90"
+              style={{ backgroundColor: "#1D9E75" }}
+            >
+              Book en demo
+            </a>
+          </div>
+        </section>
       </main>
+
+      <footer className="border-t border-slate-100 px-6 py-8 text-center text-sm text-slate-500">
+        © {new Date().getFullYear()} Systemklar. Alle rettigheder forbeholdes.
+      </footer>
     </div>
   );
 }
