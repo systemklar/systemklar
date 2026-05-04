@@ -2,20 +2,14 @@
 
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import { useCallback, useEffect, useMemo, useState } from "react";
-import {
-  companyFromTicketRow,
-  fetchTicketWithProfileById,
-  type TicketWithProfileRow,
-} from "@/lib/tickets-with-profile";
+import { useCallback, useEffect, useState } from "react";
+import { companyFromTicketRow, type TicketWithProfileRow } from "@/lib/tickets-with-profile";
 import { formatDanishDateTime } from "@/components/tickets/StatusBadge";
 import { TicketStatusToggle } from "@/components/tickets/TicketStatusToggle";
 import { TicketMessageThread } from "@/components/tickets/TicketMessageThread";
 import { setTicketLastViewedToNow } from "@/lib/ticket-last-viewed";
-import { createClient } from "@/lib/supabase";
 
 export default function AdminTicketDetailPage() {
-  const supabase = useMemo(() => createClient(), []);
   const params = useParams();
   const id = typeof params.id === "string" ? params.id : "";
 
@@ -28,16 +22,20 @@ export default function AdminTicketDetailPage() {
       return;
     }
     setTicketLoading(true);
-    const row = await fetchTicketWithProfileById(supabase, id);
+    const res = await fetch(`/api/admin/tickets/${id}`, { credentials: "same-origin" });
+    const payload = (await res.json().catch(() => ({}))) as {
+      ticket?: TicketWithProfileRow;
+      error?: string;
+    };
 
-    if (!row) {
-      console.error("[admin/ticket] load failed");
+    if (!res.ok || !payload.ticket) {
+      console.error("[admin/ticket] load failed", payload.error ?? res.status);
       setTicket(null);
     } else {
-      setTicket(row);
+      setTicket(payload.ticket);
     }
     setTicketLoading(false);
-  }, [id, supabase]);
+  }, [id]);
 
   useEffect(() => {
     queueMicrotask(() => {
@@ -108,7 +106,11 @@ export default function AdminTicketDetailPage() {
           )}
         </div>
 
-        <TicketMessageThread ticketId={ticket.id} sendAsAdmin={true} />
+        <TicketMessageThread
+          ticketId={ticket.id}
+          sendAsAdmin={true}
+          customerCompanyLabel={companyFromTicketRow(ticket)}
+        />
       </div>
     </div>
   );

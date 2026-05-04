@@ -49,6 +49,11 @@ type TicketMessageThreadProps = {
   ticketId: string;
   /** Kunde: false. Admin-svar: true. */
   sendAsAdmin: boolean;
+  /**
+   * Admin: firmanavn fra API (service role / korrekt profil-kobling).
+   * Udeladt på portalen → hentes via klientens ticket+profil.
+   */
+  customerCompanyLabel?: string;
 };
 
 /** Viser en konkret fejltekst – også når Supabase returnerer et næsten tomt fejl-objekt. */
@@ -102,7 +107,11 @@ function TypingDots() {
   );
 }
 
-export function TicketMessageThread({ ticketId, sendAsAdmin }: TicketMessageThreadProps) {
+export function TicketMessageThread({
+  ticketId,
+  sendAsAdmin,
+  customerCompanyLabel,
+}: TicketMessageThreadProps) {
   const supabase = useMemo(() => createClient(), []);
   const [messages, setMessages] = useState<MessageRow[]>([]);
   const [loading, setLoading] = useState(true);
@@ -115,6 +124,11 @@ export function TicketMessageThread({ ticketId, sendAsAdmin }: TicketMessageThre
   const [customerSenderLabel, setCustomerSenderLabel] = useState("Kunde");
 
   useEffect(() => {
+    if (customerCompanyLabel !== undefined) {
+      const trimmed = customerCompanyLabel.trim();
+      setCustomerSenderLabel(trimmed || "Kunde");
+      return;
+    }
     let cancelled = false;
     const run = async () => {
       const row = await fetchTicketWithProfileById(supabase, ticketId);
@@ -125,7 +139,7 @@ export function TicketMessageThread({ ticketId, sendAsAdmin }: TicketMessageThre
     return () => {
       cancelled = true;
     };
-  }, [ticketId, supabase]);
+  }, [ticketId, supabase, customerCompanyLabel]);
 
   const appendMessage = useCallback(
     (raw: Record<string, unknown>) => {

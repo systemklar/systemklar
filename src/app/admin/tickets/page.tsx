@@ -4,12 +4,7 @@ import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { TicketUnreadCountBadge } from "@/components/tickets/TicketUnreadCountBadge";
 import { formatDanishDateTime, StatusBadge } from "@/components/tickets/StatusBadge";
-import {
-  companyFromTicketRow,
-  normalizeTicketWithProfile,
-  TICKET_SELECT_WITH_PROFILE,
-  type TicketWithProfileRow,
-} from "@/lib/tickets-with-profile";
+import { companyFromTicketRow, type TicketWithProfileRow } from "@/lib/tickets-with-profile";
 import { fetchUnreadMessageCountsByTicket } from "@/lib/ticket-last-viewed";
 import { createClient } from "@/lib/supabase";
 
@@ -21,23 +16,21 @@ export default function AdminTicketsPage() {
 
   const loadTickets = useCallback(async () => {
     setTicketsLoading(true);
-    const { data, error } = await supabase
-      .from("tickets")
-      .select(TICKET_SELECT_WITH_PROFILE)
-      .order("created_at", { ascending: false });
+    const res = await fetch("/api/admin/tickets", { credentials: "same-origin" });
+    const payload = (await res.json().catch(() => ({}))) as {
+      tickets?: TicketWithProfileRow[];
+      error?: string;
+    };
 
-    if (error) {
-      console.error("[admin/tickets] fetch", error);
+    if (!res.ok || !payload.tickets) {
+      console.error("[admin/tickets] fetch", payload.error ?? res.status);
       setTickets([]);
       setUnreadByTicket({});
     } else {
-      const rows = (data ?? [])
-        .map((r) => normalizeTicketWithProfile(r as unknown as Record<string, unknown>))
-        .filter((x): x is TicketWithProfileRow => x !== null);
-      setTickets(rows);
+      setTickets(payload.tickets);
       const unread = await fetchUnreadMessageCountsByTicket(
         supabase,
-        rows.map((t) => t.id),
+        payload.tickets.map((t) => t.id),
       );
       setUnreadByTicket(unread);
     }
