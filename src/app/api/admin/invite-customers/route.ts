@@ -1,7 +1,7 @@
 import { createClient } from "@supabase/supabase-js";
 import { NextResponse } from "next/server";
 import { isAdminEmail } from "@/lib/admin-email";
-import { getAppOrigin, sendWelcomeEmail } from "@/lib/resend-welcome-email";
+import { getAppOrigin } from "@/lib/resend-welcome-email";
 
 const UUID_RE =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
@@ -125,6 +125,7 @@ export async function POST(request: Request) {
       continue;
     }
 
+    // Supabase sender selv invite-e-mail; ingen separat Resend-velkomst her.
     const { data: inviteData, error: inviteError } = await admin.auth.admin.inviteUserByEmail(
       email,
       {
@@ -150,20 +151,6 @@ export async function POST(request: Request) {
     }
 
     const userId = inviteData.user.id;
-
-    const welcome = await sendWelcomeEmail(email, company_name);
-    if (!welcome.ok) {
-      console.error("[invite-customers] Resend", email, welcome.error);
-      await admin.auth.admin.deleteUser(userId);
-      results.push({
-        profile_id: profileId,
-        email,
-        ok: false,
-        error: welcome.error ?? "Velkomstmail blev ikke sendt.",
-      });
-      continue;
-    }
-
     const nowIso = new Date().toISOString();
 
     const { error: updErr } = await admin
