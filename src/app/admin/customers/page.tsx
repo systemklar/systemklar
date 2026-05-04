@@ -32,6 +32,8 @@ export default function AdminCustomersPage() {
   const [inviteSubmitting, setInviteSubmitting] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
   const [inviteFormError, setInviteFormError] = useState<string | null>(null);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
 
   const loadProfiles = useCallback(async () => {
     setLoading(true);
@@ -157,6 +159,32 @@ export default function AdminCustomersPage() {
     void loadProfiles();
   };
 
+  const handleDeleteCustomer = async (p: ProfileRow) => {
+    const ok = window.confirm(
+      `Er du sikker på at du vil slette ${p.company_name}?`
+    );
+    if (!ok) return;
+
+    setDeletingId(p.id);
+    setDeleteError(null);
+
+    const res = await fetch(`/api/admin/customers/${p.id}`, {
+      method: "DELETE",
+      credentials: "same-origin",
+    });
+
+    const payload = (await res.json().catch(() => ({}))) as { error?: string };
+
+    setDeletingId(null);
+
+    if (!res.ok) {
+      setDeleteError(payload.error ?? "Sletning mislykkedes.");
+      return;
+    }
+
+    void loadProfiles();
+  };
+
   return (
     <div>
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
@@ -183,6 +211,10 @@ export default function AdminCustomersPage() {
         </div>
       </div>
 
+      {deleteError && (
+        <p className="mt-4 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">{deleteError}</p>
+      )}
+
       {loading ? (
         <p className="mt-10 text-sm text-slate-500">Henter kunder...</p>
       ) : profiles.length === 0 ? (
@@ -197,6 +229,7 @@ export default function AdminCustomersPage() {
                 <th className="px-4 py-3">Plan</th>
                 <th className="px-4 py-3">Status</th>
                 <th className="px-4 py-3">Oprettet</th>
+                <th className="px-4 py-3 text-right">Handling</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
@@ -218,6 +251,16 @@ export default function AdminCustomersPage() {
                     <CustomerStatusBadge status={p.status} />
                   </td>
                   <td className="px-4 py-3 text-slate-600">{formatDanishDateTime(p.created_at)}</td>
+                  <td className="px-4 py-3 text-right">
+                    <button
+                      type="button"
+                      disabled={deletingId === p.id}
+                      onClick={() => void handleDeleteCustomer(p)}
+                      className="rounded-full border border-red-200 bg-red-50 px-3 py-1.5 text-xs font-semibold text-red-800 transition hover:bg-red-100 disabled:opacity-50"
+                    >
+                      {deletingId === p.id ? "Sletter..." : "Slet kunde"}
+                    </button>
+                  </td>
                 </tr>
               ))}
             </tbody>
