@@ -49,6 +49,11 @@ export async function middleware(request: NextRequest) {
 
   const isAdmin = isAdminEmail(user?.email);
 
+  /* Invite-flow: session etableres via hash/?code i URL – ingen login påkrævet. */
+  if (pathname === "/set-password") {
+    return response;
+  }
+
   if (pathname === "/login" && user) {
     const url = request.nextUrl.clone();
     url.pathname = isAdmin ? "/admin/dashboard" : "/portal";

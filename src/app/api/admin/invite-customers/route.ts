@@ -80,7 +80,7 @@ export async function POST(request: Request) {
   }
 
   const admin = getServiceClient();
-  const redirectTo = `${getAppOrigin()}/portal`;
+  const redirectTo = `${getAppOrigin()}/set-password`;
   const results: InviteCustomerRowResult[] = [];
 
   for (const profileId of profileIds) {

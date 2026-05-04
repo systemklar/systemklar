@@ -90,7 +90,7 @@ export async function POST(request: Request) {
   }
 
   const admin = getServiceClient();
-  const redirectTo = `${getAppOrigin()}/portal`;
+  const redirectTo = `${getAppOrigin()}/set-password`;
 
   const { data: inviteData, error: inviteError } =
     await admin.auth.admin.inviteUserByEmail(email, {
