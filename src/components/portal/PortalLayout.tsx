@@ -42,21 +42,44 @@ export function PortalLayout({ children, activeNav }: PortalLayoutProps) {
   const [userEmail, setUserEmail] = useState<string | null>(null);
 
   useEffect(() => {
-    const checkSession = async () => {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
+    let cancelled = false;
 
-      if (!user) {
+    const applySession = (session: { user: { email?: string | null } } | null) => {
+      if (cancelled) return;
+      if (!session?.user) {
         router.replace("/login");
         return;
       }
-
-      setUserEmail(user.email ?? null);
+      setUserEmail(session.user.email ?? null);
       setIsLoading(false);
     };
 
-    void checkSession();
+    void supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session?.user) {
+        applySession(session);
+      }
+    });
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === "INITIAL_SESSION") {
+        applySession(session);
+        return;
+      }
+      if (event === "SIGNED_IN" && session?.user) {
+        applySession(session);
+        return;
+      }
+      if (event === "SIGNED_OUT") {
+        router.replace("/login");
+      }
+    });
+
+    return () => {
+      cancelled = true;
+      subscription.unsubscribe();
+    };
   }, [router]);
 
   const handleLogout = async () => {
