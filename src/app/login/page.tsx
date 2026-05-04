@@ -3,6 +3,7 @@
 import { FormEvent, Suspense, useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
+import { isAdminEmail } from "@/lib/admin-email";
 import { createClient } from "@/lib/supabase";
 
 function safeInternalPath(raw: string | null): string | null {
@@ -36,25 +37,14 @@ function LoginForm() {
       return;
     }
 
-    await supabase.auth.getSession();
-
-    const roleRes = await fetch("/api/auth/is-admin", {
-      credentials: "same-origin",
-      cache: "no-store",
-    });
-
-    let isAdmin = false;
-    try {
-      const body = (await roleRes.json()) as { isAdmin?: boolean };
-      isAdmin = body.isAdmin === true;
-    } catch {
-      isAdmin = false;
-    }
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
 
     const nextRaw = searchParams.get("next");
     const next = safeInternalPath(nextRaw);
 
-    if (isAdmin) {
+    if (isAdminEmail(user?.email)) {
       const dest =
         next && next.startsWith("/admin") ? next : "/admin/dashboard";
       router.push(dest);

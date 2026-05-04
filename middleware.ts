@@ -1,6 +1,7 @@
 import { createServerClient, type CookieOptions } from "@supabase/ssr";
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
+import { isAdminEmail } from "@/lib/admin-email";
 
 function adminForbidden(): NextResponse {
   return new NextResponse(
@@ -46,19 +47,7 @@ export async function middleware(request: NextRequest) {
     pathname.startsWith("/admin") || pathname.startsWith("/api/admin");
   const isPortalArea = pathname.startsWith("/portal");
 
-  let isAdmin = false;
-  if (user) {
-    const { data: adminRow, error } = await supabase
-      .from("admins")
-      .select("user_id")
-      .eq("user_id", user.id)
-      .maybeSingle();
-
-    if (error) {
-      console.error("[middleware] admins lookup", error.message);
-    }
-    isAdmin = !!adminRow;
-  }
+  const isAdmin = isAdminEmail(user?.email);
 
   if (pathname === "/login" && user) {
     const url = request.nextUrl.clone();

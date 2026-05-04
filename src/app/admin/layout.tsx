@@ -24,7 +24,7 @@ function activeNavFromPath(pathname: string): AdminNavKey {
 export default function AdminLayout({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const activeNav = activeNavFromPath(pathname);
-  const access = useAdminAccess("[admin/layout]");
+  const access = useAdminAccess();
 
   if (access === "loading") {
     return (

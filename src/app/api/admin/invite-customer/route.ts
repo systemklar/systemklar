@@ -1,6 +1,7 @@
 import { createClient } from "@supabase/supabase-js";
 import { NextResponse } from "next/server";
 import { Resend } from "resend";
+import { isAdminEmail } from "@/lib/admin-email";
 
 const PLANS = ["basis", "standard", "plus"] as const;
 type Plan = (typeof PLANS)[number];
@@ -60,13 +61,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Ugyldig session." }, { status: 401 });
   }
 
-  const { data: adminRow, error: adminErr } = await userClient
-    .from("admins")
-    .select("user_id")
-    .eq("user_id", adminUser.id)
-    .maybeSingle();
-
-  if (adminErr || !adminRow) {
+  if (!isAdminEmail(adminUser.email)) {
     return NextResponse.json({ error: "Ingen admin-adgang." }, { status: 403 });
   }
 
