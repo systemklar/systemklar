@@ -1,7 +1,7 @@
 import { createClient } from "@supabase/supabase-js";
 import { NextResponse } from "next/server";
-import { Resend } from "resend";
 import { isAdminEmail } from "@/lib/admin-email";
+import { getAppOrigin, sendWelcomeEmail } from "@/lib/resend-welcome-email";
 
 const PLANS = ["basis", "standard", "plus"] as const;
 type Plan = (typeof PLANS)[number];
@@ -27,18 +27,6 @@ function getServiceClient() {
     process.env.SUPABASE_SERVICE_ROLE_KEY!,
     { auth: { autoRefreshToken: false, persistSession: false } }
   );
-}
-
-function getAppOrigin(): string {
-  const fromEnv = process.env.NEXT_PUBLIC_SITE_URL?.trim();
-  if (fromEnv) {
-    return fromEnv.replace(/\/$/, "");
-  }
-  const vercel = process.env.VERCEL_URL?.trim();
-  if (vercel) {
-    return `https://${vercel.replace(/\/$/, "")}`;
-  }
-  return "http://localhost:3000";
 }
 
 export async function POST(request: Request) {
@@ -129,12 +117,14 @@ export async function POST(request: Request) {
 
   const userId = inviteData.user.id;
 
+  const nowIso = new Date().toISOString();
   const { error: profileError } = await admin.from("profiles").insert({
     user_id: userId,
     email,
     company_name,
     plan,
     status: "active",
+    invited_at: nowIso,
   });
 
   if (profileError) {
@@ -152,63 +142,9 @@ export async function POST(request: Request) {
     );
   }
 
-  const resendKey = process.env.RESEND_API_KEY;
-  let welcomeEmailSent = false;
-  /** Kun ved Resend-fejl — hjælper med debugging (også synlig i Netlify logs via console). */
-  let welcomeEmailError: string | undefined;
-
-  if (resendKey) {
-    const resend = new Resend(resendKey);
-    const from =
-      process.env.RESEND_FROM_EMAIL?.trim() ||
-      "Systemklar <onboarding@resend.dev>";
-
-    const portalUrl = `${getAppOrigin()}/portal`;
-    const htmlBody = `
-        <p>Hej,</p>
-        <p>Velkommen til <strong>Systemklar</strong> – vi er glade for at have ${escapeHtml(
-          company_name
-        )} med.</p>
-        <p>Du har modtaget en separat e-mail fra os med et link til at vælge adgangskode. Når du har sat adgangskoden, kan du logge ind på <a href="${portalUrl}">kundeportalen</a>.</p>
-        <p>Med venlig hilsen<br/>Systemklar</p>
-      `;
-
-    console.log("[invite-customer] Resend send attempt", {
-      from,
-      to: email,
-      subject: "Velkommen til Systemklar 👋",
-      htmlLength: htmlBody.length,
-    });
-
-    const { data: resendData, error: sendErr } = await resend.emails.send({
-      from,
-      to: email,
-      subject: "Velkommen til Systemklar 👋",
-      html: htmlBody,
-    });
-
-    if (sendErr) {
-      welcomeEmailError =
-        typeof sendErr === "object" && sendErr !== null && "message" in sendErr
-          ? String((sendErr as { message: unknown }).message)
-          : JSON.stringify(sendErr);
-      console.error("[invite-customer] Resend send failed", {
-        from,
-        to: email,
-        error: sendErr,
-        welcomeEmailError,
-      });
-    } else {
-      welcomeEmailSent = true;
-      console.log("[invite-customer] Resend send ok", {
-        to: email,
-        messageId: resendData?.id ?? null,
-      });
-    }
-  } else {
-    welcomeEmailError = "RESEND_API_KEY er ikke sat.";
-    console.warn("[invite-customer] RESEND_API_KEY mangler; springer velkomstmail over.");
-  }
+  const welcome = await sendWelcomeEmail(email, company_name);
+  const welcomeEmailSent = welcome.ok;
+  const welcomeEmailError = welcome.ok ? undefined : welcome.error;
 
   return NextResponse.json({
     ok: true,
@@ -216,12 +152,4 @@ export async function POST(request: Request) {
     welcomeEmailSent,
     ...(welcomeEmailError !== undefined ? { welcomeEmailError } : {}),
   });
-}
-
-function escapeHtml(s: string): string {
-  return s
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;");
 }

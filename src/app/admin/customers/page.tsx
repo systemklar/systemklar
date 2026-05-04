@@ -14,32 +14,49 @@ type ProfileRow = {
   plan: string;
   status: string;
   created_at: string;
+  invited_at: string | null;
 };
+
+function InvitationBadge({ invitedAt }: { invitedAt: string | null }) {
+  if (invitedAt) {
+    return (
+      <span className="inline-flex rounded-full bg-blue-100 px-2.5 py-0.5 text-xs font-semibold text-blue-800">
+        Inviteret
+      </span>
+    );
+  }
+  return (
+    <span className="inline-flex rounded-full bg-slate-100 px-2.5 py-0.5 text-xs font-semibold text-slate-600">
+      Ikke inviteret
+    </span>
+  );
+}
 
 export default function AdminCustomersPage() {
   const supabase = useMemo(() => createClient(), []);
   const [profiles, setProfiles] = useState<ProfileRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [modalOpen, setModalOpen] = useState(false);
-  const [inviteModalOpen, setInviteModalOpen] = useState(false);
   const [email, setEmail] = useState("");
   const [companyName, setCompanyName] = useState("");
   const [plan, setPlan] = useState<ProfilePlan>("basis");
-  const [inviteEmail, setInviteEmail] = useState("");
-  const [inviteCompanyName, setInviteCompanyName] = useState("");
-  const [invitePlan, setInvitePlan] = useState<ProfilePlan>("basis");
   const [submitting, setSubmitting] = useState(false);
-  const [inviteSubmitting, setInviteSubmitting] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
-  const [inviteFormError, setInviteFormError] = useState<string | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [deleteError, setDeleteError] = useState<string | null>(null);
+
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [inviteBusy, setInviteBusy] = useState(false);
+  const [inviteFeedback, setInviteFeedback] = useState<{
+    okLines: string[];
+    errLines: string[];
+  } | null>(null);
 
   const loadProfiles = useCallback(async () => {
     setLoading(true);
     const { data, error } = await supabase
       .from("profiles")
-      .select("id, email, company_name, plan, status, created_at")
+      .select("id, email, company_name, plan, status, created_at, invited_at")
       .order("created_at", { ascending: false });
 
     if (error) {
@@ -63,69 +80,6 @@ export default function AdminCustomersPage() {
     setEmail("");
     setCompanyName("");
     setPlan("basis");
-  };
-
-  const closeInviteModal = () => {
-    setInviteModalOpen(false);
-    setInviteFormError(null);
-    setInviteEmail("");
-    setInviteCompanyName("");
-    setInvitePlan("basis");
-  };
-
-  const handleInvite = async (e: FormEvent) => {
-    e.preventDefault();
-    const em = inviteEmail.trim().toLowerCase();
-    const co = inviteCompanyName.trim();
-    if (!em || !co) {
-      setInviteFormError("Udfyld e-mail og virksomhedsnavn.");
-      return;
-    }
-
-    setInviteSubmitting(true);
-    setInviteFormError(null);
-
-    const {
-      data: { session },
-    } = await supabase.auth.getSession();
-
-    if (!session?.access_token) {
-      setInviteFormError("Du er ikke logget ind.");
-      setInviteSubmitting(false);
-      return;
-    }
-
-    const res = await fetch("/api/admin/invite-customer", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${session.access_token}`,
-      },
-      body: JSON.stringify({
-        email: em,
-        company_name: co,
-        plan: invitePlan,
-      }),
-    });
-
-    const payload = (await res.json().catch(() => ({}))) as {
-      error?: string;
-      welcomeEmailSent?: boolean;
-    };
-
-    if (!res.ok) {
-      setInviteFormError(payload.error ?? "Invitationen kunne ikke sendes.");
-      setInviteSubmitting(false);
-      return;
-    }
-
-    setInviteSubmitting(false);
-    closeInviteModal();
-    void loadProfiles();
-
-    if (payload.welcomeEmailSent === false) {
-      console.warn("[admin/customers] Velkomstmail blev ikke sendt (tjek Resend).");
-    }
   };
 
   const handleCreate = async (e: FormEvent) => {
@@ -160,9 +114,7 @@ export default function AdminCustomersPage() {
   };
 
   const handleDeleteCustomer = async (p: ProfileRow) => {
-    const ok = window.confirm(
-      `Er du sikker på at du vil slette ${p.company_name}?`
-    );
+    const ok = window.confirm(`Er du sikker på at du vil slette ${p.company_name}?`);
     if (!ok) return;
 
     setDeletingId(p.id);
@@ -182,8 +134,104 @@ export default function AdminCustomersPage() {
       return;
     }
 
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      next.delete(p.id);
+      return next;
+    });
     void loadProfiles();
   };
+
+  const toggleRow = (id: string) => {
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  };
+
+  const pendingProfileIds = useMemo(
+    () => profiles.filter((p) => !p.invited_at).map((p) => p.id),
+    [profiles]
+  );
+
+  const toggleSelectAll = () => {
+    if (pendingProfileIds.length === 0) return;
+    setSelectedIds((prev) => {
+      const allSelected = pendingProfileIds.every((id) => prev.has(id));
+      if (allSelected) {
+        const next = new Set(prev);
+        for (const id of pendingProfileIds) next.delete(id);
+        return next;
+      }
+      return new Set([...prev, ...pendingProfileIds]);
+    });
+  };
+
+  const handleSendInvites = async () => {
+    if (selectedIds.size === 0) return;
+
+    setInviteBusy(true);
+    setInviteFeedback(null);
+
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
+
+    if (!session?.access_token) {
+      setInviteFeedback({
+        okLines: [],
+        errLines: ["Du er ikke logget ind."],
+      });
+      setInviteBusy(false);
+      return;
+    }
+
+    const res = await fetch("/api/admin/invite-customers", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${session.access_token}`,
+      },
+      body: JSON.stringify({ profile_ids: Array.from(selectedIds) }),
+    });
+
+    const payload = (await res.json().catch(() => ({}))) as {
+      results?: {
+        profile_id: string;
+        email: string;
+        ok: boolean;
+        message?: string;
+        error?: string;
+      }[];
+      error?: string;
+    };
+
+    setInviteBusy(false);
+
+    if (!res.ok) {
+      setInviteFeedback({
+        okLines: [],
+        errLines: [payload.error ?? "Invitationer kunne ikke sendes."],
+      });
+      return;
+    }
+
+    const results = payload.results ?? [];
+    const okLines = results.filter((r) => r.ok && r.message).map((r) => r.message as string);
+    const errLines = results
+      .filter((r) => !r.ok)
+      .map((r) => `${r.email || r.profile_id}: ${r.error ?? "Ukendt fejl"}`);
+
+    setInviteFeedback({ okLines, errLines });
+    setSelectedIds(new Set());
+    void loadProfiles();
+  };
+
+  const allPendingSelected =
+    pendingProfileIds.length > 0 && pendingProfileIds.every((id) => selectedIds.has(id));
+  const hasSelection = selectedIds.size > 0;
 
   return (
     <div>
@@ -192,24 +240,50 @@ export default function AdminCustomersPage() {
           <h1 className="text-2xl font-bold text-slate-900 md:text-3xl">Kunder</h1>
           <p className="mt-2 text-sm text-slate-600">Alle kundeprofiler.</p>
         </div>
-        <div className="flex shrink-0 flex-wrap gap-3">
-          <button
-            type="button"
-            onClick={() => setInviteModalOpen(true)}
-            className="rounded-full border border-emerald-600 bg-white px-5 py-2.5 text-sm font-semibold text-emerald-700 transition hover:bg-emerald-50"
-          >
-            Inviter kunde
-          </button>
+        <div className="flex shrink-0 flex-wrap items-center gap-3">
+          {hasSelection && (
+            <button
+              type="button"
+              disabled={inviteBusy}
+              onClick={() => void handleSendInvites()}
+              className="rounded-full border border-blue-600 bg-blue-50 px-5 py-2.5 text-sm font-semibold text-blue-800 transition hover:bg-blue-100 disabled:opacity-50"
+            >
+              {inviteBusy ? "Sender invitationer..." : "Send invite"}
+            </button>
+          )}
           <button
             type="button"
             onClick={() => setModalOpen(true)}
             className="rounded-full px-5 py-2.5 text-sm font-semibold text-white transition hover:opacity-90"
             style={{ backgroundColor: "#1D9E75" }}
           >
-            Opret kunde
+            Ny kunde
           </button>
         </div>
       </div>
+
+      {inviteFeedback && (inviteFeedback.okLines.length > 0 || inviteFeedback.errLines.length > 0) && (
+        <div className="mt-4 space-y-3">
+          {inviteFeedback.okLines.length > 0 && (
+            <div className="rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-900">
+              <ul className="list-inside list-disc space-y-1">
+                {inviteFeedback.okLines.map((line) => (
+                  <li key={line}>{line}</li>
+                ))}
+              </ul>
+            </div>
+          )}
+          {inviteFeedback.errLines.length > 0 && (
+            <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">
+              <ul className="list-inside list-disc space-y-1">
+                {inviteFeedback.errLines.map((line) => (
+                  <li key={line}>{line}</li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </div>
+      )}
 
       {deleteError && (
         <p className="mt-4 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">{deleteError}</p>
@@ -218,148 +292,83 @@ export default function AdminCustomersPage() {
       {loading ? (
         <p className="mt-10 text-sm text-slate-500">Henter kunder...</p>
       ) : profiles.length === 0 ? (
-        <p className="mt-10 text-sm text-slate-600">Ingen kunder endnu. Opret den første med knappen ovenfor.</p>
+        <p className="mt-10 text-sm text-slate-600">
+          Ingen kunder endnu. Opret den første med &quot;Ny kunde&quot;.
+        </p>
       ) : (
         <div className="mt-8 overflow-x-auto rounded-2xl border border-slate-200 bg-white shadow-sm">
-          <table className="w-full min-w-[640px] text-left text-sm">
+          <table className="w-full min-w-[860px] text-left text-sm">
             <thead>
               <tr className="border-b border-slate-200 bg-slate-50/80 text-xs font-semibold uppercase tracking-wide text-slate-500">
+                <th className="w-10 px-3 py-3">
+                  <input
+                    type="checkbox"
+                    checked={allPendingSelected}
+                    onChange={toggleSelectAll}
+                    disabled={pendingProfileIds.length === 0}
+                    className="h-4 w-4 rounded border-slate-300"
+                    title="Vælg alle uden invitation"
+                    aria-label="Vælg alle uden invitation"
+                  />
+                </th>
                 <th className="px-4 py-3">E-mail</th>
                 <th className="px-4 py-3">Firma</th>
                 <th className="px-4 py-3">Plan</th>
+                <th className="px-4 py-3">Invitation</th>
                 <th className="px-4 py-3">Status</th>
                 <th className="px-4 py-3">Oprettet</th>
                 <th className="px-4 py-3 text-right">Handling</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
-              {profiles.map((p) => (
-                <tr key={p.id} className="transition hover:bg-slate-50/80">
-                  <td className="px-4 py-3">
-                    <Link
-                      href={`/admin/customers/${p.id}`}
-                      className="font-medium text-emerald-700 hover:underline"
-                    >
-                      {p.email}
-                    </Link>
-                  </td>
-                  <td className="px-4 py-3 text-slate-800">{p.company_name}</td>
-                  <td className="px-4 py-3">
-                    <PlanBadge plan={p.plan} />
-                  </td>
-                  <td className="px-4 py-3">
-                    <CustomerStatusBadge status={p.status} />
-                  </td>
-                  <td className="px-4 py-3 text-slate-600">{formatDanishDateTime(p.created_at)}</td>
-                  <td className="px-4 py-3 text-right">
-                    <button
-                      type="button"
-                      disabled={deletingId === p.id}
-                      onClick={() => void handleDeleteCustomer(p)}
-                      className="rounded-full border border-red-200 bg-red-50 px-3 py-1.5 text-xs font-semibold text-red-800 transition hover:bg-red-100 disabled:opacity-50"
-                    >
-                      {deletingId === p.id ? "Sletter..." : "Slet kunde"}
-                    </button>
-                  </td>
-                </tr>
-              ))}
+              {profiles.map((p) => {
+                const canSelect = !p.invited_at;
+                return (
+                  <tr key={p.id} className="transition hover:bg-slate-50/80">
+                    <td className="px-3 py-3 align-middle">
+                      <input
+                        type="checkbox"
+                        disabled={!canSelect || inviteBusy}
+                        checked={selectedIds.has(p.id)}
+                        onChange={() => toggleRow(p.id)}
+                        className="h-4 w-4 rounded border-slate-300 disabled:opacity-40"
+                        aria-label={`Vælg ${p.company_name}`}
+                      />
+                    </td>
+                    <td className="px-4 py-3">
+                      <Link
+                        href={`/admin/customers/${p.id}`}
+                        className="font-medium text-emerald-700 hover:underline"
+                      >
+                        {p.email}
+                      </Link>
+                    </td>
+                    <td className="px-4 py-3 text-slate-800">{p.company_name}</td>
+                    <td className="px-4 py-3">
+                      <PlanBadge plan={p.plan} />
+                    </td>
+                    <td className="px-4 py-3">
+                      <InvitationBadge invitedAt={p.invited_at} />
+                    </td>
+                    <td className="px-4 py-3">
+                      <CustomerStatusBadge status={p.status} />
+                    </td>
+                    <td className="px-4 py-3 text-slate-600">{formatDanishDateTime(p.created_at)}</td>
+                    <td className="px-4 py-3 text-right">
+                      <button
+                        type="button"
+                        disabled={deletingId === p.id}
+                        onClick={() => void handleDeleteCustomer(p)}
+                        className="rounded-full border border-red-200 bg-red-50 px-3 py-1.5 text-xs font-semibold text-red-800 transition hover:bg-red-100 disabled:opacity-50"
+                      >
+                        {deletingId === p.id ? "Sletter..." : "Slet kunde"}
+                      </button>
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
-        </div>
-      )}
-
-      {inviteModalOpen && (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 p-4"
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby="invite-customer-title"
-          onClick={(e) => {
-            if (e.target === e.currentTarget) closeInviteModal();
-          }}
-        >
-          <div
-            className="w-full max-w-md rounded-2xl border border-slate-200 bg-white p-6 shadow-xl"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <h2 id="invite-customer-title" className="text-lg font-semibold text-slate-900">
-              Inviter kunde
-            </h2>
-            <p className="mt-1 text-sm text-slate-500">
-              Kunden får e-mail med link til at vælge adgangskode og lander derefter i portalen.
-            </p>
-
-            <form className="mt-6 space-y-4" onSubmit={(ev) => void handleInvite(ev)}>
-              <div>
-                <label htmlFor="invite-email" className="mb-1 block text-sm font-medium text-slate-700">
-                  E-mail
-                </label>
-                <input
-                  id="invite-email"
-                  type="email"
-                  required
-                  value={inviteEmail}
-                  onChange={(e) => setInviteEmail(e.target.value)}
-                  className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-emerald-600"
-                  placeholder="kunde@firma.dk"
-                />
-              </div>
-              <div>
-                <label
-                  htmlFor="invite-company"
-                  className="mb-1 block text-sm font-medium text-slate-700"
-                >
-                  Virksomhedsnavn
-                </label>
-                <input
-                  id="invite-company"
-                  type="text"
-                  required
-                  value={inviteCompanyName}
-                  onChange={(e) => setInviteCompanyName(e.target.value)}
-                  className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-emerald-600"
-                  placeholder="Firma A/S"
-                />
-              </div>
-              <div>
-                <label htmlFor="invite-plan" className="mb-1 block text-sm font-medium text-slate-700">
-                  Plan
-                </label>
-                <select
-                  id="invite-plan"
-                  value={invitePlan}
-                  onChange={(e) => setInvitePlan(e.target.value as ProfilePlan)}
-                  className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-emerald-600"
-                >
-                  <option value="basis">Basis</option>
-                  <option value="standard">Standard</option>
-                  <option value="plus">Plus</option>
-                </select>
-              </div>
-
-              {inviteFormError && (
-                <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">{inviteFormError}</p>
-              )}
-
-              <div className="flex justify-end gap-3 pt-2">
-                <button
-                  type="button"
-                  onClick={closeInviteModal}
-                  className="rounded-full px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100"
-                >
-                  Annuller
-                </button>
-                <button
-                  type="submit"
-                  disabled={inviteSubmitting}
-                  className="rounded-full px-5 py-2 text-sm font-semibold text-white transition hover:opacity-90 disabled:opacity-50"
-                  style={{ backgroundColor: "#1D9E75" }}
-                >
-                  {inviteSubmitting ? "Sender invitation..." : "Send invitation"}
-                </button>
-              </div>
-            </form>
-          </div>
         </div>
       )}
 
@@ -378,9 +387,11 @@ export default function AdminCustomersPage() {
             onClick={(e) => e.stopPropagation()}
           >
             <h2 id="create-customer-title" className="text-lg font-semibold text-slate-900">
-              Opret kunde
+              Ny kunde
             </h2>
-            <p className="mt-1 text-sm text-slate-500">Tilføj en ny profil i databasen.</p>
+            <p className="mt-1 text-sm text-slate-500">
+              Opretter kun profilen — ingen e-mail. Brug &quot;Send invite&quot; for invitation.
+            </p>
 
             <form className="mt-6 space-y-4" onSubmit={(ev) => void handleCreate(ev)}>
               <div>
