@@ -14,7 +14,7 @@ type AdminSidebarProps = {
 const accent = "#1D9E75";
 
 const navItems: { label: string; href: string; key: AdminNavKey }[] = [
-  { label: "Overblik", href: "/admin", key: "overview" },
+  { label: "Overblik", href: "/admin/dashboard", key: "overview" },
   { label: "Kunder", href: "/admin/customers", key: "customers" },
   { label: "Support & sager", href: "/admin/tickets", key: "tickets" },
   { label: "IT-rapporter", href: "/admin/reports", key: "reports" },
@@ -32,7 +32,7 @@ export function AdminSidebar({ activeNav }: AdminSidebarProps) {
   return (
     <aside className="flex min-h-screen w-full max-w-72 shrink-0 flex-col border-r border-slate-200 bg-white p-6 shadow-sm">
       <div className="flex min-h-0 flex-1 flex-col">
-        <Link href="/admin" className="block">
+        <Link href="/admin/dashboard" className="block">
           <div className="text-lg font-bold leading-snug" style={{ color: accent }}>
             Systemklar Admin
           </div>

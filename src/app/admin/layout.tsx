@@ -6,6 +6,9 @@ import { AdminSidebar, type AdminNavKey } from "@/components/admin/AdminSidebar"
 import { useAdminAccess } from "./use-admin-access";
 
 function activeNavFromPath(pathname: string): AdminNavKey {
+  if (pathname === "/admin" || pathname.startsWith("/admin/dashboard")) {
+    return "overview";
+  }
   if (pathname.startsWith("/admin/customers")) {
     return "customers";
   }

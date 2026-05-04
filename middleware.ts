@@ -62,7 +62,7 @@ export async function middleware(request: NextRequest) {
 
   if (pathname === "/login" && user) {
     const url = request.nextUrl.clone();
-    url.pathname = isAdmin ? "/admin" : "/portal";
+    url.pathname = isAdmin ? "/admin/dashboard" : "/portal";
     url.search = "";
     return NextResponse.redirect(url);
   }
@@ -87,7 +87,7 @@ export async function middleware(request: NextRequest) {
     }
     if (isAdmin) {
       const url = request.nextUrl.clone();
-      url.pathname = "/admin";
+      url.pathname = "/admin/dashboard";
       url.search = "";
       return NextResponse.redirect(url);
     }

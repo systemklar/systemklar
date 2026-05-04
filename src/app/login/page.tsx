@@ -36,28 +36,27 @@ function LoginForm() {
       return;
     }
 
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
+    await supabase.auth.getSession();
 
-    if (!user) {
-      setErrorMessage("Kunne ikke hente bruger efter login.");
-      setIsLoading(false);
-      return;
+    const roleRes = await fetch("/api/auth/is-admin", {
+      credentials: "same-origin",
+      cache: "no-store",
+    });
+
+    let isAdmin = false;
+    try {
+      const body = (await roleRes.json()) as { isAdmin?: boolean };
+      isAdmin = body.isAdmin === true;
+    } catch {
+      isAdmin = false;
     }
-
-    const { data: adminRow } = await supabase
-      .from("admins")
-      .select("user_id")
-      .eq("user_id", user.id)
-      .maybeSingle();
 
     const nextRaw = searchParams.get("next");
     const next = safeInternalPath(nextRaw);
 
-    if (adminRow) {
+    if (isAdmin) {
       const dest =
-        next && next.startsWith("/admin") ? next : "/admin";
+        next && next.startsWith("/admin") ? next : "/admin/dashboard";
       router.push(dest);
     } else {
       const dest =
