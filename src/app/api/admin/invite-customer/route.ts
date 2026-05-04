@@ -111,6 +111,12 @@ export async function POST(request: Request) {
     });
 
   if (inviteError || !inviteData.user) {
+    console.error("[invite-customer] Supabase inviteUserByEmail", {
+      email,
+      message: inviteError?.message,
+      name: inviteError?.name,
+      status: inviteError?.status,
+    });
     return NextResponse.json(
       {
         error:
@@ -132,6 +138,13 @@ export async function POST(request: Request) {
   });
 
   if (profileError) {
+    console.error("[invite-customer] profiles insert", {
+      email,
+      userId,
+      message: profileError.message,
+      code: profileError.code,
+      details: profileError.details,
+    });
     await admin.auth.admin.deleteUser(userId);
     return NextResponse.json(
       { error: profileError.message ?? "Kunne ikke oprette profil." },
@@ -141,6 +154,9 @@ export async function POST(request: Request) {
 
   const resendKey = process.env.RESEND_API_KEY;
   let welcomeEmailSent = false;
+  /** Kun ved Resend-fejl — hjælper med debugging (også synlig i Netlify logs via console). */
+  let welcomeEmailError: string | undefined;
+
   if (resendKey) {
     const resend = new Resend(resendKey);
     const from =
@@ -148,27 +164,49 @@ export async function POST(request: Request) {
       "Systemklar <onboarding@resend.dev>";
 
     const portalUrl = `${getAppOrigin()}/portal`;
-
-    const { error: sendErr } = await resend.emails.send({
-      from,
-      to: email,
-      subject: "Velkommen til Systemklar 👋",
-      html: `
+    const htmlBody = `
         <p>Hej,</p>
         <p>Velkommen til <strong>Systemklar</strong> – vi er glade for at have ${escapeHtml(
           company_name
         )} med.</p>
         <p>Du har modtaget en separat e-mail fra os med et link til at vælge adgangskode. Når du har sat adgangskoden, kan du logge ind på <a href="${portalUrl}">kundeportalen</a>.</p>
         <p>Med venlig hilsen<br/>Systemklar</p>
-      `,
+      `;
+
+    console.log("[invite-customer] Resend send attempt", {
+      from,
+      to: email,
+      subject: "Velkommen til Systemklar 👋",
+      htmlLength: htmlBody.length,
+    });
+
+    const { data: resendData, error: sendErr } = await resend.emails.send({
+      from,
+      to: email,
+      subject: "Velkommen til Systemklar 👋",
+      html: htmlBody,
     });
 
     if (sendErr) {
-      console.error("[invite-customer] Resend", sendErr);
+      welcomeEmailError =
+        typeof sendErr === "object" && sendErr !== null && "message" in sendErr
+          ? String((sendErr as { message: unknown }).message)
+          : JSON.stringify(sendErr);
+      console.error("[invite-customer] Resend send failed", {
+        from,
+        to: email,
+        error: sendErr,
+        welcomeEmailError,
+      });
     } else {
       welcomeEmailSent = true;
+      console.log("[invite-customer] Resend send ok", {
+        to: email,
+        messageId: resendData?.id ?? null,
+      });
     }
   } else {
+    welcomeEmailError = "RESEND_API_KEY er ikke sat.";
     console.warn("[invite-customer] RESEND_API_KEY mangler; springer velkomstmail over.");
   }
 
@@ -176,6 +214,7 @@ export async function POST(request: Request) {
     ok: true,
     user_id: userId,
     welcomeEmailSent,
+    ...(welcomeEmailError !== undefined ? { welcomeEmailError } : {}),
   });
 }
 
