@@ -38,22 +38,25 @@ export default function AiVaerktoejerPage() {
 
   const tools = [
     {
-      title: "AI-tilbudsgenerator",
-      plan: "Kun Plus-plan",
+      icon: "📄",
+      title: "AI Tilbudsgenerator",
+      badge: "Inkluderet i alle planer",
       description:
-        "Generer gennemarbejdede IT-tilbud med tydelige anbefalinger, prisniveau og næste skridt. Værktøjet hjælper med at spare tid i salgsprocessen og sikrer en mere ensartet kvalitet i kundedialogen.",
+        "Generer professionelle tilbud på sekunder. Indtast dine priser én gang, beskriv kundens behov, og lad AI'en skrive et skræddersyet tilbud klar til afsendelse.",
       accent: "#534AB7",
     },
     {
+      icon: "📊",
       title: "Månedlig IT-rapport",
-      plan: "Standard & Plus",
+      badge: "Standard & Plus",
       description:
         "Få en automatisk månedsrapport med indsigter om drift, hændelser, supportniveau og forbedringsmuligheder. Rapporten gør det lettere at følge udviklingen og træffe beslutninger på et oplyst grundlag.",
       accent: "#534AB7",
     },
     {
+      icon: "💬",
       title: "AI-assistent",
-      plan: "Standard & Plus",
+      badge: "Standard & Plus",
       description:
         "Stil spørgsmål om jeres IT-opsætning og få konkrete forslag til handling. Assistenten hjælper med hurtige afklaringer i hverdagen, så både ledelse og medarbejdere kan komme videre uden unødig ventetid.",
       accent: "#534AB7",
@@ -179,9 +182,9 @@ export default function AiVaerktoejerPage() {
             Intelligente IT-værktøjer inkluderet i din plan
           </h1>
           <p className="mt-6 max-w-3xl text-lg text-slate-600">
-            AI-funktionerne i Systemklar hjælper dig med at arbejde hurtigere og
-            mere struktureret. Nogle værktøjer er tilgængelige i alle planer,
-            mens andre er forbeholdt bestemte abonnementsniveauer.
+            AI-funktionerne i Systemklar hjælper dig med at arbejde hurtigere og mere struktureret.
+            <strong className="font-semibold text-slate-800"> AI Tilbudsgenerator</strong> er inkluderet i
+            alle abonnementer; øvrige værktøjer afhænger af plan.
           </p>
           <Link
             href="/"
@@ -195,14 +198,17 @@ export default function AiVaerktoejerPage() {
           <div className="grid gap-5 md:grid-cols-3">
             {tools.map((tool) => (
               <article key={tool.title} className="rounded-2xl border border-slate-200 p-7">
-                <h2 className="text-2xl font-semibold" style={{ color: tool.accent }}>
+                <span className="text-4xl leading-none" aria-hidden>
+                  {tool.icon}
+                </span>
+                <h2 className="mt-4 text-2xl font-semibold" style={{ color: tool.accent }}>
                   {tool.title}
                 </h2>
                 <p
                   className="mt-3 inline-block rounded-full px-3 py-1 text-sm font-semibold"
                   style={{ backgroundColor: "#EEEAFD", color: tool.accent }}
                 >
-                  {tool.plan}
+                  {tool.badge}
                 </p>
                 <p className="mt-4 leading-7 text-slate-600">{tool.description}</p>
               </article>

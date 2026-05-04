@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
+import { PricingSection } from "@/components/marketing/PricingSection";
 
 export default function Home() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -26,9 +27,10 @@ export default function Home() {
 
   const aiTools = [
     {
-      title: "AI-tilbudsgenerator",
+      title: "AI Tilbudsgenerator",
       description:
-        "Generer professionelle IT-tilbud på minutter med klare anbefalinger.",
+        "Generer professionelle tilbud på sekunder — gem priser én gang, beskriv behovet, og lad AI skrive tilbuddet klar til afsendelse.",
+      includedAllPlans: true,
     },
     {
       title: "Månedlig IT-rapport",
@@ -39,29 +41,6 @@ export default function Home() {
       title: "AI-assistent",
       description:
         "Stil spørgsmål om jeres setup og få konkrete forslag med det samme.",
-    },
-  ];
-
-  const plans = [
-    {
-      name: "Basis",
-      price: "499 kr./md.",
-      features: [
-        "Grundlæggende IT-overblik",
-        "E-mail support",
-        "Op til 10 brugere",
-      ],
-    },
-    {
-      name: "Standard",
-      price: "1.299 kr./md.",
-      features: ["Alt i Basis", "Prioriteret support", "Op til 50 brugere"],
-      highlighted: true,
-    },
-    {
-      name: "Plus",
-      price: "2.499 kr./md.",
-      features: ["Alt i Standard", "AI-værktøjer inkluderet", "Ubegrænset brug"],
     },
   ];
 
@@ -271,6 +250,14 @@ export default function Home() {
                 className="group rounded-2xl border p-6 transition hover:-translate-y-0.5 hover:shadow-md"
                 style={{ borderColor: "#DCD8F6" }}
               >
+                {"includedAllPlans" in tool && tool.includedAllPlans ? (
+                  <p
+                    className="mb-3 inline-block rounded-full px-2.5 py-0.5 text-xs font-semibold"
+                    style={{ backgroundColor: "#EEEAFD", color: "#534AB7" }}
+                  >
+                    Inkluderet i alle planer
+                  </p>
+                ) : null}
                 <h3 className="text-xl font-semibold" style={{ color: "#534AB7" }}>
                   {tool.title}
                 </h3>
@@ -320,50 +307,7 @@ export default function Home() {
           </div>
         </section>
 
-        <section id="priser" className="mx-auto max-w-6xl px-6 py-14">
-          <h2 className="text-2xl font-bold md:text-3xl">Priser</h2>
-          <p className="mt-3 max-w-2xl text-slate-600">
-            Vælg den pakke, der passer til jeres behov i dag - og opgrader, når
-            I vokser.
-          </p>
-          <div className="mt-8 grid gap-5 md:grid-cols-3">
-            {plans.map((plan) => (
-              <article
-                key={plan.name}
-                className={`rounded-2xl border p-6 ${
-                  plan.highlighted
-                    ? "border-transparent shadow-md"
-                    : "border-slate-200"
-                }`}
-                style={
-                  plan.highlighted
-                    ? { boxShadow: "0 10px 24px rgba(29, 158, 117, 0.18)" }
-                    : undefined
-                }
-              >
-                <h3 className="text-xl font-semibold">{plan.name}</h3>
-                <p
-                  className="mt-3 text-3xl font-bold"
-                  style={plan.highlighted ? { color: "#1D9E75" } : undefined}
-                >
-                  {plan.price}
-                </p>
-                <ul className="mt-5 space-y-2 text-slate-600">
-                  {plan.features.map((feature) => (
-                    <li key={feature}>- {feature}</li>
-                  ))}
-                </ul>
-                <a
-                  href="#cta"
-                  className="mt-8 inline-block rounded-full px-5 py-2 font-semibold text-white transition hover:opacity-90"
-                  style={{ backgroundColor: "#1D9E75" }}
-                >
-                  Vælg {plan.name}
-                </a>
-              </article>
-            ))}
-          </div>
-        </section>
+        <PricingSection />
 
         <section id="cta" className="mx-auto max-w-6xl px-6 pb-20 pt-8">
           <div
