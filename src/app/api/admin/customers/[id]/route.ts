@@ -58,11 +58,43 @@ export async function DELETE(
     auth: { autoRefreshToken: false, persistSession: false },
   });
 
-  const { error } = await admin.from("profiles").delete().eq("id", id);
+  const { data: profile, error: fetchError } = await admin
+    .from("profiles")
+    .select("user_id")
+    .eq("id", id)
+    .maybeSingle();
 
-  if (error) {
-    console.error("[api/admin/customers/[id]] delete", error);
-    return NextResponse.json({ error: error.message }, { status: 400 });
+  if (fetchError) {
+    console.error("[api/admin/customers/[id]] select", fetchError);
+    return NextResponse.json({ error: fetchError.message }, { status: 400 });
+  }
+
+  if (!profile) {
+    return NextResponse.json({ error: "Kunde ikke fundet." }, { status: 404 });
+  }
+
+  const userId = profile.user_id as string | null;
+
+  const { error: profileError } = await admin.from("profiles").delete().eq("id", id);
+
+  if (profileError) {
+    console.error("[api/admin/customers/[id]] delete profile", profileError);
+    return NextResponse.json({ error: profileError.message }, { status: 400 });
+  }
+
+  if (userId) {
+    const { error: authError } = await admin.auth.admin.deleteUser(userId);
+    if (authError) {
+      console.error("[api/admin/customers/[id]] deleteUser", authError);
+      return NextResponse.json(
+        {
+          error:
+            "Profilen er slettet, men auth-brugeren kunne ikke fjernes (e-mail kan stadig være optaget). Tjek Supabase Auth eller prøv igen.",
+          detail: authError.message,
+        },
+        { status: 502 }
+      );
+    }
   }
 
   return NextResponse.json({ ok: true });
