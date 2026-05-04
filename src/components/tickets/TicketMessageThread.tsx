@@ -1,9 +1,9 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { PostgrestError, RealtimePostgresChangesPayload } from "@supabase/supabase-js";
 import { companyFromTicketRow, fetchTicketWithProfileById } from "@/lib/tickets-with-profile";
-import { supabase } from "@/lib/supabase";
+import { createClient } from "@/lib/supabase";
 import { formatDanishDateTime } from "./StatusBadge";
 
 export type MessageRow = {
@@ -103,6 +103,7 @@ function TypingDots() {
 }
 
 export function TicketMessageThread({ ticketId, sendAsAdmin }: TicketMessageThreadProps) {
+  const supabase = useMemo(() => createClient(), []);
   const [messages, setMessages] = useState<MessageRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [draft, setDraft] = useState("");
@@ -124,7 +125,7 @@ export function TicketMessageThread({ ticketId, sendAsAdmin }: TicketMessageThre
     return () => {
       cancelled = true;
     };
-  }, [ticketId]);
+  }, [ticketId, supabase]);
 
   const appendMessage = useCallback(
     (raw: Record<string, unknown>) => {
@@ -163,7 +164,7 @@ export function TicketMessageThread({ ticketId, sendAsAdmin }: TicketMessageThre
       setMessages(sortMessages(rows));
     }
     setLoading(false);
-  }, [ticketId]);
+  }, [ticketId, supabase]);
 
   useEffect(() => {
     queueMicrotask(() => {
@@ -203,7 +204,7 @@ export function TicketMessageThread({ ticketId, sendAsAdmin }: TicketMessageThre
     return () => {
       void supabase.removeChannel(channel);
     };
-  }, [ticketId, appendMessage]);
+  }, [ticketId, appendMessage, supabase]);
 
   useEffect(() => {
     queueMicrotask(() => {

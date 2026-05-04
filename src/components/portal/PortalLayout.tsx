@@ -6,10 +6,11 @@ import {
   createContext,
   useContext,
   useEffect,
+  useMemo,
   useState,
   type ReactNode,
 } from "react";
-import { supabase } from "@/lib/supabase";
+import { createClient } from "@/lib/supabase";
 
 export type PortalNavKey = "dashboard" | "support" | "rapport" | "ai";
 
@@ -38,6 +39,7 @@ type PortalLayoutProps = {
 
 export function PortalLayout({ children, activeNav }: PortalLayoutProps) {
   const router = useRouter();
+  const supabase = useMemo(() => createClient(), []);
   const [isLoading, setIsLoading] = useState(true);
   const [userEmail, setUserEmail] = useState<string | null>(null);
 

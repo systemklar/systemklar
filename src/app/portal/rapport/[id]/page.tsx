@@ -2,13 +2,14 @@
 
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { PortalLayout } from "@/components/portal/PortalLayout";
 import { ReportDetailView } from "@/components/reports/ReportDetailView";
 import { fetchPortalReportDetail, type ReportDetailRow } from "@/lib/report-detail-fetch";
-import { supabase } from "@/lib/supabase";
+import { createClient } from "@/lib/supabase";
 
 export default function PortalRapportDetailPage() {
+  const supabase = useMemo(() => createClient(), []);
   const params = useParams();
   const router = useRouter();
   const id = typeof params.id === "string" ? params.id : "";
@@ -41,7 +42,7 @@ export default function PortalRapportDetailPage() {
     const row = await fetchPortalReportDetail(supabase, id, user.id);
     setPayload(row);
     setLoading(false);
-  }, [id, router]);
+  }, [id, router, supabase]);
 
   useEffect(() => {
     queueMicrotask(() => {

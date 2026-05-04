@@ -2,11 +2,11 @@
 
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { CustomerStatusBadge } from "@/components/admin/CustomerStatusBadge";
 import { PlanBadge, type ProfilePlan } from "@/components/admin/PlanBadge";
 import { formatDanishDateTime, StatusBadge, type TicketStatus } from "@/components/tickets/StatusBadge";
-import { supabase } from "@/lib/supabase";
+import { createClient } from "@/lib/supabase";
 
 type ProfileRow = {
   id: string;
@@ -26,6 +26,7 @@ type TicketRow = {
 };
 
 export default function AdminCustomerDetailPage() {
+  const supabase = useMemo(() => createClient(), []);
   const params = useParams();
   const id = typeof params.id === "string" ? params.id : "";
 
@@ -78,7 +79,7 @@ export default function AdminCustomerDetailPage() {
     }
 
     setLoading(false);
-  }, [id]);
+  }, [id, supabase]);
 
   useEffect(() => {
     queueMicrotask(() => {

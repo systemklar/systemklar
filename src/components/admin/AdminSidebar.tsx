@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { supabase } from "@/lib/supabase";
+import { useMemo } from "react";
+import { createClient } from "@/lib/supabase";
 
 export type AdminNavKey = "overview" | "customers" | "tickets" | "reports";
 
@@ -21,6 +22,7 @@ const navItems: { label: string; href: string; key: AdminNavKey }[] = [
 
 export function AdminSidebar({ activeNav }: AdminSidebarProps) {
   const router = useRouter();
+  const supabase = useMemo(() => createClient(), []);
 
   const handleLogout = async () => {
     await supabase.auth.signOut();

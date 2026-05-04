@@ -5,7 +5,7 @@ import { type FormEvent, useCallback, useEffect, useMemo, useState } from "react
 import { formatDanishDateTime } from "@/components/tickets/StatusBadge";
 import { companyNameFromProfilesEmbed, REPORTS_ADMIN_SELECT_WITH_PROFILE, REPORTS_TABLE_COLUMNS } from "@/lib/reports-queries";
 import { formatSupabaseError, logSupabaseError } from "@/lib/supabase-error";
-import { supabase } from "@/lib/supabase";
+import { createClient } from "@/lib/supabase";
 
 type ProfileOption = {
   user_id: string;
@@ -28,6 +28,7 @@ type ReportAdminRow = {
 };
 
 export default function AdminReportsPage() {
+  const supabase = useMemo(() => createClient(), []);
   const [reports, setReports] = useState<ReportAdminRow[]>([]);
   const [profiles, setProfiles] = useState<ProfileOption[]>([]);
   const [loading, setLoading] = useState(true);
@@ -101,7 +102,7 @@ export default function AdminReportsPage() {
     });
     setReports(rows);
     setLoading(false);
-  }, []);
+  }, [supabase]);
 
   const loadProfiles = useCallback(async () => {
     const { data, error } = await supabase
@@ -118,7 +119,7 @@ export default function AdminReportsPage() {
     setProfiles(
       (data ?? []).filter((p): p is ProfileOption => typeof (p as ProfileOption).user_id === "string"),
     );
-  }, []);
+  }, [supabase]);
 
   useEffect(() => {
     queueMicrotask(() => {

@@ -2,15 +2,14 @@
 
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { ReportDetailView } from "@/components/reports/ReportDetailView";
 import { fetchAdminReportDetail, type ReportDetailRow } from "@/lib/report-detail-fetch";
-import { supabase } from "@/lib/supabase";
+import { createClient } from "@/lib/supabase";
 
-/**
- * Admin-adgang håndhæves i `admin/layout.tsx` via `useAdminAccess` (samme mønster som fx. /admin/tickets/[id]).
- */
+/** Admin-adgang håndhæves i middleware (`/admin/*`) og defensivt i layout via `useAdminAccess`. */
 export default function AdminReportDetailPage() {
+  const supabase = useMemo(() => createClient(), []);
   const params = useParams();
   const id = typeof params.id === "string" ? params.id : "";
 
@@ -30,7 +29,7 @@ export default function AdminReportDetailPage() {
     const row = await fetchAdminReportDetail(supabase, id);
     setPayload(row);
     setLoading(false);
-  }, [id]);
+  }, [id, supabase]);
 
   useEffect(() => {
     queueMicrotask(() => {

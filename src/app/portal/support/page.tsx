@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { FormEvent, useCallback, useEffect, useState } from "react";
+import { FormEvent, useCallback, useEffect, useMemo, useState } from "react";
 import { PortalLayout } from "@/components/portal/PortalLayout";
 import { TicketUnreadCountBadge } from "@/components/tickets/TicketUnreadCountBadge";
 import { formatDanishDateTime, StatusBadge, type TicketStatus } from "@/components/tickets/StatusBadge";
@@ -12,11 +12,12 @@ import {
   type TicketWithProfileRow,
 } from "@/lib/tickets-with-profile";
 import { fetchUnreadMessageCountsByTicket } from "@/lib/ticket-last-viewed";
-import { supabase } from "@/lib/supabase";
+import { createClient } from "@/lib/supabase";
 
 export type { TicketWithProfileRow as TicketRow } from "@/lib/tickets-with-profile";
 
 export default function PortalSupportPage() {
+  const supabase = useMemo(() => createClient(), []);
   const [showForm, setShowForm] = useState(false);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -56,7 +57,7 @@ export default function PortalSupportPage() {
     const ids = rows.map((t) => t.id);
     const unread = await fetchUnreadMessageCountsByTicket(supabase, ids);
     setUnreadByTicket(unread);
-  }, []);
+  }, [supabase]);
 
   useEffect(() => {
     void (async () => {

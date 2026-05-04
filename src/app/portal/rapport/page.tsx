@@ -1,12 +1,12 @@
 "use client";
 
 import Link from "next/link";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { PortalLayout } from "@/components/portal/PortalLayout";
 import { formatDanishDateTime } from "@/components/tickets/StatusBadge";
 import { REPORTS_TABLE_COLUMNS } from "@/lib/reports-queries";
 import { logSupabaseError } from "@/lib/supabase-error";
-import { supabase } from "@/lib/supabase";
+import { createClient } from "@/lib/supabase";
 
 type ReportListRow = {
   id: string;
@@ -16,6 +16,7 @@ type ReportListRow = {
 };
 
 export default function PortalRapportPage() {
+  const supabase = useMemo(() => createClient(), []);
   const [reports, setReports] = useState<ReportListRow[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -53,7 +54,7 @@ export default function PortalRapportPage() {
       setReports(rows);
     }
     setLoading(false);
-  }, []);
+  }, [supabase]);
 
   useEffect(() => {
     queueMicrotask(() => {

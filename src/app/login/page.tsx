@@ -1,12 +1,19 @@
 "use client";
 
-import { FormEvent, useState } from "react";
+import { FormEvent, Suspense, useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { supabase } from "@/lib/supabase";
+import { useRouter, useSearchParams } from "next/navigation";
+import { createClient } from "@/lib/supabase";
 
-export default function LoginPage() {
+function safeInternalPath(raw: string | null): string | null {
+  if (!raw || !raw.startsWith("/") || raw.startsWith("//")) return null;
+  return raw;
+}
+
+function LoginForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const supabase = createClient();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -29,7 +36,35 @@ export default function LoginPage() {
       return;
     }
 
-    router.push("/portal");
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) {
+      setErrorMessage("Kunne ikke hente bruger efter login.");
+      setIsLoading(false);
+      return;
+    }
+
+    const { data: adminRow } = await supabase
+      .from("admins")
+      .select("user_id")
+      .eq("user_id", user.id)
+      .maybeSingle();
+
+    const nextRaw = searchParams.get("next");
+    const next = safeInternalPath(nextRaw);
+
+    if (adminRow) {
+      const dest =
+        next && next.startsWith("/admin") ? next : "/admin";
+      router.push(dest);
+    } else {
+      const dest =
+        next && next.startsWith("/portal") ? next : "/portal";
+      router.push(dest);
+    }
+
     router.refresh();
   };
 
@@ -40,11 +75,11 @@ export default function LoginPage() {
           className="mb-4 inline-block rounded-full px-3 py-1 text-xs font-semibold"
           style={{ backgroundColor: "#E7F6F1", color: "#1D9E75" }}
         >
-          Systemklar kundeportal
+          Systemklar
         </p>
         <h1 className="text-3xl font-bold">Log ind</h1>
         <p className="mt-2 text-sm text-slate-600">
-          Log ind for at få adgang til kundeportalen.
+          Log ind med den e-mail og adgangskode, du har fået tilsendt.
         </p>
 
         <form onSubmit={handleSubmit} className="mt-8 space-y-4">
@@ -60,6 +95,7 @@ export default function LoginPage() {
               required
               className="w-full rounded-lg border border-slate-300 px-3 py-2 outline-none transition focus:border-slate-500"
               placeholder="dig@firma.dk"
+              autoComplete="email"
             />
           </div>
 
@@ -75,6 +111,7 @@ export default function LoginPage() {
               required
               className="w-full rounded-lg border border-slate-300 px-3 py-2 outline-none transition focus:border-slate-500"
               placeholder="••••••••"
+              autoComplete="current-password"
             />
           </div>
 
@@ -103,5 +140,19 @@ export default function LoginPage() {
         </Link>
       </div>
     </main>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense
+      fallback={
+        <main className="min-h-screen bg-white px-6 py-20 text-slate-600">
+          <div className="mx-auto max-w-md text-center">Indlæser...</div>
+        </main>
+      }
+    >
+      <LoginForm />
+    </Suspense>
   );
 }

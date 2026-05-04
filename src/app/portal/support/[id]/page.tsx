@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { PortalLayout } from "@/components/portal/PortalLayout";
 import {
   companyFromTicketRow,
@@ -12,9 +12,10 @@ import {
 import { formatDanishDateTime, StatusBadge, type TicketStatus } from "@/components/tickets/StatusBadge";
 import { TicketMessageThread } from "@/components/tickets/TicketMessageThread";
 import { setTicketLastViewedToNow } from "@/lib/ticket-last-viewed";
-import { supabase } from "@/lib/supabase";
+import { createClient } from "@/lib/supabase";
 
 export default function PortalSupportTicketPage() {
+  const supabase = useMemo(() => createClient(), []);
   const params = useParams();
   const router = useRouter();
   const id = typeof params.id === "string" ? params.id : "";
@@ -51,7 +52,7 @@ export default function PortalSupportTicketPage() {
 
     setTicket(row);
     setLoading(false);
-  }, [id, router]);
+  }, [id, router, supabase]);
 
   useEffect(() => {
     queueMicrotask(() => {

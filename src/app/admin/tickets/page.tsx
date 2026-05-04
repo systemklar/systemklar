@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { TicketUnreadCountBadge } from "@/components/tickets/TicketUnreadCountBadge";
 import { formatDanishDateTime, StatusBadge, type TicketStatus } from "@/components/tickets/StatusBadge";
 import {
@@ -11,11 +11,12 @@ import {
   type TicketWithProfileRow,
 } from "@/lib/tickets-with-profile";
 import { fetchUnreadMessageCountsByTicket } from "@/lib/ticket-last-viewed";
-import { supabase } from "@/lib/supabase";
+import { createClient } from "@/lib/supabase";
 
 const ALL_ROWS_DUMMY_ID = "00000000-0000-0000-0000-000000000000";
 
 export default function AdminTicketsPage() {
+  const supabase = useMemo(() => createClient(), []);
   const [tickets, setTickets] = useState<TicketWithProfileRow[]>([]);
   const [unreadByTicket, setUnreadByTicket] = useState<Record<string, number>>({});
   const [ticketsLoading, setTicketsLoading] = useState(true);
@@ -46,7 +47,7 @@ export default function AdminTicketsPage() {
       setUnreadByTicket(unread);
     }
     setTicketsLoading(false);
-  }, []);
+  }, [supabase]);
 
   useEffect(() => {
     queueMicrotask(() => {

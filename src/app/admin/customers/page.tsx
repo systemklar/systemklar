@@ -1,11 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import { type FormEvent, useCallback, useEffect, useState } from "react";
+import { type FormEvent, useCallback, useEffect, useMemo, useState } from "react";
 import { CustomerStatusBadge } from "@/components/admin/CustomerStatusBadge";
 import { PlanBadge, type ProfilePlan } from "@/components/admin/PlanBadge";
 import { formatDanishDateTime } from "@/components/tickets/StatusBadge";
-import { supabase } from "@/lib/supabase";
+import { createClient } from "@/lib/supabase";
 
 type ProfileRow = {
   id: string;
@@ -17,6 +17,7 @@ type ProfileRow = {
 };
 
 export default function AdminCustomersPage() {
+  const supabase = useMemo(() => createClient(), []);
   const [profiles, setProfiles] = useState<ProfileRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [modalOpen, setModalOpen] = useState(false);
@@ -46,7 +47,7 @@ export default function AdminCustomersPage() {
       setProfiles((data ?? []) as ProfileRow[]);
     }
     setLoading(false);
-  }, []);
+  }, [supabase]);
 
   useEffect(() => {
     queueMicrotask(() => {

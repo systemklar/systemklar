@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { supabase } from "@/lib/supabase";
+import { createClient } from "@/lib/supabase";
 
 export type AdminAccessState = "loading" | "denied" | "allowed";
 
@@ -12,6 +12,7 @@ export function useAdminAccess(logLabel = "[admin]") {
   const [access, setAccess] = useState<AdminAccessState>("loading");
 
   useEffect(() => {
+    const supabase = createClient();
     let cancelled = false;
 
     const checkAdminsForUser = async (userId: string) => {

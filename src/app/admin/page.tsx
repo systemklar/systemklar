@@ -1,8 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useCallback, useEffect, useState } from "react";
-import { supabase } from "@/lib/supabase";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { createClient } from "@/lib/supabase";
 
 type DashboardStats = {
   customers: number | null;
@@ -43,6 +43,7 @@ function StatCard({
 }
 
 export default function AdminDashboardPage() {
+  const supabase = useMemo(() => createClient(), []);
   const [stats, setStats] = useState<DashboardStats>({
     customers: null,
     ticketsOpen: null,
@@ -76,7 +77,7 @@ export default function AdminDashboardPage() {
       ticketsInProgress: progressRes.error ? null : (progressRes.count ?? 0),
     });
     setLoading(false);
-  }, []);
+  }, [supabase]);
 
   useEffect(() => {
     queueMicrotask(() => {
