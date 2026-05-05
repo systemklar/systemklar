@@ -4,6 +4,7 @@ import { UNKNOWN_COMPANY_LABEL } from "@/lib/profile-customer";
 /** PostgREST-embed når FK tickets.user_id → profiles.user_id findes (migration 005). */
 export const TICKET_SELECT_WITH_PROFILE =
   "id,title,description,status,user_id,created_at,profiles(company_name,email)";
+export const TICKET_SELECT_BASE = "id,title,description,status,user_id,created_at";
 
 export type ProfileEmbed = {
   company_name: string;
@@ -90,7 +91,7 @@ export async function fetchTicketWithProfileForUser(
 ): Promise<TicketWithProfileRow | null> {
   const { data, error } = await client
     .from("tickets")
-    .select(TICKET_SELECT_WITH_PROFILE)
+    .select(TICKET_SELECT_BASE)
     .eq("id", ticketId)
     .eq("user_id", userId)
     .maybeSingle();

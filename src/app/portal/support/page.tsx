@@ -8,7 +8,7 @@ import { formatDanishDateTime, StatusBadge } from "@/components/tickets/StatusBa
 import {
   companyFromTicketRow,
   normalizeTicketWithProfile,
-  TICKET_SELECT_WITH_PROFILE,
+  TICKET_SELECT_BASE,
   type TicketWithProfileRow,
 } from "@/lib/tickets-with-profile";
 import { fetchUnreadMessageCountsByTicket } from "@/lib/ticket-last-viewed";
@@ -36,7 +36,7 @@ export default function PortalSupportPage() {
 
     const { data, error } = await supabase
       .from("tickets")
-      .select(TICKET_SELECT_WITH_PROFILE)
+      .select(TICKET_SELECT_BASE)
       .eq("user_id", user.id)
       .order("created_at", { ascending: false });
 
