@@ -34,6 +34,20 @@ function formatDkkLocal(price: string | number): string {
   return new Intl.NumberFormat("da-DK", { style: "currency", currency: "DKK" }).format(n);
 }
 
+function CardCheckIcon() {
+  return (
+    <svg viewBox="0 0 20 20" fill="none" className="h-4 w-4 text-white" aria-hidden>
+      <path
+        d="M5 10.5 8.2 13.5 15 6.5"
+        stroke="currentColor"
+        strokeWidth="2.2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
 export default function PortalTilbudsgeneratorPage() {
   const supabase = useMemo(() => createClient(), []);
 
@@ -213,6 +227,14 @@ export default function PortalTilbudsgeneratorPage() {
       else next.add(id);
       return next;
     });
+  };
+
+  const selectAllServices = () => {
+    setSelected(new Set(services.map((s) => s.id)));
+  };
+
+  const clearServiceSelection = () => {
+    setSelected(new Set());
   };
 
   const handleGenerate = async () => {
@@ -434,35 +456,72 @@ export default function PortalTilbudsgeneratorPage() {
             </div>
 
             <div>
-              <h3 className="text-sm font-semibold text-[#1C1917]">Vælg ydelser</h3>
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                <h3 className="text-sm font-semibold text-[#1C1917]">Vælg ydelser</h3>
+                {services.length > 0 ? (
+                  <div className="flex flex-wrap items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={selectAllServices}
+                      className="rounded-full border border-[#E7E5E4] bg-white px-3 py-1.5 text-xs font-semibold text-[#1C1917] shadow-sm transition hover:bg-stone-50"
+                    >
+                      Vælg alle
+                    </button>
+                    <button
+                      type="button"
+                      onClick={clearServiceSelection}
+                      className="rounded-full border border-[#E7E5E4] bg-white px-3 py-1.5 text-xs font-semibold text-[#78716C] shadow-sm transition hover:bg-stone-50"
+                    >
+                      Ryd valg
+                    </button>
+                    <span className="text-xs font-medium text-[#78716C] sm:ml-1">
+                      {selected.size === 1 ? "1 ydelse valgt" : `${selected.size} ydelser valgt`}
+                    </span>
+                  </div>
+                ) : null}
+              </div>
               {services.length === 0 ? (
                 <p className="mt-3 text-sm text-[#78716C]">
                   Tilføj ydelser i sektionen ovenfor først.
                 </p>
               ) : (
-                <ul className="mt-4 space-y-3">
-                  {services.map((s) => (
-                    <li key={s.id}>
-                      <label className="flex cursor-pointer gap-3 rounded-lg border border-stone-100 p-3 hover:bg-stone-50">
-                        <input
-                          type="checkbox"
-                          checked={selected.has(s.id)}
-                          onChange={() => toggleService(s.id)}
-                          className="mt-1"
-                        />
-                        <span className="min-w-0 flex-1">
-                          <span className="font-medium text-[#1C1917]">{s.name}</span>
-                          {s.description ? (
-                            <span className="mt-0.5 block text-sm text-[#78716C]">{s.description}</span>
-                          ) : null}
-                          <span className="mt-1 block text-sm text-[#1C1917]">
-                            {formatDkk(s.price)} · {serviceUnitLabel(s.unit)}
+                <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
+                  {services.map((s) => {
+                    const isOn = selected.has(s.id);
+                    return (
+                      <button
+                        key={s.id}
+                        type="button"
+                        onClick={() => toggleService(s.id)}
+                        className={`relative rounded-xl px-3 py-3 text-left shadow-sm transition focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 ${
+                          isOn
+                            ? "border-2 border-blue-600 bg-white ring-1 ring-blue-100"
+                            : "border border-stone-200 bg-white text-stone-600 hover:border-stone-300"
+                        }`}
+                      >
+                        {isOn ? (
+                          <span
+                            className="absolute right-2 top-2 flex h-6 w-6 items-center justify-center rounded-full bg-blue-600 shadow-sm"
+                            aria-hidden
+                          >
+                            <CardCheckIcon />
                           </span>
-                        </span>
-                      </label>
-                    </li>
-                  ))}
-                </ul>
+                        ) : null}
+                        <p
+                          className={`pr-9 text-sm font-semibold leading-snug ${
+                            isOn ? "text-[#1C1917]" : "text-stone-700"
+                          }`}
+                        >
+                          {s.name}
+                        </p>
+                        <p className={`mt-2 text-xs ${isOn ? "text-[#78716C]" : "text-stone-500"}`}>
+                          <span className="font-medium text-stone-700">{formatDkk(s.price)}</span>
+                          <span> · {serviceUnitLabel(s.unit)}</span>
+                        </p>
+                      </button>
+                    );
+                  })}
+                </div>
               )}
             </div>
 

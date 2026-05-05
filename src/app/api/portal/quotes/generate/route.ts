@@ -8,7 +8,7 @@ const UUID_RE =
 const SYSTEM_PROMPT =
   "Du er en professionel tilbudsassistent for en dansk SMV. Generer et skarpt, professionelt tilbud på dansk baseret på valgte tjenester og kundens behov.";
 
-const MODEL = "claude-sonnet-4-20250514";
+const MODEL = "claude-sonnet-4-5";
 
 function extractAnthropicText(body: unknown): string | null {
   if (!body || typeof body !== "object") return null;
