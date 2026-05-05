@@ -13,6 +13,14 @@ type ProfileOption = {
   email: string;
 };
 
+type TicketOption = {
+  id: string;
+  title: string;
+  description: string | null;
+  status: string;
+  user_id: string;
+};
+
 type ReportAdminRow = {
   id: string;
   user_id: string;
@@ -44,6 +52,10 @@ export default function AdminReportsPage() {
   const [incidents, setIncidents] = useState("");
   const [resolved, setResolved] = useState("");
   const [recommendations, setRecommendations] = useState("");
+  const [customerTickets, setCustomerTickets] = useState<TicketOption[]>([]);
+  const [ticketsLoading, setTicketsLoading] = useState(false);
+  const [ticketsError, setTicketsError] = useState<string | null>(null);
+  const [aiGenerating, setAiGenerating] = useState(false);
 
   const [editingReport, setEditingReport] = useState<ReportAdminRow | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
@@ -151,6 +163,10 @@ export default function AdminReportsPage() {
     setIncidents("");
     setResolved("");
     setRecommendations("");
+    setCustomerTickets([]);
+    setTicketsLoading(false);
+    setTicketsError(null);
+    setAiGenerating(false);
   };
 
   const openCreateModal = () => {
@@ -163,6 +179,10 @@ export default function AdminReportsPage() {
     setIncidents("");
     setResolved("");
     setRecommendations("");
+    setCustomerTickets([]);
+    setTicketsLoading(false);
+    setTicketsError(null);
+    setAiGenerating(false);
     setModalOpen(true);
   };
 
@@ -176,7 +196,84 @@ export default function AdminReportsPage() {
     setIncidents(r.incidents);
     setResolved(r.resolved);
     setRecommendations(r.recommendations);
+    setCustomerTickets([]);
+    setTicketsLoading(false);
+    setTicketsError(null);
+    setAiGenerating(false);
     setModalOpen(true);
+  };
+
+  useEffect(() => {
+    if (!modalOpen || editingReport || !customerUserId) {
+      setCustomerTickets([]);
+      setTicketsError(null);
+      setTicketsLoading(false);
+      return;
+    }
+    let cancelled = false;
+    const run = async () => {
+      setTicketsLoading(true);
+      setTicketsError(null);
+      const res = await fetch("/api/admin/tickets", { credentials: "same-origin" });
+      const payload = (await res.json().catch(() => ({}))) as {
+        tickets?: TicketOption[];
+        error?: string;
+      };
+      if (cancelled) return;
+      if (!res.ok || !payload.tickets) {
+        setCustomerTickets([]);
+        setTicketsError(payload.error ?? "Kunne ikke hente sager for kunden.");
+      } else {
+        setCustomerTickets((payload.tickets ?? []).filter((t) => t.user_id === customerUserId));
+      }
+      setTicketsLoading(false);
+    };
+    void run();
+    return () => {
+      cancelled = true;
+    };
+  }, [modalOpen, editingReport, customerUserId]);
+
+  const activeTicketCount = useMemo(
+    () => customerTickets.filter((t) => t.status === "active").length,
+    [customerTickets],
+  );
+  const resolvedTicketCount = useMemo(
+    () => customerTickets.filter((t) => t.status === "resolved").length,
+    [customerTickets],
+  );
+
+  const handleGenerateWithAi = async () => {
+    if (!customerUserId) {
+      setFormError("Vælg en kunde først.");
+      return;
+    }
+    setAiGenerating(true);
+    setFormError(null);
+    const res = await fetch("/api/admin/reports/generate", {
+      method: "POST",
+      credentials: "same-origin",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ user_id: customerUserId }),
+    });
+    const payload = (await res.json().catch(() => ({}))) as {
+      error?: string;
+      sections?: {
+        status_summary: string;
+        incidents: string;
+        resolved: string;
+        recommendations: string;
+      };
+    };
+    setAiGenerating(false);
+    if (!res.ok || !payload.sections) {
+      setFormError(payload.error ?? "AI-generering fejlede.");
+      return;
+    }
+    setStatusSummary(payload.sections.status_summary);
+    setIncidents(payload.sections.incidents);
+    setResolved(payload.sections.resolved);
+    setRecommendations(payload.sections.recommendations);
   };
 
   const handleDeleteReport = async (r: ReportAdminRow) => {
@@ -390,6 +487,31 @@ export default function AdminReportsPage() {
                   ))}
                 </select>
               </div>
+              {!editingReport && customerUserId ? (
+                <div className="rounded-lg border border-slate-200 bg-slate-50 p-3 text-sm text-slate-700">
+                  {ticketsLoading ? (
+                    <p>Henter kundens sager...</p>
+                  ) : ticketsError ? (
+                    <p className="text-red-700">{ticketsError}</p>
+                  ) : (
+                    <p>
+                      {activeTicketCount} aktive sager, {resolvedTicketCount} løste sager
+                    </p>
+                  )}
+                </div>
+              ) : null}
+              {!editingReport ? (
+                <div>
+                  <button
+                    type="button"
+                    disabled={!customerUserId || aiGenerating}
+                    onClick={() => void handleGenerateWithAi()}
+                    className="rounded-full border border-emerald-200 bg-emerald-50 px-4 py-2 text-sm font-semibold text-emerald-800 hover:bg-emerald-100 disabled:opacity-50"
+                  >
+                    {aiGenerating ? "Genererer..." : "Generer rapport med AI"}
+                  </button>
+                </div>
+              ) : null}
               <div>
                 <label htmlFor="rep-title" className="mb-1 block text-sm font-medium text-slate-700">
                   Titel
