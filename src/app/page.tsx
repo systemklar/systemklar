@@ -103,12 +103,9 @@ export default function Home() {
               <Link href="/login" className="transition hover:text-slate-600">
                 Log ind
               </Link>
-            <a
-                href="#cta"
-              className="btn-primary px-5 py-2 text-sm font-semibold shadow-sm"
-              >
-                Kom i gang
-              </a>
+              <Link href="/book-demo" className="btn-primary px-5 py-2 text-sm font-semibold shadow-sm">
+                Book en demo
+              </Link>
             </nav>
             <button
               type="button"
@@ -172,14 +169,13 @@ export default function Home() {
               >
                 Log ind
               </Link>
-              <a
-                href="#cta"
-                className="mt-2 rounded-full px-5 py-2 text-center font-semibold text-white"
-                style={{ backgroundColor: "#1D9E75" }}
+              <Link
+                href="/book-demo"
+                className="btn-primary mt-2 px-5 py-2 text-center font-semibold"
                 onClick={() => setIsMobileMenuOpen(false)}
               >
-                Kom i gang
-              </a>
+                Book en demo
+              </Link>
             </div>
           </nav>
         </div>
@@ -201,12 +197,9 @@ export default function Home() {
             med AI-værktøjer der gør IT-arbejdet lettere.
           </p>
           <div className="mt-9 flex flex-wrap gap-4">
-            <a
-              href="#cta"
-              className="btn-primary px-6 py-3 font-semibold shadow-sm"
-            >
-              Kom i gang
-            </a>
+            <Link href="/book-demo" className="btn-primary px-6 py-3 font-semibold shadow-sm">
+              Book en demo
+            </Link>
             <a
               href="#priser"
               className="rounded-full border border-slate-300 px-6 py-3 font-semibold text-slate-700 transition hover:bg-slate-50"
@@ -324,12 +317,26 @@ export default function Home() {
               Start med en uforpligtende demo og se, hvordan Systemklar kan gøre
               jeres IT-drift enkel og effektiv.
             </p>
-            <a
-              href="#"
-              className="btn-primary mt-8 inline-block px-6 py-3 font-semibold"
-            >
+            <Link href="/book-demo" className="btn-primary mt-8 inline-block px-6 py-3 font-semibold">
               Book en demo
-            </a>
+            </Link>
+          </div>
+        </section>
+
+        <section className="mx-auto max-w-6xl px-6 pb-20">
+          <div className="rounded-2xl border border-slate-200 bg-white px-8 py-10 shadow-sm">
+            <div className="flex flex-col items-start justify-between gap-4 md:flex-row md:items-center">
+              <div>
+                <p className="text-sm font-semibold text-emerald-700">Gratis demo</p>
+                <h3 className="mt-1 text-2xl font-bold text-slate-900">Book en demo tilpasset jeres virksomhed</h3>
+                <p className="mt-2 text-slate-600">
+                  Vi gennemgår platformen med udgangspunkt i jeres behov og nuværende setup.
+                </p>
+              </div>
+              <Link href="/book-demo" className="btn-primary px-6 py-3 font-semibold">
+                Book en demo
+              </Link>
+            </div>
           </div>
         </section>
       </main>
