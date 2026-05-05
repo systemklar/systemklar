@@ -45,12 +45,12 @@ export default function ForgotPasswordPage() {
         </p>
         <h1 className="text-3xl font-bold">Glemt adgangskode</h1>
         <p className="mt-2 text-sm text-slate-600">
-          Indtast din e-mail, så sender vi et link til at sætte en ny adgangskode.
+          Indtast din e-mail og vi sender dig et link til at nulstille din adgangskode.
         </p>
 
         {sent ? (
           <p className="mt-8 rounded-lg bg-emerald-50 px-3 py-2 text-sm text-emerald-800">
-            Vi har sendt et link til din email.
+            Vi har sendt et nulstillingslink til din e-mail.
           </p>
         ) : (
           <form onSubmit={handleSubmit} className="mt-8 space-y-4">

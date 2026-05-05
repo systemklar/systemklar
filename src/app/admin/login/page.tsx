@@ -12,6 +12,17 @@ function safeInternalPath(raw: string | null): string | null {
   return raw;
 }
 
+function toDanishAuthError(message: string): string {
+  const normalized = message.trim().toLowerCase();
+  if (normalized.includes("invalid login credentials")) {
+    return "Forkert e-mail eller adgangskode. Prøv igen.";
+  }
+  if (normalized.includes("email not confirmed")) {
+    return "Din e-mail er ikke bekræftet. Tjek din indbakke.";
+  }
+  return message;
+}
+
 function AdminLoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -46,7 +57,11 @@ function AdminLoginForm() {
     });
 
     if (error) {
-      setErrorMessage(error.message);
+      console.error("[admin/login] signInWithPassword failed", {
+        email: normalizedEmail,
+        error,
+      });
+      setErrorMessage(toDanishAuthError(error.message));
       setIsLoading(false);
       return;
     }
@@ -79,7 +94,7 @@ function AdminLoginForm() {
           Systemklar Admin
         </p>
         <h1 className="text-3xl font-bold">Admin login</h1>
-        <p className="mt-2 text-sm text-slate-600">Kun for intern adgang.</p>
+        <p className="mt-2 text-sm text-slate-600">Kun for Systemklar-administratorer.</p>
 
         <form onSubmit={handleSubmit} className="mt-8 space-y-4">
           <div>

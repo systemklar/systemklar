@@ -10,6 +10,17 @@ function safeInternalPath(raw: string | null): string | null {
   return raw;
 }
 
+function toDanishAuthError(message: string): string {
+  const normalized = message.trim().toLowerCase();
+  if (normalized.includes("invalid login credentials")) {
+    return "Forkert e-mail eller adgangskode. Prøv igen.";
+  }
+  if (normalized.includes("email not confirmed")) {
+    return "Din e-mail er ikke bekræftet. Tjek din indbakke.";
+  }
+  return message;
+}
+
 function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -26,18 +37,23 @@ function LoginForm() {
     setIsLoading(true);
     setErrorMessage(null);
 
+    const normalizedEmail = email.trim().toLowerCase();
     const { error } = await (supabase.auth.signInWithPassword as unknown as (args: {
       email: string;
       password: string;
       options?: { persistSession?: boolean };
     }) => Promise<{ error: { message: string } | null }>)({
-      email,
+      email: normalizedEmail,
       password,
       options: { persistSession: rememberMe },
     });
 
     if (error) {
-      setErrorMessage(error.message);
+      console.error("[login] signInWithPassword failed", {
+        email: normalizedEmail,
+        error,
+      });
+      setErrorMessage(toDanishAuthError(error.message));
       setIsLoading(false);
       return;
     }
@@ -61,7 +77,7 @@ function LoginForm() {
         </p>
         <h1 className="text-3xl font-bold">Log ind</h1>
         <p className="mt-2 text-sm text-slate-600">
-          Log ind med den e-mail og adgangskode, du har fået tilsendt.
+          Indtast din e-mail og adgangskode for at logge ind på din kundeportal.
         </p>
 
         <form onSubmit={handleSubmit} className="mt-8 space-y-4">
