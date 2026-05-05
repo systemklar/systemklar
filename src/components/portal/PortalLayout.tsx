@@ -35,15 +35,68 @@ function LockIcon() {
   );
 }
 
+function HomeIcon() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" className="h-4 w-4" aria-hidden>
+      <path d="M4 10.5 12 4l8 6.5V20a1 1 0 0 1-1 1h-5v-6H10v6H5a1 1 0 0 1-1-1v-9.5Z" stroke="currentColor" strokeWidth="1.7" />
+    </svg>
+  );
+}
+function TicketIcon() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" className="h-4 w-4" aria-hidden>
+      <path d="M4 7a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v4a2 2 0 1 0 0 4v2a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-2a2 2 0 1 0 0-4V7Z" stroke="currentColor" strokeWidth="1.7" />
+    </svg>
+  );
+}
+function ReportIcon() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" className="h-4 w-4" aria-hidden>
+      <path d="M7 4h7l3 3v13H7z" stroke="currentColor" strokeWidth="1.7" />
+      <path d="M14 4v3h3M10 12h4M10 15h4" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
+    </svg>
+  );
+}
+function SystemsIcon() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" className="h-4 w-4" aria-hidden>
+      <path d="M12 3v4m0 10v4M3 12h4m10 0h4M6 6l3 3m6 6 3 3m0-12-3 3m-6 6-3 3" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
+    </svg>
+  );
+}
+function ServicesIcon() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" className="h-4 w-4" aria-hidden>
+      <rect x="4" y="5" width="16" height="14" rx="2" stroke="currentColor" strokeWidth="1.7" />
+      <path d="M8 10h8M8 14h5" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
+    </svg>
+  );
+}
+function QuoteIcon() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" className="h-4 w-4" aria-hidden>
+      <path d="M7 17h3l2-10H9l-2 10Zm8 0h3l2-10h-3l-2 10Z" stroke="currentColor" strokeWidth="1.7" strokeLinejoin="round" />
+    </svg>
+  );
+}
+function AiIcon() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" className="h-4 w-4" aria-hidden>
+      <path d="M12 3v4m0 10v4M3 12h4m10 0h4M6.5 6.5l2.8 2.8m5.4 5.4 2.8 2.8m0-11-2.8 2.8m-5.4 5.4-2.8 2.8" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
+      <circle cx="12" cy="12" r="2.5" stroke="currentColor" strokeWidth="1.7" />
+    </svg>
+  );
+}
+
 const navItems: { label: string; href: string; key: PortalNavKey; icon?: ReactNode }[] = [
-  { label: "Overblik", href: "/portal", key: "dashboard" },
-  { label: "Support & sager", href: "/portal/support", key: "support" },
+  { label: "Overblik", href: "/portal", key: "dashboard", icon: <HomeIcon /> },
+  { label: "Support & sager", href: "/portal/support", key: "support", icon: <TicketIcon /> },
   { label: "Kodebank", href: "/portal/kodebank", key: "vault", icon: <LockIcon /> },
-  { label: "IT-rapport", href: "/portal/rapport", key: "rapport" },
-  { label: "Systemer", href: "/portal/systemer", key: "systems" },
-  { label: "Tjenester", href: "/portal/tjenester", key: "services" },
-  { label: "Tilbud", href: "/portal/tilbud", key: "tilbud" },
-  { label: "AI-assistent", href: "#", key: "ai" },
+  { label: "IT-rapport", href: "/portal/rapport", key: "rapport", icon: <ReportIcon /> },
+  { label: "Systemer", href: "/portal/systemer", key: "systems", icon: <SystemsIcon /> },
+  { label: "Tjenester", href: "/portal/tjenester", key: "services", icon: <ServicesIcon /> },
+  { label: "Tilbud", href: "/portal/tilbud", key: "tilbud", icon: <QuoteIcon /> },
+  { label: "AI-assistent", href: "#", key: "ai", icon: <AiIcon /> },
 ];
 
 type PortalSession = {
@@ -128,15 +181,17 @@ export function PortalLayout({ children, activeNav }: PortalLayoutProps) {
     <PortalSessionContext.Provider value={{ email: userEmail }}>
       <main className="min-h-screen bg-slate-50 text-slate-900">
         <div className="mx-auto flex min-h-screen w-full max-w-7xl">
-          <aside className="w-full max-w-72 border-r border-slate-200 bg-white p-6">
+          <aside className="w-full max-w-72 border-r border-slate-200 bg-white p-6 shadow-sm">
             <Link href="/portal" className="block">
-              <div className="text-2xl font-bold" style={{ color: "#1D9E75" }}>
-                Systemklar
+              <div className="rounded-xl border border-emerald-100 bg-emerald-50 px-3 py-2">
+                <div className="text-xl font-bold tracking-tight" style={{ color: "#1D9E75" }}>
+                  Systemklar
+                </div>
+                <p className="mt-0.5 text-xs font-medium text-emerald-700">Kundeportal</p>
               </div>
             </Link>
-            <p className="mt-1 text-sm text-slate-500">Kundeportal</p>
 
-            <nav className="mt-8 space-y-2">
+            <nav className="mt-6 space-y-1.5">
               {navItems.map((item) => {
                 const isActive = item.key === activeNav;
                 const isPlaceholder = item.href === "#";
@@ -159,9 +214,9 @@ export function PortalLayout({ children, activeNav }: PortalLayoutProps) {
                   <Link
                     key={item.key}
                     href={item.href}
-                    className={`block rounded-lg px-3 py-2 text-sm font-medium transition ${
+                    className={`block rounded-lg px-3 py-2.5 text-sm font-medium transition ${
                       isActive
-                        ? "bg-emerald-50 text-emerald-700"
+                        ? "bg-emerald-100 text-emerald-800 ring-1 ring-emerald-200"
                         : "text-slate-700 hover:bg-slate-100"
                     }`}
                   >
@@ -177,8 +232,7 @@ export function PortalLayout({ children, activeNav }: PortalLayoutProps) {
             <button
               type="button"
               onClick={handleLogout}
-              className="mt-10 w-full rounded-full px-4 py-2.5 text-sm font-semibold text-white transition hover:opacity-90"
-              style={{ backgroundColor: "#1D9E75" }}
+              className="btn-primary mt-8 w-full px-4 py-2.5 text-sm font-semibold"
             >
               Log ud
             </button>

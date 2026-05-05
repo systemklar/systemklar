@@ -9,16 +9,19 @@ export default function Home() {
   const mobileMenuContainerRef = useRef<HTMLDivElement>(null);
   const platformFeatures = [
     {
+      icon: "🖥️",
       title: "IT-overblik",
       description:
         "Se alle systemer og status i ét dashboard.",
     },
     {
+      icon: "🎫",
       title: "Support & sager",
       description:
         "Opret og følg IT-supportsager direkte i platformen.",
     },
     {
+      icon: "📊",
       title: "IT-rapport",
       description:
         "Automatisk månedlig rapport over drift og status.",
@@ -27,17 +30,20 @@ export default function Home() {
 
   const aiTools = [
     {
+      icon: "⚡",
       title: "AI Tilbudsgenerator",
       description:
         "Generer professionelle tilbud på sekunder — gem priser én gang, beskriv behovet, og lad AI skrive tilbuddet klar til afsendelse.",
       includedAllPlans: true,
     },
     {
+      icon: "📈",
       title: "Månedlig IT-rapport",
       description:
         "Få en automatisk status over drift, sikkerhed og forbedringsområder.",
     },
     {
+      icon: "🤖",
       title: "AI-assistent",
       description:
         "Stil spørgsmål om jeres setup og få konkrete forslag med det samme.",
@@ -97,10 +103,9 @@ export default function Home() {
               <Link href="/login" className="transition hover:text-slate-600">
                 Log ind
               </Link>
-              <a
+            <a
                 href="#cta"
-                className="rounded-full px-5 py-2 text-sm font-semibold text-white shadow-sm transition hover:opacity-90"
-                style={{ backgroundColor: "#1D9E75" }}
+              className="btn-primary px-5 py-2 text-sm font-semibold shadow-sm"
               >
                 Kom i gang
               </a>
@@ -181,25 +186,24 @@ export default function Home() {
       </header>
 
       <main>
-        <section className="mx-auto max-w-6xl px-6 pb-16 pt-12">
+        <section className="mx-auto max-w-6xl px-6 pb-20 pt-16">
           <p
             className="mb-5 inline-block rounded-full px-4 py-2 text-sm font-medium"
             style={{ backgroundColor: "#E7F6F1", color: "#1D9E75" }}
           >
             IT-platform til SMV&apos;er
           </p>
-          <h1 className="max-w-4xl text-4xl font-bold leading-tight tracking-tight md:text-5xl">
+          <h1 className="max-w-4xl text-4xl font-bold leading-tight tracking-tight md:text-6xl">
             Få overblik over din virksomheds IT - uden en IT-afdeling
           </h1>
-          <p className="mt-6 max-w-2xl text-lg text-slate-600">
+          <p className="mt-7 max-w-2xl text-xl text-slate-600">
             Systemklar samler dine systemer, support og administration et sted -
             med AI-værktøjer der gør IT-arbejdet lettere.
           </p>
           <div className="mt-9 flex flex-wrap gap-4">
             <a
               href="#cta"
-              className="rounded-full px-6 py-3 font-semibold text-white transition hover:opacity-90"
-              style={{ backgroundColor: "#1D9E75" }}
+              className="btn-primary px-6 py-3 font-semibold shadow-sm"
             >
               Kom i gang
             </a>
@@ -222,8 +226,9 @@ export default function Home() {
               <Link
                 key={feature.title}
                 href="/platformen"
-                className="group rounded-2xl border border-slate-200 p-6 transition hover:-translate-y-0.5 hover:border-slate-300 hover:shadow-md"
+                className="group rounded-2xl border border-slate-200 p-6 shadow-sm transition hover:-translate-y-0.5 hover:border-slate-300 hover:shadow-md"
               >
+                <p className="text-2xl">{feature.icon}</p>
                 <h3 className="text-xl font-semibold">{feature.title}</h3>
                 <p className="mt-3 text-slate-600">{feature.description}</p>
                 <p
@@ -247,7 +252,7 @@ export default function Home() {
               <Link
                 key={tool.title}
                 href="/ai-vaerktoejer"
-                className="group rounded-2xl border p-6 transition hover:-translate-y-0.5 hover:shadow-md"
+                className="group rounded-2xl border p-6 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"
                 style={{ borderColor: "#DCD8F6" }}
               >
                 {"includedAllPlans" in tool && tool.includedAllPlans ? (
@@ -258,6 +263,7 @@ export default function Home() {
                     Inkluderet i alle planer
                   </p>
                 ) : null}
+                <p className="mb-2 text-2xl">{tool.icon}</p>
                 <h3 className="text-xl font-semibold" style={{ color: "#534AB7" }}>
                   {tool.title}
                 </h3>
@@ -293,7 +299,7 @@ export default function Home() {
                 text: "Lad platformen og AI-værktøjerne tage de gentagne opgaver.",
               },
             ].map((item) => (
-              <article key={item.step} className="rounded-2xl border border-slate-200 p-6">
+              <article key={item.step} className="rounded-2xl border border-slate-200 p-6 shadow-sm">
                 <span
                   className="inline-flex h-8 w-8 items-center justify-center rounded-full text-sm font-bold text-white"
                   style={{ backgroundColor: "#1D9E75" }}
@@ -310,21 +316,17 @@ export default function Home() {
         <PricingSection />
 
         <section id="cta" className="mx-auto max-w-6xl px-6 pb-20 pt-8">
-          <div
-            className="rounded-3xl px-8 py-12 text-center"
-            style={{ backgroundColor: "#F2FBF8" }}
-          >
+          <div className="rounded-3xl bg-slate-900 px-8 py-14 text-center text-white shadow-sm">
             <h2 className="text-3xl font-bold md:text-4xl">
               Klar til at få styr på jeres IT?
             </h2>
-            <p className="mx-auto mt-4 max-w-2xl text-slate-600">
+            <p className="mx-auto mt-4 max-w-2xl text-slate-200">
               Start med en uforpligtende demo og se, hvordan Systemklar kan gøre
               jeres IT-drift enkel og effektiv.
             </p>
             <a
               href="#"
-              className="mt-8 inline-block rounded-full px-6 py-3 font-semibold text-white transition hover:opacity-90"
-              style={{ backgroundColor: "#1D9E75" }}
+              className="btn-primary mt-8 inline-block px-6 py-3 font-semibold"
             >
               Book en demo
             </a>
@@ -332,8 +334,22 @@ export default function Home() {
         </section>
       </main>
 
-      <footer className="border-t border-slate-100 px-6 py-8 text-center text-sm text-slate-500">
-        © {new Date().getFullYear()} Systemklar. Alle rettigheder forbeholdes.
+      <footer className="border-t border-slate-100 bg-slate-950 px-6 py-10 text-sm text-slate-300">
+        <div className="mx-auto flex w-full max-w-6xl flex-col items-start justify-between gap-6 md:flex-row">
+          <div>
+            <p className="text-lg font-semibold text-white">Systemklar</p>
+            <p className="mt-2 text-slate-400">Platform til drift, support og AI-værktøjer for SMV&apos;er.</p>
+          </div>
+          <div className="grid grid-cols-2 gap-6 text-slate-300">
+            <Link href="/platformen" className="hover:text-white">Platformen</Link>
+            <a href="#priser" className="hover:text-white">Priser</a>
+            <Link href="/ai-vaerktoejer" className="hover:text-white">AI-værktøjer</Link>
+            <Link href="/login" className="hover:text-white">Log ind</Link>
+          </div>
+        </div>
+        <p className="mx-auto mt-8 w-full max-w-6xl border-t border-slate-800 pt-6 text-slate-500">
+          © {new Date().getFullYear()} Systemklar. Alle rettigheder forbeholdes.
+        </p>
       </footer>
     </div>
   );

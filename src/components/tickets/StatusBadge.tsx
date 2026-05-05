@@ -15,17 +15,19 @@ export function formatDanishDateTime(iso: string) {
 }
 
 export function StatusBadge({ status }: { status: string }) {
-  const normalized = normalizeTicketStatus(status);
-  const styles: Record<TicketStatus, { bg: string; text: string; label: string }> = {
-    active: { bg: "#FEF3C7", text: "#C2410C", label: "Aktiv" },
-    resolved: { bg: "#DCFCE7", text: "#166534", label: "Løst" },
+  const normalized = status === "nede" ? "nede" : normalizeTicketStatus(status);
+  const styles: Record<TicketStatus | "nede", { bg: string; text: string; label: string; dot: string }> = {
+    active: { bg: "#FEF3C7", text: "#C2410C", label: "Aktiv", dot: "#D97706" },
+    resolved: { bg: "#DCFCE7", text: "#166534", label: "Løst", dot: "#D97706" },
+    nede: { bg: "#FEE2E2", text: "#991B1B", label: "Nede", dot: "#DC2626" },
   };
   const s = styles[normalized];
   return (
     <span
-      className="inline-flex rounded-full px-2.5 py-0.5 text-xs font-semibold"
+      className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-semibold"
       style={{ backgroundColor: s.bg, color: s.text }}
     >
+      <span className="h-1.5 w-1.5 rounded-full" style={{ backgroundColor: s.dot }} aria-hidden />
       {s.label}
     </span>
   );
