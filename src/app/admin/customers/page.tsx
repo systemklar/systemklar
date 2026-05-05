@@ -125,13 +125,17 @@ export default function AdminCustomersPage() {
       credentials: "same-origin",
     });
 
-    const payload = (await res.json().catch(() => ({}))) as { error?: string };
+    const payload = (await res.json().catch(() => ({}))) as { error?: string; warning?: string };
 
     setDeletingId(null);
 
     if (!res.ok) {
       setDeleteError(payload.error ?? "Sletning mislykkedes.");
       return;
+    }
+
+    if (payload.warning) {
+      console.warn("[admin/customers] customer deleted with warning:", payload.warning);
     }
 
     setSelectedIds((prev) => {

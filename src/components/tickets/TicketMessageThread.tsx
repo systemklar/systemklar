@@ -122,6 +122,9 @@ export function TicketMessageThread({
   const [showTypingIndicator, setShowTypingIndicator] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const [customerSenderLabel, setCustomerSenderLabel] = useState("Kunde");
+  const typingTimeoutRef = useRef<number | null>(null);
+  const lastTypingSentAtRef = useRef(0);
+  const typingChannelRef = useRef<ReturnType<typeof supabase.channel> | null>(null);
 
   useEffect(() => {
     if (customerCompanyLabel !== undefined) {
@@ -221,31 +224,61 @@ export function TicketMessageThread({
   }, [ticketId, appendMessage, supabase]);
 
   useEffect(() => {
+    if (!ticketId) return;
+
+    const channelName = `ticket-typing-${ticketId}`;
+    const channel = supabase
+      .channel(channelName)
+      .on("broadcast", { event: "typing" }, (payload) => {
+        const incomingIsAdmin = parseIsAdmin((payload.payload as { is_admin?: unknown })?.is_admin);
+
+        // Vis kun typing-indikator for modparten.
+        if (incomingIsAdmin === sendAsAdmin) return;
+
+        setShowTypingIndicator(true);
+        if (typingTimeoutRef.current !== null) {
+          window.clearTimeout(typingTimeoutRef.current);
+        }
+        typingTimeoutRef.current = window.setTimeout(() => {
+          setShowTypingIndicator(false);
+          typingTimeoutRef.current = null;
+        }, 3000);
+      })
+      .subscribe((status, err) => {
+        if (status === "CHANNEL_ERROR" || status === "TIMED_OUT") {
+          console.error("[typing] realtime", status, err);
+        }
+      });
+    typingChannelRef.current = channel;
+
+    return () => {
+      typingChannelRef.current = null;
+      if (typingTimeoutRef.current !== null) {
+        window.clearTimeout(typingTimeoutRef.current);
+        typingTimeoutRef.current = null;
+      }
+      void supabase.removeChannel(channel);
+    };
+  }, [ticketId, sendAsAdmin, supabase]);
+
+  useEffect(() => {
     queueMicrotask(() => {
       messagesEndRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
     });
   }, [messages]);
 
-  useEffect(() => {
-    let timeoutId: number | undefined;
+  const maybeBroadcastTyping = useCallback(async () => {
+    const now = Date.now();
+    if (now - lastTypingSentAtRef.current < 1000) return; // max 1 event/sek
+    lastTypingSentAtRef.current = now;
 
-    queueMicrotask(() => {
-      const text = draft.trim();
-      if (!text) {
-        setShowTypingIndicator(false);
-        return;
-      }
-
-      setShowTypingIndicator(false);
-      timeoutId = window.setTimeout(() => setShowTypingIndicator(true), 500);
+    if (!typingChannelRef.current) return;
+    await typingChannelRef.current.send({
+      type: "broadcast",
+      event: "typing",
+      payload: { is_admin: sendAsAdmin },
     });
-
-    return () => {
-      if (timeoutId !== undefined) {
-        window.clearTimeout(timeoutId);
-      }
-    };
-  }, [draft]);
+  }, [sendAsAdmin]);
 
   const handleSend = async () => {
     const text = draft.trim();
@@ -359,6 +392,7 @@ export function TicketMessageThread({
                       : "rounded-bl-md border border-emerald-200 bg-emerald-50 text-emerald-800"
                   }`}
                 >
+                  <span>Skriver</span>
                   <TypingDots />
                 </div>
               </div>
@@ -380,8 +414,12 @@ export function TicketMessageThread({
           type="text"
           value={draft}
           onChange={(e) => {
-            setDraft(e.target.value);
+            const next = e.target.value;
+            setDraft(next);
             if (sendError) setSendError(null);
+            if (next.trim()) {
+              void maybeBroadcastTyping();
+            }
           }}
           onKeyDown={(e) => {
             if (e.key === "Enter" && !e.shiftKey) {

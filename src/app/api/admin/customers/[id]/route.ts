@@ -1,8 +1,8 @@
 import { createServerClient, type CookieOptions } from "@supabase/ssr";
-import { createClient } from "@supabase/supabase-js";
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 import { isAdminEmail } from "@/lib/admin-email";
+import { createServiceRoleClient } from "@/lib/supabase-service-role";
 
 const UUID_RE =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
@@ -48,15 +48,11 @@ export async function DELETE(
     return NextResponse.json({ error: "Ingen adgang." }, { status: 403 });
   }
 
-  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-  if (!serviceKey) {
+  const admin = createServiceRoleClient();
+  if (!admin) {
     console.error("[api/admin/customers/[id]] SUPABASE_SERVICE_ROLE_KEY mangler");
     return NextResponse.json({ error: "Serverkonfiguration." }, { status: 500 });
   }
-
-  const admin = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, serviceKey, {
-    auth: { autoRefreshToken: false, persistSession: false },
-  });
 
   const { data: profile, error: fetchError } = await admin
     .from("profiles")
@@ -83,17 +79,23 @@ export async function DELETE(
   }
 
   if (userId) {
+    console.log("[api/admin/customers/[id]] delete auth user attempt", {
+      profile_id: id,
+      user_id: userId,
+    });
     const { error: authError } = await admin.auth.admin.deleteUser(userId);
     if (authError) {
-      console.error("[api/admin/customers/[id]] deleteUser", authError);
-      return NextResponse.json(
-        {
-          error:
-            "Profilen er slettet, men auth-brugeren kunne ikke fjernes (e-mail kan stadig være optaget). Tjek Supabase Auth eller prøv igen.",
-          detail: authError.message,
-        },
-        { status: 502 }
-      );
+      const detail = authError.message || "Ukendt fejl";
+      console.error("[api/admin/customers/[id]] deleteUser failed", {
+        profile_id: id,
+        user_id: userId,
+        detail,
+      });
+      // Profilen er allerede slettet; returnér 200 for at undgå forvirrende fejl i UI.
+      return NextResponse.json({
+        ok: true,
+        warning: `Auth-brugeren kunne ikke fjernes: ${detail}`,
+      });
     }
   }
 
