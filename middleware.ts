@@ -44,8 +44,15 @@ export async function middleware(request: NextRequest) {
   const isAdmin = (user?.email ?? "").trim().toLowerCase() === ADMIN_EMAIL;
 
   /* Invite-flow: session etableres via hash/?code i URL – ingen login påkrævet. */
-  if (pathname === "/set-password") {
+  if (pathname === "/set-password" || pathname === "/forgot-password") {
     return response;
+  }
+
+  if (pathname === "/admin/login" && user) {
+    const url = request.nextUrl.clone();
+    url.pathname = isAdmin ? "/admin/dashboard" : "/portal";
+    url.search = "";
+    return NextResponse.redirect(url);
   }
 
   if (pathname === "/login" && user) {
@@ -57,7 +64,7 @@ export async function middleware(request: NextRequest) {
 
   if (isAdminArea) {
     if (!user) {
-      const login = new URL("/login", request.url);
+      const login = new URL("/admin/login", request.url);
       login.searchParams.set("next", pathname + request.nextUrl.search);
       return NextResponse.redirect(login);
     }

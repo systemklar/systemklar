@@ -26,7 +26,7 @@ export function AdminSidebar({ activeNav }: AdminSidebarProps) {
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
-    router.replace("/login");
+    router.replace("/admin/login");
   };
 
   return (
