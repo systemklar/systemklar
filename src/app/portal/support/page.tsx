@@ -50,7 +50,8 @@ export default function PortalSupportPage() {
 
     const rows = (data ?? [])
       .map((r) => normalizeTicketWithProfile(r as unknown as Record<string, unknown>))
-      .filter((x): x is TicketWithProfileRow => x !== null);
+      .filter((x): x is TicketWithProfileRow => x !== null)
+      .filter((x) => x.user_id === user.id);
     setTickets(rows);
     setErrorMessage(null);
 

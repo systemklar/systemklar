@@ -1,14 +1,8 @@
 import { createServerClient, type CookieOptions } from "@supabase/ssr";
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
-import { isAdminEmail } from "@/lib/admin-email";
 
-function adminForbidden(): NextResponse {
-  return new NextResponse(
-    `<!DOCTYPE html><html lang="da"><head><meta charset="utf-8"/><title>403</title></head><body style="font-family:system-ui,sans-serif;padding:2rem;max-width:32rem"><h1>403 — Ingen adgang</h1><p>Du har ikke adgang til admin-området.</p><p><a href="/portal">Gå til kundeportalen</a> · <a href="/login">Log ud og log ind igen</a></p></body></html>`,
-    { status: 403, headers: { "Content-Type": "text/html; charset=utf-8" } }
-  );
-}
+const ADMIN_EMAIL = "kontakt@systemklar.dk";
 
 export async function middleware(request: NextRequest) {
   let response = NextResponse.next({
@@ -47,7 +41,7 @@ export async function middleware(request: NextRequest) {
     pathname.startsWith("/admin") || pathname.startsWith("/api/admin");
   const isPortalArea = pathname.startsWith("/portal");
 
-  const isAdmin = isAdminEmail(user?.email);
+  const isAdmin = (user?.email ?? "").trim().toLowerCase() === ADMIN_EMAIL;
 
   /* Invite-flow: session etableres via hash/?code i URL – ingen login påkrævet. */
   if (pathname === "/set-password") {
@@ -68,7 +62,10 @@ export async function middleware(request: NextRequest) {
       return NextResponse.redirect(login);
     }
     if (!isAdmin) {
-      return adminForbidden();
+      const url = request.nextUrl.clone();
+      url.pathname = "/portal";
+      url.search = "";
+      return NextResponse.redirect(url);
     }
     return response;
   }
