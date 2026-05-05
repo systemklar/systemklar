@@ -80,10 +80,12 @@ export async function POST(request: Request) {
 
   const messages: ChatMessage[] = rawMessages
     .filter((m): m is { role?: unknown; content?: unknown } => !!m && typeof m === "object")
-    .map((m) => ({
-      role: m.role === "assistant" ? "assistant" : "user",
-      content: typeof m.content === "string" ? m.content.trim() : "",
-    }))
+    .map(
+      (m): ChatMessage => ({
+        role: m.role === "assistant" ? "assistant" : "user",
+        content: typeof m.content === "string" ? m.content.trim() : "",
+      }),
+    )
     .filter((m) => m.content.length > 0)
     .slice(-10);
 
