@@ -13,6 +13,8 @@ export default function AdminTicketsPage() {
   const [tickets, setTickets] = useState<TicketWithProfileRow[]>([]);
   const [unreadByTicket, setUnreadByTicket] = useState<Record<string, number>>({});
   const [ticketsLoading, setTicketsLoading] = useState(true);
+  const [selectedCompany, setSelectedCompany] = useState<string>("all");
+  const [query, setQuery] = useState("");
 
   const loadTickets = useCallback(async () => {
     setTicketsLoading(true);
@@ -43,11 +45,55 @@ export default function AdminTicketsPage() {
     });
   }, [loadTickets]);
 
+  const groupedByCompany = useMemo(() => {
+    const map = new Map<string, TicketWithProfileRow[]>();
+    for (const t of tickets) {
+      const company = companyFromTicketRow(t);
+      if (!map.has(company)) {
+        map.set(company, []);
+      }
+      map.get(company)!.push(t);
+    }
+    return Array.from(map.entries())
+      .map(([company, rows]) => ({
+        company,
+        tickets: rows,
+        activeCount: rows.filter((r) => r.status === "active").length,
+      }))
+      .sort((a, b) => a.company.localeCompare(b.company, "da"));
+  }, [tickets]);
+
+  const filteredGroups = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    return groupedByCompany
+      .filter((g) => selectedCompany === "all" || g.company === selectedCompany)
+      .map((g) => ({
+        ...g,
+        tickets: g.tickets.filter((t) => {
+          if (!q) return true;
+          const title = t.title.toLowerCase();
+          const company = g.company.toLowerCase();
+          return title.includes(q) || company.includes(q);
+        }),
+      }))
+      .filter((g) => g.tickets.length > 0);
+  }, [groupedByCompany, selectedCompany, query]);
+
+  const totalFiltered = useMemo(
+    () => filteredGroups.reduce((acc, g) => acc + g.tickets.length, 0),
+    [filteredGroups],
+  );
+
+  const totalActive = useMemo(
+    () => tickets.filter((t) => t.status === "active").length,
+    [tickets],
+  );
+
   return (
     <div>
       <div>
         <h1 className="text-2xl font-bold tracking-tight text-slate-900 md:text-3xl">Support & sager</h1>
-        <p className="mt-2 text-sm text-slate-600">Alle tickets på tværs af brugere.</p>
+        <p className="mt-2 text-sm text-slate-600">Tickets grupperet per kunde.</p>
       </div>
 
       {ticketsLoading ? (
@@ -55,26 +101,83 @@ export default function AdminTicketsPage() {
       ) : tickets.length === 0 ? (
         <p className="mt-8 text-sm text-slate-600">Ingen tickets.</p>
       ) : (
-        <ul className="mt-8 divide-y divide-slate-200 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
-          {tickets.map((t) => (
-            <li key={t.id}>
-              <Link
-                href={`/admin/tickets/${t.id}`}
-                className="flex flex-col gap-3 px-5 py-4 transition hover:bg-slate-50 md:flex-row md:items-center md:justify-between"
+        <div className="mt-8 grid gap-6 lg:grid-cols-[280px_minmax(0,1fr)]">
+          <aside className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+            <p className="px-2 text-xs font-semibold uppercase tracking-wide text-slate-500">Kunder</p>
+            <div className="mt-2 space-y-1">
+              <button
+                type="button"
+                onClick={() => setSelectedCompany("all")}
+                className={`flex w-full items-center justify-between rounded-lg px-2 py-2 text-left text-sm ${
+                  selectedCompany === "all" ? "bg-emerald-50 text-emerald-800" : "hover:bg-slate-50"
+                }`}
               >
-                <div className="min-w-0 flex-1">
-                  <div className="flex flex-wrap items-center gap-2">
-                    <p className="font-medium text-slate-900">{t.title}</p>
-                    <TicketUnreadCountBadge count={unreadByTicket[t.id] ?? 0} />
+                <span>Alle sager</span>
+                <span className="text-xs font-semibold">{totalActive} aktive</span>
+              </button>
+              {groupedByCompany.map((group) => (
+                <button
+                  key={group.company}
+                  type="button"
+                  onClick={() => setSelectedCompany(group.company)}
+                  className={`flex w-full items-center justify-between rounded-lg px-2 py-2 text-left text-sm ${
+                    selectedCompany === group.company ? "bg-emerald-50 text-emerald-800" : "hover:bg-slate-50"
+                  }`}
+                >
+                  <span className="truncate">{group.company}</span>
+                  <span className="ml-2 shrink-0 text-xs font-semibold">{group.activeCount} aktive</span>
+                </button>
+              ))}
+            </div>
+          </aside>
+
+          <section>
+            <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+              <label className="block text-xs font-semibold uppercase tracking-wide text-slate-500">Søg</label>
+              <input
+                type="text"
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                placeholder="Filtrer på kundenavn eller sagsnavn..."
+                className="mt-2 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+              />
+            </div>
+
+            {totalFiltered === 0 ? (
+              <p className="mt-6 text-sm text-slate-600">Ingen sager matcher filteret.</p>
+            ) : (
+              <div className="mt-6 space-y-6">
+                {filteredGroups.map((group) => (
+                  <div key={group.company} className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+                    <div className="border-b border-slate-200 bg-slate-50 px-5 py-3">
+                      <p className="font-semibold text-slate-900">{group.company}</p>
+                      <p className="text-xs text-slate-500">{group.tickets.length} sager</p>
+                    </div>
+                    <ul className="divide-y divide-slate-200">
+                      {group.tickets.map((t) => (
+                        <li key={t.id}>
+                          <Link
+                            href={`/admin/tickets/${t.id}`}
+                            className="flex flex-col gap-3 px-5 py-4 transition hover:bg-slate-50 md:flex-row md:items-center md:justify-between"
+                          >
+                            <div className="min-w-0 flex-1">
+                              <div className="flex flex-wrap items-center gap-2">
+                                <p className="font-medium text-slate-900">{t.title}</p>
+                                <TicketUnreadCountBadge count={unreadByTicket[t.id] ?? 0} />
+                              </div>
+                              <p className="mt-0.5 text-sm text-slate-500">{formatDanishDateTime(t.created_at)}</p>
+                            </div>
+                            <StatusBadge status={t.status} />
+                          </Link>
+                        </li>
+                      ))}
+                    </ul>
                   </div>
-                  <p className="mt-1 text-xs text-slate-500">{companyFromTicketRow(t)}</p>
-                  <p className="mt-0.5 text-sm text-slate-500">{formatDanishDateTime(t.created_at)}</p>
-                </div>
-                <StatusBadge status={t.status} />
-              </Link>
-            </li>
-          ))}
-        </ul>
+                ))}
+              </div>
+            )}
+          </section>
+        </div>
       )}
     </div>
   );
