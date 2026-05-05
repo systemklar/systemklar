@@ -141,7 +141,7 @@ export default function PortalTilbudDetailPage() {
   if (!quote) {
     return (
       <PortalLayout activeNav="tilbud">
-        <Link href="/portal/tilbud" className="text-sm font-semibold text-emerald-700 hover:underline">
+        <Link href="/portal/tilbud" className="text-sm font-semibold text-blue-600 hover:underline">
           ← Tilbage til tilbud
         </Link>
         <p className="mt-6 text-sm text-slate-600">Tilbud ikke fundet.</p>
@@ -151,7 +151,7 @@ export default function PortalTilbudDetailPage() {
 
   return (
     <PortalLayout activeNav="tilbud">
-      <Link href="/portal/tilbud" className="text-sm font-semibold text-emerald-700 hover:underline">
+      <Link href="/portal/tilbud" className="text-sm font-semibold text-blue-600 hover:underline">
         ← Tilbage til tilbud
       </Link>
 
@@ -160,7 +160,7 @@ export default function PortalTilbudDetailPage() {
           <h1 className="text-2xl font-bold text-slate-900 md:text-3xl">Tilbud</h1>
           <p className="mt-2 text-xs text-slate-500">Oprettet {formatDanishDateTime(quote.created_at)}</p>
           {quote.status === "sent" && quote.sent_at ? (
-            <p className="mt-1 text-xs text-emerald-700">Sendt {formatDanishDateTime(quote.sent_at)}</p>
+            <p className="mt-1 text-xs text-green-700">Sendt {formatDanishDateTime(quote.sent_at)}</p>
           ) : null}
         </div>
         <div className="flex flex-wrap gap-2">
@@ -169,7 +169,7 @@ export default function PortalTilbudDetailPage() {
               Kladde
             </span>
           ) : (
-            <span className="inline-flex rounded-full bg-emerald-100 px-3 py-1 text-xs font-semibold text-emerald-800">
+            <span className="inline-flex rounded-full bg-green-100 px-3 py-1 text-xs font-semibold text-green-800">
               Sendt
             </span>
           )}
@@ -211,8 +211,7 @@ export default function PortalTilbudDetailPage() {
           <button
             type="submit"
             disabled={saving || sending}
-            className="rounded-full px-5 py-2.5 text-sm font-semibold text-white disabled:opacity-50"
-            style={{ backgroundColor: "#1D9E75" }}
+            className="rounded-full bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
           >
             {saving ? "Gemmer..." : "Gem ændringer"}
           </button>

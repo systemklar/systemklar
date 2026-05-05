@@ -226,8 +226,7 @@ export default function PortalKodebankPage() {
           <button
             type="button"
             onClick={openCreate}
-            className="rounded-full px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:opacity-90"
-            style={{ backgroundColor: "#1D9E75" }}
+            className="rounded-full bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700"
           >
             Tilføj login
           </button>
@@ -293,7 +292,7 @@ export default function PortalKodebankPage() {
                           href={entry.url}
                           target="_blank"
                           rel="noreferrer"
-                          className="text-emerald-700 underline"
+                          className="text-blue-600 underline"
                         >
                           {entry.url}
                         </a>
@@ -454,8 +453,7 @@ export default function PortalKodebankPage() {
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="rounded-full px-4 py-2 text-sm font-semibold text-white transition hover:opacity-90 disabled:opacity-50"
-                  style={{ backgroundColor: "#1D9E75" }}
+                  className="rounded-full bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700 disabled:opacity-50"
                 >
                   {submitting ? "Gemmer..." : editingId ? "Gem ændringer" : "Opret login"}
                 </button>

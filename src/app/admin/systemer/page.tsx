@@ -92,7 +92,7 @@ export default function AdminSystemsPage() {
                     {group.email ? <p className="text-sm text-slate-600">{group.email}</p> : null}
                   </div>
                   <div className="flex flex-wrap gap-2 text-xs font-semibold">
-                    <span className="rounded-full bg-emerald-100 px-2.5 py-0.5 text-emerald-800">OK: {group.counts.ok}</span>
+                    <span className="rounded-full bg-green-100 px-2.5 py-0.5 text-green-800">OK: {group.counts.ok}</span>
                     <span className="rounded-full bg-amber-100 px-2.5 py-0.5 text-amber-900">Advarsel: {group.counts.advarsel}</span>
                     <span className="rounded-full bg-red-100 px-2.5 py-0.5 text-red-800">Nede: {group.counts.nede}</span>
                   </div>
@@ -108,7 +108,7 @@ export default function AdminSystemsPage() {
                         <span
                           className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-semibold ${
                             s.status === "ok"
-                              ? "bg-emerald-100 text-emerald-800"
+                              ? "bg-green-100 text-green-800"
                               : s.status === "advarsel"
                                 ? "bg-amber-100 text-amber-900"
                                 : "bg-red-100 text-red-800"

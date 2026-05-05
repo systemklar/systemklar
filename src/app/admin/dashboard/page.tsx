@@ -23,7 +23,7 @@ function StatCard({
   href?: string;
 }) {
   const inner = (
-    <article className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm transition hover:border-emerald-200 hover:shadow-md">
+    <article className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm transition hover:border-blue-200 hover:shadow-md">
       <p className="text-sm font-medium text-slate-500">{title}</p>
       <p className="mt-3 text-3xl font-bold tabular-nums text-slate-900">
         {value === null ? "—" : value}
@@ -34,7 +34,7 @@ function StatCard({
 
   if (href) {
     return (
-      <Link href={href} className="block outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/40">
+      <Link href={href} className="block outline-none focus-visible:ring-2 focus-visible:ring-blue-500/40">
         {inner}
       </Link>
     );
@@ -129,7 +129,7 @@ export default function AdminDashboardPage() {
       <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
         <div className="flex items-center justify-between">
           <h2 className="text-lg font-semibold text-slate-900">Seneste supportsager</h2>
-          <Link href="/admin/tickets" className="text-sm font-semibold text-emerald-700 hover:underline">
+          <Link href="/admin/tickets" className="text-sm font-semibold text-blue-600 hover:underline">
             Åbn alle
           </Link>
         </div>
@@ -153,7 +153,7 @@ export default function AdminDashboardPage() {
                 {recentTickets.map((t) => (
                   <tr key={t.id} className="hover:bg-slate-50">
                     <td className="px-4 py-3">
-                      <Link href={`/admin/tickets/${t.id}`} className="font-medium text-slate-900 hover:text-emerald-700">
+                      <Link href={`/admin/tickets/${t.id}`} className="font-medium text-slate-900 hover:text-blue-600">
                         {t.title}
                       </Link>
                     </td>

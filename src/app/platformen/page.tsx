@@ -55,40 +55,39 @@ export default function PlatformenPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-white text-slate-900">
-      <header className="sticky top-0 z-10 border-b border-slate-100 bg-white/95 backdrop-blur">
+    <div className="min-h-screen bg-[#FAFAF8] text-[#1C1917]">
+      <header className="sticky top-0 z-10 border-b border-[#E7E5E4] bg-white/95 shadow-sm backdrop-blur">
         <div ref={mobileMenuContainerRef}>
           <div className="mx-auto flex w-full max-w-6xl items-center justify-between px-6 py-4">
-            <Link href="/" className="text-2xl font-bold" style={{ color: "#1D9E75" }}>
+            <Link href="/" className="text-2xl font-bold text-blue-600">
               Systemklar
             </Link>
             <nav className="hidden items-center gap-7 text-sm font-medium md:flex">
-              <Link href="/platformen" className="transition hover:text-slate-600">
+              <Link href="/platformen" className="transition hover:text-[#78716C]">
                 Platformen
               </Link>
               <Link
                 href="/ai-vaerktoejer"
-                className="transition hover:text-slate-600"
+                className="transition hover:text-[#78716C]"
               >
                 AI-værktøjer
               </Link>
-              <Link href="/priser" className="transition hover:text-slate-600">
+              <Link href="/priser" className="transition hover:text-[#78716C]">
                 Priser
               </Link>
-              <Link href="/login" className="transition hover:text-slate-600">
+              <Link href="/login" className="transition hover:text-[#78716C]">
                 Log ind
               </Link>
               <Link
                 href="/book-demo"
-                className="rounded-full px-5 py-2 text-sm font-semibold text-white shadow-sm transition hover:opacity-90"
-                style={{ backgroundColor: "#1D9E75" }}
+                className="rounded-full bg-blue-600 px-5 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700"
               >
                 Book demo
               </Link>
             </nav>
             <button
               type="button"
-              className="inline-flex items-center rounded-lg border border-slate-200 p-2 text-slate-700 md:hidden"
+              className="inline-flex items-center rounded-lg border border-[#E7E5E4] p-2 text-[#1C1917] md:hidden"
               onClick={() => setIsMobileMenuOpen((prev) => !prev)}
               aria-label={isMobileMenuOpen ? "Luk menu" : "Åbn menu"}
               aria-expanded={isMobileMenuOpen}
@@ -112,7 +111,7 @@ export default function PlatformenPage() {
           </div>
           <nav
             id="mobil-menu"
-            className={`mx-auto w-full max-w-6xl overflow-hidden border-t border-slate-100 px-6 text-sm font-medium transition-all duration-300 ease-out md:hidden ${
+            className={`mx-auto w-full max-w-6xl overflow-hidden border-t border-[#E7E5E4] px-6 text-sm font-medium transition-all duration-300 ease-out md:hidden ${
               isMobileMenuOpen
                 ? "max-h-96 translate-y-0 py-4 opacity-100"
                 : "max-h-0 -translate-y-1 py-0 opacity-0"
@@ -150,8 +149,7 @@ export default function PlatformenPage() {
               </Link>
               <Link
                 href="/book-demo"
-                className="mt-2 rounded-full px-5 py-2 text-center font-semibold text-white"
-                style={{ backgroundColor: "#1D9E75" }}
+                className="mt-2 rounded-full bg-blue-600 px-5 py-2 text-center font-semibold text-white hover:bg-blue-700"
                 onClick={() => setIsMobileMenuOpen(false)}
               >
                 Book demo
@@ -163,23 +161,20 @@ export default function PlatformenPage() {
 
       <main>
         <section className="mx-auto max-w-6xl px-6 pb-14 pt-12">
-          <p
-            className="mb-5 inline-block rounded-full px-4 py-2 text-sm font-medium"
-            style={{ backgroundColor: "#E7F6F1", color: "#1D9E75" }}
-          >
+          <p className="mb-5 inline-block rounded-full bg-[#EFF6FF] px-4 py-2 text-sm font-semibold text-blue-700">
             Platformfunktioner
           </p>
           <h1 className="max-w-4xl text-4xl font-bold leading-tight tracking-tight md:text-5xl">
             Din komplette IT-platform - samlet ét sted
           </h1>
-          <p className="mt-6 max-w-3xl text-lg text-slate-600">
+          <p className="mt-6 max-w-3xl text-lg text-[#78716C]">
             Platformen er designet til virksomheder, der vil have styr på IT uden
             tung administration. Du får én samlet flade til overblik, support og
             rapportering.
           </p>
           <Link
             href="/"
-            className="mt-8 inline-block rounded-full border border-slate-300 px-6 py-3 font-semibold text-slate-700 transition hover:bg-slate-50"
+            className="mt-8 inline-block rounded-full border border-[#E7E5E4] bg-white px-6 py-3 font-semibold text-[#1C1917] shadow-sm transition hover:bg-stone-50"
           >
             Tilbage til forsiden
           </Link>
@@ -188,20 +183,20 @@ export default function PlatformenPage() {
         <section className="mx-auto max-w-6xl px-6 pb-16">
           <div className="grid gap-5 md:grid-cols-3">
             {features.map((feature) => (
-              <article key={feature.title} className="rounded-2xl border border-slate-200 p-7">
-                <h2 className="text-2xl font-semibold" style={{ color: "#1D9E75" }}>
+              <article key={feature.title} className="rounded-xl border border-[#E7E5E4] bg-white p-7 shadow-sm">
+                <h2 className="text-2xl font-semibold text-blue-600">
                   {feature.title}
                 </h2>
-                <p className="mt-4 leading-7 text-slate-600">{feature.description}</p>
+                <p className="mt-4 leading-7 text-[#78716C]">{feature.description}</p>
               </article>
             ))}
           </div>
         </section>
 
         <section className="mx-auto max-w-6xl px-6 pb-20">
-          <div className="rounded-3xl bg-slate-50 px-8 py-10">
+          <div className="rounded-3xl border border-[#E7E5E4] bg-white px-8 py-10 shadow-sm">
             <h3 className="text-2xl font-bold">Vigtigt at vide</h3>
-            <p className="mt-3 max-w-3xl text-slate-600">
+            <p className="mt-3 max-w-3xl text-[#78716C]">
               Disse funktioner er tilgængelige i kundeportalen - log ind for at
               komme i gang.
             </p>
@@ -209,7 +204,7 @@ export default function PlatformenPage() {
         </section>
       </main>
 
-      <footer className="border-t border-slate-100 px-6 py-8 text-center text-sm text-slate-500">
+      <footer className="border-t border-[#E7E5E4] px-6 py-8 text-center text-sm text-[#78716C]">
         © {new Date().getFullYear()} Systemklar. Alle rettigheder forbeholdes.
       </footer>
     </div>

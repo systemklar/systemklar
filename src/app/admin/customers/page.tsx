@@ -258,8 +258,7 @@ export default function AdminCustomersPage() {
           <button
             type="button"
             onClick={() => setModalOpen(true)}
-            className="rounded-full px-5 py-2.5 text-sm font-semibold text-white transition hover:opacity-90"
-            style={{ backgroundColor: "#1D9E75" }}
+            className="rounded-full bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700"
           >
             Ny kunde
           </button>
@@ -269,7 +268,7 @@ export default function AdminCustomersPage() {
       {inviteFeedback && (inviteFeedback.okLines.length > 0 || inviteFeedback.errLines.length > 0) && (
         <div className="mt-4 space-y-3">
           {inviteFeedback.okLines.length > 0 && (
-            <div className="rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-900">
+            <div className="rounded-lg border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-900">
               <ul className="list-inside list-disc space-y-1">
                 {inviteFeedback.okLines.map((line) => (
                   <li key={line}>{line}</li>
@@ -342,7 +341,7 @@ export default function AdminCustomersPage() {
                     <td className="px-4 py-3">
                       <Link
                         href={`/admin/customers/${p.id}`}
-                        className="font-medium text-emerald-700 hover:underline"
+                        className="font-medium text-blue-600 hover:underline"
                       >
                         {p.email}
                       </Link>
@@ -408,7 +407,7 @@ export default function AdminCustomersPage() {
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-emerald-600"
+                  className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-blue-600"
                   placeholder="kunde@firma.dk"
                 />
               </div>
@@ -422,7 +421,7 @@ export default function AdminCustomersPage() {
                   required
                   value={companyName}
                   onChange={(e) => setCompanyName(e.target.value)}
-                  className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-emerald-600"
+                  className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-blue-600"
                   placeholder="Firma A/S"
                 />
               </div>
@@ -434,7 +433,7 @@ export default function AdminCustomersPage() {
                   id="cust-plan"
                   value={plan}
                   onChange={(e) => setPlan(e.target.value as ProfilePlan)}
-                  className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-emerald-600"
+                  className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-blue-600"
                 >
                   <option value="basis">Basis</option>
                   <option value="standard">Standard</option>
@@ -457,8 +456,7 @@ export default function AdminCustomersPage() {
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="rounded-full px-5 py-2 text-sm font-semibold text-white transition hover:opacity-90 disabled:opacity-50"
-                  style={{ backgroundColor: "#1D9E75" }}
+                  className="rounded-full bg-blue-600 px-5 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700 disabled:opacity-50"
                 >
                   {submitting ? "Opretter..." : "Opret"}
                 </button>

@@ -105,11 +105,7 @@ export default function PortalSupportTicketPage() {
   return (
     <PortalLayout activeNav="support">
       <div className="mx-auto flex h-[calc(100vh-7rem)] max-w-3xl flex-col md:h-[calc(100vh-9rem)]">
-        <Link
-          href="/portal/support"
-          className="text-sm font-semibold hover:underline"
-          style={{ color: "#1D9E75" }}
-        >
+        <Link href="/portal/support" className="text-sm font-semibold text-blue-600 hover:underline">
           ← Tilbage til Support & sager
         </Link>
 

@@ -175,7 +175,7 @@ export default function PortalQuoteNewPage() {
   return (
     <PortalLayout activeNav="tilbud">
       <div>
-        <Link href="/portal/tilbud" className="text-sm font-semibold text-emerald-700 hover:underline">
+        <Link href="/portal/tilbud" className="text-sm font-semibold text-blue-600 hover:underline">
           ← Tilbage til tilbud
         </Link>
 
@@ -204,7 +204,7 @@ export default function PortalQuoteNewPage() {
             {services.length === 0 ? (
               <p className="mt-3 text-sm text-slate-600">
                 Ingen tjenester endnu.{" "}
-                <Link href="/portal/tjenester" className="font-semibold text-emerald-700 hover:underline">
+                <Link href="/portal/tjenester" className="font-semibold text-blue-600 hover:underline">
                   Opret tjenester først
                 </Link>
                 .
@@ -249,8 +249,7 @@ export default function PortalQuoteNewPage() {
               type="button"
               disabled={generating}
               onClick={() => void handleGenerate()}
-              className="mt-4 rounded-full px-5 py-2.5 text-sm font-semibold text-white transition hover:opacity-90 disabled:opacity-50"
-              style={{ backgroundColor: "#1D9E75" }}
+              className="mt-4 rounded-full bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
             >
               {generating ? "Genererer..." : "Generer tilbud"}
             </button>
@@ -279,8 +278,7 @@ export default function PortalQuoteNewPage() {
             <button
               type="submit"
               disabled={saving || sending}
-              className="rounded-full px-5 py-2.5 text-sm font-semibold text-white disabled:opacity-50"
-              style={{ backgroundColor: "#1D9E75" }}
+              className="rounded-full bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
             >
               {saving ? "Gemmer..." : "Gem som kladde"}
             </button>

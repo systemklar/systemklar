@@ -11,8 +11,6 @@ type AdminSidebarProps = {
   activeNav: AdminNavKey;
 };
 
-const accent = "#1D9E75";
-
 function DotIcon({ path }: { path: string }) {
   return (
     <svg viewBox="0 0 24 24" fill="none" className="h-4 w-4" aria-hidden>
@@ -42,11 +40,9 @@ export function AdminSidebar({ activeNav }: AdminSidebarProps) {
     <aside className="flex min-h-screen w-full max-w-72 shrink-0 flex-col border-r border-slate-200 bg-white p-6 shadow-sm">
       <div className="flex min-h-0 flex-1 flex-col">
         <Link href="/admin/dashboard" className="block">
-          <div className="rounded-xl border border-emerald-100 bg-emerald-50 px-3 py-2">
-            <div className="text-lg font-bold leading-snug" style={{ color: accent }}>
-              Systemklar Admin
-            </div>
-            <p className="mt-0.5 text-xs font-medium text-emerald-700">Kontrolpanel</p>
+          <div className="rounded-xl border border-blue-100 bg-blue-50 px-3 py-2">
+            <div className="text-lg font-bold leading-snug text-blue-600">Systemklar Admin</div>
+            <p className="mt-0.5 text-xs font-medium text-blue-700">Kontrolpanel</p>
           </div>
         </Link>
 
@@ -59,7 +55,7 @@ export function AdminSidebar({ activeNav }: AdminSidebarProps) {
                 href={item.href}
                 className={`rounded-lg px-3 py-2.5 text-sm font-medium transition ${
                   isActive
-                    ? "bg-emerald-50 text-emerald-800 ring-1 ring-emerald-100"
+                    ? "bg-blue-50 text-blue-700 ring-1 ring-blue-100"
                     : "text-slate-700 hover:bg-slate-50"
                 }`}
               >

@@ -109,7 +109,7 @@ export default function AdminTicketsPage() {
                 type="button"
                 onClick={() => setSelectedCompany("all")}
                 className={`flex w-full items-center justify-between rounded-lg px-2 py-2 text-left text-sm ${
-                  selectedCompany === "all" ? "bg-emerald-50 text-emerald-800" : "hover:bg-slate-50"
+                  selectedCompany === "all" ? "bg-blue-50 text-blue-700" : "hover:bg-slate-50"
                 }`}
               >
                 <span>Alle sager</span>
@@ -121,7 +121,7 @@ export default function AdminTicketsPage() {
                   type="button"
                   onClick={() => setSelectedCompany(group.company)}
                   className={`flex w-full items-center justify-between rounded-lg px-2 py-2 text-left text-sm ${
-                    selectedCompany === group.company ? "bg-emerald-50 text-emerald-800" : "hover:bg-slate-50"
+                    selectedCompany === group.company ? "bg-blue-50 text-blue-700" : "hover:bg-slate-50"
                   }`}
                 >
                   <span className="truncate">{group.company}</span>

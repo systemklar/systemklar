@@ -20,7 +20,7 @@ type SystemRow = {
 };
 
 const statusStyles: Record<SystemStatus, string> = {
-  ok: "bg-emerald-100 text-emerald-800",
+  ok: "bg-green-100 text-green-800",
   advarsel: "bg-amber-100 text-amber-900",
   nede: "bg-red-100 text-red-800",
 };
@@ -173,8 +173,7 @@ export default function PortalSystemsPage() {
           <button
             type="button"
             onClick={openCreate}
-            className="rounded-full px-5 py-2.5 text-sm font-semibold text-white transition hover:opacity-90"
-            style={{ backgroundColor: "#1D9E75" }}
+            className="rounded-full bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700"
           >
             Tilføj system
           </button>
@@ -265,7 +264,7 @@ export default function PortalSystemsPage() {
                   <button type="button" onClick={() => setModalOpen(false)} className="rounded-lg px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100">
                     Annuller
                   </button>
-                  <button type="submit" disabled={saving} className="rounded-full px-5 py-2 text-sm font-semibold text-white disabled:opacity-50" style={{ backgroundColor: "#1D9E75" }}>
+                  <button type="submit" disabled={saving} className="rounded-full bg-blue-600 px-5 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700 disabled:opacity-50">
                     {saving ? "Gemmer..." : "Gem"}
                   </button>
                 </div>

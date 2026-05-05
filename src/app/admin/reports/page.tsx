@@ -379,8 +379,7 @@ export default function AdminReportsPage() {
         <button
           type="button"
           onClick={openCreateModal}
-          className="shrink-0 rounded-full px-5 py-2.5 text-sm font-semibold text-white transition hover:opacity-90"
-          style={{ backgroundColor: "#1D9E75" }}
+          className="shrink-0 rounded-full bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700"
         >
           Opret rapport
         </button>
@@ -418,7 +417,7 @@ export default function AdminReportsPage() {
                   ) : null}
                   <Link
                     href={`/admin/reports/${r.id}`}
-                    className="mt-2 inline-block font-semibold text-emerald-800 hover:underline"
+                    className="mt-2 inline-block font-semibold text-blue-600 hover:underline"
                   >
                     {r.title}
                   </Link>
@@ -477,7 +476,7 @@ export default function AdminReportsPage() {
                   disabled={!!editingReport}
                   value={customerUserId}
                   onChange={(e) => setCustomerUserId(e.target.value)}
-                  className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-emerald-600 disabled:cursor-not-allowed disabled:bg-slate-100"
+                  className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-blue-600 disabled:cursor-not-allowed disabled:bg-slate-100"
                 >
                   <option value="">Vælg kunde…</option>
                   {profiles.map((p) => (
@@ -506,7 +505,7 @@ export default function AdminReportsPage() {
                     type="button"
                     disabled={!customerUserId || aiGenerating}
                     onClick={() => void handleGenerateWithAi()}
-                    className="rounded-full border border-emerald-200 bg-emerald-50 px-4 py-2 text-sm font-semibold text-emerald-800 hover:bg-emerald-100 disabled:opacity-50"
+                    className="rounded-full border border-blue-200 bg-[#EFF6FF] px-4 py-2 text-sm font-semibold text-blue-800 hover:bg-blue-100 disabled:opacity-50"
                   >
                     {aiGenerating ? "Genererer..." : "Generer rapport med AI"}
                   </button>
@@ -522,7 +521,7 @@ export default function AdminReportsPage() {
                   required
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
-                  className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-emerald-600"
+                  className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-blue-600"
                   placeholder="IT-rapport — Maj 2026"
                 />
               </div>
@@ -536,7 +535,7 @@ export default function AdminReportsPage() {
                   required
                   value={period}
                   onChange={(e) => setPeriod(e.target.value)}
-                  className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-emerald-600"
+                  className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-blue-600"
                   placeholder="Maj 2026"
                 />
               </div>
@@ -549,7 +548,7 @@ export default function AdminReportsPage() {
                   rows={4}
                   value={statusSummary}
                   onChange={(e) => setStatusSummary(e.target.value)}
-                  className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-emerald-600"
+                  className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-blue-600"
                 />
               </div>
               <div>
@@ -561,7 +560,7 @@ export default function AdminReportsPage() {
                   rows={4}
                   value={incidents}
                   onChange={(e) => setIncidents(e.target.value)}
-                  className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-emerald-600"
+                  className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-blue-600"
                 />
               </div>
               <div>
@@ -573,7 +572,7 @@ export default function AdminReportsPage() {
                   rows={4}
                   value={resolved}
                   onChange={(e) => setResolved(e.target.value)}
-                  className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-emerald-600"
+                  className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-blue-600"
                 />
               </div>
               <div>
@@ -585,7 +584,7 @@ export default function AdminReportsPage() {
                   rows={4}
                   value={recommendations}
                   onChange={(e) => setRecommendations(e.target.value)}
-                  className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-emerald-600"
+                  className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-blue-600"
                 />
               </div>
 
@@ -604,8 +603,7 @@ export default function AdminReportsPage() {
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="rounded-full px-5 py-2 text-sm font-semibold text-white transition hover:opacity-90 disabled:opacity-50"
-                  style={{ backgroundColor: "#1D9E75" }}
+                  className="rounded-full bg-blue-600 px-5 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700 disabled:opacity-50"
                 >
                   {submitting ? "Gemmer..." : editingReport ? "Gem ændringer" : "Gem rapport"}
                 </button>

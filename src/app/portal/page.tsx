@@ -14,7 +14,7 @@ type SystemRow = {
 };
 
 const statusStyles: Record<SystemRow["status"], string> = {
-  ok: "bg-emerald-100 text-emerald-800",
+  ok: "bg-green-100 text-green-800",
   advarsel: "bg-amber-100 text-amber-900",
   nede: "bg-red-100 text-red-800",
 };
@@ -85,7 +85,7 @@ function DashboardContent() {
       <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
         <div className="flex items-center justify-between gap-4">
           <h2 className="text-xl font-semibold text-slate-900">Mine systemer</h2>
-          <Link href="/portal/systemer" className="text-sm font-semibold text-emerald-700 hover:underline">
+          <Link href="/portal/systemer" className="text-sm font-semibold text-blue-600 hover:underline">
             Se alle
           </Link>
         </div>
@@ -139,7 +139,7 @@ function DashboardContent() {
       <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
         <div className="flex items-center justify-between">
           <h2 className="text-xl font-semibold text-slate-900">Seneste sager</h2>
-          <Link href="/portal/support" className="text-sm font-semibold text-emerald-700 hover:underline">
+          <Link href="/portal/support" className="text-sm font-semibold text-blue-600 hover:underline">
             Se alle
           </Link>
         </div>

@@ -52,23 +52,23 @@ export default function BookDemoPage() {
   };
 
   return (
-    <main className="min-h-screen bg-slate-50 px-6 py-12 text-slate-900">
+    <main className="min-h-screen bg-[#FAFAF8] px-6 py-12 text-[#1C1917]">
       <div className="mx-auto w-full max-w-3xl">
-        <Link href="/" className="text-sm font-semibold text-emerald-700 hover:underline">
+        <Link href="/" className="text-sm font-semibold text-blue-600 hover:underline">
           ← Tilbage til forsiden
         </Link>
 
-        <section className="mt-4 rounded-2xl border border-slate-200 bg-white p-8 shadow-sm">
-          <p className="inline-block rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700">
+        <section className="mt-4 rounded-2xl border border-[#E7E5E4] bg-white p-8 shadow-sm">
+          <p className="inline-block rounded-full bg-[#EFF6FF] px-3 py-1 text-xs font-semibold text-blue-700">
             Book en demo
           </p>
           <h1 className="mt-3 text-3xl font-bold tracking-tight">Få en gratis gennemgang af Systemklar</h1>
-          <p className="mt-3 text-slate-600">
+          <p className="mt-3 text-[#78716C]">
             Fortæl os lidt om jeres virksomhed, så kontakter vi jer og planlægger en relevant demo.
           </p>
 
           {success ? (
-            <div className="mt-6 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-emerald-800">
+            <div className="mt-6 rounded-xl border border-[#bbf7d0] bg-[#f0fdf4] px-4 py-3 text-[#15803d]">
               <p className="font-semibold">Tak for din anmodning</p>
               <p className="mt-1 text-sm">{success}</p>
             </div>
@@ -88,7 +88,7 @@ export default function BookDemoPage() {
                   required
                   value={form.name}
                   onChange={(e) => setForm((prev) => ({ ...prev, name: e.target.value }))}
-                  className="w-full rounded-lg border border-slate-300 px-3 py-2 outline-none focus:border-emerald-600"
+                  className="w-full rounded-lg border border-[#E7E5E4] px-3 py-2 outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-600/15"
                 />
               </div>
               <div>
@@ -97,7 +97,7 @@ export default function BookDemoPage() {
                   required
                   value={form.companyName}
                   onChange={(e) => setForm((prev) => ({ ...prev, companyName: e.target.value }))}
-                  className="w-full rounded-lg border border-slate-300 px-3 py-2 outline-none focus:border-emerald-600"
+                  className="w-full rounded-lg border border-[#E7E5E4] px-3 py-2 outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-600/15"
                 />
               </div>
             </div>
@@ -110,7 +110,7 @@ export default function BookDemoPage() {
                   type="email"
                   value={form.email}
                   onChange={(e) => setForm((prev) => ({ ...prev, email: e.target.value }))}
-                  className="w-full rounded-lg border border-slate-300 px-3 py-2 outline-none focus:border-emerald-600"
+                  className="w-full rounded-lg border border-[#E7E5E4] px-3 py-2 outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-600/15"
                 />
               </div>
               <div>
@@ -118,7 +118,7 @@ export default function BookDemoPage() {
                 <input
                   value={form.phone}
                   onChange={(e) => setForm((prev) => ({ ...prev, phone: e.target.value }))}
-                  className="w-full rounded-lg border border-slate-300 px-3 py-2 outline-none focus:border-emerald-600"
+                  className="w-full rounded-lg border border-[#E7E5E4] px-3 py-2 outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-600/15"
                 />
               </div>
             </div>
@@ -133,7 +133,7 @@ export default function BookDemoPage() {
                     employees: (e.target.value as DemoForm["employees"]) ?? "",
                   }))
                 }
-                className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 outline-none focus:border-emerald-600"
+                className="w-full rounded-lg border border-[#E7E5E4] bg-white px-3 py-2 outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-600/15"
               >
                 <option value="">Vælg antal ansatte</option>
                 <option value="1-5">1-5</option>
@@ -149,7 +149,7 @@ export default function BookDemoPage() {
                 rows={5}
                 value={form.message}
                 onChange={(e) => setForm((prev) => ({ ...prev, message: e.target.value }))}
-                className="w-full rounded-lg border border-slate-300 px-3 py-2 outline-none focus:border-emerald-600"
+                className="w-full rounded-lg border border-[#E7E5E4] px-3 py-2 outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-600/15"
               />
             </div>
 

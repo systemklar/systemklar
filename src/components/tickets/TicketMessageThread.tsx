@@ -357,7 +357,7 @@ export function TicketMessageThread({
                   className={`mb-1 block max-w-[14rem] truncate text-xs font-semibold ${
                     m.is_admin
                       ? "uppercase tracking-wide text-slate-500"
-                      : "normal-case tracking-normal text-emerald-700"
+                      : "normal-case tracking-normal text-blue-600"
                   }`}
                 >
                   {m.is_admin ? "Systemklar" : customerSenderLabel}
@@ -366,7 +366,7 @@ export function TicketMessageThread({
                   className={`max-w-[min(100%,28rem)] rounded-2xl px-4 py-2.5 text-sm shadow-sm ${
                     m.is_admin
                       ? "rounded-br-md bg-slate-700 text-white"
-                      : "rounded-bl-md border border-emerald-200 bg-emerald-50 text-slate-900"
+                      : "rounded-bl-md border border-blue-200 bg-blue-50 text-slate-900"
                   }`}
                 >
                   <p className="whitespace-pre-wrap leading-relaxed">{m.content}</p>
@@ -389,7 +389,7 @@ export function TicketMessageThread({
                   className={`mb-1 block max-w-[14rem] truncate text-xs font-semibold ${
                     typingOnRight
                       ? "uppercase tracking-wide text-slate-500"
-                      : "normal-case tracking-normal text-emerald-700"
+                      : "normal-case tracking-normal text-blue-600"
                   }`}
                 >
                   {typingOnRight ? "Systemklar" : customerSenderLabel}
@@ -398,7 +398,7 @@ export function TicketMessageThread({
                   className={`flex items-center gap-2 rounded-2xl px-4 py-3 text-sm ${
                     typingOnRight
                       ? "rounded-br-md bg-slate-600 text-white"
-                      : "rounded-bl-md border border-emerald-200 bg-emerald-50 text-emerald-800"
+                      : "rounded-bl-md border border-blue-200 bg-blue-50 text-blue-700"
                   }`}
                 >
                   <span>Skriver</span>
@@ -437,14 +437,13 @@ export function TicketMessageThread({
             }
           }}
           placeholder="Skriv en besked..."
-          className="min-w-0 flex-1 rounded-lg border border-slate-300 px-3 py-2 outline-none focus:border-slate-500"
+          className="min-w-0 flex-1 rounded-lg border border-slate-300 px-3 py-2 outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-500"
         />
         <button
           type="button"
           disabled={sending || !draft.trim()}
           onClick={() => void handleSend()}
-          className="rounded-full px-5 py-2 text-sm font-semibold text-white transition hover:opacity-90 disabled:opacity-50"
-          style={{ backgroundColor: "#1D9E75" }}
+          className="rounded-full bg-blue-600 px-5 py-2 text-sm font-semibold text-white transition hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
         >
           {sending ? "Sender..." : "Send"}
         </button>

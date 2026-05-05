@@ -18,7 +18,7 @@ export function StatusBadge({ status }: { status: string }) {
   const normalized = status === "nede" ? "nede" : normalizeTicketStatus(status);
   const styles: Record<TicketStatus | "nede", { bg: string; text: string; label: string; dot: string }> = {
     active: { bg: "#FEF3C7", text: "#C2410C", label: "Aktiv", dot: "#D97706" },
-    resolved: { bg: "#DCFCE7", text: "#166534", label: "Løst", dot: "#D97706" },
+    resolved: { bg: "#DCFCE7", text: "#166534", label: "Løst", dot: "#16a34a" },
     nede: { bg: "#FEE2E2", text: "#991B1B", label: "Nede", dot: "#DC2626" },
   };
   const s = styles[normalized];

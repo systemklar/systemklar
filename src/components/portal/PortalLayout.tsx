@@ -169,8 +169,8 @@ export function PortalLayout({ children, activeNav }: PortalLayoutProps) {
 
   if (isLoading) {
     return (
-      <main className="min-h-screen bg-slate-50 px-6 py-20 text-slate-900">
-        <div className="mx-auto max-w-3xl rounded-2xl border border-slate-200 bg-white p-8 text-center shadow-sm">
+      <main className="min-h-screen bg-[#FAFAF8] px-6 py-20 text-[#1C1917]">
+        <div className="mx-auto max-w-3xl rounded-2xl border border-[#E7E5E4] bg-white p-8 text-center shadow-sm">
           Indlæser portal...
         </div>
       </main>
@@ -179,15 +179,13 @@ export function PortalLayout({ children, activeNav }: PortalLayoutProps) {
 
   return (
     <PortalSessionContext.Provider value={{ email: userEmail }}>
-      <main className="min-h-screen bg-slate-50 text-slate-900">
+      <main className="min-h-screen bg-[#FAFAF8] text-[#1C1917]">
         <div className="mx-auto flex min-h-screen w-full max-w-7xl">
-          <aside className="w-full max-w-72 border-r border-slate-200 bg-white p-6 shadow-sm">
+          <aside className="w-full max-w-72 border-r border-[#E7E5E4] bg-white p-6 shadow-sm">
             <Link href="/portal" className="block">
-              <div className="rounded-xl border border-emerald-100 bg-emerald-50 px-3 py-2">
-                <div className="text-xl font-bold tracking-tight" style={{ color: "#1D9E75" }}>
-                  Systemklar
-                </div>
-                <p className="mt-0.5 text-xs font-medium text-emerald-700">Kundeportal</p>
+              <div className="rounded-xl border border-blue-100 bg-blue-50 px-3 py-2">
+                <div className="text-xl font-bold tracking-tight text-blue-600">Systemklar</div>
+                <p className="mt-0.5 text-xs font-medium text-blue-700">Kundeportal</p>
               </div>
             </Link>
 
@@ -216,7 +214,7 @@ export function PortalLayout({ children, activeNav }: PortalLayoutProps) {
                     href={item.href}
                     className={`block rounded-lg px-3 py-2.5 text-sm font-medium transition ${
                       isActive
-                        ? "bg-emerald-100 text-emerald-800 ring-1 ring-emerald-200"
+                        ? "bg-blue-50 text-blue-700 ring-1 ring-blue-100"
                         : "text-slate-700 hover:bg-slate-100"
                     }`}
                   >

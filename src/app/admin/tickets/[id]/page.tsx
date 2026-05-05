@@ -59,7 +59,7 @@ export default function AdminTicketDetailPage() {
   if (!ticket) {
     return (
       <div>
-        <Link href="/admin/tickets" className="text-sm font-semibold text-emerald-700 hover:underline">
+        <Link href="/admin/tickets" className="text-sm font-semibold text-blue-600 hover:underline">
           ← Tilbage til Support & sager
         </Link>
         <p className="mt-6 text-sm text-slate-600">Sag ikke fundet.</p>
@@ -71,7 +71,7 @@ export default function AdminTicketDetailPage() {
 
   return (
     <div>
-      <Link href="/admin/tickets" className="text-sm font-semibold text-emerald-700 hover:underline">
+      <Link href="/admin/tickets" className="text-sm font-semibold text-blue-600 hover:underline">
         ← Tilbage til Support & sager
       </Link>
 

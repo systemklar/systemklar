@@ -1,8 +1,8 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #0f172a;
+  --background: #fafaf8;
+  --foreground: #1c1917;
 }
 
 @theme inline {
@@ -28,17 +28,17 @@ button {
 }
 
 .btn-primary {
-  background-color: #1d9e75;
+  background-color: #2563eb;
   color: #fff;
-  border-radius: 0.5rem;
+  border-radius: 9999px;
 }
 
 .btn-primary:hover {
-  background-color: #178762;
+  background-color: #1d4ed8;
 }
 
 .btn-primary:focus-visible {
-  outline: 2px solid #34d399;
+  outline: 2px solid rgba(37, 99, 235, 0.45);
   outline-offset: 2px;
 }
 

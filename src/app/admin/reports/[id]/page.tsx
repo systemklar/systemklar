@@ -44,7 +44,7 @@ export default function AdminReportDetailPage() {
   if (!payload) {
     return (
       <div>
-        <Link href="/admin/reports" className="text-sm font-semibold text-emerald-700 hover:underline">
+        <Link href="/admin/reports" className="text-sm font-semibold text-blue-600 hover:underline">
           ← Tilbage til IT-rapporter
         </Link>
         <p className="mt-6 text-sm text-slate-600">Rapporten findes ikke.</p>

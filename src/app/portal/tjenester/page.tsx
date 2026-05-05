@@ -171,8 +171,7 @@ export default function PortalServicesPage() {
           <button
             type="button"
             onClick={openCreate}
-            className="rounded-full px-5 py-2.5 text-sm font-semibold text-white transition hover:opacity-90"
-            style={{ backgroundColor: "#1D9E75" }}
+            className="rounded-full bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700"
           >
             Ny tjeneste
           </button>
@@ -288,8 +287,7 @@ export default function PortalServicesPage() {
                   <button
                     type="submit"
                     disabled={saving}
-                    className="rounded-full px-5 py-2 text-sm font-semibold text-white disabled:opacity-50"
-                    style={{ backgroundColor: "#1D9E75" }}
+                    className="rounded-full bg-blue-600 px-5 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700 disabled:opacity-50"
                   >
                     {saving ? "Gemmer..." : "Gem"}
                   </button>
