@@ -8,6 +8,16 @@ export async function middleware(request: NextRequest) {
   let response = NextResponse.next({
     request,
   });
+  const pathname = request.nextUrl.pathname;
+
+  if (
+    pathname === "/admin/login" ||
+    pathname === "/forgot-password" ||
+    pathname === "/set-password" ||
+    pathname === "/login"
+  ) {
+    return response;
+  }
 
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -36,31 +46,11 @@ export async function middleware(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser();
 
-  const pathname = request.nextUrl.pathname;
   const isAdminArea =
     pathname.startsWith("/admin") || pathname.startsWith("/api/admin");
   const isPortalArea = pathname.startsWith("/portal");
 
   const isAdmin = (user?.email ?? "").trim().toLowerCase() === ADMIN_EMAIL;
-
-  /* Invite-flow: session etableres via hash/?code i URL – ingen login påkrævet. */
-  if (pathname === "/set-password" || pathname === "/forgot-password") {
-    return response;
-  }
-
-  if (pathname === "/admin/login" && user) {
-    const url = request.nextUrl.clone();
-    url.pathname = isAdmin ? "/admin/dashboard" : "/portal";
-    url.search = "";
-    return NextResponse.redirect(url);
-  }
-
-  if (pathname === "/login" && user) {
-    const url = request.nextUrl.clone();
-    url.pathname = isAdmin ? "/admin/dashboard" : "/portal";
-    url.search = "";
-    return NextResponse.redirect(url);
-  }
 
   if (isAdminArea) {
     if (!user) {
