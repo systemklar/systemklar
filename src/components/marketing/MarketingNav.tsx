@@ -13,6 +13,7 @@ const NAV = [
 export function MarketingNav() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -36,8 +37,21 @@ export function MarketingNav() {
     setOpen(false);
   }, [pathname]);
 
+  useEffect(() => {
+    const onScroll = () => {
+      setScrolled(window.scrollY > 6);
+    };
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
   return (
-    <header className="sticky top-0 z-50 border-b border-gray-100 bg-white/80 backdrop-blur">
+    <header
+      className={`sticky top-0 z-50 border-b bg-white/80 backdrop-blur transition-[box-shadow,border-color] duration-300 ease-out ${
+        scrolled ? "border-gray-200/90 shadow-md shadow-gray-900/5" : "border-gray-100 shadow-none"
+      }`}
+    >
       <div ref={containerRef} className="relative mx-auto h-16 max-w-6xl px-6">
         <div className="flex h-full items-center justify-between">
           <Link href="/" className="text-xl font-bold tracking-tight text-[#2563EB]">
