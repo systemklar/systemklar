@@ -123,7 +123,10 @@ function AdminLoginForm() {
             Husk mig
           </label>
 
-          <Link href="/forgot-password" className="block text-sm font-semibold text-emerald-700 hover:underline">
+          <Link
+            href="/admin/forgot-password"
+            className="block text-sm font-semibold text-emerald-700 hover:underline"
+          >
             Glemt adgangskode?
           </Link>
 

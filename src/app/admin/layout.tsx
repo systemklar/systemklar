@@ -23,7 +23,11 @@ function activeNavFromPath(pathname: string): AdminNavKey {
 
 export default function AdminLayout({ children }: { children: ReactNode }) {
   const pathname = usePathname();
-  if (pathname === "/admin/login") {
+  if (
+    pathname === "/admin/login" ||
+    pathname === "/admin/forgot-password" ||
+    pathname === "/admin/set-password"
+  ) {
     return <>{children}</>;
   }
   const activeNav = activeNavFromPath(pathname);

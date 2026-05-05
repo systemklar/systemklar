@@ -12,6 +12,8 @@ export async function middleware(request: NextRequest) {
 
   if (
     pathname === "/admin/login" ||
+    pathname === "/admin/forgot-password" ||
+    pathname === "/admin/set-password" ||
     pathname === "/forgot-password" ||
     pathname === "/set-password" ||
     pathname === "/login"
@@ -60,7 +62,7 @@ export async function middleware(request: NextRequest) {
     }
     if (!isAdmin) {
       const url = request.nextUrl.clone();
-      url.pathname = "/portal";
+      url.pathname = "/admin/login";
       url.search = "";
       return NextResponse.redirect(url);
     }
@@ -72,12 +74,6 @@ export async function middleware(request: NextRequest) {
       const login = new URL("/login", request.url);
       login.searchParams.set("next", pathname + request.nextUrl.search);
       return NextResponse.redirect(login);
-    }
-    if (isAdmin) {
-      const url = request.nextUrl.clone();
-      url.pathname = "/admin/dashboard";
-      url.search = "";
-      return NextResponse.redirect(url);
     }
     return response;
   }
