@@ -81,13 +81,13 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-white text-slate-900">
-      <header className="sticky top-0 z-10 border-b border-slate-100 bg-white/95 backdrop-blur">
+      <header className="sticky top-0 z-20 border-b border-slate-200 bg-white/95 backdrop-blur">
         <div ref={mobileMenuContainerRef}>
           <div className="mx-auto flex w-full max-w-6xl items-center justify-between px-6 py-4">
-            <a href="#" className="text-2xl font-bold" style={{ color: "#1D9E75" }}>
+            <a href="#" className="text-2xl font-extrabold tracking-tight text-green-600">
               Systemklar
             </a>
-            <nav className="hidden items-center gap-7 text-sm font-medium md:flex">
+            <nav className="hidden items-center gap-8 text-sm font-medium md:flex">
               <Link href="/platformen" className="transition hover:text-slate-600">
                 Platformen
               </Link>
@@ -100,8 +100,12 @@ export default function Home() {
               <a href="#priser" className="transition hover:text-slate-600">
                 Priser
               </a>
+            </nav>
+            <nav className="hidden items-center gap-3 md:flex">
               <Link href="/login" className="transition hover:text-slate-600">
-                Log ind
+                <span className="inline-flex rounded-lg border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50">
+                  Log ind
+                </span>
               </Link>
               <Link href="/book-demo" className="btn-primary px-5 py-2 text-sm font-semibold shadow-sm">
                 Book en demo
@@ -183,14 +187,11 @@ export default function Home() {
 
       <main>
         <section className="mx-auto max-w-6xl px-6 pb-20 pt-16">
-          <p
-            className="mb-5 inline-block rounded-full px-4 py-2 text-sm font-medium"
-            style={{ backgroundColor: "#E7F6F1", color: "#1D9E75" }}
-          >
-            IT-platform til SMV&apos;er
+          <p className="mb-5 inline-block rounded-full bg-green-50 px-4 py-2 text-sm font-semibold text-green-700">
+            🇩🇰 Bygget til danske SMV&apos;er
           </p>
           <h1 className="max-w-4xl text-4xl font-bold leading-tight tracking-tight md:text-6xl">
-            Få overblik over din virksomheds IT - uden en IT-afdeling
+            Få overblik over din virksomheds IT – uden en IT-afdeling
           </h1>
           <p className="mt-7 max-w-2xl text-xl text-slate-600">
             Systemklar samler dine systemer, support og administration et sted -
@@ -198,14 +199,14 @@ export default function Home() {
           </p>
           <div className="mt-9 flex flex-wrap gap-4">
             <Link href="/book-demo" className="btn-primary px-6 py-3 font-semibold shadow-sm">
-              Book en demo
+              Book gratis demo
             </Link>
-            <a
-              href="#priser"
-              className="rounded-full border border-slate-300 px-6 py-3 font-semibold text-slate-700 transition hover:bg-slate-50"
+            <Link
+              href="/platformen"
+              className="rounded-lg border border-slate-300 px-6 py-3 font-semibold text-slate-700 transition hover:bg-slate-50"
             >
-              Se priser
-            </a>
+              Se platformen
+            </Link>
           </div>
         </section>
 
@@ -219,7 +220,7 @@ export default function Home() {
               <Link
                 key={feature.title}
                 href="/platformen"
-                className="group rounded-2xl border border-slate-200 p-6 shadow-sm transition hover:-translate-y-0.5 hover:border-slate-300 hover:shadow-md"
+                className="group rounded-2xl border border-slate-200 bg-white p-6 shadow-sm transition hover:-translate-y-0.5 hover:border-green-600 hover:shadow-md"
               >
                 <p className="text-2xl">{feature.icon}</p>
                 <h3 className="text-xl font-semibold">{feature.title}</h3>
@@ -341,17 +342,29 @@ export default function Home() {
         </section>
       </main>
 
-      <footer className="border-t border-slate-100 bg-slate-950 px-6 py-10 text-sm text-slate-300">
-        <div className="mx-auto flex w-full max-w-6xl flex-col items-start justify-between gap-6 md:flex-row">
+      <footer className="border-t border-slate-800 bg-gray-900 px-6 py-12 text-sm text-slate-300">
+        <div className="mx-auto flex w-full max-w-6xl flex-col items-start justify-between gap-10 md:flex-row">
           <div>
-            <p className="text-lg font-semibold text-white">Systemklar</p>
+            <p className="text-lg font-bold text-green-500">Systemklar</p>
             <p className="mt-2 text-slate-400">Platform til drift, support og AI-værktøjer for SMV&apos;er.</p>
           </div>
-          <div className="grid grid-cols-2 gap-6 text-slate-300">
-            <Link href="/platformen" className="hover:text-white">Platformen</Link>
-            <a href="#priser" className="hover:text-white">Priser</a>
-            <Link href="/ai-vaerktoejer" className="hover:text-white">AI-værktøjer</Link>
-            <Link href="/login" className="hover:text-white">Log ind</Link>
+          <div className="grid grid-cols-1 gap-8 text-slate-300 sm:grid-cols-3">
+            <div className="space-y-2">
+              <p className="font-semibold text-white">Produkt</p>
+              <Link href="/platformen" className="block hover:text-white">Platformen</Link>
+              <Link href="/ai-vaerktoejer" className="block hover:text-white">AI-værktøjer</Link>
+              <Link href="/priser" className="block hover:text-white">Priser</Link>
+            </div>
+            <div className="space-y-2">
+              <p className="font-semibold text-white">Virksomhed</p>
+              <Link href="/book-demo" className="block hover:text-white">Book demo</Link>
+              <Link href="/login" className="block hover:text-white">Log ind</Link>
+            </div>
+            <div className="space-y-2">
+              <p className="font-semibold text-white">Support</p>
+              <a href="mailto:kontakt@systemklar.dk" className="block hover:text-white">kontakt@systemklar.dk</a>
+              <Link href="/platformen" className="block hover:text-white">Dokumentation</Link>
+            </div>
           </div>
         </div>
         <p className="mx-auto mt-8 w-full max-w-6xl border-t border-slate-800 pt-6 text-slate-500">

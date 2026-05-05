@@ -10,12 +10,12 @@ const plans = [
     name: "Standard",
     price: "1.299 kr./md.",
     features: ["Alt i Basis", "Prioriteret support", "Op til 50 brugere"],
-    highlighted: true,
   },
   {
     name: "Plus",
     price: "2.499 kr./md.",
     features: ["Alt i Standard", "AI-værktøjer inkluderet", "Ubegrænset brug"],
+    highlighted: true,
   },
 ];
 
@@ -67,16 +67,14 @@ export function PricingSection({ sectionId = "priser", ctaHref = "#cta" }: Prici
           <article
             key={plan.name}
             className={`rounded-2xl border p-6 ${
-              plan.highlighted ? "border-transparent shadow-md" : "border-slate-200"
+              plan.highlighted ? "border-green-600 shadow-md" : "border-slate-200"
             }`}
-            style={
-              plan.highlighted ? { boxShadow: "0 10px 24px rgba(29, 158, 117, 0.18)" } : undefined
-            }
+            style={plan.highlighted ? { boxShadow: "0 10px 24px rgba(22, 163, 74, 0.22)" } : undefined}
           >
             <h3 className="text-xl font-semibold">{plan.name}</h3>
             <p
               className="mt-3 text-3xl font-bold"
-              style={plan.highlighted ? { color: "#1D9E75" } : undefined}
+              style={plan.highlighted ? { color: "#16A34A" } : undefined}
             >
               {plan.price}
             </p>
