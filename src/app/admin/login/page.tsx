@@ -123,6 +123,10 @@ function AdminLoginForm() {
             Husk mig
           </label>
 
+          <Link href="/forgot-password" className="block text-sm font-semibold text-emerald-700 hover:underline">
+            Glemt adgangskode?
+          </Link>
+
           {errorMessage ? (
             <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">{errorMessage}</p>
           ) : null}
