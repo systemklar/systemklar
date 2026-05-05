@@ -21,7 +21,7 @@ export function getAppOrigin(): string {
 }
 
 export function getResendFromAddress(): string {
-  return process.env.RESEND_FROM_EMAIL?.trim() || "Systemklar <onboarding@resend.dev>";
+  return process.env.RESEND_FROM_EMAIL?.trim() || "noreply@systemklar.dk";
 }
 
 export type WelcomeEmailResult =
