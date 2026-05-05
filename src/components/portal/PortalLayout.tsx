@@ -96,7 +96,7 @@ const navItems: { label: string; href: string; key: PortalNavKey; icon?: ReactNo
   { label: "Systemer", href: "/portal/systemer", key: "systems", icon: <SystemsIcon /> },
   { label: "Tjenester", href: "/portal/tjenester", key: "services", icon: <ServicesIcon /> },
   { label: "Tilbud", href: "/portal/tilbud", key: "tilbud", icon: <QuoteIcon /> },
-  { label: "AI-assistent", href: "#", key: "ai", icon: <AiIcon /> },
+  { label: "AI-assistent", href: "/portal/ai-assistent", key: "ai", icon: <AiIcon /> },
 ];
 
 type PortalSession = {
@@ -192,22 +192,6 @@ export function PortalLayout({ children, activeNav }: PortalLayoutProps) {
             <nav className="mt-6 space-y-1.5">
               {navItems.map((item) => {
                 const isActive = item.key === activeNav;
-                const isPlaceholder = item.href === "#";
-
-                if (isPlaceholder) {
-                  return (
-                    <span
-                      key={item.key}
-                      className="block cursor-not-allowed rounded-lg px-3 py-2 text-sm font-medium text-slate-400"
-                    >
-                      <span className="inline-flex items-center gap-2">
-                        {item.icon}
-                        {item.label}
-                      </span>
-                    </span>
-                  );
-                }
-
                 return (
                   <Link
                     key={item.key}
