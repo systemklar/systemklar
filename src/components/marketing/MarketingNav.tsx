@@ -3,11 +3,13 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
+import { StableNavLink } from "./StableNavLink";
 
 const NAV = [
   { href: "/platformen", label: "Platformen" },
   { href: "/ai-vaerktoejer", label: "AI-værktøjer" },
   { href: "/priser", label: "Priser" },
+  { href: "/kontakt", label: "Kontakt" },
 ] as const;
 
 export function MarketingNav() {
@@ -53,29 +55,18 @@ export function MarketingNav() {
       }`}
     >
       <div ref={containerRef} className="relative mx-auto h-16 max-w-6xl px-6">
-        <div className="flex h-full items-center justify-between">
-          <Link href="/" className="text-xl font-bold tracking-tight text-[#2563EB]">
+        <div className="flex h-full items-center justify-between gap-4">
+          <Link href="/" className="shrink-0 text-xl font-bold tracking-tight text-[#2563EB]">
             Systemklar
           </Link>
 
-          <nav className="hidden items-center gap-8 md:flex" aria-label="Hovednavigation">
-            {NAV.map((item) => {
-              const active = pathname === item.href;
-              return (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className={`text-sm font-medium transition-colors ${
-                    active ? "font-semibold text-gray-900" : "text-gray-600 hover:text-gray-900"
-                  }`}
-                >
-                  {item.label}
-                </Link>
-              );
-            })}
+          <nav className="hidden min-w-0 flex-1 items-center justify-center gap-8 md:flex" aria-label="Hovednavigation">
+            {NAV.map((item) => (
+              <StableNavLink key={item.href} href={item.href} label={item.label} active={pathname === item.href} />
+            ))}
           </nav>
 
-          <div className="hidden items-center gap-3 md:flex">
+          <div className="hidden shrink-0 items-center gap-3 md:flex">
             <Link
               href="/login"
               className="text-sm font-medium text-gray-600 transition-colors hover:text-gray-900"
@@ -92,7 +83,7 @@ export function MarketingNav() {
 
           <button
             type="button"
-            className="inline-flex h-10 w-10 items-center justify-center rounded-lg text-gray-700 transition-colors hover:bg-gray-50 md:hidden"
+            className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-lg text-gray-700 transition-colors hover:bg-gray-50 md:hidden"
             onClick={() => setOpen((v) => !v)}
             aria-label={open ? "Luk menu" : "Åbn menu"}
             aria-expanded={open}
@@ -123,8 +114,8 @@ export function MarketingNav() {
                   <Link
                     key={item.href}
                     href={item.href}
-                    className={`block rounded-lg px-3 py-2.5 text-sm font-medium transition-colors ${
-                      active ? "bg-gray-50 font-semibold text-gray-900" : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
+                    className={`block min-w-max rounded-lg px-3 py-2.5 text-sm transition-colors ${
+                      active ? "bg-gray-50 font-semibold text-gray-900" : "font-medium text-gray-600 hover:bg-gray-50 hover:text-gray-900"
                     }`}
                   >
                     {item.label}
@@ -133,7 +124,7 @@ export function MarketingNav() {
               })}
               <Link
                 href="/login"
-                className="block rounded-lg px-3 py-2.5 text-sm font-medium text-gray-600 hover:bg-gray-50 hover:text-gray-900"
+                className="block min-w-max rounded-lg px-3 py-2.5 text-sm font-medium text-gray-600 hover:bg-gray-50 hover:text-gray-900"
               >
                 Log ind
               </Link>
