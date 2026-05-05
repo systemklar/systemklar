@@ -50,6 +50,7 @@ export async function middleware(request: NextRequest) {
 
   const isAdminArea =
     pathname.startsWith("/admin") || pathname.startsWith("/api/admin");
+  /** Alle stier under /portal (fx /portal/tilbudsgenerator) kræver login. */
   const isPortalArea = pathname.startsWith("/portal");
 
   const isAdmin = (user?.email ?? "").trim().toLowerCase() === ADMIN_EMAIL;

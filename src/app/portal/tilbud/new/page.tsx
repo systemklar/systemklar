@@ -173,10 +173,10 @@ export default function PortalQuoteNewPage() {
   };
 
   return (
-    <PortalLayout activeNav="tilbud">
+    <PortalLayout activeNav="tilbudsgenerator">
       <div>
-        <Link href="/portal/tilbud" className="text-sm font-semibold text-blue-600 hover:underline">
-          ← Tilbage til tilbud
+        <Link href="/portal/tilbudsgenerator" className="text-sm font-semibold text-blue-600 hover:underline">
+          ← Tilbage til AI Tilbudsgenerator
         </Link>
 
         <h1 className="mt-6 text-2xl font-bold text-slate-900 md:text-3xl">Nyt tilbud</h1>
@@ -204,8 +204,8 @@ export default function PortalQuoteNewPage() {
             {services.length === 0 ? (
               <p className="mt-3 text-sm text-slate-600">
                 Ingen tjenester endnu.{" "}
-                <Link href="/portal/tjenester" className="font-semibold text-blue-600 hover:underline">
-                  Opret tjenester først
+                <Link href="/portal/tilbudsgenerator#ydelser" className="font-semibold text-blue-600 hover:underline">
+                  Opret ydelser først
                 </Link>
                 .
               </p>

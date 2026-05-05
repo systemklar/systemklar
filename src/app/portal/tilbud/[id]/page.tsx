@@ -132,7 +132,7 @@ export default function PortalTilbudDetailPage() {
 
   if (loading) {
     return (
-      <PortalLayout activeNav="tilbud">
+      <PortalLayout activeNav="tilbudsgenerator">
         <p className="text-sm text-slate-600">Indlæser tilbud...</p>
       </PortalLayout>
     );
@@ -140,9 +140,9 @@ export default function PortalTilbudDetailPage() {
 
   if (!quote) {
     return (
-      <PortalLayout activeNav="tilbud">
-        <Link href="/portal/tilbud" className="text-sm font-semibold text-blue-600 hover:underline">
-          ← Tilbage til tilbud
+      <PortalLayout activeNav="tilbudsgenerator">
+        <Link href="/portal/tilbudsgenerator" className="text-sm font-semibold text-blue-600 hover:underline">
+          ← Tilbage til AI Tilbudsgenerator
         </Link>
         <p className="mt-6 text-sm text-slate-600">Tilbud ikke fundet.</p>
       </PortalLayout>
@@ -150,9 +150,9 @@ export default function PortalTilbudDetailPage() {
   }
 
   return (
-    <PortalLayout activeNav="tilbud">
-      <Link href="/portal/tilbud" className="text-sm font-semibold text-blue-600 hover:underline">
-        ← Tilbage til tilbud
+    <PortalLayout activeNav="tilbudsgenerator">
+      <Link href="/portal/tilbudsgenerator" className="text-sm font-semibold text-blue-600 hover:underline">
+        ← Tilbage til AI Tilbudsgenerator
       </Link>
 
       <div className="mt-6 flex flex-wrap items-start justify-between gap-4">

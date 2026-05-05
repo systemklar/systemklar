@@ -16,8 +16,7 @@ export type PortalNavKey =
   | "dashboard"
   | "support"
   | "rapport"
-  | "services"
-  | "tilbud"
+  | "tilbudsgenerator"
   | "systems"
   | "vault"
   | "ai";
@@ -64,18 +63,21 @@ function SystemsIcon() {
     </svg>
   );
 }
-function ServicesIcon() {
+function SparklesIcon() {
   return (
     <svg viewBox="0 0 24 24" fill="none" className="h-4 w-4" aria-hidden>
-      <rect x="4" y="5" width="16" height="14" rx="2" stroke="currentColor" strokeWidth="1.7" />
-      <path d="M8 10h8M8 14h5" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
-    </svg>
-  );
-}
-function QuoteIcon() {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" className="h-4 w-4" aria-hidden>
-      <path d="M7 17h3l2-10H9l-2 10Zm8 0h3l2-10h-3l-2 10Z" stroke="currentColor" strokeWidth="1.7" strokeLinejoin="round" />
+      <path
+        d="M12 3v2.5M12 18.5V21M3 12h2.5M18.5 12H21M5.6 5.6l1.8 1.8M16.6 16.6l1.8 1.8M5.6 18.4l1.8-1.8M16.6 7.4l1.8-1.8"
+        stroke="currentColor"
+        strokeWidth="1.7"
+        strokeLinecap="round"
+      />
+      <path
+        d="M12 8.5 10.8 12 12 15.5 13.2 12 12 8.5Zm-4.2 3.5L5.5 12l2.3.5L8.5 15l.5-2.3L11 12l-2.3-.5L8.5 9l-.5 2.3Zm8.4 0L19.5 12l-2.3.5L15.5 15l-.5-2.3L13 12l2.3-.5L15.5 9l.5 2.3Z"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinejoin="round"
+      />
     </svg>
   );
 }
@@ -94,8 +96,12 @@ const navItems: { label: string; href: string; key: PortalNavKey; icon?: ReactNo
   { label: "Kodebank", href: "/portal/kodebank", key: "vault", icon: <LockIcon /> },
   { label: "IT-rapport", href: "/portal/rapport", key: "rapport", icon: <ReportIcon /> },
   { label: "Systemer", href: "/portal/systemer", key: "systems", icon: <SystemsIcon /> },
-  { label: "Tjenester", href: "/portal/tjenester", key: "services", icon: <ServicesIcon /> },
-  { label: "Tilbud", href: "/portal/tilbud", key: "tilbud", icon: <QuoteIcon /> },
+  {
+    label: "AI Tilbudsgenerator",
+    href: "/portal/tilbudsgenerator",
+    key: "tilbudsgenerator",
+    icon: <SparklesIcon />,
+  },
   { label: "AI-assistent", href: "/portal/ai-assistent", key: "ai", icon: <AiIcon /> },
 ];
 
