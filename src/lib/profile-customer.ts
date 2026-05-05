@@ -40,3 +40,21 @@ export function companyLabelFromProfile(row: ProfileCustomerRow | undefined): st
   const name = row?.company_name?.trim();
   return name ? name : UNKNOWN_COMPANY_LABEL;
 }
+
+/**
+ * Hent firmanavn for én bruger (kundeportal).
+ */
+export async function fetchCompanyNameForUser(
+  client: SupabaseClient,
+  userId: string,
+): Promise<string | null> {
+  if (!userId) return null;
+  const { data, error } = await client
+    .from("profiles")
+    .select("company_name")
+    .eq("user_id", userId)
+    .maybeSingle();
+  if (error || !data) return null;
+  const name = (data as { company_name?: unknown }).company_name;
+  return typeof name === "string" && name.trim() ? name.trim() : null;
+}

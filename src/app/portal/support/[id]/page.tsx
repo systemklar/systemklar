@@ -5,7 +5,6 @@ import { useParams, useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { PortalLayout } from "@/components/portal/PortalLayout";
 import {
-  companyFromTicketRow,
   fetchTicketWithProfileForUser,
   type TicketWithProfileRow,
 } from "@/lib/tickets-with-profile";
@@ -13,6 +12,7 @@ import { formatDanishDateTime } from "@/components/tickets/StatusBadge";
 import { TicketStatusToggle } from "@/components/tickets/TicketStatusToggle";
 import { TicketMessageThread } from "@/components/tickets/TicketMessageThread";
 import { setTicketLastViewedToNow } from "@/lib/ticket-last-viewed";
+import { fetchCompanyNameForUser } from "@/lib/profile-customer";
 import { createClient } from "@/lib/supabase";
 
 export default function PortalSupportTicketPage() {
@@ -24,6 +24,7 @@ export default function PortalSupportTicketPage() {
   const [ticket, setTicket] = useState<TicketWithProfileRow | null>(null);
   const [loading, setLoading] = useState(true);
   const [deleting, setDeleting] = useState(false);
+  const [companyName, setCompanyName] = useState<string | null>(null);
 
   const loadTicket = useCallback(async () => {
     await Promise.resolve();
@@ -43,6 +44,8 @@ export default function PortalSupportTicketPage() {
     }
 
     const row = await fetchTicketWithProfileForUser(supabase, id, user.id);
+    const ownCompanyName = await fetchCompanyNameForUser(supabase, user.id);
+    setCompanyName(ownCompanyName);
 
     if (!row) {
       console.error("[ticket] load failed");
@@ -101,7 +104,7 @@ export default function PortalSupportTicketPage() {
 
   return (
     <PortalLayout activeNav="support">
-      <div className="mx-auto max-w-3xl">
+      <div className="mx-auto flex h-[calc(100vh-7rem)] max-w-3xl flex-col md:h-[calc(100vh-9rem)]">
         <Link
           href="/portal/support"
           className="text-sm font-semibold hover:underline"
@@ -110,11 +113,13 @@ export default function PortalSupportTicketPage() {
           ← Tilbage til Support & sager
         </Link>
 
-        <header className="mt-6 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+        <header className="mt-4 shrink-0 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
           <div className="flex flex-wrap items-start justify-between gap-4">
             <div>
               <h1 className="text-2xl font-bold text-slate-900">{ticket.title}</h1>
-              <p className="mt-2 text-sm font-medium text-slate-700">{companyFromTicketRow(ticket)}</p>
+              {companyName ? (
+                <p className="mt-2 text-sm font-medium text-slate-700">{companyName}</p>
+              ) : null}
               <p className="mt-1 text-sm text-slate-500">
                 Oprettet {formatDanishDateTime(ticket.created_at)}
               </p>
@@ -143,7 +148,14 @@ export default function PortalSupportTicketPage() {
           </button>
         </header>
 
-        <TicketMessageThread ticketId={ticket.id} sendAsAdmin={false} />
+        <div className="mt-4 min-h-0 flex-1">
+          <TicketMessageThread
+            ticketId={ticket.id}
+            sendAsAdmin={false}
+            customerCompanyLabel={companyName ?? "Kunde"}
+            fullHeight
+          />
+        </div>
       </div>
     </PortalLayout>
   );

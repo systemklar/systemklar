@@ -6,12 +6,12 @@ import { PortalLayout } from "@/components/portal/PortalLayout";
 import { TicketUnreadCountBadge } from "@/components/tickets/TicketUnreadCountBadge";
 import { formatDanishDateTime, StatusBadge } from "@/components/tickets/StatusBadge";
 import {
-  companyFromTicketRow,
   normalizeTicketWithProfile,
   TICKET_SELECT_BASE,
   type TicketWithProfileRow,
 } from "@/lib/tickets-with-profile";
 import { fetchUnreadMessageCountsByTicket } from "@/lib/ticket-last-viewed";
+import { fetchCompanyNameForUser } from "@/lib/profile-customer";
 import { createClient } from "@/lib/supabase";
 
 export type { TicketWithProfileRow as TicketRow } from "@/lib/tickets-with-profile";
@@ -26,6 +26,7 @@ export default function PortalSupportPage() {
   const [listLoading, setListLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [companyName, setCompanyName] = useState<string | null>(null);
 
   const fetchTickets = useCallback(async () => {
     const {
@@ -33,6 +34,9 @@ export default function PortalSupportPage() {
     } = await supabase.auth.getSession();
     const user = session?.user;
     if (!user) return;
+
+    const ownCompanyName = await fetchCompanyNameForUser(supabase, user.id);
+    setCompanyName(ownCompanyName);
 
     const { data, error } = await supabase
       .from("tickets")
@@ -214,7 +218,9 @@ export default function PortalSupportPage() {
                         <p className="font-medium text-slate-900">{ticket.title}</p>
                         <TicketUnreadCountBadge count={unreadByTicket[ticket.id] ?? 0} />
                       </div>
-                      <p className="mt-1 text-xs text-slate-500">{companyFromTicketRow(ticket)}</p>
+                      {companyName ? (
+                        <p className="mt-1 text-xs text-slate-500">{companyName}</p>
+                      ) : null}
                       <p className="mt-0.5 text-sm text-slate-500">
                         {formatDanishDateTime(ticket.created_at)}
                       </p>

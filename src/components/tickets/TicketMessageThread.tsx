@@ -54,6 +54,8 @@ type TicketMessageThreadProps = {
    * Udeladt på portalen → hentes via klientens ticket+profil.
    */
   customerCompanyLabel?: string;
+  /** Bruges på portalens detaljeside for at lade tråden udfylde resten af viewporten. */
+  fullHeight?: boolean;
 };
 
 /** Viser en konkret fejltekst – også når Supabase returnerer et næsten tomt fejl-objekt. */
@@ -111,6 +113,7 @@ export function TicketMessageThread({
   ticketId,
   sendAsAdmin,
   customerCompanyLabel,
+  fullHeight = false,
 }: TicketMessageThreadProps) {
   const supabase = useMemo(() => createClient(), []);
   const [messages, setMessages] = useState<MessageRow[]>([]);
@@ -320,7 +323,13 @@ export function TicketMessageThread({
   const typingOnRight = sendAsAdmin;
 
   return (
-    <div className="mt-8 flex h-[min(28rem,calc(100vh-14rem))] min-h-[20rem] max-h-[32rem] flex-col rounded-2xl border border-slate-200 bg-white shadow-sm sm:h-[32rem] sm:max-h-[36rem]">
+    <div
+      className={`flex flex-col rounded-2xl border border-slate-200 bg-white shadow-sm ${
+        fullHeight
+          ? "h-full min-h-0"
+          : "mt-8 h-[min(28rem,calc(100vh-14rem))] min-h-[20rem] max-h-[32rem] sm:h-[32rem] sm:max-h-[36rem]"
+      }`}
+    >
       <div className="shrink-0 border-b border-slate-100 px-4 py-3">
         <h2 className="text-lg font-semibold">Beskeder</h2>
       </div>
