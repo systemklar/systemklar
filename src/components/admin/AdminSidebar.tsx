@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useMemo } from "react";
 import { createClient } from "@/lib/supabase";
 
-export type AdminNavKey = "overview" | "customers" | "tickets" | "reports";
+export type AdminNavKey = "overview" | "customers" | "tickets" | "reports" | "systems";
 
 type AdminSidebarProps = {
   activeNav: AdminNavKey;
@@ -18,6 +18,7 @@ const navItems: { label: string; href: string; key: AdminNavKey }[] = [
   { label: "Kunder", href: "/admin/customers", key: "customers" },
   { label: "Support & sager", href: "/admin/tickets", key: "tickets" },
   { label: "IT-rapporter", href: "/admin/reports", key: "reports" },
+  { label: "Systemer", href: "/admin/systemer", key: "systems" },
 ];
 
 export function AdminSidebar({ activeNav }: AdminSidebarProps) {

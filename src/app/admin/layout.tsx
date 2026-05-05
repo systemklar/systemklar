@@ -18,6 +18,9 @@ function activeNavFromPath(pathname: string): AdminNavKey {
   if (pathname.startsWith("/admin/reports")) {
     return "reports";
   }
+  if (pathname.startsWith("/admin/systemer")) {
+    return "systems";
+  }
   return "overview";
 }
 

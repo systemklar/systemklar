@@ -12,12 +12,13 @@ import {
 } from "react";
 import { createClient } from "@/lib/supabase";
 
-export type PortalNavKey = "dashboard" | "support" | "rapport" | "services" | "tilbud" | "ai";
+export type PortalNavKey = "dashboard" | "support" | "rapport" | "services" | "tilbud" | "systems" | "ai";
 
 const navItems: { label: string; href: string; key: PortalNavKey }[] = [
   { label: "Overblik", href: "/portal", key: "dashboard" },
   { label: "Support & sager", href: "/portal/support", key: "support" },
   { label: "IT-rapport", href: "/portal/rapport", key: "rapport" },
+  { label: "Systemer", href: "/portal/systemer", key: "systems" },
   { label: "Tjenester", href: "/portal/tjenester", key: "services" },
   { label: "Tilbud", href: "/portal/tilbud", key: "tilbud" },
   { label: "AI-assistent", href: "#", key: "ai" },
