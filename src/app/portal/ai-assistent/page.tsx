@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, useEffect, useMemo, useState } from "react";
+import { FormEvent, useEffect, useMemo, useRef, useState } from "react";
 import { PortalLayout } from "@/components/portal/PortalLayout";
 import { createClient } from "@/lib/supabase";
 
@@ -41,11 +41,18 @@ function TypingDots() {
 
 export default function PortalAiAssistantPage() {
   const supabase = useMemo(() => createClient(), []);
+  const bottomRef = useRef<HTMLDivElement>(null);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [companyName, setCompanyName] = useState<string>("kunde");
   const [draft, setDraft] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    queueMicrotask(() => {
+      bottomRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
+    });
+  }, [messages, loading]);
 
   useEffect(() => {
     let cancelled = false;
@@ -195,6 +202,7 @@ export default function PortalAiAssistantPage() {
               </div>
             </div>
           ) : null}
+          <div ref={bottomRef} className="h-px w-full shrink-0 scroll-mt-4" aria-hidden />
         </section>
 
         <footer className="shrink-0 border-t border-[#E7E5E4] bg-white px-4 py-3">
