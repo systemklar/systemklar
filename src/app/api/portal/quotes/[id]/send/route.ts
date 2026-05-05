@@ -1,7 +1,6 @@
 import { createServerClient, type CookieOptions } from "@supabase/ssr";
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
-import { isAdminEmail } from "@/lib/admin-email";
 import { sendQuoteEmail } from "@/lib/quote-resend";
 
 const UUID_RE =
@@ -43,14 +42,15 @@ export async function POST(
     data: { user },
   } = await supabaseAuth.auth.getUser();
 
-  if (!user || !isAdminEmail(user.email)) {
+  if (!user) {
     return NextResponse.json({ error: "Ingen adgang." }, { status: 403 });
   }
 
   const { data: quote, error: qErr } = await supabaseAuth
     .from("quotes")
-    .select("id, title, content, customer_profile_id, status")
+    .select("id, title, content, recipient_email, status")
     .eq("id", id)
+    .eq("user_id", user.id)
     .maybeSingle();
 
   if (qErr) {
@@ -61,30 +61,19 @@ export async function POST(
     return NextResponse.json({ error: "Tilbud ikke fundet." }, { status: 404 });
   }
 
-  const profileId = quote.customer_profile_id as string;
-
-  const { data: profile, error: pErr } = await supabaseAuth
-    .from("profiles")
-    .select("company_name, email")
-    .eq("id", profileId)
-    .maybeSingle();
-
-  if (pErr || !profile) {
-    return NextResponse.json({ error: "Kundeprofil ikke fundet." }, { status: 404 });
-  }
-
-  const email = String((profile as { email?: string }).email ?? "").trim().toLowerCase();
+  const email = String((quote as { recipient_email?: string }).recipient_email ?? "")
+    .trim()
+    .toLowerCase();
   if (!email) {
-    return NextResponse.json({ error: "Kunden har ingen e-mail på profilen." }, { status: 400 });
+    return NextResponse.json({ error: "Modtager-email mangler på tilbuddet." }, { status: 400 });
   }
 
   const title = String((quote as { title?: string }).title ?? "Tilbud");
   const content = String((quote as { content?: string }).content ?? "");
-  const companyName = String((profile as { company_name?: string }).company_name ?? "kunde");
 
   const mail = await sendQuoteEmail({
     toEmail: email,
-    companyName,
+    companyName: "kunde",
     quoteTitle: title,
     quoteId: id,
     contentPreview: content,
@@ -98,10 +87,11 @@ export async function POST(
   const { error: updErr } = await supabaseAuth
     .from("quotes")
     .update({ status: "sent", sent_at: sentAt })
-    .eq("id", id);
+    .eq("id", id)
+    .eq("user_id", user.id);
 
   if (updErr) {
-    console.error("[api/admin/quotes/send] update", updErr);
+    console.error("[api/portal/quotes/send] update", updErr);
     return NextResponse.json(
       { error: "Mail sendt, men tilbuddet kunne ikke markeres som sendt. Opdater manuelt.", detail: updErr.message },
       { status: 502 },
