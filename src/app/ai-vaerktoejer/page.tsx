@@ -81,18 +81,18 @@ export default function AiVaerktoejerPage() {
               >
                 AI-værktøjer
               </Link>
-              <Link href="/#priser" className="transition hover:text-slate-600">
+              <Link href="/priser" className="transition hover:text-slate-600">
                 Priser
               </Link>
               <Link href="/login" className="transition hover:text-slate-600">
                 Log ind
               </Link>
               <Link
-                href="/#cta"
+                href="/book-demo"
                 className="rounded-full px-5 py-2 text-sm font-semibold text-white shadow-sm transition hover:opacity-90"
                 style={{ backgroundColor: "#1D9E75" }}
               >
-                Kom i gang
+                Book demo
               </Link>
             </nav>
             <button
@@ -144,7 +144,7 @@ export default function AiVaerktoejerPage() {
                 AI-værktøjer
               </Link>
               <Link
-                href="/#priser"
+                href="/priser"
                 className="rounded-lg px-3 py-2 hover:bg-slate-50"
                 onClick={() => setIsMobileMenuOpen(false)}
               >
@@ -158,12 +158,12 @@ export default function AiVaerktoejerPage() {
                 Log ind
               </Link>
               <Link
-                href="/#cta"
+                href="/book-demo"
                 className="mt-2 rounded-full px-5 py-2 text-center font-semibold text-white"
                 style={{ backgroundColor: "#1D9E75" }}
                 onClick={() => setIsMobileMenuOpen(false)}
               >
-                Kom i gang
+                Book demo
               </Link>
             </div>
           </nav>

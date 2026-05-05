@@ -115,7 +115,7 @@ export default function PriserPage() {
           </div>
         </div>
         <p className="mx-auto mt-8 w-full max-w-6xl border-t border-slate-800 pt-6 text-slate-500">
-          © {new Date().getFullYear()} Systemklar. Alle rettigheder forbeholdes.
+          © {new Date().getFullYear()} Systemklar. Alle rettigheder forbeholdes. CVR 46431596
         </p>
       </footer>
     </div>
