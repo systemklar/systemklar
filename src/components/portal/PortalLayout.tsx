@@ -12,11 +12,33 @@ import {
 } from "react";
 import { createClient } from "@/lib/supabase";
 
-export type PortalNavKey = "dashboard" | "support" | "rapport" | "services" | "tilbud" | "systems" | "ai";
+export type PortalNavKey =
+  | "dashboard"
+  | "support"
+  | "rapport"
+  | "services"
+  | "tilbud"
+  | "systems"
+  | "vault"
+  | "ai";
 
-const navItems: { label: string; href: string; key: PortalNavKey }[] = [
+function LockIcon() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" className="h-4 w-4" aria-hidden>
+      <path
+        d="M8 10V7a4 4 0 1 1 8 0v3M7 10h10a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1v-8a1 1 0 0 1 1-1Z"
+        stroke="currentColor"
+        strokeWidth="1.7"
+        strokeLinecap="round"
+      />
+    </svg>
+  );
+}
+
+const navItems: { label: string; href: string; key: PortalNavKey; icon?: ReactNode }[] = [
   { label: "Overblik", href: "/portal", key: "dashboard" },
   { label: "Support & sager", href: "/portal/support", key: "support" },
+  { label: "Kodebank", href: "/portal/kodebank", key: "vault", icon: <LockIcon /> },
   { label: "IT-rapport", href: "/portal/rapport", key: "rapport" },
   { label: "Systemer", href: "/portal/systemer", key: "systems" },
   { label: "Tjenester", href: "/portal/tjenester", key: "services" },
@@ -125,7 +147,10 @@ export function PortalLayout({ children, activeNav }: PortalLayoutProps) {
                       key={item.key}
                       className="block cursor-not-allowed rounded-lg px-3 py-2 text-sm font-medium text-slate-400"
                     >
-                      {item.label}
+                      <span className="inline-flex items-center gap-2">
+                        {item.icon}
+                        {item.label}
+                      </span>
                     </span>
                   );
                 }
@@ -140,7 +165,10 @@ export function PortalLayout({ children, activeNav }: PortalLayoutProps) {
                         : "text-slate-700 hover:bg-slate-100"
                     }`}
                   >
-                    {item.label}
+                    <span className="inline-flex items-center gap-2">
+                      {item.icon}
+                      {item.label}
+                    </span>
                   </Link>
                 );
               })}
