@@ -47,8 +47,8 @@ function buildPreviewVars(variableKeys: string[]): Record<string, string> {
 }
 
 function sortByDefaultOrder(rows: TemplateRow[]): TemplateRow[] {
-  const order = DEFAULT_EMAIL_TEMPLATE_ROWS.map((r) => r.id);
-  return [...rows].sort((a, b) => order.indexOf(a.id) - order.indexOf(b.id));
+  const order = DEFAULT_EMAIL_TEMPLATE_ROWS.map((r) => r.id as string);
+  return [...rows].sort((a, b) => order.indexOf(a.id as string) - order.indexOf(b.id as string));
 }
 
 type EditorProps = {
