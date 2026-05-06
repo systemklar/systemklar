@@ -297,10 +297,11 @@ export function TicketMessageThread({
       data: { session },
     } = await supabase.auth.getSession();
     const user = session?.user;
-    const senderNameFromAuth =
-      typeof user.user_metadata?.full_name === "string" && user.user_metadata.full_name.trim()
-        ? user.user_metadata.full_name.trim()
-        : user.email?.trim() || (sendAsAdmin ? "Admin" : customerSenderLabel);
+    const senderNameFromAuth = user
+      ? (typeof user.user_metadata?.full_name === "string" && user.user_metadata.full_name.trim()
+          ? user.user_metadata.full_name.trim()
+          : user.email?.trim() || (sendAsAdmin ? "Admin" : customerSenderLabel))
+      : (sendAsAdmin ? "Admin" : customerSenderLabel);
     let senderName = senderNameFromAuth;
     if (!sendAsAdmin) {
       const { data: profile } = await supabase
