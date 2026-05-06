@@ -304,13 +304,15 @@ export function TicketMessageThread({
       : (sendAsAdmin ? "Admin" : customerSenderLabel);
     let senderName = senderNameFromAuth;
     if (!sendAsAdmin) {
-      const { data: profile } = await supabase
-        .from("profiles")
-        .select("full_name")
-        .eq("id", user.id)
-        .maybeSingle();
-      const fullName = profile?.full_name as string | undefined;
-      if (fullName?.trim()) senderName = fullName.trim();
+      if (user) {
+        const { data: profile } = await supabase
+          .from("profiles")
+          .select("full_name")
+          .eq("id", user.id)
+          .maybeSingle();
+        const fullName = profile?.full_name as string | undefined;
+        if (fullName?.trim()) senderName = fullName.trim();
+      }
     }
 
     if (!user) {
