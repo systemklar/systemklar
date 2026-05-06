@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
-import { FileSignature, FileText, Lock, MessageSquare, Monitor, Sparkles } from "lucide-react";
+import { CheckCircle, Clock, FileSignature, FileText, Lock, MessageSquare, Monitor, Sparkles, Users } from "lucide-react";
 import { AnimatedSection } from "@/components/ui/AnimatedSection";
 import { useInView } from "@/hooks/useInView";
 
@@ -58,6 +58,46 @@ const platformHighlights = [
   { icon: FileText, title: "Månedlig rapport", text: "Få overblik uden teknisk snak" },
 ];
 
+const hourlyRate = 350;
+
+const employeeOptions = [
+  { id: "1-5", label: "1-5 ansatte", employees: 3 },
+  { id: "6-15", label: "6-15 ansatte", employees: 10 },
+  { id: "16-30", label: "16-30 ansatte", employees: 23 },
+  { id: "30+", label: "30+ ansatte", employees: 35 },
+] as const;
+
+const wasteOptions = [
+  {
+    id: "passwords",
+    icon: Lock,
+    title: "Finde adgangskoder",
+    subtitle: "Logins der ikke kan huskes",
+    hours: 1.25,
+  },
+  {
+    id: "ventetid",
+    icon: Clock,
+    title: "Vente på IT-hjælp",
+    subtitle: "Når noget går ned eller fejler",
+    hours: 0.75,
+  },
+  {
+    id: "systemer",
+    icon: Monitor,
+    title: "Styre systemer manuelt",
+    subtitle: "Ingen samlet overblik",
+    hours: 0.5,
+  },
+  {
+    id: "support",
+    icon: MessageSquare,
+    title: "Forklare problemer",
+    subtitle: "Til ekstern IT-support",
+    hours: 1.0,
+  },
+] as const;
+
 type TabKey = "Overblik" | "Support" | "IT-rapport";
 
 function useCountUp(target: number, duration: number, inView: boolean) {
@@ -109,6 +149,10 @@ export function MarketingHomeContent() {
   const [typedQuestion, setTypedQuestion] = useState("");
   const [showAnswer, setShowAnswer] = useState(false);
   const typingTimeoutRef = useRef<number | null>(null);
+  const stepDelayRef = useRef<number | null>(null);
+  const [calculatorStep, setCalculatorStep] = useState(1);
+  const [selectedEmployees, setSelectedEmployees] = useState<(typeof employeeOptions)[number]["id"] | null>(null);
+  const [selectedWaste, setSelectedWaste] = useState<Array<(typeof wasteOptions)[number]["id"]>>([]);
 
   useEffect(() => {
     const prices = yearly
@@ -166,6 +210,12 @@ export function MarketingHomeContent() {
     };
   }, [pairIndex, typePairs]);
 
+  useEffect(() => {
+    return () => {
+      if (stepDelayRef.current) window.clearTimeout(stepDelayRef.current);
+    };
+  }, []);
+
   const handleTabChange = (tab: TabKey) => {
     if (tab === activeTab) return;
     setChanging(true);
@@ -178,6 +228,44 @@ export function MarketingHomeContent() {
   const supportCount = useCountUp(100, 800, statsInView);
   const platformCount = useCountUp(1, 800, statsInView);
   const bindingCount = useCountUp(0, 800, statsInView);
+  const selectedEmployeeOption = employeeOptions.find((option) => option.id === selectedEmployees) ?? null;
+  const employeeCount = selectedEmployeeOption?.employees ?? 0;
+  const wasteHoursPerPerson = selectedWaste.reduce((sum, categoryId) => {
+    const category = wasteOptions.find((item) => item.id === categoryId);
+    return sum + (category?.hours ?? 0);
+  }, 0);
+  const weeklyWaste = employeeCount * wasteHoursPerPerson;
+  const monthlyWasteHours = Math.round(weeklyWaste * 4);
+  const monthlyWasteCost = Math.round(weeklyWaste * 4 * hourlyRate);
+  const systemklarSavings = Math.round(monthlyWasteCost * 0.7);
+  const plan =
+    employeeCount <= 5
+      ? { name: "Starter", price: 499 }
+      : employeeCount <= 15
+        ? { name: "Plus", price: 1299 }
+        : { name: "Pro", price: 2499 };
+  const netGain = systemklarSavings - plan.price;
+  const resultHours = useCountUp(monthlyWasteHours, 1000, calculatorStep === 3);
+  const resultLost = useCountUp(monthlyWasteCost, 1000, calculatorStep === 3);
+  const resultSavings = useCountUp(systemklarSavings, 1000, calculatorStep === 3);
+  const resultNet = useCountUp(Math.abs(netGain), 1000, calculatorStep === 3);
+  const formatNumber = (value: number) => new Intl.NumberFormat("da-DK").format(value);
+
+  const toggleWaste = (id: (typeof wasteOptions)[number]["id"]) => {
+    setSelectedWaste((prev) => (prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]));
+  };
+
+  const handleEmployeeSelect = (id: (typeof employeeOptions)[number]["id"]) => {
+    setSelectedEmployees(id);
+    if (stepDelayRef.current) window.clearTimeout(stepDelayRef.current);
+    stepDelayRef.current = window.setTimeout(() => setCalculatorStep(2), 500);
+  };
+
+  const resetCalculator = () => {
+    setSelectedEmployees(null);
+    setSelectedWaste([]);
+    setCalculatorStep(1);
+  };
 
   return (
     <main>
@@ -473,6 +561,184 @@ export function MarketingHomeContent() {
                 </div>
               </AnimatedSection>
             ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="bg-[#F0F7FF] py-24">
+        <div className="mx-auto max-w-3xl px-6">
+          <p className="mx-auto inline-flex rounded-full bg-sky-50 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-sky-700">
+            IT-beregner
+          </p>
+          <h2 className="mt-4 text-center text-3xl font-bold tracking-tight text-[#0D1F2D] md:text-4xl">
+            Hvad koster IT-rod din virksomhed?
+          </h2>
+          <p className="mt-3 text-center text-base text-[#2C4A5E]">Besvar 3 hurtige spørgsmål og få et konkret svar.</p>
+
+          <div className="mt-8 flex items-center justify-center gap-3">
+            {[1, 2, 3].map((stepNumber) => (
+              <div key={stepNumber} className="flex items-center gap-3">
+                <div
+                  className={`flex h-9 w-9 items-center justify-center rounded-full text-sm font-semibold ${
+                    calculatorStep === stepNumber ? "bg-sky-600 text-white" : "bg-sky-200 text-sky-700"
+                  }`}
+                >
+                  {stepNumber}
+                </div>
+                {stepNumber < 3 ? <div className="h-[2px] w-8 bg-sky-200" aria-hidden /> : null}
+              </div>
+            ))}
+          </div>
+
+          <div className="relative mt-10 min-h-[580px]">
+            <div
+              className={`transition-all duration-[400ms] ${
+                calculatorStep === 1 ? "translate-y-0 opacity-100" : "pointer-events-none absolute inset-0 translate-y-4 opacity-0"
+              }`}
+            >
+              <h3 className="text-center text-2xl font-semibold text-[#0D1F2D]">Hvor mange ansatte har I?</h3>
+              <div className="mt-6 grid grid-cols-2 gap-3">
+                {employeeOptions.map((option) => (
+                  <button
+                    key={option.id}
+                    onClick={() => handleEmployeeSelect(option.id)}
+                    className={`rounded-2xl p-5 text-center transition-all ${
+                      selectedEmployees === option.id
+                        ? "border border-sky-600 bg-sky-600 text-white shadow-md"
+                        : "cursor-pointer border border-sky-100 bg-white hover:border-sky-400 hover:shadow-sm"
+                    }`}
+                  >
+                    <Users className="mx-auto h-5 w-5" />
+                    <p className="mt-2 text-base font-semibold">{option.label}</p>
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div
+              className={`transition-all duration-[400ms] ${
+                calculatorStep === 2 ? "translate-y-0 opacity-100" : "pointer-events-none absolute inset-0 translate-y-4 opacity-0"
+              }`}
+            >
+              <h3 className="text-center text-2xl font-semibold text-[#0D1F2D]">Hvad bruger I unødigt tid på?</h3>
+              <p className="mt-2 text-center text-sm text-[#2C4A5E]">Vælg alle der passer</p>
+              <div className="mt-6 grid grid-cols-2 gap-3">
+                {wasteOptions.map((option) => {
+                  const Icon = option.icon;
+                  const selected = selectedWaste.includes(option.id);
+                  return (
+                    <button
+                      key={option.id}
+                      onClick={() => toggleWaste(option.id)}
+                      className={`rounded-2xl p-5 text-left transition-all ${
+                        selected
+                          ? "border border-sky-600 bg-sky-600 text-white shadow-md"
+                          : "cursor-pointer border border-sky-100 bg-white hover:border-sky-400 hover:shadow-sm"
+                      }`}
+                    >
+                      <Icon className="h-5 w-5" />
+                      <p className="mt-2 text-base font-semibold">{option.title}</p>
+                      <p className={`mt-1 text-sm ${selected ? "text-white/90" : "text-[#2C4A5E]"}`}>{option.subtitle}</p>
+                    </button>
+                  );
+                })}
+              </div>
+              <button
+                onClick={() => setCalculatorStep(3)}
+                disabled={selectedWaste.length === 0}
+                className="mt-8 inline-flex rounded-full bg-sky-600 px-8 py-3 font-semibold text-white disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                Beregn resultat
+              </button>
+            </div>
+
+            <div
+              className={`transition-all duration-[400ms] ${
+                calculatorStep === 3 ? "translate-y-0 opacity-100" : "pointer-events-none absolute inset-0 translate-y-4 opacity-0"
+              }`}
+            >
+              <AnimatedSection direction="up">
+                <div className="rounded-3xl border border-sky-100 bg-white p-8 shadow-lg">
+                  <div className="flex items-center justify-center gap-3">
+                    <span className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-green-100">
+                      <CheckCircle className="h-6 w-6 text-green-600" />
+                    </span>
+                    <p className="text-lg font-semibold text-[#0D1F2D]">Her er jeres IT-regning</p>
+                  </div>
+
+                  <div className="mt-6 grid gap-4 md:grid-cols-3">
+                    <div className="rounded-2xl border border-sky-100 bg-[#F8FCFF] p-4 text-center">
+                      <p className="text-3xl font-bold text-[#0D1F2D]">{formatNumber(resultHours)} timer</p>
+                      <p className="mt-1 text-xs uppercase tracking-wide text-[#4A8CB5]">Spildt tid per måned</p>
+                    </div>
+                    <div className="rounded-2xl border border-sky-100 bg-[#F8FCFF] p-4 text-center">
+                      <p className="text-3xl font-bold text-red-500">{formatNumber(resultLost)} kr</p>
+                      <p className="mt-1 text-xs uppercase tracking-wide text-[#4A8CB5]">Tabt arbejdstid pr. måned</p>
+                    </div>
+                    <div className="rounded-2xl border border-sky-100 bg-[#F8FCFF] p-4 text-center">
+                      <p className="text-3xl font-bold text-sky-600">{formatNumber(resultSavings)} kr</p>
+                      <p className="mt-1 text-xs uppercase tracking-wide text-[#4A8CB5]">systemklar sparer jer pr. måned</p>
+                    </div>
+                  </div>
+
+                  <div className="my-6 h-px bg-slate-200" />
+
+                  <div className="rounded-2xl border border-green-100 bg-green-50 p-5">
+                    <p className="text-sm font-semibold text-green-800">
+                      Med {plan.name}-planen til {formatNumber(plan.price)} kr/md får I:
+                    </p>
+                    <ul className="mt-3 space-y-2">
+                      {selectedWaste.includes("passwords") ? (
+                        <li className="flex items-start gap-2 text-sm text-green-800">
+                          <CheckCircle className="mt-0.5 h-4 w-4 shrink-0" />
+                          <span>Sikker kodebank – find alle logins på sekunder</span>
+                        </li>
+                      ) : null}
+                      {selectedWaste.includes("ventetid") ? (
+                        <li className="flex items-start gap-2 text-sm text-green-800">
+                          <CheckCircle className="mt-0.5 h-4 w-4 shrink-0" />
+                          <span>Support direkte i platformen – ingen ventetid</span>
+                        </li>
+                      ) : null}
+                      {selectedWaste.includes("systemer") ? (
+                        <li className="flex items-start gap-2 text-sm text-green-800">
+                          <CheckCircle className="mt-0.5 h-4 w-4 shrink-0" />
+                          <span>Samlet systemoverblik – alt på ét sted</span>
+                        </li>
+                      ) : null}
+                      {selectedWaste.includes("support") ? (
+                        <li className="flex items-start gap-2 text-sm text-green-800">
+                          <CheckCircle className="mt-0.5 h-4 w-4 shrink-0" />
+                          <span>Månedlig IT-rapport – vi forklarer det for dig</span>
+                        </li>
+                      ) : null}
+                    </ul>
+                  </div>
+
+                  <p className="mt-6 text-center text-2xl font-bold text-green-700">
+                    Netto gevinst: {netGain < 0 ? "-" : "+"}
+                    {formatNumber(resultNet)} kr/md efter abonnement
+                  </p>
+
+                  <Link
+                    href="/kontakt"
+                    className="mt-4 inline-flex w-full justify-center rounded-full bg-sky-600 px-8 py-3 font-semibold text-white"
+                  >
+                    Book en gratis demo
+                  </Link>
+                  <p className="mt-3 text-center text-xs text-[#7AAEC8]">
+                    Beregningen er baseret på gennemsnitlig dansk timeløn (350 kr/t) og dokumenteret IT-tidsspild i
+                    SMV&apos;er.
+                  </p>
+                  <button
+                    onClick={resetCalculator}
+                    className="mt-4 block w-full text-center text-sm text-[#4A8CB5] transition-colors hover:text-sky-600"
+                  >
+                    Start forfra
+                  </button>
+                </div>
+              </AnimatedSection>
+            </div>
           </div>
         </div>
       </section>
