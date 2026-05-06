@@ -28,7 +28,6 @@ export function MarketingContactAside({ className = "", concise = false }: Props
             href={`mailto:${MARKETING_CONTACT_EMAIL}`}
             className="mt-1 inline-flex items-center gap-2 text-[#2563EB] hover:text-[#1D4ED8]"
           >
-            <span aria-hidden>📧</span>
             {MARKETING_CONTACT_EMAIL}
           </a>
         </li>
@@ -39,7 +38,6 @@ export function MarketingContactAside({ className = "", concise = false }: Props
             href={`tel:${MARKETING_CONTACT_PHONE_TEL}`}
             className="mt-1 inline-flex items-center gap-2 text-[#2563EB] hover:text-[#1D4ED8]"
           >
-            <span aria-hidden>📞</span>
             {MARKETING_CONTACT_PHONE_DISPLAY}
           </a>
         </li>

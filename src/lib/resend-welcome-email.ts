@@ -56,13 +56,13 @@ export async function sendWelcomeEmail(
   console.log("[sendWelcomeEmail] attempt", {
     from,
     to: toEmail,
-    subject: "Velkommen til Systemklar 👋",
+    subject: "Velkommen til Systemklar",
   });
 
   const { data, error } = await resend.emails.send({
     from,
     to: toEmail,
-    subject: "Velkommen til Systemklar 👋",
+    subject: "Velkommen til Systemklar",
     html: htmlBody,
   });
 

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { SystemklarLogo } from "@/components/branding/SystemklarLogo";
 import { MARKETING_CONTACT_EMAIL, MARKETING_CONTACT_PHONE_DISPLAY, MARKETING_CONTACT_PHONE_TEL } from "@/lib/marketing-contact";
 
 export function MarketingFooter() {
@@ -7,7 +8,11 @@ export function MarketingFooter() {
     <footer className="bg-[#062840] text-sm text-sky-100">
       <div className="mx-auto grid max-w-5xl gap-12 px-6 py-24 md:grid-cols-2 lg:grid-cols-4">
         <div className="md:col-span-2 lg:col-span-1">
-          <p className="text-base font-bold text-white">systemklar</p>
+          <SystemklarLogo
+            href="/"
+            textClassName="text-base font-bold text-white tracking-tight"
+            iconClassName="opacity-95"
+          />
           <p className="mt-4 leading-relaxed text-sky-200">
             Drift, support og AI samlet i et roligt overblik.
           </p>

@@ -5,21 +5,21 @@ import { ScrollReveal } from "@/components/marketing/ScrollReveal";
 
 const tools = [
   {
-    icon: "🧠",
+    icon: "01",
     title: "AI-assistent med indsigt i jeres egne data",
     badge: "Plus",
     description:
       "Få konkrete svar baseret på jeres systemer og sager — ikke generiske råd — så I kan handle hurtigere.",
   },
   {
-    icon: "📄",
+    icon: "02",
     title: "AI Tilbudsgenerator",
     badge: "Alle planer",
     description:
       "Byg tilbud ud fra jeres ydelser og priser automatisk og send dem professionelt på få øjeblikke.",
   },
   {
-    icon: "📊",
+    icon: "03",
     title: "AI IT-rapportgenerator",
     badge: "Standard & Plus",
     description:
@@ -65,8 +65,8 @@ export default function AiVaerktoejerPage() {
             <div className="grid gap-8 md:grid-cols-3">
               {tools.map((tool, index) => (
                 <ScrollReveal key={tool.title} staggerMs={index * 100} className="h-full">
-                  <article className="flex h-full flex-col rounded-2xl border border-gray-100 bg-white p-8 shadow-sm transition hover:shadow-md">
-                    <span className="text-5xl leading-none" aria-hidden>
+                  <article className="card-hover flex h-full flex-col rounded-2xl border border-gray-100 bg-white p-8">
+                    <span className="fade-scale text-3xl font-semibold leading-none text-sky-200" aria-hidden>
                       {tool.icon}
                     </span>
                     <h2 className="mt-6 text-xl font-semibold text-[#2563EB]">{tool.title}</h2>

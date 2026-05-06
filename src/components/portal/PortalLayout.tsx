@@ -10,6 +10,7 @@ import {
   useState,
   type ReactNode,
 } from "react";
+import { SystemklarLogo } from "@/components/branding/SystemklarLogo";
 import { createClient } from "@/lib/supabase";
 
 export type PortalNavKey =
@@ -175,7 +176,7 @@ export function PortalLayout({ children, activeNav }: PortalLayoutProps) {
 
   if (isLoading) {
     return (
-      <main className="min-h-screen bg-[#FAFAF8] px-6 py-20 text-[#1C1917]">
+      <main className="min-h-screen bg-[#F8FAFC] px-6 py-20 text-[#1C1917]">
         <div className="mx-auto max-w-3xl rounded-2xl border border-[#E7E5E4] bg-white p-8 text-center shadow-sm">
           Indlæser portal...
         </div>
@@ -185,12 +186,12 @@ export function PortalLayout({ children, activeNav }: PortalLayoutProps) {
 
   return (
     <PortalSessionContext.Provider value={{ email: userEmail }}>
-      <main className="min-h-screen bg-[#FAFAF8] text-[#1C1917]">
+      <main className="surface-cards min-h-screen bg-[#F8FAFC] text-[#1C1917]">
         <div className="mx-auto flex min-h-screen w-full max-w-7xl">
-          <aside className="w-full max-w-72 border-r border-[#E7E5E4] bg-white p-6 shadow-sm">
+          <aside className="w-full max-w-72 border-r border-[#D0E8F5] bg-[#F8FAFC] p-6">
             <Link href="/portal" className="block">
-              <div className="rounded-xl border border-blue-100 bg-blue-50 px-3 py-2">
-                <div className="text-xl font-bold tracking-tight text-blue-600">Systemklar</div>
+              <div className="rounded-xl border border-[#D0E8F5] bg-white px-3 py-2">
+                <SystemklarLogo textClassName="text-lg font-bold tracking-tight text-sky-600" />
                 <p className="mt-0.5 text-xs font-medium text-blue-700">Kundeportal</p>
               </div>
             </Link>
@@ -226,7 +227,7 @@ export function PortalLayout({ children, activeNav }: PortalLayoutProps) {
             </button>
           </aside>
 
-          <section className="flex-1 p-6 md:p-10">{children}</section>
+          <section className="app-rhythm flex-1 p-6 md:p-10">{children}</section>
         </div>
       </main>
     </PortalSessionContext.Provider>

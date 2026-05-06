@@ -52,7 +52,15 @@ const pricePreview = [
 export function MarketingHomeContent() {
   return (
     <main>
-      <section className="flex min-h-[90vh] items-center bg-white py-24 md:py-32">
+      <section
+        className="relative flex min-h-[90vh] items-center overflow-hidden py-24 md:py-32"
+        style={{ background: "linear-gradient(180deg, #EBF4FB 0%, #FFFFFF 40%)" }}
+      >
+        <div
+          className="pointer-events-none absolute -right-[100px] -top-[100px] h-[600px] w-[600px]"
+          style={{ background: "radial-gradient(circle, #0A6EBD22 0%, transparent 70%)", opacity: 0.15 }}
+          aria-hidden
+        />
         <div className="mx-auto max-w-4xl px-6 text-center">
           <p
             className="fade-in-up mb-10 inline-flex items-center rounded-full bg-stone-100 px-4 py-2 text-sm font-medium text-[#4A8CB5]"
@@ -121,9 +129,9 @@ export function MarketingHomeContent() {
           <h2 className="text-left text-3xl font-bold tracking-tight text-[#0D1F2D] md:text-4xl">Alt hvad I har brug for</h2>
           <div className="mt-16 grid gap-14 md:grid-cols-3 md:gap-10">
             {features.map((item, index) => (
-              <ScrollReveal key={item.title} staggerMs={index * 120}>
-                <Link href={item.href} className="group block">
-                  <p className="text-6xl font-bold leading-none text-sky-100">{item.n}</p>
+              <ScrollReveal key={item.title} staggerMs={index * 120} className="stagger-item">
+                <Link href={item.href} className="group block rounded-2xl p-5 transition-colors hover:bg-sky-50">
+                  <p className="fade-scale visible text-6xl font-bold leading-none text-sky-100">{item.n}</p>
                   <h3 className="mt-6 text-2xl font-semibold text-[#0D1F2D]">{item.title}</h3>
                   <p className="mt-4 text-base leading-relaxed text-[#4A8CB5]">
                     {item.line1}
@@ -140,7 +148,7 @@ export function MarketingHomeContent() {
         </div>
       </section>
 
-      <section className="bg-[#F5FAFD] py-24 md:py-32">
+      <section className="bg-[#F0F7FF] py-24 md:py-32">
         <div className="mx-auto max-w-5xl px-6">
           <h2 className="text-center text-3xl font-bold tracking-tight text-[#0D1F2D] md:text-4xl">Sådan virker det</h2>
           <div className="mt-14 flex flex-wrap items-center justify-center gap-4 text-center">
@@ -165,16 +173,17 @@ export function MarketingHomeContent() {
         <div className="mx-auto max-w-5xl px-6">
           <h2 className="text-center text-3xl font-bold tracking-tight text-[#0D1F2D] md:text-4xl">Priser</h2>
           <div className="mt-14 grid gap-5 md:grid-cols-3">
-            {pricePreview.map((plan) => (
-              <article
-                key={plan.name}
-                className={`rounded-3xl border px-8 py-10 text-center ${
-                  plan.highlight ? "border-sky-600" : "border-[#D0E8F5]"
-                }`}
-              >
-                <p className="text-sm font-semibold uppercase tracking-wide text-[#4A8CB5]">{plan.name}</p>
-                <p className="mt-4 text-4xl font-bold text-[#0D1F2D]">{plan.price}</p>
-              </article>
+            {pricePreview.map((plan, index) => (
+              <ScrollReveal key={plan.name} staggerMs={index * 100} className="stagger-item">
+                <article
+                  className={`rounded-3xl border px-8 py-10 text-center ${
+                    plan.highlight ? "border-sky-600 bg-sky-50" : "border-[#D0E8F5]"
+                  }`}
+                >
+                  <p className="text-sm font-semibold uppercase tracking-wide text-[#4A8CB5]">{plan.name}</p>
+                  <p className="mt-4 text-4xl font-bold text-[#0D1F2D]">{plan.price}</p>
+                </article>
+              </ScrollReveal>
             ))}
           </div>
           <div className="mt-8 text-center">

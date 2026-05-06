@@ -3,6 +3,7 @@
 import { FormEvent, Suspense, useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
+import { AuthSplitLayout } from "@/components/auth/AuthSplitLayout";
 import { createClient } from "@/lib/supabase";
 
 function safeInternalPath(raw: string | null): string | null {
@@ -67,17 +68,11 @@ function LoginForm() {
   };
 
   return (
-    <main className="min-h-screen bg-[#FAFAF8] px-6 py-20 text-[#1C1917]">
-      <div className="mx-auto w-full max-w-md rounded-2xl border border-[#E7E5E4] bg-white p-8 shadow-sm">
-        <p className="mb-4 inline-block rounded-full bg-[#EFF6FF] px-3 py-1 text-xs font-semibold text-blue-700">
-          Systemklar
-        </p>
-        <h1 className="text-3xl font-bold">Log ind</h1>
-        <p className="mt-2 text-sm text-[#78716C]">
-          Indtast din e-mail og adgangskode for at logge ind på din kundeportal.
-        </p>
-
-        <form onSubmit={handleSubmit} className="mt-8 space-y-4">
+    <AuthSplitLayout
+      title="Log ind"
+      subtitle="Indtast din e-mail og adgangskode for at logge ind på din kundeportal."
+    >
+      <form onSubmit={handleSubmit} className="mt-8 space-y-4">
           <div>
             <label htmlFor="email" className="mb-1 block text-sm font-medium">
               E-mail
@@ -132,13 +127,11 @@ function LoginForm() {
           <button type="submit" disabled={isLoading} className="btn-primary w-full px-5 py-2.5 disabled:opacity-60">
             {isLoading ? "Logger ind..." : "Log ind"}
           </button>
-        </form>
-
-        <Link href="/" className="mt-6 inline-block text-sm font-semibold text-blue-600 hover:underline">
-          Tilbage til forsiden
-        </Link>
-      </div>
-    </main>
+      </form>
+      <Link href="/" className="mt-6 inline-block text-sm font-semibold text-blue-600 hover:underline">
+        Tilbage til forsiden
+      </Link>
+    </AuthSplitLayout>
   );
 }
 
@@ -146,7 +139,7 @@ export default function LoginPage() {
   return (
     <Suspense
       fallback={
-        <main className="min-h-screen bg-[#FAFAF8] px-6 py-20 text-[#78716C]">
+        <main className="min-h-screen bg-white px-6 py-20 text-[#78716C]">
           <div className="mx-auto max-w-md text-center">Indlæser...</div>
         </main>
       }

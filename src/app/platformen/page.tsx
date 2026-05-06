@@ -5,47 +5,47 @@ import { ScrollReveal } from "@/components/marketing/ScrollReveal";
 
 const features = [
   {
-    icon: "🏠",
+    icon: "01",
     title: "Kundeportal med dashboard",
     description: "Et samlet dashboard i kundeportalen med overblik over status, hændelser og aktivitet.",
   },
   {
-    icon: "📡",
+    icon: "02",
     title: "IT-systemovervågning",
     description: "Tilføj jeres systemer og følg status live — sundhed og ændringer samlet ét sted.",
   },
   {
-    icon: "💬",
+    icon: "03",
     title: "Support & sager",
     description: "Opret og følg sager og chat i realtid med Systemklar, så I altid ved, hvad der sker.",
   },
   {
-    icon: "📑",
+    icon: "04",
     title: "IT-rapporter",
     description: "Månedlige rapporter fra jeres IT-leverandør med drift, trends og konkrete anbefalinger.",
   },
   {
-    icon: "🧠",
+    icon: "05",
     title: "AI-assistent",
     description: "Stil spørgsmål om jeres systemer og sager — få hjælp til hurtige afklaringer i hverdagen.",
   },
   {
-    icon: "📄",
+    icon: "06",
     title: "AI Tilbudsgenerator",
     description: "Generér professionelle tilbud på sekunder med jeres ydelser, priser og kundens behov.",
   },
   {
-    icon: "🔐",
+    icon: "07",
     title: "Sikker kodebank",
     description: "Gem logins og følsomme oplysninger sikkert, så teamet nemt finder det, der skal bruges.",
   },
   {
-    icon: "🔔",
+    icon: "08",
     title: "Realtids notifikationer",
     description: "Hold jer opdaterede med øjeblikkelige beskeder ved vigtige hændelser og sagopdateringer.",
   },
   {
-    icon: "👥",
+    icon: "09",
     title: "Separate login til admin og kunde",
     description: "Tydelig adskillelse mellem administrations- og kundeportal — de rette rettigheder til hver rolle.",
   },
@@ -94,8 +94,8 @@ export default function PlatformenPage() {
             <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
               {features.map((feature, index) => (
                 <ScrollReveal key={feature.title} staggerMs={index * 75} className="h-full">
-                  <article className="flex h-full flex-col rounded-2xl border border-gray-100 bg-white p-8 shadow-sm transition hover:shadow-md">
-                    <span className="text-4xl leading-none" aria-hidden>
+                  <article className="card-hover flex h-full flex-col rounded-2xl border border-gray-100 bg-white p-8">
+                    <span className="fade-scale text-3xl font-semibold leading-none text-sky-200" aria-hidden>
                       {feature.icon}
                     </span>
                     <h2 className="mt-5 text-lg font-semibold text-[#2563EB]">{feature.title}</h2>

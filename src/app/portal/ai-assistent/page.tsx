@@ -20,11 +20,11 @@ const QUICK_QUESTIONS = [
 
 function RobotIcon() {
   return (
-    <span
-      className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-slate-200 text-sm"
-      aria-hidden
-    >
-      🤖
+    <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-slate-200" aria-hidden>
+      <svg viewBox="0 0 20 20" fill="none" className="h-4 w-4 text-slate-600">
+        <rect x="4" y="6" width="12" height="10" rx="2" stroke="currentColor" strokeWidth="1.5" />
+        <path d="M10 4v2M7.5 10h.01M12.5 10h.01" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+      </svg>
     </span>
   );
 }
@@ -144,7 +144,7 @@ export default function PortalAiAssistantPage() {
 
   return (
     <PortalLayout activeNav="ai">
-      <div className="mx-auto flex h-[calc(100vh-8rem)] w-full max-w-4xl flex-col rounded-2xl border border-[#E7E5E4] bg-white shadow-sm">
+      <div className="card-hover mx-auto flex h-[calc(100vh-8rem)] w-full max-w-4xl flex-col rounded-2xl border border-[#E7E5E4] bg-white shadow-sm">
         <header className="shrink-0 border-b border-[#E7E5E4] px-5 py-4">
           <h1 className="text-xl font-bold text-[#1C1917]">AI-assistent</h1>
           <p className="mt-1 text-sm text-[#78716C]">

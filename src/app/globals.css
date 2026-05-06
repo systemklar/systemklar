@@ -49,6 +49,103 @@ html {
   transform: translateY(0);
 }
 
+/* Stagger fade-in for lists */
+.stagger-item {
+  opacity: 0;
+  transform: translateY(16px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+.stagger-item.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.stagger-item:nth-child(1) {
+  transition-delay: 0ms;
+}
+
+.stagger-item:nth-child(2) {
+  transition-delay: 80ms;
+}
+
+.stagger-item:nth-child(3) {
+  transition-delay: 160ms;
+}
+
+.stagger-item:nth-child(4) {
+  transition-delay: 240ms;
+}
+
+/* Smooth number counter feel */
+.fade-scale {
+  opacity: 0;
+  transform: scale(0.96);
+  transition: opacity 0.4s ease, transform 0.4s ease;
+}
+
+.fade-scale.visible {
+  opacity: 1;
+  transform: scale(1);
+}
+
+/* Subtle card hover */
+.card-hover {
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background-image 0.2s ease;
+}
+
+.card-hover:hover {
+  transform: translateY(-2px);
+  background-image: linear-gradient(180deg, #ffffff 0%, #f0f7ff 100%);
+  box-shadow: 0 8px 24px rgba(10, 110, 189, 0.08);
+}
+
+.surface-cards .rounded-2xl.border.bg-white,
+.surface-cards .rounded-xl.border.bg-white {
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background-image 0.2s ease;
+}
+
+.surface-cards .rounded-2xl.border.bg-white:hover,
+.surface-cards .rounded-xl.border.bg-white:hover {
+  transform: translateY(-2px);
+  background-image: linear-gradient(180deg, #ffffff 0%, #f0f7ff 100%);
+  box-shadow: 0 8px 24px rgba(10, 110, 189, 0.08);
+}
+
+.app-rhythm > div.space-y-6,
+.app-rhythm > div.space-y-8 {
+  row-gap: 2rem;
+}
+
+.app-rhythm h1 {
+  letter-spacing: -0.015em;
+}
+
+.app-rhythm h2 {
+  letter-spacing: -0.01em;
+}
+
+.app-rhythm .rounded-2xl.border.bg-white {
+  border-color: #dbe8f3;
+}
+
+.app-rhythm table thead {
+  background: #f8fbff;
+}
+
+.app-rhythm table th {
+  font-weight: 600;
+  color: #36566f;
+}
+
+.app-rhythm table td {
+  color: #0d1f2d;
+}
+
+.app-rhythm .text-slate-600 {
+  color: #4a6478;
+}
+
 a,
 button {
   transition: color 0.2s ease, background-color 0.2s ease, border-color 0.2s ease;

@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
+import { SystemklarLogo } from "@/components/branding/SystemklarLogo";
 import { StableNavLink } from "./StableNavLink";
 
 const NAV = [
@@ -52,9 +53,7 @@ export function MarketingNav() {
     >
       <div ref={containerRef} className="relative mx-auto h-16 w-full max-w-[1200px] px-6">
         <div className="flex h-full items-center justify-between gap-4">
-          <Link href="/" className="shrink-0 text-sm font-bold tracking-tight text-sky-600">
-            systemklar
-          </Link>
+          <SystemklarLogo href="/" />
 
           <nav className="hidden min-w-0 flex-1 items-center justify-center gap-8 md:flex" aria-label="Hovednavigation">
             {NAV.map((item) => (
