@@ -75,14 +75,14 @@ export default function AdminDashboardPage() {
     setLoading(true);
 
     const [customersRes, activeRes, resolvedRes, recentRes] = await Promise.all([
-      supabase.from("profiles").select("id", { count: "exact", head: true }),
+      supabase.from("organisations").select("*", { count: "exact", head: true }),
       supabase.from("tickets").select("id", { count: "exact", head: true }).eq("status", "active"),
       supabase.from("tickets").select("id", { count: "exact", head: true }).eq("status", "resolved"),
       supabase.from("tickets").select("id,title,status,created_at").order("created_at", { ascending: false }).limit(8),
     ]);
 
     if (customersRes.error) {
-      console.error("[admin/dashboard] profiles count", customersRes.error);
+      console.error("[admin/dashboard] organisations count", customersRes.error);
     }
     if (activeRes.error) {
       console.error("[admin/dashboard] tickets active", activeRes.error);
@@ -125,7 +125,7 @@ export default function AdminDashboardPage() {
             <StatCard
               title="Kunder"
               value={stats.customers}
-              hint="Antal rækker i profiler"
+              hint="Aktive organisationer"
               href="/admin/customers"
             />
           </AnimatedSection>
