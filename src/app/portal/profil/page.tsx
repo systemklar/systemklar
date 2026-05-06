@@ -88,7 +88,46 @@ export default function PortalProfilePage() {
       .maybeSingle();
 
     if (profileError || !data) {
-      setError(profileError?.message ?? "Kunne ikke hente profil.");
+      if (profileError) {
+        setError(profileError.message);
+      }
+      if (!data) {
+        const {
+          data: { user },
+        } = await supabase.auth.getUser();
+        if (user) {
+          const baseName =
+            (typeof user.user_metadata?.full_name === "string" && user.user_metadata.full_name.trim()) ||
+            user.email ||
+            "U";
+          const { data: newProfile } = await supabase
+            .from("profiles")
+            .upsert({
+              id: user.id,
+              email: user.email,
+              full_name: baseName,
+              avatar_initials: baseName
+                .split(" ")
+                .map((n: string) => n[0] ?? "")
+                .join("")
+                .toUpperCase()
+                .slice(0, 2),
+              role: "org_admin",
+            })
+            .select("*, organisations(name)")
+            .maybeSingle();
+          if (newProfile) {
+            const created = newProfile as unknown as ProfileRow;
+            setProfile(created);
+            setFullNameInput(created.full_name ?? "");
+            setNotifNewMessage(created.notif_new_message ?? true);
+            setNotifStatusChange(created.notif_status_change ?? true);
+            setNotifMonthlyReport(created.notif_monthly_report ?? true);
+            setLoading(false);
+            return;
+          }
+        }
+      }
       setProfile(null);
       setLoading(false);
       return;
@@ -198,6 +237,16 @@ export default function PortalProfilePage() {
     ? profile.organisations[0]?.name ?? "Ukendt organisation"
     : profile?.organisations?.name ?? "Ukendt organisation";
   const avatarText = profile?.avatar_initials || buildInitials(profile?.full_name ?? "") || "??";
+
+  if (!profile && !loading) {
+    return (
+      <PortalLayout activeNav="profile">
+        <div className="p-8 text-center text-[#4A8CB5]">
+          Kunne ikke indlaese profil. Proev at logge ud og ind igen.
+        </div>
+      </PortalLayout>
+    );
+  }
 
   return (
     <PortalLayout activeNav="profile">
