@@ -1,58 +1,58 @@
 "use client";
 
 import Link from "next/link";
-import { FileText, Lock, MessageSquare, Monitor, Sparkles, Users } from "lucide-react";
+import { Bell, FileText, MessageSquare, Monitor, ShieldCheck, Users } from "lucide-react";
 import { ScrollReveal } from "./ScrollReveal";
 
 const features = [
   {
     n: "01",
     icon: Monitor,
-    title: "Samlet driftsoverblik",
-    text: "Se systemstatus, support og handlinger samlet i én enkel visning.",
+    title: "Vi holder øje med jeres systemer",
+    text: "Du kan altid se om alt kører, og du får besked hvis noget driller.",
     href: "/platformen",
   },
   {
     n: "02",
     icon: MessageSquare,
-    title: "Support der svarer hurtigt",
-    text: "Dansk support med tydelig prioritering, status og opfølgning.",
+    title: "Få hjælp uden ventetid",
+    text: "Opret en sag, følg status, og se hvad næste skridt er i almindeligt sprog.",
     href: "/ai-vaerktoejer",
   },
   {
     n: "03",
-    icon: Sparkles,
-    title: "AI i daglig drift",
-    text: "Automatiser rutiner og få bedre beslutninger uden ekstra støj.",
+    icon: Bell,
+    title: "Du får besked med det samme",
+    text: "Når noget ændrer sig, får du en tydelig besked uden du skal lede efter den.",
     href: "/priser",
   },
   {
     n: "04",
-    icon: Lock,
-    title: "Sikker adgangsstyring",
-    text: "Beskyttet adgang, klare roller og sikker håndtering af data.",
+    icon: ShieldCheck,
+    title: "Tryg og sikker adgang",
+    text: "Kun de rigtige personer har adgang, og alt er samlet ét sikkert sted.",
     href: "/platformen",
   },
   {
     n: "05",
     icon: FileText,
-    title: "Rapporter med retning",
-    text: "Få klare rapporter med indsigter, ikke bare rå data.",
+    title: "Rapporter du kan forstå",
+    text: "Se kort hvad der fungerer, hvad der skal fixes, og hvad du bør gøre nu.",
     href: "/platformen",
   },
   {
     n: "06",
     icon: Users,
-    title: "Bygget til teams",
-    text: "Ét overblik for ejere, ledelse og medarbejdere i samme platform.",
+    title: "Alt samlet i én platform",
+    text: "Support, status og opgaver ligger samme sted, så du sparer tid i hverdagen.",
     href: "/kontakt",
   },
 ];
 
 const steps = [
-  { n: "01", title: "Kom i gang", text: "Vi opretter jeres miljø og tilpasser det til jeres behov." },
-  { n: "02", title: "Kobl jeres systemer", text: "I tilslutter kilder — vi hjælper med opsætningen." },
-  { n: "03", title: "Få live overblik", text: "Se status, sager og rapporter samlet ét sted." },
+  { n: "1", title: "Vi starter sammen", text: "Vi sætter det op for jer, så I hurtigt kommer i gang." },
+  { n: "2", title: "Vi kobler jeres drift på", text: "Jeres systemer og support samles ét sted." },
+  { n: "3", title: "I får ro i hverdagen", text: "I kan se status med det samme, uden at gætte." },
 ];
 
 const pricePreview = [
@@ -75,8 +75,8 @@ export function MarketingHomeContent() {
   return (
     <main>
       <section
-        className="relative flex min-h-[90vh] items-center overflow-hidden py-24 md:py-32"
-        style={{ background: "linear-gradient(180deg, #EBF4FB 0%, #FFFFFF 40%)" }}
+        className="relative flex min-h-[90vh] scroll-mt-20 items-center overflow-hidden py-40"
+        style={{ background: "linear-gradient(180deg, #F0F7FF 0%, #FFFFFF 55%)" }}
       >
         <div
           className="pointer-events-none absolute -right-[100px] -top-[100px] h-[600px] w-[600px]"
@@ -85,23 +85,25 @@ export function MarketingHomeContent() {
         />
         <div className="mx-auto max-w-4xl px-6 text-center">
           <p
-            className="fade-in-up mb-10 inline-flex items-center rounded-full bg-stone-100 px-4 py-2 text-sm font-medium text-[#4A8CB5]"
-            style={{ animationDelay: "0ms" }}
+            className="fade-in-up inline-flex items-center gap-2 rounded-full bg-sky-50 px-4 py-1.5 text-xs font-semibold uppercase tracking-wide text-sky-700"
+            style={{ animationDelay: "40ms" }}
           >
-            Bygget til danske SMV&apos;er
+            <span className="h-1.5 w-1.5 rounded-full bg-sky-500" aria-hidden />
+            IT-platform til danske SMV&apos;er
           </p>
           <h1
-            className="fade-in-up mx-auto max-w-4xl text-5xl font-bold tracking-tight text-[#0D1F2D] md:text-7xl md:leading-[0.98]"
+            className="fade-in-up mx-auto mt-8 max-w-4xl text-5xl font-bold tracking-tight text-[#0D1F2D] md:text-7xl md:leading-[0.98]"
             style={{ animationDelay: "80ms" }}
           >
-            <span className="block">Din virksomheds IT.</span>
-            <span className="block">Samlet. Overskuet.</span>
+            Få styr på IT uden at bruge
+            <br className="hidden md:block" />
+            hele dagen på det
           </h1>
           <p
-            className="fade-in-up mx-auto mt-8 max-w-2xl text-lg text-[#4A8CB5]"
+            className="fade-in-up mx-auto mt-8 max-w-2xl text-lg text-[#2C4A5E]"
             style={{ animationDelay: "160ms" }}
           >
-            Support, overvågning og AI - i et simpelt overblik.
+            Du kan se hvad der sker, vi holder øje, og du får besked i tide.
           </p>
           <div
             className="fade-in-up mt-12 flex flex-wrap items-center justify-center gap-4"
@@ -115,19 +117,21 @@ export function MarketingHomeContent() {
             </Link>
             <Link
               href="/platformen"
-              className="inline-flex rounded-full border border-sky-200 px-6 py-3 text-sm font-semibold text-sky-800 transition-colors hover:bg-sky-50"
+              className="inline-flex rounded-full border border-sky-100 px-6 py-3 text-sm font-semibold text-[#0D1F2D] transition-colors hover:bg-[#F0F7FF]"
             >
               Se hvordan det virker
             </Link>
           </div>
           <p
-            className="fade-in-up mt-10 text-sm font-medium text-slate-400"
+            className="fade-in-up mt-10 text-sm font-medium text-[#4A8CB5]"
             style={{ animationDelay: "320ms" }}
           >
             <span className="inline-flex flex-wrap items-center justify-center gap-x-6 gap-y-2">
-              <span>✓ Ingen binding</span>
-              <span>✓ Dansk support</span>
-              <span>✓ Gratis opsætning</span>
+              <span>Ingen binding</span>
+              <span>·</span>
+              <span>Opsig når som helst</span>
+              <span>·</span>
+              <span>Gratis at starte</span>
             </span>
           </p>
         </div>
@@ -135,7 +139,10 @@ export function MarketingHomeContent() {
 
       <section className="bg-[#F0F7FF] py-24 md:py-32">
         <div className="mx-auto max-w-5xl px-6 text-center">
-          <p className="text-sm font-medium text-[#4A8CB5]">Betroet af virksomheder i hele Danmark</p>
+          <h2 className="text-center text-3xl font-bold tracking-tight text-[#0D1F2D] md:text-4xl">Betroet i hele Danmark</h2>
+          <p className="mx-auto mt-4 max-w-2xl text-center text-base text-[#2C4A5E]">
+            Virksomheder på tværs af brancher bruger systemklar til at få mere ro på IT.
+          </p>
           <div className="mt-10 grid grid-cols-2 gap-4 text-sm font-medium text-stone-400 md:grid-cols-5 md:gap-8">
             {["Nordic Byg", "CopenTech", "Berglund A/S", "RetailFlow", "Moller Gruppen"].map((name) => (
               <span key={name} className="whitespace-nowrap">
@@ -148,24 +155,22 @@ export function MarketingHomeContent() {
 
       <section className="bg-white py-24 md:py-32">
         <div className="mx-auto max-w-5xl px-6">
-          <h2 className="text-left text-3xl font-bold tracking-tight text-[#0D1F2D] md:text-4xl">Alt hvad I har brug for</h2>
-          <div className="mt-16 grid gap-6 md:grid-cols-2 md:gap-8">
+          <h2 className="text-center text-3xl font-bold tracking-tight text-[#0D1F2D] md:text-4xl">Alt hvad I har brug for</h2>
+          <p className="mx-auto mt-4 max-w-2xl text-center text-base text-[#2C4A5E]">
+            Alt det vigtigste samlet i ét roligt overblik, så du kan fokusere på din forretning.
+          </p>
+          <div className="mt-16 grid gap-6 md:grid-cols-3 md:gap-8">
             {features.map((item, index) => (
               <ScrollReveal key={item.title} staggerMs={index * 120} className="stagger-item">
-                <Link href={item.href} className="group block rounded-2xl p-4 transition-colors hover:bg-sky-50">
-                  <article className="grid items-center gap-4 sm:grid-cols-[120px_1fr]">
-                    <div className="flex h-24 items-center justify-center rounded-2xl bg-[#F0F7FF]">
-                      <item.icon className="h-12 w-12 text-sky-600" aria-hidden />
+                <Link href={item.href} className="group block">
+                  <article className="rounded-2xl border border-sky-100 bg-white p-8 shadow-sm">
+                    <div className="mb-5 flex h-12 w-12 items-center justify-center rounded-xl bg-sky-50">
+                      <item.icon className="h-6 w-6 text-sky-600" aria-hidden />
                     </div>
-                    <div>
-                      <p className="fade-scale visible text-5xl font-bold leading-none text-sky-100">{item.n}</p>
-                      <h3 className="mt-3 text-xl font-semibold text-[#0D1F2D]">{item.title}</h3>
-                      <p className="mt-2 text-base leading-relaxed text-[#4A8CB5]">{item.text}</p>
-                    </div>
+                    <h3 className="text-lg font-semibold text-[#0D1F2D]">{item.title}</h3>
+                    <p className="mt-3 text-sm leading-relaxed text-[#2C4A5E]">{item.text}</p>
+                    <p className="mt-4 text-sm font-medium text-sky-600">Se mere →</p>
                   </article>
-                  <span className="mt-6 inline-block text-sm font-semibold text-sky-600 transition-colors group-hover:text-sky-700">
-                    Læs mere →
-                  </span>
                 </Link>
               </ScrollReveal>
             ))}
@@ -176,13 +181,13 @@ export function MarketingHomeContent() {
       <section className="bg-[#F0F7FF] py-24 md:py-32">
         <div className="mx-auto grid max-w-5xl gap-12 px-6 lg:grid-cols-2 lg:items-center">
           <div>
-            <p className="text-sm font-semibold uppercase tracking-wide text-sky-700">Om systemklar</p>
+            <p className="text-sm font-semibold uppercase tracking-wide text-[#4A8CB5]">Om systemklar</p>
             <h2 className="mt-4 text-3xl font-bold tracking-tight text-[#0D1F2D] md:text-4xl">
-              Vi hjælper danske virksomheder med at få styr på IT
+              Vi hjælper små virksomheder med at få ro på IT
             </h2>
-            <p className="mt-5 max-w-xl text-base leading-relaxed text-[#4A8CB5]">
-              systemklar er bygget til ejerledede virksomheder der vil have professionelt IT-overblik uden at ansætte
-              en IT-afdeling. Vi kombinerer support, overvågning og AI i ét simpelt overblik.
+            <p className="mt-5 max-w-xl text-base leading-relaxed text-[#2C4A5E]">
+              Du får et enkelt overblik over support, systemer og opgaver. Det betyder færre overraskelser, hurtigere
+              svar og mindre tid brugt på at jagte status.
             </p>
             <div className="mt-8 grid gap-5 sm:grid-cols-3">
               <div>
@@ -199,7 +204,7 @@ export function MarketingHomeContent() {
               </div>
             </div>
           </div>
-          <div className="overflow-hidden rounded-3xl border border-[#D0E8F5] bg-white">
+          <div className="overflow-hidden rounded-3xl border border-sky-100 bg-white">
             <div className="px-8 py-10">
               <p className="text-lg font-semibold text-[#0D1F2D]">Benjamin Sorensen</p>
               <p className="mt-1 text-sm text-[#4A8CB5]">Grundlægger, systemklar</p>
@@ -215,16 +220,22 @@ export function MarketingHomeContent() {
 
       <section className="bg-white py-24 md:py-32">
         <div className="mx-auto max-w-5xl px-6">
-          <h2 className="text-center text-3xl font-bold tracking-tight text-[#0D1F2D] md:text-4xl">Sådan virker det</h2>
+          <h2 className="text-center text-3xl font-bold tracking-tight text-[#0D1F2D] md:text-4xl">Sådan fungerer det</h2>
+          <p className="mx-auto mt-4 max-w-2xl text-center text-base text-[#2C4A5E]">
+            Tre enkle trin, så du hurtigt får overblik uden at ændre hele din hverdag.
+          </p>
           <div className="mt-14 flex flex-wrap items-center justify-center gap-4 text-center">
             {steps.map((s, idx) => (
               <div key={s.n} className="flex items-center gap-4">
-                <div className="text-left">
-                  <p className="text-4xl font-bold text-sky-200">{s.n}</p>
-                  <p className="mt-2 text-sm font-semibold text-[#0D1F2D]">{s.title}</p>
+                <div className="relative text-left">
+                  <p className="absolute -left-1 -top-8 text-7xl font-extrabold text-sky-100">{s.n}</p>
+                  <div className="relative z-10 pt-4">
+                    <p className="text-lg font-semibold text-[#0D1F2D]">{s.title}</p>
+                    <p className="mt-1 max-w-[220px] text-sm text-[#2C4A5E]">{s.text}</p>
+                  </div>
                 </div>
                 {idx < steps.length - 1 ? (
-                  <span className="pb-5 text-2xl text-[#4A8CB5]" aria-hidden>
+                  <span className="pb-5 text-2xl text-neutral-300" aria-hidden>
                     →
                   </span>
                 ) : null}
@@ -237,12 +248,15 @@ export function MarketingHomeContent() {
       <section className="bg-[#F0F7FF] py-24 md:py-32">
         <div className="mx-auto max-w-5xl px-6">
           <h2 className="text-center text-3xl font-bold tracking-tight text-[#0D1F2D] md:text-4xl">Priser</h2>
+          <p className="mx-auto mt-4 max-w-2xl text-center text-base text-[#2C4A5E]">
+            Vælg den plan der passer til jer i dag, og skift når behovet ændrer sig.
+          </p>
           <div className="mt-14 grid gap-5 md:grid-cols-3">
             {pricePreview.map((plan, index) => (
               <ScrollReveal key={plan.name} staggerMs={index * 100} className="stagger-item">
                 <article
                   className={`rounded-3xl border px-8 py-10 text-center ${
-                    plan.highlight ? "border-sky-600 bg-sky-50" : "border-[#D0E8F5]"
+                    plan.highlight ? "border-sky-600 bg-sky-50" : "border-sky-100"
                   }`}
                 >
                   <p className="text-sm font-semibold uppercase tracking-wide text-[#4A8CB5]">{plan.name}</p>
@@ -259,12 +273,13 @@ export function MarketingHomeContent() {
         </div>
       </section>
 
-      <section id="cta" className="relative flex min-h-[400px] items-center border-b border-sky-900/70 bg-[#062840] py-24 md:py-32">
+      <section id="cta" className="relative flex min-h-[400px] items-center border-b border-sky-900/70 bg-gradient-to-br from-[#062840] to-[#0A3D5C] py-24 md:py-32">
         <div className="mx-auto max-w-3xl px-6 text-center">
           <h2 className="text-4xl font-bold tracking-tight text-white md:text-5xl">Klar til at komme i gang?</h2>
-          <p className="mx-auto mt-5 max-w-xl text-lg text-sky-200">
-            Book en kort intro, og få et klart overblik over mulighederne.
+          <p className="mx-auto mt-5 max-w-xl text-lg text-[#7AAEC8]">
+            Få en kort gennemgang, så du ved præcis hvordan det virker i din hverdag.
           </p>
+          <p className="mt-4 text-sm text-[#7AAEC8]">Ingen binding · Opsig når som helst</p>
           <Link
             href="/book-demo"
             className="mt-10 inline-flex rounded-full bg-sky-500 px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-sky-400"
