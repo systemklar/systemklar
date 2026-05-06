@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { type FormEvent, useCallback, useEffect, useMemo, useState } from "react";
 import { createClient } from "@/lib/supabase";
 
@@ -40,6 +41,7 @@ function initialsFromName(name: string) {
 }
 
 export default function AdminCustomersPage() {
+  const router = useRouter();
   const supabase = useMemo(() => createClient(), []);
   const [orgs, setOrgs] = useState<OrganisationRow[]>([]);
   const [loading, setLoading] = useState(true);
@@ -151,7 +153,7 @@ export default function AdminCustomersPage() {
       const data = (await res.json()) as { error?: string; ok?: boolean; warning?: string; organisation_id?: string };
       console.log("API response:", res.status, data);
 
-      if (!res.ok) {
+      if (!res.ok || !data.ok) {
         setFormError(data.error ?? "Noget gik galt. Prøv igen.");
         setSubmitting(false);
         return;
@@ -163,7 +165,8 @@ export default function AdminCustomersPage() {
 
       setSubmitting(false);
       closeModal();
-      void loadData();
+      router.refresh();
+      await loadData();
     } catch (err) {
       console.error("[admin/customers] invite-customer fetch failed", err);
       setFormError("Netværksfejl eller uventet afbrydelse. Prøv igen.");
