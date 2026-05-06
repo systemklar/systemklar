@@ -279,7 +279,7 @@ export function MarketingHomeContent() {
         </div>
       </section>
 
-      <section className="bg-[#F0F7FF] py-24 md:py-32">
+      <section className="bg-white py-24 md:py-32">
         <div className="mx-auto max-w-5xl px-6">
           <h2 className="text-center text-3xl font-bold tracking-tight text-[#0D1F2D] md:text-4xl">Priser</h2>
           <p className="mx-auto mt-4 max-w-2xl text-center text-base text-[#2C4A5E]">
@@ -290,7 +290,9 @@ export function MarketingHomeContent() {
               <ScrollReveal key={plan.name} staggerMs={index * 100} className="stagger-item">
                 <article
                   className={`rounded-3xl border px-8 py-10 text-center ${
-                    plan.highlight ? "border-sky-600 bg-sky-50" : "border-sky-100"
+                    plan.highlight
+                      ? "border-2 border-sky-600 bg-white shadow-md"
+                      : "border border-sky-200 bg-white shadow-sm"
                   }`}
                 >
                   <p className="text-sm font-semibold uppercase tracking-wide text-[#4A8CB5]">{plan.name}</p>
@@ -307,7 +309,10 @@ export function MarketingHomeContent() {
         </div>
       </section>
 
-      <section id="cta" className="relative flex min-h-[400px] items-center border-b border-sky-900/70 bg-gradient-to-br from-[#062840] to-[#0A3D5C] py-24 md:py-32">
+      <section
+        id="cta"
+        className="relative flex min-h-[400px] items-center border-b border-sky-900/70 bg-[#062840] bg-gradient-to-br from-[#062840] to-[#0A3D5C] py-24 md:py-32"
+      >
         <div className="mx-auto max-w-3xl px-6 text-center">
           <h2 className="text-4xl font-bold tracking-tight text-white md:text-5xl">Klar til at komme i gang?</h2>
           <p className="mx-auto mt-5 max-w-xl text-lg text-[#7AAEC8]">
