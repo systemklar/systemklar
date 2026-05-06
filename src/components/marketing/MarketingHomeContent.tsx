@@ -4,30 +4,6 @@ import Link from "next/link";
 import { FileSignature, FileText, Lock, MessageSquare, Monitor, Sparkles } from "lucide-react";
 import { ScrollReveal } from "./ScrollReveal";
 
-const platformFeatures = [
-  {
-    n: "01",
-    icon: Monitor,
-    title: "Vi holder øje med dine systemer",
-    text: "Du kan altid se om alt kører, og du får besked hvis noget driller.",
-    href: "/platformen",
-  },
-  {
-    n: "02",
-    icon: MessageSquare,
-    title: "Få hjælp uden ventetid",
-    text: "Opret en sag, følg status, og se hvad næste skridt er – i almindeligt sprog.",
-    href: "/ai-vaerktoejer",
-  },
-  {
-    n: "03",
-    icon: FileText,
-    title: "Rapporter du kan forstå",
-    text: "Se kort hvad der fungerer, hvad der skal fixes, og hvad du bør gøre nu.",
-    href: "/platformen",
-  },
-];
-
 const toolFeatures = [
   {
     n: "01",
@@ -78,24 +54,26 @@ export function MarketingHomeContent() {
   return (
     <main>
       <section
-        className="relative flex min-h-[90vh] scroll-mt-20 items-center overflow-hidden py-40"
-        style={{ background: "linear-gradient(180deg, #F0F7FF 0%, #FFFFFF 55%)" }}
+        className="relative flex min-h-[90vh] scroll-mt-20 items-center overflow-hidden bg-gradient-to-br from-[#0A6EBD] via-[#1A8FD1] to-[#062840] py-48"
       >
         <div
-          className="pointer-events-none absolute -right-[100px] -top-[100px] h-[600px] w-[600px]"
-          style={{ background: "radial-gradient(circle, #0A6EBD22 0%, transparent 70%)", opacity: 0.15 }}
+          className="absolute inset-0 opacity-10"
+          style={{
+            backgroundImage: "radial-gradient(circle, white 1px, transparent 1px)",
+            backgroundSize: "32px 32px",
+          }}
           aria-hidden
         />
         <div className="mx-auto max-w-4xl px-6 text-center">
           <p
-            className="fade-in-up inline-flex items-center gap-2 rounded-full bg-sky-50 px-4 py-1.5 text-xs font-semibold uppercase tracking-wide text-sky-700"
+            className="fade-in-up inline-flex items-center gap-2 rounded-full border border-white/30 bg-white/20 px-4 py-1.5 text-xs font-semibold uppercase tracking-wide text-white"
             style={{ animationDelay: "40ms" }}
           >
-            <span className="h-1.5 w-1.5 rounded-full bg-sky-500" aria-hidden />
+            <span className="h-1.5 w-1.5 rounded-full bg-white" aria-hidden />
             IT-platform til danske SMV&apos;er
           </p>
           <h1
-            className="fade-in-up mx-auto mt-8 max-w-4xl text-5xl font-bold tracking-tight text-[#0D1F2D] md:text-7xl md:leading-[0.98]"
+            className="fade-in-up mx-auto mt-8 max-w-4xl text-6xl font-extrabold tracking-tight text-white md:text-7xl md:leading-[0.98]"
             style={{ animationDelay: "80ms" }}
           >
             Få styr på IT uden at bruge
@@ -103,7 +81,7 @@ export function MarketingHomeContent() {
             hele dagen på det
           </h1>
           <p
-            className="fade-in-up mx-auto mt-8 max-w-2xl text-lg text-[#2C4A5E]"
+            className="fade-in-up mx-auto mt-8 max-w-2xl text-xl text-white/80"
             style={{ animationDelay: "160ms" }}
           >
             Du kan se hvad der sker, vi holder øje, og du får besked i tide.
@@ -114,19 +92,19 @@ export function MarketingHomeContent() {
           >
             <Link
               href="/book-demo"
-              className="inline-flex rounded-full bg-sky-600 px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-sky-700"
+              className="inline-flex rounded-full bg-white px-6 py-3 text-sm font-semibold text-[#0A6EBD] transition-colors hover:bg-white/90"
             >
               Book gratis demo
             </Link>
             <Link
               href="/platformen"
-              className="inline-flex rounded-full border border-sky-100 px-6 py-3 text-sm font-semibold text-[#0D1F2D] transition-colors hover:bg-[#F0F7FF]"
+              className="inline-flex rounded-full border border-white/50 px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-white/10"
             >
               Se hvordan det virker
             </Link>
           </div>
           <p
-            className="fade-in-up mt-10 text-sm font-medium text-[#4A8CB5]"
+            className="fade-in-up mt-10 text-sm font-medium text-white/60"
             style={{ animationDelay: "320ms" }}
           >
             <span className="inline-flex flex-wrap items-center justify-center gap-x-6 gap-y-2">
@@ -140,45 +118,149 @@ export function MarketingHomeContent() {
         </div>
       </section>
 
-      <section className="bg-[#F0F7FF] py-24 md:py-32">
-        <div className="mx-auto max-w-5xl px-6 text-center">
-          <h2 className="text-center text-3xl font-bold tracking-tight text-[#0D1F2D] md:text-4xl">Betroet i hele Danmark</h2>
-          <p className="mx-auto mt-4 max-w-2xl text-center text-base text-[#2C4A5E]">
-            Virksomheder på tværs af brancher bruger systemklar til at få mere ro på IT.
-          </p>
-          <div className="mt-10 grid grid-cols-2 gap-4 text-sm font-medium text-stone-400 md:grid-cols-5 md:gap-8">
-            {["Nordic Byg", "CopenTech", "Berglund A/S", "RetailFlow", "Moller Gruppen"].map((name) => (
-              <span key={name} className="whitespace-nowrap">
-                {name}
-              </span>
-            ))}
-          </div>
-        </div>
-      </section>
-
       <section className="bg-white py-24 md:py-32">
         <div className="mx-auto max-w-5xl px-6">
           <h2 className="text-center text-3xl font-bold tracking-tight text-[#0D1F2D] md:text-4xl">
-            Hvad du får med systemklar
+            Alt på ét sted – præcis som det er
           </h2>
           <p className="mx-auto mt-4 max-w-2xl text-center text-base text-[#2C4A5E]">
-            Alt det vigtigste samlet i ét roligt overblik, så du kan fokusere på din forretning.
+            Se hvordan platformen ser ud i praksis, med et overblik du kan forstå med det samme.
           </p>
-          <div className="mt-16 grid gap-6 md:grid-cols-3 md:gap-8">
-            {platformFeatures.map((item, index) => (
-              <ScrollReveal key={item.title} staggerMs={index * 120} className="stagger-item">
-                <Link href={item.href} className="group block">
-                  <article className="rounded-2xl border border-sky-100 bg-white p-8 shadow-sm">
-                    <div className="mb-5 flex h-12 w-12 items-center justify-center rounded-xl bg-sky-50">
-                      <item.icon className="h-6 w-6 text-sky-600" aria-hidden />
+          <div className="mt-16 space-y-16">
+            <ScrollReveal className="grid items-center gap-10 lg:grid-cols-2">
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-widest text-sky-600">OVERBLIK</p>
+                <h3 className="mt-3 text-3xl font-bold text-[#0D1F2D]">Alt på ét sted – præcis som det er</h3>
+                <p className="mt-4 text-base leading-relaxed text-[#2C4A5E]">
+                  Du logger ind og ser med det samme hvad der kører, hvad der mangler, og om noget kræver din
+                  opmærksomhed.
+                </p>
+              </div>
+              <div className="overflow-hidden rounded-2xl border border-sky-100 bg-white shadow-xl">
+                <div className="flex items-center gap-2 border-b border-sky-100 bg-[#F0F7FF] px-4 py-3">
+                  <div className="flex gap-1.5">
+                    <div className="h-3 w-3 rounded-full bg-red-400" />
+                    <div className="h-3 w-3 rounded-full bg-amber-400" />
+                    <div className="h-3 w-3 rounded-full bg-green-400" />
+                  </div>
+                  <div className="flex-1 rounded-full bg-white px-3 py-1 text-xs text-[#4A8CB5]">systemklar.dk/portal</div>
+                </div>
+                <div className="flex" style={{ height: "280px" }}>
+                  <div className="flex w-40 flex-col gap-1 border-r border-sky-50 bg-[#F5FAFD] p-3">
+                    <div className="mb-2 text-xs font-bold text-[#0A6EBD]">systemklar</div>
+                    <div className="rounded-lg bg-sky-50 px-2 py-1.5 text-xs font-medium text-sky-700">Overblik</div>
+                    <div className="px-2 py-1.5 text-xs text-slate-500">Support & sager</div>
+                    <div className="px-2 py-1.5 text-xs text-slate-500">Kodebank</div>
+                    <div className="px-2 py-1.5 text-xs text-slate-500">IT-rapport</div>
+                    <div className="px-2 py-1.5 text-xs text-slate-500">Systemer</div>
+                  </div>
+                  <div className="flex-1 bg-white p-4">
+                    <div className="mb-1 text-sm font-bold text-[#0D1F2D]">Goddag, Møllers VVS</div>
+                    <div className="mb-3 text-xs text-[#4A8CB5]">Her er dagens overblik.</div>
+                    <div className="mb-3 grid grid-cols-3 gap-2">
+                      <div className="rounded-lg bg-[#F0F7FF] p-2 text-center">
+                        <div className="text-sm font-bold text-[#0A6EBD]">3</div>
+                        <div className="text-[10px] text-[#4A8CB5]">Systemer OK</div>
+                      </div>
+                      <div className="rounded-lg bg-[#F0F7FF] p-2 text-center">
+                        <div className="text-sm font-bold text-[#0A6EBD]">1</div>
+                        <div className="text-[10px] text-[#4A8CB5]">Åben sag</div>
+                      </div>
+                      <div className="rounded-lg bg-[#F0F7FF] p-2 text-center">
+                        <div className="text-sm font-bold text-[#0A6EBD]">apr</div>
+                        <div className="text-[10px] text-[#4A8CB5]">Seneste rapport</div>
+                      </div>
                     </div>
-                    <h3 className="text-lg font-semibold text-[#0D1F2D]">{item.title}</h3>
-                    <p className="mt-3 text-sm leading-relaxed text-[#2C4A5E]">{item.text}</p>
-                    <p className="mt-4 text-sm font-medium text-sky-600">Se mere →</p>
-                  </article>
-                </Link>
-              </ScrollReveal>
-            ))}
+                    <div className="mb-2 text-xs font-semibold text-[#0D1F2D]">Seneste sager</div>
+                    <div className="flex items-center justify-between rounded-lg bg-[#F0F7FF] px-3 py-2">
+                      <span className="text-xs text-[#2C4A5E]">Printer virker ikke</span>
+                      <span className="rounded-full bg-amber-100 px-2 py-0.5 text-[10px] text-amber-700">Aktiv</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </ScrollReveal>
+
+            <ScrollReveal className="grid items-center gap-10 lg:grid-cols-2">
+              <div className="overflow-hidden rounded-2xl border border-sky-100 bg-white shadow-xl">
+                <div className="flex items-center gap-2 border-b border-sky-100 bg-[#F0F7FF] px-4 py-3">
+                  <div className="flex gap-1.5">
+                    <div className="h-3 w-3 rounded-full bg-red-400" />
+                    <div className="h-3 w-3 rounded-full bg-amber-400" />
+                    <div className="h-3 w-3 rounded-full bg-green-400" />
+                  </div>
+                  <div className="flex-1 rounded-full bg-white px-3 py-1 text-xs text-[#4A8CB5]">systemklar.dk/support</div>
+                </div>
+                <div className="p-4" style={{ height: "280px" }}>
+                  <div className="mb-3 text-sm font-bold text-[#0D1F2D]">Support & sager</div>
+                  <div className="flex flex-col gap-2">
+                    <div className="max-w-xs self-end rounded-2xl rounded-tr-sm bg-sky-600 px-3 py-2 text-xs text-white">
+                      Vores printer printer ikke – det haster lidt
+                    </div>
+                    <div className="max-w-xs self-start rounded-2xl rounded-tl-sm bg-[#F0F7FF] px-3 py-2 text-xs text-[#2C4A5E]">
+                      Forstået! Vi kigger på det med det samme. Kan du se om der er fejlkode på displayet?
+                    </div>
+                    <div className="max-w-xs self-end rounded-2xl rounded-tr-sm bg-sky-600 px-3 py-2 text-xs text-white">
+                      Den siger "Paper jam 02"
+                    </div>
+                    <div className="max-w-xs self-start rounded-2xl rounded-tl-sm bg-[#F0F7FF] px-3 py-2 text-xs text-[#2C4A5E]">
+                      Det er en kendt fejl. Trin-for-trin guide er sendt til din mail nu.
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-widest text-sky-600">SUPPORT</p>
+                <h3 className="mt-3 text-3xl font-bold text-[#0D1F2D]">Få hjælp uden at vente</h3>
+                <p className="mt-4 text-base leading-relaxed text-[#2C4A5E]">
+                  Opret en sag direkte i systemet. Du kan følge status og chatte med os – uden at ringe eller vente i
+                  kø.
+                </p>
+              </div>
+            </ScrollReveal>
+
+            <ScrollReveal className="grid items-center gap-10 lg:grid-cols-2">
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-widest text-sky-600">IT-RAPPORT</p>
+                <h3 className="mt-3 text-3xl font-bold text-[#0D1F2D]">En rapport du faktisk forstår</h3>
+                <p className="mt-4 text-base leading-relaxed text-[#2C4A5E]">
+                  Hver måned får du en overskuelig rapport med hvad der er sket, hvad vi har løst, og hvad du bør gøre
+                  nu.
+                </p>
+              </div>
+              <div className="overflow-hidden rounded-2xl border border-sky-100 bg-white shadow-xl">
+                <div className="flex items-center gap-2 border-b border-sky-100 bg-[#F0F7FF] px-4 py-3">
+                  <div className="flex gap-1.5">
+                    <div className="h-3 w-3 rounded-full bg-red-400" />
+                    <div className="h-3 w-3 rounded-full bg-amber-400" />
+                    <div className="h-3 w-3 rounded-full bg-green-400" />
+                  </div>
+                  <div className="flex-1 rounded-full bg-white px-3 py-1 text-xs text-[#4A8CB5]">systemklar.dk/rapport</div>
+                </div>
+                <div className="p-4" style={{ height: "280px" }}>
+                  <div className="mb-1 text-sm font-bold text-[#0D1F2D]">IT-rapport – april 2026</div>
+                  <div className="mb-3 text-xs text-[#4A8CB5]">Møllers VVS</div>
+                  <div className="mb-3 grid grid-cols-3 gap-2">
+                    <div className="rounded-lg bg-green-50 p-2 text-center">
+                      <div className="text-sm font-bold text-green-700">100%</div>
+                      <div className="text-[10px] text-green-600">Oppetid</div>
+                    </div>
+                    <div className="rounded-lg bg-[#F0F7FF] p-2 text-center">
+                      <div className="text-sm font-bold text-[#0A6EBD]">3</div>
+                      <div className="text-[10px] text-[#4A8CB5]">Løste sager</div>
+                    </div>
+                    <div className="rounded-lg bg-[#F0F7FF] p-2 text-center">
+                      <div className="text-sm font-bold text-[#0A6EBD]">0</div>
+                      <div className="text-[10px] text-[#4A8CB5]">Åbne sager</div>
+                    </div>
+                  </div>
+                  <div className="mb-1.5 text-xs font-semibold text-[#0D1F2D]">Anbefaling</div>
+                  <div className="rounded-lg border border-amber-100 bg-amber-50 px-3 py-2 text-xs text-amber-800">
+                    Opdater Windows på 2 maskiner inden næste måned.
+                  </div>
+                </div>
+              </div>
+            </ScrollReveal>
           </div>
         </div>
       </section>
@@ -189,19 +271,50 @@ export function MarketingHomeContent() {
             Værktøjer der gør arbejdet for dig
           </h2>
           <p className="mx-auto mt-4 max-w-2xl text-center text-base text-[#2C4A5E]">
-            Praktiske værktøjer, så du kan løse opgaver hurtigere uden ekstra systemer.
+            Tre enkle værktøjer, der hjælper dig med de opgaver, som normalt tager unødigt lang tid.
           </p>
           <div className="mt-16 grid gap-6 md:grid-cols-3 md:gap-8">
             {toolFeatures.map((item, index) => (
               <ScrollReveal key={item.title} staggerMs={index * 120} className="stagger-item">
                 <Link href={item.href} className="group block">
                   <article className="rounded-2xl border border-sky-100 bg-white p-8 shadow-sm">
-                    <div className="mb-5 flex h-12 w-12 items-center justify-center rounded-xl bg-sky-50">
-                      <item.icon className="h-6 w-6 text-sky-600" aria-hidden />
+                    <div className="mb-5 rounded-xl border border-sky-100 bg-[#F5FAFD] p-3">
+                      {index === 0 ? (
+                        <div>
+                          <div className="mb-2 text-[10px] text-[#4A8CB5]">Tilbud - VVS serviceaftale</div>
+                          <div className="space-y-1">
+                            <div className="h-1.5 w-full rounded bg-sky-100" />
+                            <div className="h-1.5 w-5/6 rounded bg-sky-100" />
+                            <div className="h-1.5 w-4/6 rounded bg-sky-100" />
+                          </div>
+                          <div className="mt-3 inline-flex rounded-full bg-green-100 px-2 py-0.5 text-[10px] font-semibold text-green-700">
+                            Klar til at sende ✓
+                          </div>
+                        </div>
+                      ) : null}
+                      {index === 1 ? (
+                        <div className="space-y-1.5">
+                          <div className="ml-auto max-w-[80%] rounded-xl rounded-tr-sm bg-sky-600 px-2 py-1 text-[10px] text-white">
+                            Hvad betyder oppetid?
+                          </div>
+                          <div className="max-w-[85%] rounded-xl rounded-tl-sm bg-white px-2 py-1 text-[10px] text-[#2C4A5E]">
+                            Hvor tit jeres systemer virker uden afbrydelse.
+                          </div>
+                        </div>
+                      ) : null}
+                      {index === 2 ? (
+                        <div className="space-y-1.5">
+                          {["Microsoft 365", "Dinero", "e-Boks"].map((row) => (
+                            <div key={row} className="flex items-center justify-between rounded-lg bg-white px-2 py-1.5">
+                              <span className="text-[10px] text-[#2C4A5E]">{row}</span>
+                              <span className="text-[10px] tracking-wider text-[#4A8CB5]">••••••••</span>
+                            </div>
+                          ))}
+                        </div>
+                      ) : null}
                     </div>
                     <h3 className="text-lg font-semibold text-[#0D1F2D]">{item.title}</h3>
                     <p className="mt-3 text-sm leading-relaxed text-[#2C4A5E]">{item.text}</p>
-                    <p className="mt-4 text-sm font-medium text-sky-600">Se mere →</p>
                   </article>
                 </Link>
               </ScrollReveal>
@@ -210,7 +323,7 @@ export function MarketingHomeContent() {
         </div>
       </section>
 
-      <section className="bg-[#F0F7FF] py-24 md:py-32">
+      <section className="bg-white py-24 md:py-32">
         <div className="mx-auto grid max-w-5xl gap-12 px-6 lg:grid-cols-2 lg:items-center">
           <div>
             <p className="text-sm font-semibold uppercase tracking-wide text-[#4A8CB5]">Om systemklar</p>
@@ -250,7 +363,7 @@ export function MarketingHomeContent() {
         </div>
       </section>
 
-      <section className="bg-white py-24 md:py-32">
+      <section className="bg-[#F0F7FF] py-24 md:py-32">
         <div className="mx-auto max-w-5xl px-6">
           <h2 className="text-center text-3xl font-bold tracking-tight text-[#0D1F2D] md:text-4xl">Sådan fungerer det</h2>
           <p className="mx-auto mt-4 max-w-2xl text-center text-base text-[#2C4A5E]">

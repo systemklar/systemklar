@@ -24,8 +24,7 @@ export function AuthSplitLayout({ title, subtitle, children }: AuthSplitLayoutPr
             <SystemklarLogo
               href="/"
               textClassName="text-sm font-bold tracking-tight text-white"
-              iconColor="#FFFFFF"
-              iconSecondaryOpacity={0.55}
+              iconClassName="brightness-0 invert"
             />
             <h2 className="mt-12 max-w-md text-4xl font-bold tracking-tight text-white">
               Få overblik over din virksomheds IT

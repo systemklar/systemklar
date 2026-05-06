@@ -47,7 +47,7 @@ export function MarketingNav() {
 
   return (
     <header
-      className={`sticky top-0 z-50 bg-white/95 backdrop-blur transition-shadow duration-300 ease-out ${
+      className={`sticky top-0 z-50 border-b border-sky-100/50 bg-white/80 backdrop-blur-md transition-shadow duration-300 ease-out ${
         scrolled ? "shadow-[0_8px_24px_rgba(6,40,64,0.06)]" : "shadow-none"
       }`}
     >
