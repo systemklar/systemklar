@@ -128,10 +128,10 @@ export default function KontaktPage() {
           <div className="mx-auto max-w-5xl px-6 text-center">
             <h2 className="text-3xl font-bold text-white md:text-4xl">Klar til at komme i gang?</h2>
             <Link
-              href="/login"
+              href="/kontakt"
               className="mt-8 inline-flex rounded-full bg-sky-500 px-6 py-3 font-semibold text-white transition hover:bg-sky-400"
             >
-              Opret gratis konto
+              Book gratis demo
             </Link>
           </div>
         </section>

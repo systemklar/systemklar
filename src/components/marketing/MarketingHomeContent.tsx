@@ -1,8 +1,10 @@
 "use client";
 
+import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
-import { FileSignature, FileText, Lock, MessageSquare, Monitor, Sparkles } from "lucide-react";
+import { ChevronDown, FileSignature, Lock, Sparkles } from "lucide-react";
 import { AnimatedSection } from "@/components/ui/AnimatedSection";
+import { useInView } from "@/hooks/useInView";
 
 const toolFeatures = [
   {
@@ -50,7 +52,128 @@ const pricePreview = [
   },
 ];
 
+type TabKey = "Overblik" | "Support" | "IT-rapport";
+
+function useCountUp(target: number, duration: number, inView: boolean) {
+  const [count, setCount] = useState(0);
+  useEffect(() => {
+    if (!inView) return;
+    let start = 0;
+    const step = target / (duration / 16);
+    const timer = window.setInterval(() => {
+      start += step;
+      if (start >= target) {
+        setCount(target);
+        window.clearInterval(timer);
+      } else {
+        setCount(Math.floor(start));
+      }
+    }, 16);
+    return () => window.clearInterval(timer);
+  }, [inView, target, duration]);
+  return count;
+}
+
 export function MarketingHomeContent() {
+  const [yearly, setYearly] = useState(false);
+  const [priceFading, setPriceFading] = useState(false);
+  const [displayPrice, setDisplayPrice] = useState(pricePreview);
+  const [activeTab, setActiveTab] = useState<TabKey>("Overblik");
+  const [changing, setChanging] = useState(false);
+  const [openStep, setOpenStep] = useState<number | null>(null);
+  const { ref: statsRef, inView: statsInView } = useInView(0.2);
+
+  const typePairs = useMemo(
+    () => [
+      {
+        q: "Hvad betyder oppetid?",
+        a: "Det betyder at dine systemer kører uden afbrydelse. Jeres oppetid er 99,9% denne måned.",
+      },
+      {
+        q: "Hvornår kom den seneste rapport?",
+        a: "Rapporten for april 2026 er klar. Alt ser godt ud – ingen kritiske fejl.",
+      },
+      {
+        q: "Vi kan ikke printe",
+        a: "Jeg har oprettet en sag til jer. Supportteamet kigger på det inden for 1 time.",
+      },
+    ],
+    [],
+  );
+  const [pairIndex, setPairIndex] = useState(0);
+  const [typedQuestion, setTypedQuestion] = useState("");
+  const [showAnswer, setShowAnswer] = useState(false);
+  const typingTimeoutRef = useRef<number | null>(null);
+
+  useEffect(() => {
+    const prices = yearly
+      ? [
+          { name: "Starter", price: "415 kr/md", highlight: false },
+          { name: "Plus", price: "1.082 kr/md", highlight: true },
+          { name: "Pro", price: "2.082 kr/md", highlight: false },
+        ]
+      : [
+          { name: "Starter", price: "499 kr/md", highlight: false },
+          { name: "Plus", price: "1.299 kr/md", highlight: true },
+          { name: "Pro", price: "2.499 kr/md", highlight: false },
+        ];
+    setPriceFading(true);
+    const timer = window.setTimeout(() => {
+      setDisplayPrice(prices);
+      setPriceFading(false);
+    }, 150);
+    return () => window.clearTimeout(timer);
+  }, [yearly]);
+
+  useEffect(() => {
+    let cancelled = false;
+    const run = () => {
+      if (cancelled) return;
+      const pair = typePairs[pairIndex];
+      setTypedQuestion("");
+      setShowAnswer(false);
+      let i = 0;
+      const typeChar = () => {
+        if (cancelled) return;
+        if (i <= pair.q.length) {
+          setTypedQuestion(pair.q.slice(0, i));
+          i += 1;
+          typingTimeoutRef.current = window.setTimeout(typeChar, 40);
+          return;
+        }
+        typingTimeoutRef.current = window.setTimeout(() => {
+          if (cancelled) return;
+          setShowAnswer(true);
+          typingTimeoutRef.current = window.setTimeout(() => {
+            if (cancelled) return;
+            setShowAnswer(false);
+            setTypedQuestion("");
+            setPairIndex((prev) => (prev + 1) % typePairs.length);
+          }, 2500);
+        }, 600);
+      };
+      typeChar();
+    };
+    run();
+    return () => {
+      cancelled = true;
+      if (typingTimeoutRef.current) window.clearTimeout(typingTimeoutRef.current);
+    };
+  }, [pairIndex, typePairs]);
+
+  const handleTabChange = (tab: TabKey) => {
+    if (tab === activeTab) return;
+    setChanging(true);
+    window.setTimeout(() => {
+      setActiveTab(tab);
+      setChanging(false);
+    }, 150);
+  };
+
+  const supportCount = useCountUp(100, 800, statsInView);
+  const platformCount = useCountUp(1, 800, statsInView);
+  const bindingCount = useCountUp(0, 800, statsInView);
+
   return (
     <main>
       <section
@@ -142,37 +265,83 @@ export function MarketingHomeContent() {
                   </div>
                   <div className="flex-1 rounded-full bg-white px-3 py-1 text-xs text-[#4A8CB5]">systemklar.dk/portal</div>
                 </div>
-                <div className="flex" style={{ height: "280px" }}>
-                  <div className="flex w-40 flex-col gap-1 border-r border-sky-50 bg-[#F5FAFD] p-3">
-                    <div className="mb-2 text-xs font-bold text-[#0A6EBD]">systemklar</div>
-                    <div className="rounded-lg bg-sky-50 px-2 py-1.5 text-xs font-medium text-sky-700">Overblik</div>
-                    <div className="px-2 py-1.5 text-xs text-slate-500">Support & sager</div>
-                    <div className="px-2 py-1.5 text-xs text-slate-500">Kodebank</div>
-                    <div className="px-2 py-1.5 text-xs text-slate-500">IT-rapport</div>
-                    <div className="px-2 py-1.5 text-xs text-slate-500">Systemer</div>
+                <div className="p-4">
+                  <div className="mb-4 flex gap-1 rounded-lg bg-[#F0F7FF] p-1">
+                    {(["Overblik", "Support", "IT-rapport"] as TabKey[]).map((tab) => (
+                      <button
+                        key={tab}
+                        onClick={() => handleTabChange(tab)}
+                        className={`flex-1 rounded-md py-1.5 text-xs font-medium transition-all duration-200 ${
+                          activeTab === tab ? "bg-white text-sky-700 shadow-sm" : "text-[#4A8CB5] hover:text-sky-700"
+                        }`}
+                      >
+                        {tab}
+                      </button>
+                    ))}
                   </div>
-                  <div className="flex-1 bg-white p-4">
-                    <div className="mb-1 text-sm font-bold text-[#0D1F2D]">Goddag, Møllers VVS</div>
-                    <div className="mb-3 text-xs text-[#4A8CB5]">Her er dagens overblik.</div>
-                    <div className="mb-3 grid grid-cols-3 gap-2">
-                      <div className="rounded-lg bg-[#F0F7FF] p-2 text-center">
-                        <div className="text-sm font-bold text-[#0A6EBD]">3</div>
-                        <div className="text-[10px] text-[#4A8CB5]">Systemer OK</div>
+                  <div className={`transition-opacity duration-300 ${changing ? "opacity-0" : "opacity-100"}`}>
+                    {activeTab === "Overblik" ? (
+                      <div className="flex" style={{ height: "280px" }}>
+                        <div className="flex w-40 flex-col gap-1 border-r border-sky-50 bg-[#F5FAFD] p-3">
+                          <div className="mb-2 text-xs font-bold text-[#0A6EBD]">systemklar</div>
+                          <div className="rounded-lg bg-sky-50 px-2 py-1.5 text-xs font-medium text-sky-700">Overblik</div>
+                          <div className="px-2 py-1.5 text-xs text-slate-500">Support & sager</div>
+                          <div className="px-2 py-1.5 text-xs text-slate-500">Kodebank</div>
+                          <div className="px-2 py-1.5 text-xs text-slate-500">IT-rapport</div>
+                        </div>
+                        <div className="flex-1 bg-white p-4">
+                          <div className="mb-1 text-sm font-bold text-[#0D1F2D]">Goddag, Møllers VVS</div>
+                          <div className="mb-3 text-xs text-[#4A8CB5]">Her er dagens overblik.</div>
+                          <div className="mb-3 grid grid-cols-3 gap-2">
+                            <div className="rounded-lg bg-[#F0F7FF] p-2 text-center">
+                              <div className="text-sm font-bold text-[#0A6EBD]">3</div>
+                              <div className="text-[10px] text-[#4A8CB5]">Systemer OK</div>
+                            </div>
+                            <div className="rounded-lg bg-[#F0F7FF] p-2 text-center">
+                              <div className="text-sm font-bold text-[#0A6EBD]">1</div>
+                              <div className="text-[10px] text-[#4A8CB5]">Åben sag</div>
+                            </div>
+                            <div className="rounded-lg bg-[#F0F7FF] p-2 text-center">
+                              <div className="text-sm font-bold text-[#0A6EBD]">apr</div>
+                              <div className="text-[10px] text-[#4A8CB5]">Seneste rapport</div>
+                            </div>
+                          </div>
+                        </div>
                       </div>
-                      <div className="rounded-lg bg-[#F0F7FF] p-2 text-center">
-                        <div className="text-sm font-bold text-[#0A6EBD]">1</div>
-                        <div className="text-[10px] text-[#4A8CB5]">Åben sag</div>
+                    ) : null}
+                    {activeTab === "Support" ? (
+                      <div style={{ height: "280px" }}>
+                        <div className="mb-3 text-sm font-bold text-[#0D1F2D]">Support & sager</div>
+                        <div className="flex flex-col gap-2">
+                          <div className="max-w-xs self-end rounded-2xl rounded-tr-sm bg-sky-600 px-3 py-2 text-xs text-white">
+                            Vores printer printer ikke – det haster lidt
+                          </div>
+                          <div className="max-w-xs self-start rounded-2xl rounded-tl-sm bg-[#F0F7FF] px-3 py-2 text-xs text-[#2C4A5E]">
+                            Forstået! Vi kigger på det med det samme.
+                          </div>
+                        </div>
                       </div>
-                      <div className="rounded-lg bg-[#F0F7FF] p-2 text-center">
-                        <div className="text-sm font-bold text-[#0A6EBD]">apr</div>
-                        <div className="text-[10px] text-[#4A8CB5]">Seneste rapport</div>
+                    ) : null}
+                    {activeTab === "IT-rapport" ? (
+                      <div style={{ height: "280px" }}>
+                        <div className="mb-1 text-sm font-bold text-[#0D1F2D]">IT-rapport – april 2026</div>
+                        <div className="mb-3 text-xs text-[#4A8CB5]">Møllers VVS</div>
+                        <div className="mb-3 grid grid-cols-3 gap-2">
+                          <div className="rounded-lg bg-green-50 p-2 text-center">
+                            <div className="text-sm font-bold text-green-700">100%</div>
+                            <div className="text-[10px] text-green-600">Oppetid</div>
+                          </div>
+                          <div className="rounded-lg bg-[#F0F7FF] p-2 text-center">
+                            <div className="text-sm font-bold text-[#0A6EBD]">3</div>
+                            <div className="text-[10px] text-[#4A8CB5]">Løste sager</div>
+                          </div>
+                          <div className="rounded-lg bg-[#F0F7FF] p-2 text-center">
+                            <div className="text-sm font-bold text-[#0A6EBD]">0</div>
+                            <div className="text-[10px] text-[#4A8CB5]">Åbne sager</div>
+                          </div>
+                        </div>
                       </div>
-                    </div>
-                    <div className="mb-2 text-xs font-semibold text-[#0D1F2D]">Seneste sager</div>
-                    <div className="flex items-center justify-between rounded-lg bg-[#F0F7FF] px-3 py-2">
-                      <span className="text-xs text-[#2C4A5E]">Printer virker ikke</span>
-                      <span className="rounded-full bg-amber-100 px-2 py-0.5 text-[10px] text-amber-700">Aktiv</span>
-                    </div>
+                    ) : null}
                   </div>
                 </div>
               </div>
@@ -290,12 +459,17 @@ export function MarketingHomeContent() {
                         </div>
                       ) : null}
                       {index === 1 ? (
-                        <div className="w-full space-y-1.5">
-                          <div className="ml-auto max-w-[80%] rounded-xl rounded-tr-sm bg-sky-600 px-2 py-1 text-[10px] text-white">
-                            Hvad betyder oppetid?
+                        <div className="w-full space-y-2">
+                          <div className="ml-auto max-w-[85%] rounded-xl rounded-tr-sm bg-sky-600 px-2 py-1 text-[10px] text-white">
+                            {typedQuestion}
+                            <span className="animate-pulse">|</span>
                           </div>
-                          <div className="max-w-[85%] rounded-xl rounded-tl-sm bg-white px-2 py-1 text-[10px] text-[#2C4A5E]">
-                            Hvor tit jeres systemer virker uden afbrydelse.
+                          <div
+                            className={`max-w-[90%] rounded-xl rounded-tl-sm bg-white px-2 py-1 text-[10px] text-[#2C4A5E] transition-opacity duration-300 ${
+                              showAnswer ? "opacity-100" : "opacity-0"
+                            }`}
+                          >
+                            {typePairs[pairIndex].a}
                           </div>
                         </div>
                       ) : null}
@@ -321,7 +495,7 @@ export function MarketingHomeContent() {
       </section>
 
       <section className="bg-white py-24 md:py-32">
-        <div className="mx-auto grid max-w-5xl gap-12 px-6 lg:grid-cols-2 lg:items-center">
+        <div ref={statsRef} className="mx-auto grid max-w-5xl gap-12 px-6 lg:grid-cols-2 lg:items-center">
           <div>
             <p className="text-sm font-semibold uppercase tracking-wide text-[#4A8CB5]">Om systemklar</p>
             <h2 className="mt-4 text-3xl font-bold tracking-tight text-[#0D1F2D] md:text-4xl">
@@ -333,15 +507,15 @@ export function MarketingHomeContent() {
             </p>
             <div className="mt-8 grid gap-5 sm:grid-cols-3">
               <div>
-                <p className="text-2xl font-bold text-[#0D1F2D]">100%</p>
+                <p className="text-2xl font-bold text-[#0D1F2D]">{supportCount}%</p>
                 <p className="text-sm text-[#4A8CB5]">Dansk support</p>
               </div>
               <div>
-                <p className="text-2xl font-bold text-[#0D1F2D]">1 platform</p>
+                <p className="text-2xl font-bold text-[#0D1F2D]">{platformCount} platform</p>
                 <p className="text-sm text-[#4A8CB5]">Alt samlet</p>
               </div>
               <div>
-                <p className="text-2xl font-bold text-[#0D1F2D]">0 binding</p>
+                <p className="text-2xl font-bold text-[#0D1F2D]">{bindingCount} binding</p>
                 <p className="text-sm text-[#4A8CB5]">Kom i gang i dag</p>
               </div>
             </div>
@@ -369,21 +543,39 @@ export function MarketingHomeContent() {
           <div className="mt-14 grid gap-8 md:grid-cols-3">
             {steps.map((s, idx) => (
               <AnimatedSection key={s.n} direction="up" delay={(idx * 100) as 0 | 100 | 200 | 300}>
-                <div className="relative rounded-2xl border border-sky-100 bg-white p-6">
-                <div className="flex items-start gap-3">
-                  <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-sky-600 text-sm font-bold text-white">
-                    {s.n}
-                  </span>
-                  <div>
-                    <p className="text-lg font-semibold text-[#0D1F2D]">{s.title}</p>
-                    <p className="mt-1 text-sm text-[#2C4A5E]">{s.text}</p>
+                <div
+                  className="relative cursor-pointer rounded-2xl border border-sky-100 bg-white p-6"
+                  onClick={() => setOpenStep(openStep === idx ? null : idx)}
+                >
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="flex items-start gap-3">
+                      <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-sky-600 text-sm font-bold text-white">
+                        {s.n}
+                      </span>
+                      <div>
+                        <p className="text-lg font-semibold text-[#0D1F2D]">{s.title}</p>
+                        <p className="mt-1 text-sm text-[#2C4A5E]">{s.text}</p>
+                      </div>
+                    </div>
+                    <ChevronDown
+                      className={`h-5 w-5 text-sky-600 transition-transform duration-200 ${
+                        openStep === idx ? "rotate-180" : ""
+                      }`}
+                    />
                   </div>
-                </div>
-                {idx < steps.length - 1 ? (
-                  <span className="absolute -right-5 top-1/2 hidden -translate-y-1/2 text-xl text-sky-300 md:block" aria-hidden>
-                    →
-                  </span>
-                ) : null}
+                  <div
+                    className={`overflow-hidden transition-all duration-300 ${
+                      openStep === idx ? "mt-3 max-h-32 opacity-100" : "max-h-0 opacity-0"
+                    }`}
+                  >
+                    <p className="text-sm text-[#2C4A5E]">
+                      {idx === 0
+                        ? "Vi ringer eller skriver til dig inden for én hverdag. Du behøver ikke forberede noget – vi guider dig igennem det hele."
+                        : idx === 1
+                          ? "Fortæl os hvilke systemer og programmer I bruger. Vi tilføjer dem i platformen og sætter overvågning op."
+                          : "Log ind og se status på alt fra dag ét. Opret supportssager, se rapporter og brug AI-assistenten når du har brug for det."}
+                    </p>
+                  </div>
                 </div>
               </AnimatedSection>
             ))}
@@ -397,8 +589,29 @@ export function MarketingHomeContent() {
           <p className="mx-auto mt-4 max-w-2xl text-center text-base text-[#2C4A5E]">
             Vælg den plan der passer til jer i dag, og skift når behovet ændrer sig.
           </p>
+          <div className="mt-10 flex items-center justify-center gap-3">
+            <span className={`text-sm font-medium ${!yearly ? "text-[#0D1F2D]" : "text-[#4A8CB5]"}`}>Månedlig</span>
+            <button
+              onClick={() => setYearly(!yearly)}
+              className={`relative h-6 w-12 rounded-full transition-colors duration-200 ${
+                yearly ? "bg-sky-600" : "bg-slate-200"
+              }`}
+            >
+              <div
+                className={`absolute top-1 h-4 w-4 rounded-full bg-white shadow transition-transform duration-200 ${
+                  yearly ? "translate-x-7" : "translate-x-1"
+                }`}
+              />
+            </button>
+            <span className={`text-sm font-medium ${yearly ? "text-[#0D1F2D]" : "text-[#4A8CB5]"}`}>Årlig</span>
+            {yearly ? (
+              <span className="rounded-full bg-green-100 px-2 py-0.5 text-xs font-semibold text-green-700">
+                Spar 2 måneder
+              </span>
+            ) : null}
+          </div>
           <div className="mt-14 grid gap-5 md:grid-cols-3">
-            {pricePreview.map((plan, index) => (
+            {displayPrice.map((plan, index) => (
               <AnimatedSection key={plan.name} direction="up" delay={(index * 100) as 0 | 100 | 200 | 300}>
                 <article
                   className={`rounded-3xl border px-8 py-10 text-center ${
@@ -408,7 +621,10 @@ export function MarketingHomeContent() {
                   }`}
                 >
                   <p className="text-sm font-semibold uppercase tracking-wide text-[#4A8CB5]">{plan.name}</p>
-                  <p className="mt-4 text-4xl font-bold text-[#0D1F2D]">{plan.price}</p>
+                  <p className={`mt-4 text-4xl font-bold text-[#0D1F2D] transition-opacity duration-200 ${priceFading ? "opacity-0" : "opacity-100"}`}>
+                    {plan.price}
+                  </p>
+                  {yearly ? <p className="mt-1 text-xs text-[#4A8CB5]">faktureres årligt</p> : null}
                 </article>
               </AnimatedSection>
             ))}

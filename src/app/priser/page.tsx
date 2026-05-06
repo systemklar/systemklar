@@ -1,3 +1,6 @@
+"use client";
+
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { CheckCircle } from "lucide-react";
 import { MarketingShell } from "@/components/marketing/MarketingShell";
@@ -15,6 +18,27 @@ const comparisonRows: [string, string, string, string][] = [
 ];
 
 export default function PriserPage() {
+  const [yearly, setYearly] = useState(false);
+  const [priceFading, setPriceFading] = useState(false);
+  const [displayPrice, setDisplayPrice] = useState({
+    starter: "499 kr/md",
+    plus: "1.299 kr/md",
+    pro: "2.499 kr/md",
+  });
+
+  useEffect(() => {
+    setPriceFading(true);
+    const timer = window.setTimeout(() => {
+      setDisplayPrice(
+        yearly
+          ? { starter: "415 kr/md", plus: "1.082 kr/md", pro: "2.082 kr/md" }
+          : { starter: "499 kr/md", plus: "1.299 kr/md", pro: "2.499 kr/md" },
+      );
+      setPriceFading(false);
+    }, 150);
+    return () => window.clearTimeout(timer);
+  }, [yearly]);
+
   return (
     <MarketingShell>
       <main>
@@ -31,10 +55,34 @@ export default function PriserPage() {
 
         <section className="bg-white py-24">
           <div className="mx-auto max-w-7xl px-6">
+            <div className="mb-10 flex items-center justify-center gap-3">
+              <span className={`text-sm font-medium ${!yearly ? "text-[#0D1F2D]" : "text-[#4A8CB5]"}`}>Månedlig</span>
+              <button
+                onClick={() => setYearly(!yearly)}
+                className={`relative h-6 w-12 rounded-full transition-colors duration-200 ${
+                  yearly ? "bg-sky-600" : "bg-slate-200"
+                }`}
+              >
+                <div
+                  className={`absolute top-1 h-4 w-4 rounded-full bg-white shadow transition-transform duration-200 ${
+                    yearly ? "translate-x-7" : "translate-x-1"
+                  }`}
+                />
+              </button>
+              <span className={`text-sm font-medium ${yearly ? "text-[#0D1F2D]" : "text-[#4A8CB5]"}`}>Årlig</span>
+              {yearly ? (
+                <span className="rounded-full bg-green-100 px-2 py-0.5 text-xs font-semibold text-green-700">
+                  Spar 2 måneder
+                </span>
+              ) : null}
+            </div>
             <div className="grid gap-6 md:grid-cols-3">
               <article className="rounded-2xl border border-sky-200 bg-white p-8 shadow-sm">
                 <h3 className="text-xl font-semibold text-[#0D1F2D]">STARTER</h3>
-                <p className="mt-2 text-3xl font-bold text-[#0D1F2D]">499 kr/md</p>
+                <p className={`mt-2 text-3xl font-bold text-[#0D1F2D] transition-opacity duration-200 ${priceFading ? "opacity-0" : "opacity-100"}`}>
+                  {displayPrice.starter}
+                </p>
+                {yearly ? <p className="mt-1 text-xs text-[#4A8CB5]">faktureres årligt</p> : null}
                 <ul className="mt-6 space-y-3 text-sm text-[#2C4A5E]">
                   {["IT-dashboard og overblik", "Support & sager", "Kodebank", "Op til 3 brugere"].map((item) => (
                     <li key={item} className="flex items-start gap-2">
@@ -53,7 +101,10 @@ export default function PriserPage() {
                   Mest populær
                 </span>
                 <h3 className="text-xl font-semibold text-[#0D1F2D]">PLUS</h3>
-                <p className="mt-2 text-3xl font-bold text-[#0D1F2D]">1.299 kr/md</p>
+                <p className={`mt-2 text-3xl font-bold text-[#0D1F2D] transition-opacity duration-200 ${priceFading ? "opacity-0" : "opacity-100"}`}>
+                  {displayPrice.plus}
+                </p>
+                {yearly ? <p className="mt-1 text-xs text-[#4A8CB5]">faktureres årligt</p> : null}
                 <ul className="mt-6 space-y-3 text-sm text-[#2C4A5E]">
                   {["Alt i Starter", "Månedlig IT-rapport", "AI-assistent", "Op til 10 brugere"].map((item) => (
                     <li key={item} className="flex items-start gap-2">
@@ -69,7 +120,10 @@ export default function PriserPage() {
 
               <article className="rounded-2xl border border-sky-200 bg-white p-8 shadow-sm">
                 <h3 className="text-xl font-semibold text-[#0D1F2D]">PRO</h3>
-                <p className="mt-2 text-3xl font-bold text-[#0D1F2D]">2.499 kr/md</p>
+                <p className={`mt-2 text-3xl font-bold text-[#0D1F2D] transition-opacity duration-200 ${priceFading ? "opacity-0" : "opacity-100"}`}>
+                  {displayPrice.pro}
+                </p>
+                {yearly ? <p className="mt-1 text-xs text-[#4A8CB5]">faktureres årligt</p> : null}
                 <ul className="mt-6 space-y-3 text-sm text-[#2C4A5E]">
                   {["Alt i Plus", "AI Tilbudsgenerator", "Prioriteret support", "Dedikeret kontaktperson", "Ubegrænset brugere"].map(
                     (item) => (
