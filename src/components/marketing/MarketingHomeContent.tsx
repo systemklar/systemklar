@@ -236,6 +236,7 @@ export function MarketingHomeContent() {
   const [pairIndex, setPairIndex] = useState(0);
   const [typedQuestion, setTypedQuestion] = useState("");
   const [showAnswer, setShowAnswer] = useState(false);
+  const [activeAI, setActiveAI] = useState(0);
   const typingTimeoutRef = useRef<number | null>(null);
   const stepDelayRef = useRef<number | null>(null);
   const [calculatorStep, setCalculatorStep] = useState(1);
@@ -482,7 +483,7 @@ export function MarketingHomeContent() {
         </div>
       </section>
 
-      <section className="bg-white py-24 md:py-32">
+      <section className="bg-[#F0F7FF] py-24 md:py-32">
         <div className="mx-auto max-w-5xl px-6">
           <h2 className="text-center text-3xl font-bold tracking-tight text-[#0D1F2D] md:text-4xl">
             Alt på ét sted – præcis som det er
@@ -611,39 +612,62 @@ export function MarketingHomeContent() {
           <p className="mx-auto mt-4 max-w-2xl text-center text-base text-white/70">
             Tre enkle værktøjer, der hjælper dig med de opgaver, som normalt tager unødigt lang tid.
           </p>
-          <div className="mt-16 grid gap-6 md:grid-cols-3 md:gap-8">
-            {toolFeatures.map((item, index) => {
-              const Icon = item.icon;
-              return (
-                <AnimatedSection key={item.title} direction="up" delay={(index * 100) as 0 | 100 | 200 | 300}>
-                  <Link href={item.href} className="group block">
-                    <article className="flex h-full flex-col rounded-2xl border border-white/20 bg-white/10 p-6 backdrop-blur-sm transition-all duration-200 hover:bg-white/15">
-                      <div className="mb-5 flex h-12 w-12 items-center justify-center rounded-xl bg-white/10">
-                        <Icon className="h-6 w-6 text-white" />
-                      </div>
-                      <h3 className="text-lg font-semibold text-white">{item.title}</h3>
-                      <p className="mt-3 text-sm leading-relaxed text-white/70">{item.text}</p>
-                      {index === 1 ? (
-                        <div className="mt-4 rounded-xl border border-white/20 bg-white/10 p-3 text-xs">
-                          <div className="ml-auto max-w-[92%] rounded-xl rounded-tr-sm bg-white/20 px-2 py-1 text-white">
-                            {typedQuestion}
-                            <span className="animate-pulse">|</span>
-                          </div>
-                          <div
-                            className={`mt-2 max-w-[95%] rounded-xl rounded-tl-sm border border-white/20 bg-white/10 px-2 py-1 text-white/80 transition-opacity duration-300 ${
-                              showAnswer ? "opacity-100" : "opacity-0"
-                            }`}
-                          >
-                            {typePairs[pairIndex].a}
-                          </div>
-                        </div>
-                      ) : null}
-                      <span className="mt-4 text-sm text-sky-300 transition-colors hover:text-sky-200">Se mere →</span>
-                    </article>
-                  </Link>
-                </AnimatedSection>
-              );
-            })}
+          <div className="mt-16 grid gap-8 md:grid-cols-3">
+            <div className="space-y-3 md:col-span-1">
+              {toolFeatures.map((item, index) => {
+                const Icon = item.icon;
+                const isActive = activeAI === index;
+                return (
+                  <button
+                    key={item.title}
+                    onMouseEnter={() => setActiveAI(index)}
+                    className={`flex w-full items-center gap-3 rounded-xl p-4 text-left transition-all ${
+                      isActive ? "border-l-2 border-sky-400 bg-white/20" : "bg-transparent hover:bg-white/10"
+                    }`}
+                  >
+                    <Icon className="h-5 w-5 text-white" />
+                    <span className="text-sm font-semibold text-white">{item.title}</span>
+                    {isActive ? <span className="ml-auto text-sm text-sky-200">→</span> : null}
+                  </button>
+                );
+              })}
+            </div>
+            <AnimatedSection key={toolFeatures[activeAI].title} direction="up" className="md:col-span-2">
+              <div className="rounded-2xl border border-white/20 bg-white/10 p-8 backdrop-blur-sm transition-all duration-300 hover:bg-white/15">
+                <div className="mb-5 flex h-12 w-12 items-center justify-center rounded-xl bg-white/10">
+                  {(() => {
+                    const Icon = toolFeatures[activeAI].icon;
+                    return <Icon className="h-6 w-6 text-white" />;
+                  })()}
+                </div>
+                <h3 className="mb-3 text-xl font-bold text-white">{toolFeatures[activeAI].title}</h3>
+                <p className="mb-6 text-white/80">
+                  {activeAI === 0
+                    ? "Beskriv hvad kunden skal bruge. Få et professionelt tilbud klar til at sende – uden at bruge en time på det."
+                    : activeAI === 1
+                      ? "Stil IT-spørgsmål og få svar du faktisk forstår. Ingen teknisk jargon, bare klare svar."
+                      : "Ét sted til alle passwords. Kun du og dit team har adgang – aldrig mere tid spildt på at finde logins."}
+                </p>
+                {activeAI === 1 ? (
+                  <div className="rounded-xl border border-white/20 bg-white/10 p-4 text-sm text-white/80">
+                    <div className="ml-auto max-w-[88%] rounded-xl rounded-tr-sm bg-white/20 px-3 py-2 text-white">
+                      {typedQuestion}
+                      <span className="animate-pulse">|</span>
+                    </div>
+                    <div
+                      className={`mt-2 max-w-[92%] rounded-xl rounded-tl-sm border border-white/20 bg-white/10 px-3 py-2 transition-opacity duration-300 ${
+                        showAnswer ? "opacity-100" : "opacity-0"
+                      }`}
+                    >
+                      {typePairs[pairIndex].a}
+                    </div>
+                  </div>
+                ) : null}
+                <Link href={toolFeatures[activeAI].href} className="mt-6 inline-flex text-sky-300 hover:text-sky-200">
+                  Læs mere →
+                </Link>
+              </div>
+            </AnimatedSection>
           </div>
         </div>
       </section>
@@ -688,7 +712,7 @@ export function MarketingHomeContent() {
         </div>
       </section>
 
-      <section className="bg-[#F0F7FF] py-24 md:py-32">
+      <section className="bg-white py-24 md:py-32">
         <div className="mx-auto max-w-5xl px-6">
           <h2 className="text-center text-3xl font-bold tracking-tight text-[#0D1F2D] md:text-4xl">Sådan fungerer det</h2>
           <p className="mx-auto mt-4 max-w-2xl text-center text-base text-[#2C4A5E]">
@@ -719,7 +743,7 @@ export function MarketingHomeContent() {
         </div>
       </section>
 
-      <section className="bg-white py-24">
+      <section className="bg-[#F0F7FF] py-24">
         <div className="mx-auto max-w-3xl px-6">
           <p className="mb-2 text-center text-xs font-semibold uppercase tracking-widest text-sky-600">Prøv det selv →</p>
           <div className="mx-auto max-w-3xl rounded-3xl bg-gradient-to-br from-[#0A6EBD] to-[#062840] p-1">
@@ -1015,7 +1039,7 @@ export function MarketingHomeContent() {
           <p className="mx-auto mt-4 max-w-2xl text-center text-base text-[#2C4A5E]">
             Vælg den plan der passer til jer i dag, og skift når behovet ændrer sig.
           </p>
-          <div className="mt-10 flex items-center justify-center gap-3">
+          <div className="mt-10 flex min-h-8 items-center justify-center gap-3">
             <span className={`text-sm font-medium ${!yearly ? "text-[#0D1F2D]" : "text-[#4A8CB5]"}`}>Månedlig</span>
             <button
               onClick={() => setYearly(!yearly)}
@@ -1031,7 +1055,7 @@ export function MarketingHomeContent() {
             </button>
             <span className={`text-sm font-medium ${yearly ? "text-[#0D1F2D]" : "text-[#4A8CB5]"}`}>Årlig</span>
             <span
-              className={`rounded-full bg-green-100 px-2 py-0.5 text-xs font-semibold text-green-700 transition-opacity duration-200 ${
+              className={`min-w-[110px] rounded-full bg-green-100 px-2 py-0.5 text-center text-xs font-semibold text-green-700 transition-opacity duration-200 ${
                 yearly ? "opacity-100" : "pointer-events-none opacity-0"
               }`}
             >
