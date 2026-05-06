@@ -2,9 +2,8 @@
 
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
-import { FormEvent, useCallback, useEffect, useMemo, useState } from "react";
+import { FormEvent, useCallback, useEffect, useState } from "react";
 import { StatusBadge, formatDanishDateTime } from "@/components/tickets/StatusBadge";
-import { createClient } from "@/lib/supabase";
 
 type OrgProfile = {
   id: string;
@@ -77,13 +76,13 @@ function initialsOf(profile: OrgProfile | OrgInvitation) {
 }
 
 export default function AdminCustomerDetailPage() {
-  const supabase = useMemo(() => createClient(), []);
   const params = useParams();
   const router = useRouter();
   const id = typeof params.id === "string" ? params.id : "";
 
   const [org, setOrg] = useState<OrganisationDetail | null>(null);
   const [loading, setLoading] = useState(true);
+  const [notFound, setNotFound] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [inviteModalOpen, setInviteModalOpen] = useState(false);
   const [inviteEmail, setInviteEmail] = useState("");
@@ -94,30 +93,73 @@ export default function AdminCustomerDetailPage() {
 
   const load = useCallback(async () => {
     if (!id) {
+      setOrg(null);
+      setNotFound(false);
+      setError(null);
       setLoading(false);
       return;
     }
     setLoading(true);
     setError(null);
+    setNotFound(false);
 
-    const { data, error: fetchError } = await supabase
-      .from("organisations")
-      .select(
-        "id,name,created_at,profiles(id, full_name, email, role, avatar_initials, created_at), invitations(id, email, contact_name, role, accepted_at, created_at), tickets(id, title, status, created_by_name, created_at), systems(id, name, type, status, last_checked)"
-      )
-      .eq("id", id)
-      .maybeSingle();
+    try {
+      const res = await fetch(`/api/admin/organisations/${encodeURIComponent(id)}`, {
+        credentials: "include",
+        redirect: "manual",
+      });
 
-    if (fetchError || !data) {
+      if (res.status >= 300 && res.status < 400) {
+        console.warn("[admin/customers/[id]] organisation redirect", res.status);
+        setOrg(null);
+        setNotFound(false);
+        setError("Session udløbet. Genindlæs siden og log ind igen.");
+        return;
+      }
+
+      const contentType = res.headers.get("content-type") ?? "";
+      if (!contentType.includes("application/json")) {
+        const text = await res.text();
+        console.error("[admin/customers/[id]] non-JSON", res.status, text.slice(0, 300));
+        setOrg(null);
+        setNotFound(false);
+        setError("Uventet svar fra serveren.");
+        return;
+      }
+
+      const payload = (await res.json()) as { error?: string; organisation?: unknown };
+
+      if (res.status === 404) {
+        setOrg(null);
+        setNotFound(true);
+        setError(null);
+        return;
+      }
+
+      if (!res.ok) {
+        setOrg(null);
+        setNotFound(false);
+        setError(payload.error ?? "Kunne ikke hente virksomhed.");
+        return;
+      }
+
+      if (!payload.organisation) {
+        setOrg(null);
+        setNotFound(true);
+        setError(null);
+        return;
+      }
+
+      setOrg(payload.organisation as OrganisationDetail);
+    } catch (e) {
+      console.error("[admin/customers/[id]] fetch organisation", e);
       setOrg(null);
-      setError(fetchError?.message ?? "Kunde ikke fundet.");
+      setNotFound(false);
+      setError("Netværksfejl. Prøv igen.");
+    } finally {
       setLoading(false);
-      return;
     }
-
-    setOrg(data as unknown as OrganisationDetail);
-    setLoading(false);
-  }, [id, supabase]);
+  }, [id]);
 
   useEffect(() => {
     queueMicrotask(() => {
@@ -189,7 +231,9 @@ export default function AdminCustomerDetailPage() {
         <Link href="/admin/customers" className="text-sm font-semibold text-sky-700 hover:underline">
           ← Kunder
         </Link>
-        <p className="mt-6 text-sm text-slate-600">{error || "Virksomhed ikke fundet."}</p>
+        <p className="mt-6 text-sm text-slate-600">
+          {notFound ? "Kunde ikke fundet." : error ?? "Virksomhed ikke fundet."}
+        </p>
       </div>
     );
   }
