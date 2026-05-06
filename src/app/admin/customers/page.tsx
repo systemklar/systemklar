@@ -107,30 +107,68 @@ export default function AdminCustomersPage() {
       return;
     }
 
-    const res = await fetch("/api/admin/invite-customer", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${session.access_token}`,
-      },
-      body: JSON.stringify({
-        email: em,
-        contact_name: contact,
-        company_name: co,
-        role,
-      }),
-    });
+    const body = {
+      contactName: contact,
+      email: em,
+      organisationName: co,
+      role,
+    };
 
-    const payload = (await res.json().catch(() => ({}))) as { error?: string };
-    if (!res.ok) {
-      setFormError(payload.error ?? "Kunne ikke oprette kunde.");
+    console.log("Opretter kunde:", body);
+
+    try {
+      const res = await fetch("/api/admin/invite-customer", {
+        method: "POST",
+        credentials: "include",
+        redirect: "manual",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${session.access_token}`,
+        },
+        body: JSON.stringify(body),
+      });
+
+      if (res.status >= 300 && res.status < 400) {
+        console.warn("[admin/customers] invite-customer redirect", res.status, res.headers.get("location"));
+        setFormError(
+          "Du blev sendt væk fra API’et (typisk udløbet session). Genindlæs siden og log ind som admin igen.",
+        );
+        setSubmitting(false);
+        return;
+      }
+
+      const contentType = res.headers.get("content-type") ?? "";
+      if (!contentType.includes("application/json")) {
+        const text = await res.text();
+        console.error("[admin/customers] invite-customer non-JSON", res.status, text.slice(0, 500));
+        setFormError(
+          "Uventet svar fra serveren (ikke JSON). Tjek at du er logget ind i admin, og prøv igen.",
+        );
+        setSubmitting(false);
+        return;
+      }
+
+      const data = (await res.json()) as { error?: string; ok?: boolean; warning?: string; organisation_id?: string };
+      console.log("API response:", res.status, data);
+
+      if (!res.ok) {
+        setFormError(data.error ?? "Noget gik galt. Prøv igen.");
+        setSubmitting(false);
+        return;
+      }
+
+      if (typeof data.warning === "string" && data.warning.trim()) {
+        setActionError(data.warning.trim());
+      }
+
       setSubmitting(false);
-      return;
+      closeModal();
+      void loadData();
+    } catch (err) {
+      console.error("[admin/customers] invite-customer fetch failed", err);
+      setFormError("Netværksfejl eller uventet afbrydelse. Prøv igen.");
+      setSubmitting(false);
     }
-
-    setSubmitting(false);
-    closeModal();
-    void loadData();
   };
 
   return (
@@ -154,7 +192,9 @@ export default function AdminCustomersPage() {
       {loading ? (
         <p className="mt-10 text-sm text-slate-500">Henter kunder...</p>
       ) : orgs.length === 0 ? (
-        <p className="mt-10 text-sm text-slate-600">Ingen kunder endnu. Opret den forste med "Ny kunde".</p>
+        <p className="mt-10 text-sm text-slate-600">
+          Ingen kunder endnu. Opret den første med &quot;Ny kunde&quot;.
+        </p>
       ) : (
         <div className="mt-8 grid grid-cols-1 gap-4">
           {orgs.map((org) => {
@@ -293,8 +333,6 @@ export default function AdminCustomersPage() {
                 </select>
               </div>
 
-              {formError ? <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">{formError}</p> : null}
-
               <div className="flex justify-end gap-3 pt-2">
                 <button
                   type="button"
@@ -311,6 +349,9 @@ export default function AdminCustomersPage() {
                   {submitting ? "Opretter..." : "Opret"}
                 </button>
               </div>
+              {formError ? (
+                <p className="mt-2 text-sm text-red-500">{formError}</p>
+              ) : null}
             </form>
           </div>
         </div>
