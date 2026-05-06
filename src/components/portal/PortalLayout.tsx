@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Users } from "lucide-react";
+import { User, Users } from "lucide-react";
 import {
   createContext,
   useContext,
@@ -23,7 +23,8 @@ export type PortalNavKey =
   | "systems"
   | "vault"
   | "ai"
-  | "team";
+  | "team"
+  | "profile";
 
 function LockIcon() {
   return (
@@ -108,6 +109,7 @@ const navItems: { label: string; href: string; key: PortalNavKey; icon?: ReactNo
   },
   { label: "AI-assistent", href: "/portal/ai-assistent", key: "ai", icon: <AiIcon /> },
   { label: "Team", href: "/portal/team", key: "team", icon: <Users className="h-4 w-4 text-sky-600" />, adminOnly: true },
+  { label: "Profil", href: "/portal/profil", key: "profile", icon: <User className="h-4 w-4 text-sky-600" /> },
 ];
 
 type PortalSession = {

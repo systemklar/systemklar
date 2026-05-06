@@ -12,7 +12,7 @@ type AcceptedCustomerRow = {
   avatar_initials: string | null;
   organisation_id: string | null;
   created_at: string;
-  organisations: { name: string } | { name: string }[] | null;
+  organisations: { name: string } | null;
 };
 
 type PendingInvitationRow = {
@@ -22,13 +22,11 @@ type PendingInvitationRow = {
   contact_name: string | null;
   created_at: string;
   expires_at: string;
-  organisations: { name: string } | { name: string }[] | null;
+  organisations: { name: string } | null;
 };
 
-function orgNameOf(row: { organisations: { name: string } | { name: string }[] | null }) {
-  return Array.isArray(row.organisations)
-    ? row.organisations[0]?.name ?? "Ukendt organisation"
-    : row.organisations?.name ?? "Ukendt organisation";
+function orgNameOf(row: { organisations: { name: string } | null }) {
+  return row.organisations?.name ?? "Ukendt organisation";
 }
 
 export default function AdminCustomersPage() {
@@ -51,12 +49,12 @@ export default function AdminCustomersPage() {
     const [customersRes, invitesRes] = await Promise.all([
       supabase
         .from("profiles")
-        .select("id, email, full_name, role, avatar_initials, organisation_id, created_at, organisations(name)")
+        .select("*, organisations(name)")
         .not("organisation_id", "is", null)
         .order("created_at", { ascending: false }),
       supabase
         .from("invitations")
-        .select("id, email, role, contact_name, created_at, expires_at, organisations(name)")
+        .select("*, organisations(name)")
         .is("accepted_at", null)
         .gt("expires_at", new Date().toISOString())
         .order("created_at", { ascending: false }),

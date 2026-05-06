@@ -78,7 +78,7 @@ export default function PortalTeamPage() {
 
   const handleInvite = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    if (!organisationId) return;
+    if (!organisationId || !isOrgAdmin) return;
     setSavingInvite(true);
     setError(null);
 
@@ -106,6 +106,7 @@ export default function PortalTeamPage() {
   };
 
   const cancelInvite = async (inviteId: string) => {
+    if (!isOrgAdmin) return;
     const { error: cancelError } = await supabase.from("invitations").delete().eq("id", inviteId);
     if (cancelError) {
       setError(cancelError.message);
