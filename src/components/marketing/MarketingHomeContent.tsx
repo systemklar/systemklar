@@ -1,14 +1,14 @@
 "use client";
 
 import Link from "next/link";
-import { Bell, FileText, MessageSquare, Monitor, ShieldCheck, Users } from "lucide-react";
+import { FileSignature, FileText, Lock, MessageSquare, Monitor, Sparkles } from "lucide-react";
 import { ScrollReveal } from "./ScrollReveal";
 
-const features = [
+const platformFeatures = [
   {
     n: "01",
     icon: Monitor,
-    title: "Vi holder øje med jeres systemer",
+    title: "Vi holder øje med dine systemer",
     text: "Du kan altid se om alt kører, og du får besked hvis noget driller.",
     href: "/platformen",
   },
@@ -16,36 +16,39 @@ const features = [
     n: "02",
     icon: MessageSquare,
     title: "Få hjælp uden ventetid",
-    text: "Opret en sag, følg status, og se hvad næste skridt er i almindeligt sprog.",
+    text: "Opret en sag, følg status, og se hvad næste skridt er – i almindeligt sprog.",
     href: "/ai-vaerktoejer",
   },
   {
     n: "03",
-    icon: Bell,
-    title: "Du får besked med det samme",
-    text: "Når noget ændrer sig, får du en tydelig besked uden du skal lede efter den.",
-    href: "/priser",
-  },
-  {
-    n: "04",
-    icon: ShieldCheck,
-    title: "Tryg og sikker adgang",
-    text: "Kun de rigtige personer har adgang, og alt er samlet ét sikkert sted.",
-    href: "/platformen",
-  },
-  {
-    n: "05",
     icon: FileText,
     title: "Rapporter du kan forstå",
     text: "Se kort hvad der fungerer, hvad der skal fixes, og hvad du bør gøre nu.",
     href: "/platformen",
   },
+];
+
+const toolFeatures = [
   {
-    n: "06",
-    icon: Users,
-    title: "Alt samlet i én platform",
-    text: "Support, status og opgaver ligger samme sted, så du sparer tid i hverdagen.",
-    href: "/kontakt",
+    n: "01",
+    icon: FileSignature,
+    title: "Tilbud på 2 minutter",
+    text: "Beskriv hvad kunden skal bruge. Få et færdigt tilbud klar til at sende.",
+    href: "/ai-vaerktoejer",
+  },
+  {
+    n: "02",
+    icon: Sparkles,
+    title: "Spørg løs på dansk",
+    text: "Stil spørgsmål om din IT og få et svar du faktisk forstår.",
+    href: "/ai-vaerktoejer",
+  },
+  {
+    n: "03",
+    icon: Lock,
+    title: "Adgangskoder samlet sikkert",
+    text: "Ét sted til alle passwords – kun du og dit team har adgang.",
+    href: "/platformen",
   },
 ];
 
@@ -155,12 +158,41 @@ export function MarketingHomeContent() {
 
       <section className="bg-white py-24 md:py-32">
         <div className="mx-auto max-w-5xl px-6">
-          <h2 className="text-center text-3xl font-bold tracking-tight text-[#0D1F2D] md:text-4xl">Alt hvad I har brug for</h2>
+          <h2 className="text-center text-3xl font-bold tracking-tight text-[#0D1F2D] md:text-4xl">
+            Hvad du får med systemklar
+          </h2>
           <p className="mx-auto mt-4 max-w-2xl text-center text-base text-[#2C4A5E]">
             Alt det vigtigste samlet i ét roligt overblik, så du kan fokusere på din forretning.
           </p>
           <div className="mt-16 grid gap-6 md:grid-cols-3 md:gap-8">
-            {features.map((item, index) => (
+            {platformFeatures.map((item, index) => (
+              <ScrollReveal key={item.title} staggerMs={index * 120} className="stagger-item">
+                <Link href={item.href} className="group block">
+                  <article className="rounded-2xl border border-sky-100 bg-white p-8 shadow-sm">
+                    <div className="mb-5 flex h-12 w-12 items-center justify-center rounded-xl bg-sky-50">
+                      <item.icon className="h-6 w-6 text-sky-600" aria-hidden />
+                    </div>
+                    <h3 className="text-lg font-semibold text-[#0D1F2D]">{item.title}</h3>
+                    <p className="mt-3 text-sm leading-relaxed text-[#2C4A5E]">{item.text}</p>
+                    <p className="mt-4 text-sm font-medium text-sky-600">Se mere →</p>
+                  </article>
+                </Link>
+              </ScrollReveal>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="bg-[#F0F7FF] py-24 md:py-32">
+        <div className="mx-auto max-w-5xl px-6">
+          <h2 className="text-center text-3xl font-bold tracking-tight text-[#0D1F2D] md:text-4xl">
+            Værktøjer der gør arbejdet for dig
+          </h2>
+          <p className="mx-auto mt-4 max-w-2xl text-center text-base text-[#2C4A5E]">
+            Praktiske værktøjer, så du kan løse opgaver hurtigere uden ekstra systemer.
+          </p>
+          <div className="mt-16 grid gap-6 md:grid-cols-3 md:gap-8">
+            {toolFeatures.map((item, index) => (
               <ScrollReveal key={item.title} staggerMs={index * 120} className="stagger-item">
                 <Link href={item.href} className="group block">
                   <article className="rounded-2xl border border-sky-100 bg-white p-8 shadow-sm">
@@ -206,7 +238,7 @@ export function MarketingHomeContent() {
           </div>
           <div className="overflow-hidden rounded-3xl border border-sky-100 bg-white">
             <div className="px-8 py-10">
-              <p className="text-lg font-semibold text-[#0D1F2D]">Benjamin Sorensen</p>
+              <p className="text-lg font-semibold text-[#0D1F2D]">Benjamin Sørensen</p>
               <p className="mt-1 text-sm text-[#4A8CB5]">Grundlægger, systemklar</p>
             </div>
             <div className="bg-[#062840] px-8 py-8">
@@ -224,18 +256,20 @@ export function MarketingHomeContent() {
           <p className="mx-auto mt-4 max-w-2xl text-center text-base text-[#2C4A5E]">
             Tre enkle trin, så du hurtigt får overblik uden at ændre hele din hverdag.
           </p>
-          <div className="mt-14 flex flex-wrap items-center justify-center gap-4 text-center">
+          <div className="mt-14 grid gap-8 md:grid-cols-3">
             {steps.map((s, idx) => (
-              <div key={s.n} className="flex items-center gap-4">
-                <div className="relative text-left">
-                  <p className="absolute -left-1 -top-8 text-7xl font-extrabold text-sky-100">{s.n}</p>
-                  <div className="relative z-10 pt-4">
+              <div key={s.n} className="relative rounded-2xl border border-sky-100 bg-white p-6">
+                <div className="flex items-start gap-3">
+                  <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-sky-600 text-sm font-bold text-white">
+                    {s.n}
+                  </span>
+                  <div>
                     <p className="text-lg font-semibold text-[#0D1F2D]">{s.title}</p>
-                    <p className="mt-1 max-w-[220px] text-sm text-[#2C4A5E]">{s.text}</p>
+                    <p className="mt-1 text-sm text-[#2C4A5E]">{s.text}</p>
                   </div>
                 </div>
                 {idx < steps.length - 1 ? (
-                  <span className="pb-5 text-2xl text-neutral-300" aria-hidden>
+                  <span className="absolute -right-5 top-1/2 hidden -translate-y-1/2 text-xl text-sky-300 md:block" aria-hidden>
                     →
                   </span>
                 ) : null}
