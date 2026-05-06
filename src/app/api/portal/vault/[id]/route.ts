@@ -34,7 +34,14 @@ async function getAuthedClient() {
   const {
     data: { user },
   } = await client.auth.getUser();
-  return { client, user };
+  const profile = user
+    ? await client
+        .from("profiles")
+        .select("organisation_id")
+        .eq("id", user.id)
+        .maybeSingle()
+    : { data: null };
+  return { client, user, organisationId: (profile.data?.organisation_id as string | undefined) ?? null };
 }
 
 export async function PUT(request: Request, context: { params: Promise<{ id: string }> }) {
@@ -43,8 +50,8 @@ export async function PUT(request: Request, context: { params: Promise<{ id: str
     return NextResponse.json({ error: "Ugyldigt id." }, { status: 400 });
   }
 
-  const { client, user } = await getAuthedClient();
-  if (!user) {
+  const { client, user, organisationId } = await getAuthedClient();
+  if (!user || !organisationId) {
     return NextResponse.json({ error: "Ikke logget ind." }, { status: 401 });
   }
 
@@ -103,8 +110,8 @@ export async function PUT(request: Request, context: { params: Promise<{ id: str
       notes,
     })
     .eq("id", id)
-    .eq("user_id", user.id)
-    .select("id,user_id,name,username,encrypted_password,url,category,notes,created_at,updated_at")
+    .eq("organisation_id", organisationId)
+    .select("id,organisation_id,name,username,encrypted_password,url,category,notes,created_at,updated_at")
     .maybeSingle();
 
   if (error) {
@@ -124,12 +131,16 @@ export async function DELETE(_request: Request, context: { params: Promise<{ id:
     return NextResponse.json({ error: "Ugyldigt id." }, { status: 400 });
   }
 
-  const { client, user } = await getAuthedClient();
-  if (!user) {
+  const { client, user, organisationId } = await getAuthedClient();
+  if (!user || !organisationId) {
     return NextResponse.json({ error: "Ikke logget ind." }, { status: 401 });
   }
 
-  const { error } = await client.from("vault_entries").delete().eq("id", id).eq("user_id", user.id);
+  const { error } = await client
+    .from("vault_entries")
+    .delete()
+    .eq("id", id)
+    .eq("organisation_id", organisationId);
   if (error) {
     return NextResponse.json({ error: error.message }, { status: 400 });
   }

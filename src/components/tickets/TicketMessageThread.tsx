@@ -10,6 +10,8 @@ export type MessageRow = {
   id: string;
   ticket_id: string;
   user_id: string;
+  sender_name: string | null;
+  sender_role: string | null;
   content: string;
   is_admin: boolean;
   created_at: string;
@@ -34,11 +36,15 @@ function normalizeMessageRow(raw: Record<string, unknown>): MessageRow | null {
     return null;
   }
   const user_id = typeof raw.user_id === "string" ? raw.user_id : "";
+  const sender_name = typeof raw.sender_name === "string" ? raw.sender_name : null;
+  const sender_role = typeof raw.sender_role === "string" ? raw.sender_role : null;
   const created_at = typeof raw.created_at === "string" ? raw.created_at : "";
   return {
     id,
     ticket_id,
     user_id,
+    sender_name,
+    sender_role,
     content,
     is_admin: parseIsAdmin(raw.is_admin),
     created_at,
@@ -167,7 +173,7 @@ export function TicketMessageThread({
     setFetchError(null);
     const { data, error } = await supabase
       .from("messages")
-      .select("id, ticket_id, user_id, content, is_admin, created_at")
+      .select("id, ticket_id, user_id, sender_name, sender_role, content, is_admin, created_at")
       .eq("ticket_id", ticketId)
       .order("created_at", { ascending: true });
 
@@ -291,6 +297,21 @@ export function TicketMessageThread({
       data: { session },
     } = await supabase.auth.getSession();
     const user = session?.user;
+    const senderNameFromAuth =
+      typeof user.user_metadata?.full_name === "string" && user.user_metadata.full_name.trim()
+        ? user.user_metadata.full_name.trim()
+        : user.email?.trim() || (sendAsAdmin ? "Admin" : customerSenderLabel);
+    let senderName = senderNameFromAuth;
+    if (!sendAsAdmin) {
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("full_name")
+        .eq("id", user.id)
+        .maybeSingle();
+      const fullName = profile?.full_name as string | undefined;
+      if (fullName?.trim()) senderName = fullName.trim();
+    }
+
     if (!user) {
       setSendError("Du er ikke logget ind.");
       return;
@@ -305,6 +326,8 @@ export function TicketMessageThread({
       user_id: user.id,
       content: text,
       is_admin: sendAsAdmin,
+      sender_name: senderName,
+      sender_role: sendAsAdmin ? "admin" : "customer",
     });
 
     if (error) {
@@ -351,32 +374,22 @@ export function TicketMessageThread({
             {messages.map((m) => (
               <div
                 key={m.id}
-                className={`flex w-full flex-col ${m.is_admin ? "items-end" : "items-start"}`}
+                className={`flex w-full flex-col ${
+                  m.sender_role === "customer" ? "items-end" : "items-start"
+                }`}
               >
-                <span
-                  className={`mb-1 block max-w-[14rem] truncate text-xs font-semibold ${
-                    m.is_admin
-                      ? "uppercase tracking-wide text-slate-500"
-                      : "normal-case tracking-normal text-blue-600"
-                  }`}
-                >
-                  {m.is_admin ? "Systemklar" : customerSenderLabel}
-                </span>
+                <div className="mb-1 text-xs text-[#4A8CB5]">
+                  {(m.sender_name?.trim() || (m.sender_role === "customer" ? customerSenderLabel : "Systemklar"))} ·{" "}
+                  {formatDanishDateTime(m.created_at)}
+                </div>
                 <div
                   className={`max-w-[min(100%,28rem)] rounded-2xl px-4 py-2.5 text-sm shadow-sm ${
-                    m.is_admin
-                      ? "rounded-br-md bg-slate-700 text-white"
-                      : "rounded-bl-md border border-blue-200 bg-blue-50 text-slate-900"
+                    m.sender_role === "customer"
+                      ? "rounded-br-md border border-blue-200 bg-blue-50 text-slate-900"
+                      : "rounded-bl-md bg-slate-700 text-white"
                   }`}
                 >
                   <p className="whitespace-pre-wrap leading-relaxed">{m.content}</p>
-                  <time
-                    className={`mt-1 block text-[11px] ${
-                      m.is_admin ? "text-slate-300" : "text-slate-500"
-                    }`}
-                  >
-                    {formatDanishDateTime(m.created_at)}
-                  </time>
                 </div>
               </div>
             ))}

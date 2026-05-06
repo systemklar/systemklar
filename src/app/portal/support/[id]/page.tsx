@@ -11,8 +11,8 @@ import {
 import { formatDanishDateTime } from "@/components/tickets/StatusBadge";
 import { TicketStatusToggle } from "@/components/tickets/TicketStatusToggle";
 import { TicketMessageThread } from "@/components/tickets/TicketMessageThread";
+import { fetchCurrentProfile } from "@/lib/current-profile";
 import { setTicketLastViewedToNow } from "@/lib/ticket-last-viewed";
-import { fetchCompanyNameForUser } from "@/lib/profile-customer";
 import { createClient } from "@/lib/supabase";
 
 export default function PortalSupportTicketPage() {
@@ -43,9 +43,14 @@ export default function PortalSupportTicketPage() {
       return;
     }
 
-    const row = await fetchTicketWithProfileForUser(supabase, id, user.id);
-    const ownCompanyName = await fetchCompanyNameForUser(supabase, user.id);
-    setCompanyName(ownCompanyName);
+    const profile = await fetchCurrentProfile(supabase, user.id);
+    if (!profile?.organisation_id) {
+      router.replace("/portal/support");
+      setLoading(false);
+      return;
+    }
+    const row = await fetchTicketWithProfileForUser(supabase, id, profile.organisation_id);
+    setCompanyName(profile.company_name ?? null);
 
     if (!row) {
       console.error("[ticket] load failed");
@@ -77,13 +82,15 @@ export default function PortalSupportTicketPage() {
     } = await supabase.auth.getSession();
     const user = session?.user;
     if (!user) return;
+    const profile = await fetchCurrentProfile(supabase, user.id);
+    if (!profile?.organisation_id) return;
 
     setDeleting(true);
     const { error } = await supabase
       .from("tickets")
       .delete()
       .eq("id", ticket.id)
-      .eq("user_id", user.id);
+      .eq("organisation_id", profile.organisation_id);
 
     if (error) {
       console.error("[ticket] delete", error);

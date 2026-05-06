@@ -2,6 +2,7 @@
 
 import { type FormEvent, useCallback, useEffect, useMemo, useState } from "react";
 import { PortalLayout } from "@/components/portal/PortalLayout";
+import { fetchCurrentProfile } from "@/lib/current-profile";
 import { logSupabaseError } from "@/lib/supabase-error";
 import { createClient } from "@/lib/supabase";
 
@@ -9,7 +10,7 @@ type SystemType = "cloud" | "server" | "netværk" | "software";
 type SystemStatus = "ok" | "advarsel" | "nede";
 type SystemRow = {
   id: string;
-  user_id: string;
+  organisation_id: string;
   name: string;
   type: SystemType;
   status: SystemStatus;
@@ -53,9 +54,20 @@ export default function PortalSystemsPage() {
 
   const load = useCallback(async () => {
     setLoading(true);
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
+    const userId = session?.user?.id;
+    const profile = userId ? await fetchCurrentProfile(supabase, userId) : null;
+    if (!profile?.organisation_id) {
+      setRows([]);
+      setLoading(false);
+      return;
+    }
     const { data, error } = await supabase
       .from("systems")
-      .select("id, user_id, name, type, status, url, notes, last_checked, created_at")
+      .select("id, organisation_id, name, type, status, url, notes, last_checked, created_at")
+      .eq("organisation_id", profile.organisation_id)
       .order("created_at", { ascending: false });
     if (error) {
       logSupabaseError("[portal/systemer] list", error);
@@ -111,12 +123,17 @@ export default function PortalSystemsPage() {
       setFormError("Session udløbet. Log ind igen.");
       return;
     }
+    const profile = await fetchCurrentProfile(supabase, userId);
+    if (!profile?.organisation_id) {
+      setFormError("Organisation ikke fundet for brugeren.");
+      return;
+    }
 
     setSaving(true);
     setFormError(null);
 
     const payload = {
-      user_id: userId,
+      organisation_id: profile.organisation_id,
       name: trimmedName,
       type,
       status,
@@ -126,7 +143,11 @@ export default function PortalSystemsPage() {
     };
 
     if (editing) {
-      const { error } = await supabase.from("systems").update(payload).eq("id", editing.id);
+      const { error } = await supabase
+        .from("systems")
+        .update(payload)
+        .eq("id", editing.id)
+        .eq("organisation_id", profile.organisation_id);
       if (error) {
         logSupabaseError("[portal/systemer] update", error);
         setFormError(error.message);
@@ -152,7 +173,19 @@ export default function PortalSystemsPage() {
     const ok = window.confirm(`Slet systemet "${row.name}"?`);
     if (!ok) return;
     setDeletingId(row.id);
-    const { error } = await supabase.from("systems").delete().eq("id", row.id);
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
+    const profile = session?.user?.id ? await fetchCurrentProfile(supabase, session.user.id) : null;
+    if (!profile?.organisation_id) {
+      setDeletingId(null);
+      return;
+    }
+    const { error } = await supabase
+      .from("systems")
+      .delete()
+      .eq("id", row.id)
+      .eq("organisation_id", profile.organisation_id);
     setDeletingId(null);
     if (error) {
       logSupabaseError("[portal/systemer] delete", error);

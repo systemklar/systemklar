@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { mergeTicketRowsWithProfiles, resolveDisplayProfilesForUserIds } from "@/lib/admin-ticket-profiles";
+import { mergeTicketRowsWithProfiles, resolveDisplayProfilesForOrganisationIds } from "@/lib/admin-ticket-profiles";
 import { requireAdminSession } from "@/lib/require-admin-api";
 import { createServiceRoleClient } from "@/lib/supabase-service-role";
 
@@ -15,7 +15,7 @@ export async function GET() {
 
   const { data: tickets, error } = await admin
     .from("tickets")
-    .select("id, title, description, status, user_id, created_at")
+    .select("id, title, description, status, organisation_id, created_at")
     .order("created_at", { ascending: false });
 
   if (error) {
@@ -24,8 +24,8 @@ export async function GET() {
   }
 
   const rows = tickets ?? [];
-  const userIds = rows.map((t) => t.user_id as string).filter(Boolean);
-  const profileByUserId = await resolveDisplayProfilesForUserIds(admin, userIds);
+  const organisationIds = rows.map((t) => t.organisation_id as string).filter(Boolean);
+  const profileByUserId = await resolveDisplayProfilesForOrganisationIds(admin, organisationIds);
   const merged = mergeTicketRowsWithProfiles(
     rows as unknown as Record<string, unknown>[],
     profileByUserId,

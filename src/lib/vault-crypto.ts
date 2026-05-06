@@ -51,7 +51,7 @@ export type VaultCategory = (typeof VAULT_CATEGORIES)[number];
 
 export type VaultEntryRow = {
   id: string;
-  user_id: string;
+  organisation_id: string;
   name: string;
   username: string | null;
   encrypted_password: string | null;

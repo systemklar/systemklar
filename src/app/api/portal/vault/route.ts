@@ -31,19 +31,26 @@ async function getAuthedClient() {
   const {
     data: { user },
   } = await client.auth.getUser();
-  return { client, user };
+  const profile = user
+    ? await client
+        .from("profiles")
+        .select("organisation_id")
+        .eq("id", user.id)
+        .maybeSingle()
+    : { data: null };
+  return { client, user, organisationId: (profile.data?.organisation_id as string | undefined) ?? null };
 }
 
 export async function GET() {
-  const { client, user } = await getAuthedClient();
-  if (!user) {
+  const { client, user, organisationId } = await getAuthedClient();
+  if (!user || !organisationId) {
     return NextResponse.json({ error: "Ikke logget ind." }, { status: 401 });
   }
 
   const { data, error } = await client
     .from("vault_entries")
-    .select("id,user_id,name,username,encrypted_password,url,category,notes,created_at,updated_at")
-    .eq("user_id", user.id)
+    .select("id,organisation_id,name,username,encrypted_password,url,category,notes,created_at,updated_at")
+    .eq("organisation_id", organisationId)
     .order("created_at", { ascending: false });
 
   if (error) {
@@ -60,8 +67,8 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
-  const { client, user } = await getAuthedClient();
-  if (!user) {
+  const { client, user, organisationId } = await getAuthedClient();
+  if (!user || !organisationId) {
     return NextResponse.json({ error: "Ikke logget ind." }, { status: 401 });
   }
 
@@ -112,7 +119,7 @@ export async function POST(request: Request) {
   const { data, error } = await client
     .from("vault_entries")
     .insert({
-      user_id: user.id,
+      organisation_id: organisationId,
       name,
       username,
       encrypted_password: encryptedPassword,
@@ -120,7 +127,7 @@ export async function POST(request: Request) {
       category,
       notes,
     })
-    .select("id,user_id,name,username,encrypted_password,url,category,notes,created_at,updated_at")
+    .select("id,organisation_id,name,username,encrypted_password,url,category,notes,created_at,updated_at")
     .single();
 
   if (error || !data) {

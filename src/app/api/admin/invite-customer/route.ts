@@ -1,14 +1,8 @@
+import { Resend } from "resend";
 import { createClient } from "@supabase/supabase-js";
 import { NextResponse } from "next/server";
 import { isAdminEmail } from "@/lib/admin-email";
-import { getAppOrigin, sendWelcomeEmail } from "@/lib/resend-welcome-email";
-
-const PLANS = ["basis", "standard", "plus"] as const;
-type Plan = (typeof PLANS)[number];
-
-function isPlan(v: unknown): v is Plan {
-  return typeof v === "string" && (PLANS as readonly string[]).includes(v);
-}
+import { getAppOrigin, getResendFromAddress } from "@/lib/resend-welcome-email";
 
 function createUserClient(accessToken: string) {
   return createClient(
@@ -68,15 +62,9 @@ export async function POST(request: Request) {
     typeof body === "object" && body !== null && "company_name" in body
       ? (body as { company_name: unknown }).company_name
       : null;
-  const planRaw =
-    typeof body === "object" && body !== null && "plan" in body
-      ? (body as { plan: unknown }).plan
-      : null;
-
   const email = typeof emailRaw === "string" ? emailRaw.trim().toLowerCase() : "";
   const company_name =
     typeof companyRaw === "string" ? companyRaw.trim() : "";
-  const plan = planRaw;
 
   if (!email || !company_name) {
     return NextResponse.json(
@@ -85,71 +73,53 @@ export async function POST(request: Request) {
     );
   }
 
-  if (!isPlan(plan)) {
-    return NextResponse.json({ error: "Ugyldig plan." }, { status: 400 });
-  }
-
   const admin = getServiceClient();
-  const redirectTo = `${getAppOrigin()}/set-password`;
+  const { data: organisation, error: organisationError } = await admin
+    .from("organisations")
+    .insert({ name: company_name })
+    .select("id,name")
+    .single();
 
-  const { data: inviteData, error: inviteError } =
-    await admin.auth.admin.inviteUserByEmail(email, {
-      data: { company_name },
-      redirectTo,
-    });
-
-  if (inviteError || !inviteData.user) {
-    console.error("[invite-customer] Supabase inviteUserByEmail", {
-      email,
-      message: inviteError?.message,
-      name: inviteError?.name,
-      status: inviteError?.status,
-    });
+  if (organisationError || !organisation) {
     return NextResponse.json(
-      {
-        error:
-          inviteError?.message ??
-          "Kunne ikke sende invitation. E-mailen er måske allerede registreret.",
-      },
-      { status: 400 }
+      { error: organisationError?.message ?? "Kunne ikke oprette organisation." },
+      { status: 400 },
     );
   }
 
-  const userId = inviteData.user.id;
-
-  const nowIso = new Date().toISOString();
-  const { error: profileError } = await admin.from("profiles").insert({
-    user_id: userId,
-    email,
-    company_name,
-    plan,
-    status: "active",
-    invited_at: nowIso,
-  });
-
-  if (profileError) {
-    console.error("[invite-customer] profiles insert", {
+  const { data: invitation, error: invitationError } = await admin
+    .from("invitations")
+    .insert({
+      organisation_id: organisation.id,
       email,
-      userId,
-      message: profileError.message,
-      code: profileError.code,
-      details: profileError.details,
-    });
-    await admin.auth.admin.deleteUser(userId);
+      role: "org_admin",
+      invited_by: adminUser.id,
+      expires_at: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+    })
+    .select("token, expires_at")
+    .single();
+
+  if (invitationError || !invitation) {
+    await admin.from("organisations").delete().eq("id", organisation.id);
     return NextResponse.json(
-      { error: profileError.message ?? "Kunne ikke oprette profil." },
-      { status: 400 }
+      { error: invitationError?.message ?? "Kunne ikke oprette invitation." },
+      { status: 400 },
     );
   }
 
-  const welcome = await sendWelcomeEmail(email, company_name);
-  const welcomeEmailSent = welcome.ok;
-  const welcomeEmailError = welcome.ok ? undefined : welcome.error;
+  const inviteUrl = `${getAppOrigin()}/invite?token=${encodeURIComponent(invitation.token as string)}`;
+  const resendKey = process.env.RESEND_API_KEY?.trim();
+  if (resendKey) {
+    const resend = new Resend(resendKey);
+    await resend.emails.send({
+      from: getResendFromAddress(),
+      to: email,
+      subject: "Du er inviteret til systemklar",
+      html: `<p>Hej, du er inviteret til ${organisation.name} på systemklar.</p>
+<p>Klik her for at oprette din profil: <a href="${inviteUrl}">${inviteUrl}</a></p>
+<p>Linket udløber om 7 dage.</p>`,
+    });
+  }
 
-  return NextResponse.json({
-    ok: true,
-    user_id: userId,
-    welcomeEmailSent,
-    ...(welcomeEmailError !== undefined ? { welcomeEmailError } : {}),
-  });
+  return NextResponse.json({ ok: true, organisation_id: organisation.id });
 }

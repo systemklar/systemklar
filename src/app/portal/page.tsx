@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { PortalLayout, usePortalSession } from "@/components/portal/PortalLayout";
 import { AnimatedSection } from "@/components/ui/AnimatedSection";
+import { fetchCurrentProfile } from "@/lib/current-profile";
 import { StatusBadge } from "@/components/tickets/StatusBadge";
 import { createClient } from "@/lib/supabase";
 
@@ -62,15 +63,28 @@ function DashboardContent() {
       } = await supabase.auth.getSession();
       const user = authSession?.user;
       if (!user) return;
+      const profile = await fetchCurrentProfile(supabase, user.id);
+      if (!profile?.organisation_id) {
+        setSystems([]);
+        setRecentTickets([]);
+        setCompanyName(null);
+        setSystemsLoading(false);
+        return;
+      }
       const [systemsRes, ticketsRes, companyRes] = await Promise.all([
-        supabase.from("systems").select("id, name, status, type").order("created_at", { ascending: false }).limit(4),
+        supabase
+          .from("systems")
+          .select("id, name, status, type")
+          .eq("organisation_id", profile.organisation_id)
+          .order("created_at", { ascending: false })
+          .limit(4),
         supabase
           .from("tickets")
           .select("id,title,status,created_at")
-          .eq("user_id", user.id)
+          .eq("organisation_id", profile.organisation_id)
           .order("created_at", { ascending: false })
           .limit(5),
-        supabase.from("profiles").select("company_name").eq("user_id", user.id).maybeSingle(),
+        supabase.from("organisations").select("name").eq("id", profile.organisation_id).maybeSingle(),
       ]);
       if (cancelled) return;
       if (systemsRes.error) {
@@ -82,8 +96,8 @@ function DashboardContent() {
         ((ticketsRes.data ?? []) as { id: string; title: string; status: string; created_at: string }[]) ?? [],
       );
       setCompanyName(
-        companyRes.data?.company_name && companyRes.data.company_name.trim()
-          ? companyRes.data.company_name.trim()
+        companyRes.data?.name && companyRes.data.name.trim()
+          ? companyRes.data.name.trim()
           : null,
       );
       setSystemsLoading(false);

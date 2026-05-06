@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { Users } from "lucide-react";
 import {
   createContext,
   useContext,
@@ -11,6 +12,7 @@ import {
   type ReactNode,
 } from "react";
 import { SystemklarLogo } from "@/components/branding/SystemklarLogo";
+import { fetchCurrentProfile } from "@/lib/current-profile";
 import { createClient } from "@/lib/supabase";
 
 export type PortalNavKey =
@@ -20,7 +22,8 @@ export type PortalNavKey =
   | "tilbudsgenerator"
   | "systems"
   | "vault"
-  | "ai";
+  | "ai"
+  | "team";
 
 function LockIcon() {
   return (
@@ -91,7 +94,7 @@ function AiIcon() {
   );
 }
 
-const navItems: { label: string; href: string; key: PortalNavKey; icon?: ReactNode }[] = [
+const navItems: { label: string; href: string; key: PortalNavKey; icon?: ReactNode; adminOnly?: boolean }[] = [
   { label: "Overblik", href: "/portal", key: "dashboard", icon: <HomeIcon /> },
   { label: "Support & sager", href: "/portal/support", key: "support", icon: <TicketIcon /> },
   { label: "Kodebank", href: "/portal/kodebank", key: "vault", icon: <LockIcon /> },
@@ -104,10 +107,15 @@ const navItems: { label: string; href: string; key: PortalNavKey; icon?: ReactNo
     icon: <SparklesIcon />,
   },
   { label: "AI-assistent", href: "/portal/ai-assistent", key: "ai", icon: <AiIcon /> },
+  { label: "Team", href: "/portal/team", key: "team", icon: <Users className="h-4 w-4 text-sky-600" />, adminOnly: true },
 ];
 
 type PortalSession = {
   email: string | null;
+  userId: string | null;
+  organisationId: string | null;
+  role: string | null;
+  fullName: string | null;
 };
 
 const PortalSessionContext = createContext<PortalSession | null>(null);
@@ -127,23 +135,33 @@ export function PortalLayout({ children, activeNav }: PortalLayoutProps) {
   const supabase = useMemo(() => createClient(), []);
   const [isLoading, setIsLoading] = useState(true);
   const [userEmail, setUserEmail] = useState<string | null>(null);
+  const [userId, setUserId] = useState<string | null>(null);
+  const [role, setRole] = useState<string | null>(null);
+  const [organisationId, setOrganisationId] = useState<string | null>(null);
+  const [fullName, setFullName] = useState<string | null>(null);
 
   useEffect(() => {
     let cancelled = false;
 
-    const applySession = (session: { user: { email?: string | null } } | null) => {
+    const applySession = async (session: { user: { id: string; email?: string | null } } | null) => {
       if (cancelled) return;
       if (!session?.user) {
         router.replace("/login");
         return;
       }
+      const profile = await fetchCurrentProfile(supabase, session.user.id);
+      if (cancelled) return;
       setUserEmail(session.user.email ?? null);
+      setUserId(session.user.id);
+      setRole(profile?.role ?? null);
+      setOrganisationId(profile?.organisation_id ?? null);
+      setFullName(profile?.full_name ?? null);
       setIsLoading(false);
     };
 
     void supabase.auth.getSession().then(({ data: { session } }) => {
       if (session?.user) {
-        applySession(session);
+        void applySession(session);
       }
     });
 
@@ -151,11 +169,11 @@ export function PortalLayout({ children, activeNav }: PortalLayoutProps) {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((event, session) => {
       if (event === "INITIAL_SESSION") {
-        applySession(session);
+        void applySession(session);
         return;
       }
       if (event === "SIGNED_IN" && session?.user) {
-        applySession(session);
+        void applySession(session);
         return;
       }
       if (event === "SIGNED_OUT") {
@@ -184,8 +202,10 @@ export function PortalLayout({ children, activeNav }: PortalLayoutProps) {
     );
   }
 
+  const visibleNavItems = navItems.filter((item) => !item.adminOnly || role === "org_admin");
+
   return (
-    <PortalSessionContext.Provider value={{ email: userEmail }}>
+    <PortalSessionContext.Provider value={{ email: userEmail, userId, organisationId, role, fullName }}>
       <main className="surface-cards min-h-screen bg-[#F5FAFD] text-[#1C1917]">
         <div className="mx-auto flex min-h-screen w-full max-w-7xl">
           <aside className="w-full max-w-72 border-r border-sky-100 bg-[#F5FAFD] p-6">
@@ -197,7 +217,7 @@ export function PortalLayout({ children, activeNav }: PortalLayoutProps) {
             </Link>
 
             <nav className="mt-6 space-y-1.5">
-              {navItems.map((item) => {
+              {visibleNavItems.map((item) => {
                 const isActive = item.key === activeNav;
                 return (
                   <Link

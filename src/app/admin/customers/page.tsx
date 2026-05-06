@@ -94,16 +94,31 @@ export default function AdminCustomersPage() {
     setSubmitting(true);
     setFormError(null);
 
-    const { error } = await supabase.from("profiles").insert({
-      email: em,
-      company_name: co,
-      plan,
-      status: "active",
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
+    if (!session?.access_token) {
+      setFormError("Session udløbet. Log ind igen.");
+      setSubmitting(false);
+      return;
+    }
+
+    const res = await fetch("/api/admin/invite-customer", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${session.access_token}`,
+      },
+      body: JSON.stringify({
+        email: em,
+        company_name: co,
+        plan,
+      }),
     });
 
-    if (error) {
-      console.error("[admin/customers] insert", error);
-      setFormError(error.message);
+    const payload = (await res.json().catch(() => ({}))) as { error?: string };
+    if (!res.ok) {
+      setFormError(payload.error ?? "Kunne ikke oprette kunde.");
       setSubmitting(false);
       return;
     }

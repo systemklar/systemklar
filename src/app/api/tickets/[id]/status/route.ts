@@ -79,7 +79,7 @@ export async function PATCH(
 
   const { data: ticketRow, error: fetchErr } = await admin
     .from("tickets")
-    .select("user_id")
+    .select("organisation_id")
     .eq("id", id)
     .maybeSingle();
 
@@ -87,9 +87,15 @@ export async function PATCH(
     return NextResponse.json({ error: "Ticket ikke fundet." }, { status: 404 });
   }
 
-  const ownerId = ticketRow.user_id as string;
+  const ownerOrgId = ticketRow.organisation_id as string;
+  const { data: requesterProfile } = await admin
+    .from("profiles")
+    .select("organisation_id")
+    .eq("id", user.id)
+    .maybeSingle();
+  const requesterOrgId = requesterProfile?.organisation_id as string | undefined;
 
-  if (!isAdminEmail(user.email) && ownerId !== user.id) {
+  if (!isAdminEmail(user.email) && (!requesterOrgId || requesterOrgId !== ownerOrgId)) {
     return NextResponse.json({ error: "Ingen adgang." }, { status: 403 });
   }
 

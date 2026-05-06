@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { type FormEvent, useCallback, useEffect, useMemo, useState } from "react";
 import { PortalLayout } from "@/components/portal/PortalLayout";
+import { fetchCurrentProfile } from "@/lib/current-profile";
 import { formatDanishDateTime } from "@/components/tickets/StatusBadge";
 import { formatDkk, serviceUnitLabel } from "@/lib/service-units";
 import { logSupabaseError } from "@/lib/supabase-error";
@@ -80,9 +81,19 @@ export default function PortalTilbudsgeneratorPage() {
 
   const loadServices = useCallback(async () => {
     setServicesLoading(true);
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
+    const profile = session?.user?.id ? await fetchCurrentProfile(supabase, session.user.id) : null;
+    if (!profile?.organisation_id) {
+      setServices([]);
+      setServicesLoading(false);
+      return;
+    }
     const { data, error } = await supabase
       .from("services")
       .select("id, name, description, price, unit, created_at")
+      .eq("organisation_id", profile.organisation_id)
       .order("name", { ascending: true });
     if (error) {
       logSupabaseError("[portal/tilbudsgenerator] services", error);
@@ -95,9 +106,19 @@ export default function PortalTilbudsgeneratorPage() {
 
   const loadQuotes = useCallback(async () => {
     setQuotesLoading(true);
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
+    const profile = session?.user?.id ? await fetchCurrentProfile(supabase, session.user.id) : null;
+    if (!profile?.organisation_id) {
+      setQuotes([]);
+      setQuotesLoading(false);
+      return;
+    }
     const { data, error } = await supabase
       .from("quotes")
       .select("id, title, recipient_email, status, created_at, sent_at")
+      .eq("organisation_id", profile.organisation_id)
       .order("created_at", { ascending: false });
     if (error) {
       logSupabaseError("[portal/tilbudsgenerator] quotes", error);
@@ -160,13 +181,18 @@ export default function PortalTilbudsgeneratorPage() {
       setFormError("Session udløbet. Log ind igen.");
       return;
     }
+    const profile = await fetchCurrentProfile(supabase, userId);
+    if (!profile?.organisation_id) {
+      setFormError("Organisation ikke fundet.");
+      return;
+    }
 
     setSavingService(true);
     setFormError(null);
 
     if (modalMode === "create") {
       const { error } = await supabase.from("services").insert({
-        user_id: userId,
+        organisation_id: profile.organisation_id,
         name: n,
         description: description.trim() || null,
         price: priceNum,
@@ -179,6 +205,10 @@ export default function PortalTilbudsgeneratorPage() {
         return;
       }
     } else if (modalMode === "edit" && editing) {
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+      const profile = session?.user?.id ? await fetchCurrentProfile(supabase, session.user.id) : null;
       const { error } = await supabase
         .from("services")
         .update({
@@ -187,7 +217,8 @@ export default function PortalTilbudsgeneratorPage() {
           price: priceNum,
           unit,
         })
-        .eq("id", editing.id);
+        .eq("id", editing.id)
+        .eq("organisation_id", profile?.organisation_id ?? "");
       if (error) {
         logSupabaseError("[portal/tilbudsgenerator] update", error);
         setFormError(error.message);
@@ -205,7 +236,15 @@ export default function PortalTilbudsgeneratorPage() {
     const ok = window.confirm(`Slet ydelsen "${r.name}"?`);
     if (!ok) return;
     setDeletingId(r.id);
-    const { error } = await supabase.from("services").delete().eq("id", r.id);
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
+    const profile = session?.user?.id ? await fetchCurrentProfile(supabase, session.user.id) : null;
+    const { error } = await supabase
+      .from("services")
+      .delete()
+      .eq("id", r.id)
+      .eq("organisation_id", profile?.organisation_id ?? "");
     setDeletingId(null);
     if (error) {
       logSupabaseError("[portal/tilbudsgenerator] delete", error);
@@ -284,6 +323,11 @@ export default function PortalTilbudsgeneratorPage() {
       setActionError("Session udløbet. Log ind igen.");
       return null;
     }
+    const profile = await fetchCurrentProfile(supabase, userId);
+    if (!profile?.organisation_id) {
+      setActionError("Organisation ikke fundet.");
+      return null;
+    }
 
     const t = title.trim() || `Tilbud — ${new Intl.DateTimeFormat("da-DK", { dateStyle: "medium" }).format(new Date())}`;
     const c = content.trim();
@@ -299,7 +343,8 @@ export default function PortalTilbudsgeneratorPage() {
       const { error } = await supabase
         .from("quotes")
         .update({ title: t, content: c, recipient_email: email, status: "draft" })
-        .eq("id", quoteId);
+        .eq("id", quoteId)
+        .eq("organisation_id", profile.organisation_id);
       setSavingQuote(false);
       if (error) {
         logSupabaseError("[portal/tilbudsgenerator] quote update", error);
@@ -313,7 +358,7 @@ export default function PortalTilbudsgeneratorPage() {
     const { data, error } = await supabase
       .from("quotes")
       .insert({
-        user_id: userId,
+        organisation_id: profile.organisation_id,
         recipient_email: email,
         title: t,
         content: c,

@@ -1,10 +1,10 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { UNKNOWN_COMPANY_LABEL } from "@/lib/profile-customer";
 
-/** PostgREST-embed når FK tickets.user_id → profiles.user_id findes (migration 005). */
+/** PostgREST-embed når FK tickets.organisation_id → organisations/profiles findes. */
 export const TICKET_SELECT_WITH_PROFILE =
-  "id,title,description,status,user_id,created_at,profiles(company_name,email)";
-export const TICKET_SELECT_BASE = "id,title,description,status,user_id,created_at";
+  "id,title,description,status,organisation_id,created_at,profiles(company_name,email)";
+export const TICKET_SELECT_BASE = "id,title,description,status,organisation_id,created_at";
 
 export type ProfileEmbed = {
   company_name: string;
@@ -16,7 +16,7 @@ export type TicketWithProfileRow = {
   title: string;
   description: string | null;
   status: string;
-  user_id: string;
+  organisation_id: string;
   created_at: string;
   profiles: ProfileEmbed;
 };
@@ -46,10 +46,10 @@ export function companyFromTicketRow(row: TicketWithProfileRow): string {
 export function normalizeTicketWithProfile(raw: Record<string, unknown>): TicketWithProfileRow | null {
   const id = raw.id;
   const title = raw.title;
-  const user_id = raw.user_id;
+  const organisation_id = raw.organisation_id;
   const created_at = raw.created_at;
   const status = raw.status;
-  if (typeof id !== "string" || typeof title !== "string" || typeof user_id !== "string") {
+  if (typeof id !== "string" || typeof title !== "string" || typeof organisation_id !== "string") {
     return null;
   }
   const description =
@@ -60,7 +60,7 @@ export function normalizeTicketWithProfile(raw: Record<string, unknown>): Ticket
     title,
     description,
     status: typeof status === "string" ? status : "active",
-    user_id,
+    organisation_id,
     created_at: typeof created_at === "string" ? created_at : "",
     profiles: normalizeProfileEmbed(raw.profiles),
   };
@@ -83,17 +83,17 @@ export async function fetchTicketWithProfileById(
   return normalizeTicketWithProfile(data as Record<string, unknown>);
 }
 
-/** Portal: ticket skal tilhøre den angivne bruger. */
+/** Portal: ticket skal tilhøre den angivne organisation. */
 export async function fetchTicketWithProfileForUser(
   client: SupabaseClient,
   ticketId: string,
-  userId: string,
+  organisationId: string,
 ): Promise<TicketWithProfileRow | null> {
   const { data, error } = await client
     .from("tickets")
     .select(TICKET_SELECT_BASE)
     .eq("id", ticketId)
-    .eq("user_id", userId)
+    .eq("organisation_id", organisationId)
     .maybeSingle();
 
   if (error || !data) {

@@ -57,6 +57,15 @@ export async function POST(request: Request) {
   if (!user) {
     return NextResponse.json({ error: "Ingen adgang." }, { status: 403 });
   }
+  const { data: profile } = await supabaseAuth
+    .from("profiles")
+    .select("organisation_id")
+    .eq("id", user.id)
+    .maybeSingle();
+  const organisationId = profile?.organisation_id as string | undefined;
+  if (!organisationId) {
+    return NextResponse.json({ error: "Organisation ikke fundet." }, { status: 400 });
+  }
 
   let body: unknown;
   try {
@@ -88,7 +97,7 @@ export async function POST(request: Request) {
   const { data: services, error: sErr } = await supabaseAuth
     .from("services")
     .select("id, name, description, price, unit")
-    .eq("user_id", user.id)
+    .eq("organisation_id", organisationId)
     .in("id", ids);
 
   if (sErr) {

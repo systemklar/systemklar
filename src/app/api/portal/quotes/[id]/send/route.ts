@@ -45,12 +45,21 @@ export async function POST(
   if (!user) {
     return NextResponse.json({ error: "Ingen adgang." }, { status: 403 });
   }
+  const { data: profile } = await supabaseAuth
+    .from("profiles")
+    .select("organisation_id")
+    .eq("id", user.id)
+    .maybeSingle();
+  const organisationId = profile?.organisation_id as string | undefined;
+  if (!organisationId) {
+    return NextResponse.json({ error: "Organisation ikke fundet." }, { status: 400 });
+  }
 
   const { data: quote, error: qErr } = await supabaseAuth
     .from("quotes")
     .select("id, title, content, recipient_email, status")
     .eq("id", id)
-    .eq("user_id", user.id)
+    .eq("organisation_id", organisationId)
     .maybeSingle();
 
   if (qErr) {
@@ -88,7 +97,7 @@ export async function POST(
     .from("quotes")
     .update({ status: "sent", sent_at: sentAt })
     .eq("id", id)
-    .eq("user_id", user.id);
+    .eq("organisation_id", organisationId);
 
   if (updErr) {
     console.error("[api/portal/quotes/send] update", updErr);

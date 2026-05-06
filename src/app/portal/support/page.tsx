@@ -5,13 +5,13 @@ import { FormEvent, useCallback, useEffect, useMemo, useState } from "react";
 import { PortalLayout } from "@/components/portal/PortalLayout";
 import { TicketUnreadCountBadge } from "@/components/tickets/TicketUnreadCountBadge";
 import { formatDanishDateTime, StatusBadge } from "@/components/tickets/StatusBadge";
+import { fetchCurrentProfile } from "@/lib/current-profile";
 import {
   normalizeTicketWithProfile,
   TICKET_SELECT_BASE,
   type TicketWithProfileRow,
 } from "@/lib/tickets-with-profile";
 import { fetchUnreadMessageCountsByTicket } from "@/lib/ticket-last-viewed";
-import { fetchCompanyNameForUser } from "@/lib/profile-customer";
 import { createClient } from "@/lib/supabase";
 
 export type { TicketWithProfileRow as TicketRow } from "@/lib/tickets-with-profile";
@@ -35,13 +35,18 @@ export default function PortalSupportPage() {
     const user = session?.user;
     if (!user) return;
 
-    const ownCompanyName = await fetchCompanyNameForUser(supabase, user.id);
-    setCompanyName(ownCompanyName);
+    const profile = await fetchCurrentProfile(supabase, user.id);
+    if (!profile?.organisation_id) {
+      setTickets([]);
+      setUnreadByTicket({});
+      return;
+    }
+    setCompanyName(profile.company_name ?? null);
 
     const { data, error } = await supabase
       .from("tickets")
       .select(TICKET_SELECT_BASE)
-      .eq("user_id", user.id)
+      .eq("organisation_id", profile.organisation_id)
       .order("created_at", { ascending: false });
 
     if (error) {
@@ -55,7 +60,7 @@ export default function PortalSupportPage() {
     const rows = (data ?? [])
       .map((r) => normalizeTicketWithProfile(r as unknown as Record<string, unknown>))
       .filter((x): x is TicketWithProfileRow => x !== null)
-      .filter((x) => x.user_id === user.id);
+      .filter((x) => x.organisation_id === profile.organisation_id);
     setTickets(rows);
     setErrorMessage(null);
 
@@ -87,12 +92,19 @@ export default function PortalSupportPage() {
       setSubmitting(false);
       return;
     }
+    const profile = await fetchCurrentProfile(supabase, user.id);
+    if (!profile?.organisation_id) {
+      setErrorMessage("Organisation ikke fundet.");
+      setSubmitting(false);
+      return;
+    }
 
     const { error } = await supabase.from("tickets").insert({
       title: title.trim(),
       description: description.trim() || null,
       status: "active" as const,
-      user_id: user.id,
+      organisation_id: profile.organisation_id,
+      created_by_name: profile.full_name ?? profile.email ?? "Kunde",
     });
 
     if (error) {
