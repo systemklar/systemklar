@@ -131,6 +131,16 @@ function LoginForm() {
           >
             {isLoading ? "Logger ind..." : "Log ind"}
           </button>
+          <p className="mt-4 text-center text-xs text-[#4A8CB5]">
+            Ved at logge ind accepterer du vores{" "}
+            <a href="/vilkaar" className="text-sky-600 hover:underline">
+              vilkår
+            </a>{" "}
+            og{" "}
+            <a href="/privatlivspolitik" className="text-sky-600 hover:underline">
+              privatlivspolitik
+            </a>
+          </p>
       </form>
       <Link href="/" className="mt-6 inline-block text-sm font-semibold text-sky-600 hover:underline">
         Tilbage til forsiden

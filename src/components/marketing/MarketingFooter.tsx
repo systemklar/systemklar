@@ -55,6 +55,26 @@ export function MarketingFooter() {
                 Kontakt
               </Link>
             </li>
+            <li>
+              <Link href="/privatlivspolitik" className="text-[#7AAEC8] text-sm transition-colors hover:text-white">
+                Privatlivspolitik
+              </Link>
+            </li>
+            <li>
+              <Link href="/cookiepolitik" className="text-[#7AAEC8] text-sm transition-colors hover:text-white">
+                Cookiepolitik
+              </Link>
+            </li>
+            <li>
+              <Link href="/vilkaar" className="text-[#7AAEC8] text-sm transition-colors hover:text-white">
+                Vilkår
+              </Link>
+            </li>
+            <li>
+              <Link href="/databehandleraftale" className="text-[#7AAEC8] text-sm transition-colors hover:text-white">
+                Databehandleraftale
+              </Link>
+            </li>
           </ul>
         </div>
         <div>
