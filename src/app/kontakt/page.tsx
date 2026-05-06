@@ -15,16 +15,18 @@ export default function KontaktPage() {
           />
         </div>
 
-        <div className="mx-auto mt-16 grid max-w-6xl gap-12 px-6 md:mt-20 lg:grid-cols-12 lg:items-start">
-          <ScrollReveal className="lg:col-span-7" staggerMs={0}>
-            <ContactForm />
-          </ScrollReveal>
-          <ScrollReveal className="lg:col-span-5" staggerMs={100}>
-            <div className="lg:sticky lg:top-28">
-              <MarketingContactAside concise={false} />
-            </div>
-          </ScrollReveal>
-        </div>
+        <section className="mt-16 bg-[#F0F7FF] py-14 md:mt-20 md:py-20">
+          <div className="mx-auto grid max-w-6xl gap-12 px-6 lg:grid-cols-12 lg:items-start">
+            <ScrollReveal className="lg:col-span-7" staggerMs={0}>
+              <ContactForm />
+            </ScrollReveal>
+            <ScrollReveal className="lg:col-span-5" staggerMs={100}>
+              <div className="lg:sticky lg:top-28">
+                <MarketingContactAside concise={false} />
+              </div>
+            </ScrollReveal>
+          </div>
+        </section>
       </main>
     </MarketingShell>
   );

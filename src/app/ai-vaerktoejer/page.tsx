@@ -1,25 +1,26 @@
 import Link from "next/link";
+import { Bot, FileText, Sparkles } from "lucide-react";
 import { MarketingShell } from "@/components/marketing/MarketingShell";
 import { MarketingSubpageHero } from "@/components/marketing/MarketingSubpageHero";
 import { ScrollReveal } from "@/components/marketing/ScrollReveal";
 
 const tools = [
   {
-    icon: "01",
+    icon: Bot,
     title: "AI-assistent med indsigt i jeres egne data",
     badge: "Plus",
     description:
       "Få konkrete svar baseret på jeres systemer og sager — ikke generiske råd — så I kan handle hurtigere.",
   },
   {
-    icon: "02",
+    icon: Sparkles,
     title: "AI Tilbudsgenerator",
     badge: "Alle planer",
     description:
       "Byg tilbud ud fra jeres ydelser og priser automatisk og send dem professionelt på få øjeblikke.",
   },
   {
-    icon: "03",
+    icon: FileText,
     title: "AI IT-rapportgenerator",
     badge: "Standard & Plus",
     description:
@@ -60,15 +61,15 @@ export default function AiVaerktoejerPage() {
           </MarketingSubpageHero>
         </section>
 
-        <section className="border-t border-gray-100 bg-[#F7F7F5] py-16 md:py-24">
+        <section className="border-t border-[#D0E8F5] bg-[#F0F7FF] py-16 md:py-24">
           <div className="mx-auto max-w-6xl px-6">
             <div className="grid gap-8 md:grid-cols-3">
               {tools.map((tool, index) => (
                 <ScrollReveal key={tool.title} staggerMs={index * 100} className="h-full">
-                  <article className="card-hover flex h-full flex-col rounded-2xl border border-gray-100 bg-white p-8">
-                    <span className="fade-scale text-3xl font-semibold leading-none text-sky-200" aria-hidden>
-                      {tool.icon}
-                    </span>
+                  <article className="card-hover flex h-full flex-col rounded-2xl border border-[#D0E8F5] bg-white p-8">
+                    <div className="flex h-20 w-20 items-center justify-center rounded-2xl bg-[#F0F7FF]">
+                      <tool.icon className="h-10 w-10 text-sky-600" aria-hidden />
+                    </div>
                     <h2 className="mt-6 text-xl font-semibold text-[#2563EB]">{tool.title}</h2>
                     <p className="mt-3 inline-block w-fit rounded-full bg-[#EFF6FF] px-3 py-1 text-xs font-semibold text-[#1D4ED8]">
                       {tool.badge}
@@ -81,7 +82,8 @@ export default function AiVaerktoejerPage() {
           </div>
         </section>
 
-        <section className="mx-auto max-w-6xl px-6 py-16 md:py-24">
+        <section className="bg-white py-16 md:py-24">
+          <div className="mx-auto max-w-6xl px-6">
           <ScrollReveal staggerMs={0}>
             <div className="rounded-2xl border border-gray-100 bg-[#F7F7F5] px-8 py-10 md:px-12">
               <h3 className="text-xl font-bold text-[#0A0A0A]">Kommende</h3>
@@ -102,13 +104,14 @@ export default function AiVaerktoejerPage() {
           </ScrollReveal>
 
           <ScrollReveal staggerMs={80} className="mt-10">
-            <div className="rounded-2xl border border-gray-100 bg-white px-8 py-10 md:px-12">
+            <div className="rounded-2xl border border-[#D0E8F5] bg-[#F0F7FF] px-8 py-10 md:px-12">
               <h3 className="text-xl font-bold text-[#0A0A0A]">Vigtigt at vide</h3>
               <p className="mt-3 max-w-2xl text-[#6B6B6B]">
                 AI-værktøjerne aktiveres i kundeportalen — log ind eller book en demo for at se dem i aktion.
               </p>
             </div>
           </ScrollReveal>
+          </div>
         </section>
       </main>
     </MarketingShell>

@@ -1,19 +1,23 @@
 import { ScrollReveal } from "./ScrollReveal";
+import { Briefcase, ShieldCheck, Sparkles } from "lucide-react";
 
 const plans = [
   {
     name: "Basis",
     price: "499 kr./md.",
+    icon: Briefcase,
     features: ["IT-overblik", "Support & sager", "Op til 10 brugere", "AI Tilbudsgenerator"],
   },
   {
     name: "Standard",
     price: "1.299 kr./md.",
+    icon: ShieldCheck,
     features: ["Alt i Basis", "Prioriteret support", "Op til 50 brugere", "Månedlig IT-rapport"],
   },
   {
     name: "Plus",
     price: "2.499 kr./md.",
+    icon: Sparkles,
     features: ["Alt i Standard", "AI-værktøjer inkluderet", "Ubegrænset brug", "Dedikeret onboarding"],
     highlighted: true,
   },
@@ -33,7 +37,7 @@ export function PricingSection({ sectionId = "priser", ctaHref = "/book-demo", c
           <ScrollReveal key={plan.name} staggerMs={index * 100} className="h-full">
             <article
               className={`relative flex h-full flex-col rounded-2xl border bg-white p-8 md:p-10 ${
-                plan.highlighted ? "border-[#2563EB] shadow-sm ring-1 ring-[#2563EB]/10" : "border-gray-100"
+                plan.highlighted ? "border-[#2563EB] bg-sky-50 shadow-sm ring-1 ring-[#2563EB]/10" : "border-gray-100"
               }`}
             >
               {plan.highlighted ? (
@@ -41,6 +45,9 @@ export function PricingSection({ sectionId = "priser", ctaHref = "/book-demo", c
                   Mest populær
                 </p>
               ) : null}
+              <div className="mb-5 flex h-12 w-12 items-center justify-center rounded-xl bg-[#F0F7FF]">
+                <plan.icon className="h-6 w-6 text-sky-600" aria-hidden />
+              </div>
               <h3 className="text-xl font-semibold text-[#0A0A0A]">{plan.name}</h3>
               <p className={`mt-5 text-3xl font-bold tracking-tight md:text-4xl ${plan.highlighted ? "text-[#2563EB]" : "text-[#0A0A0A]"}`}>
                 {plan.price}

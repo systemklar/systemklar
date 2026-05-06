@@ -9,7 +9,7 @@ type AuthSplitLayoutProps = {
 
 function CheckIcon() {
   return (
-    <svg viewBox="0 0 20 20" fill="none" className="mt-0.5 h-4 w-4 shrink-0 text-sky-600" aria-hidden>
+    <svg viewBox="0 0 20 20" fill="none" className="mt-0.5 h-4 w-4 shrink-0 text-white" aria-hidden>
       <path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   );
@@ -19,13 +19,18 @@ export function AuthSplitLayout({ title, subtitle, children }: AuthSplitLayoutPr
   return (
     <main className="min-h-screen bg-white text-[#0D1F2D]">
       <div className="grid min-h-screen md:grid-cols-2">
-        <aside className="hidden bg-[#F0F7FF] px-10 py-12 md:flex md:flex-col md:justify-between">
+        <aside className="hidden bg-sky-600 px-10 py-12 md:flex md:flex-col md:justify-between">
           <div>
-            <SystemklarLogo href="/" />
-            <h2 className="mt-12 max-w-md text-4xl font-bold tracking-tight text-[#0D1F2D]">
+            <SystemklarLogo
+              href="/"
+              textClassName="text-sm font-bold tracking-tight text-white"
+              iconColor="#FFFFFF"
+              iconSecondaryOpacity={0.55}
+            />
+            <h2 className="mt-12 max-w-md text-4xl font-bold tracking-tight text-white">
               Få overblik over din virksomheds IT
             </h2>
-            <ul className="mt-8 space-y-4 text-[#4A8CB5]">
+            <ul className="mt-8 space-y-4 text-sky-100">
               <li className="flex items-start gap-3">
                 <CheckIcon />
                 <span>Support og sager samlet ét sted</span>

@@ -1,51 +1,52 @@
 import Link from "next/link";
+import { Bell, Brain, FileText, Home, Lock, MessageSquare, Monitor, Radio, Users } from "lucide-react";
 import { MarketingShell } from "@/components/marketing/MarketingShell";
 import { MarketingSubpageHero } from "@/components/marketing/MarketingSubpageHero";
 import { ScrollReveal } from "@/components/marketing/ScrollReveal";
 
 const features = [
   {
-    icon: "01",
+    icon: Home,
     title: "Kundeportal med dashboard",
     description: "Et samlet dashboard i kundeportalen med overblik over status, hændelser og aktivitet.",
   },
   {
-    icon: "02",
+    icon: Radio,
     title: "IT-systemovervågning",
     description: "Tilføj jeres systemer og følg status live — sundhed og ændringer samlet ét sted.",
   },
   {
-    icon: "03",
+    icon: MessageSquare,
     title: "Support & sager",
     description: "Opret og følg sager og chat i realtid med Systemklar, så I altid ved, hvad der sker.",
   },
   {
-    icon: "04",
+    icon: FileText,
     title: "IT-rapporter",
     description: "Månedlige rapporter fra jeres IT-leverandør med drift, trends og konkrete anbefalinger.",
   },
   {
-    icon: "05",
+    icon: Brain,
     title: "AI-assistent",
     description: "Stil spørgsmål om jeres systemer og sager — få hjælp til hurtige afklaringer i hverdagen.",
   },
   {
-    icon: "06",
+    icon: Monitor,
     title: "AI Tilbudsgenerator",
     description: "Generér professionelle tilbud på sekunder med jeres ydelser, priser og kundens behov.",
   },
   {
-    icon: "07",
+    icon: Lock,
     title: "Sikker kodebank",
     description: "Gem logins og følsomme oplysninger sikkert, så teamet nemt finder det, der skal bruges.",
   },
   {
-    icon: "08",
+    icon: Bell,
     title: "Realtids notifikationer",
     description: "Hold jer opdaterede med øjeblikkelige beskeder ved vigtige hændelser og sagopdateringer.",
   },
   {
-    icon: "09",
+    icon: Users,
     title: "Separate login til admin og kunde",
     description: "Tydelig adskillelse mellem administrations- og kundeportal — de rette rettigheder til hver rolle.",
   },
@@ -89,17 +90,21 @@ export default function PlatformenPage() {
           </MarketingSubpageHero>
         </section>
 
-        <section className="border-t border-gray-100 bg-[#F7F7F5] py-16 md:py-24">
+        <section className="border-t border-[#D0E8F5] bg-[#F0F7FF] py-16 md:py-24">
           <div className="mx-auto max-w-6xl px-6">
             <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
               {features.map((feature, index) => (
                 <ScrollReveal key={feature.title} staggerMs={index * 75} className="h-full">
-                  <article className="card-hover flex h-full flex-col rounded-2xl border border-gray-100 bg-white p-8">
-                    <span className="fade-scale text-3xl font-semibold leading-none text-sky-200" aria-hidden>
-                      {feature.icon}
-                    </span>
-                    <h2 className="mt-5 text-lg font-semibold text-[#2563EB]">{feature.title}</h2>
-                    <p className="mt-3 flex-1 leading-relaxed text-[#6B6B6B]">{feature.description}</p>
+                  <article className="card-hover h-full rounded-2xl border border-[#D0E8F5] bg-white p-6">
+                    <div className="grid items-center gap-4 sm:grid-cols-[88px_1fr]">
+                      <div className="flex h-20 items-center justify-center rounded-2xl bg-[#F0F7FF]">
+                        <feature.icon className="h-10 w-10 text-sky-600" aria-hidden />
+                      </div>
+                      <div>
+                        <h2 className="text-lg font-semibold text-[#2563EB]">{feature.title}</h2>
+                        <p className="mt-2 flex-1 leading-relaxed text-[#6B6B6B]">{feature.description}</p>
+                      </div>
+                    </div>
                   </article>
                 </ScrollReveal>
               ))}

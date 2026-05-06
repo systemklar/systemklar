@@ -25,7 +25,7 @@ export default function PriserPage() {
           />
         </div>
 
-        <div className="mt-16 md:mt-24">
+        <div className="mt-16 bg-[#F0F7FF] py-16 md:mt-24 md:py-24">
           <PricingSection sectionId="priser" ctaHref="/book-demo" />
         </div>
 
