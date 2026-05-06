@@ -1,50 +1,68 @@
 import { Resend } from "resend";
+import {
+  EMAIL_TEMPLATE_FALLBACK_RECORD,
+  type EmailTemplateId,
+} from "@/lib/email-template-defaults";
+import { EMAIL_SITE, emailOuterHtml } from "@/lib/email-layout";
+import { escapeHtml } from "@/lib/resend-welcome-email";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
-const FROM = process.env.RESEND_FROM_EMAIL ?? "systemklar <kontakt@systemklar.dk>";
-const SITE = process.env.NEXT_PUBLIC_SITE_URL ?? "https://systemklar.dk";
+export const FROM = process.env.RESEND_FROM_EMAIL ?? "systemklar <kontakt@systemklar.dk>";
+export const SITE = EMAIL_SITE;
 
-function baseTemplate(content: string) {
-  return `
-    <div style="font-family: Inter, Arial, sans-serif; max-width: 560px; margin: 0 auto; color: #0D1F2D;">
-      <div style="background: linear-gradient(135deg, #0A6EBD, #062840); padding: 32px; border-radius: 16px 16px 0 0; text-align: center;">
-        <svg width="32" height="32" viewBox="0 0 18 18" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;">
-          <rect x="1" y="1" width="7" height="7" rx="1.5" fill="#ffffff"/>
-          <rect x="10" y="1" width="7" height="7" rx="1.5" fill="#4FA8E0"/>
-          <rect x="1" y="10" width="7" height="7" rx="1.5" fill="#4FA8E0"/>
-          <rect x="10" y="10" width="7" height="7" rx="1.5" fill="#ffffff"/>
-        </svg>
-        <span style="color: white; font-size: 20px; font-weight: 700; margin-left: 10px; vertical-align: middle;">systemklar</span>
-      </div>
-      <div style="background: #ffffff; padding: 32px; border: 1px solid #D0E8F5; border-top: none;">
-        ${content}
-      </div>
-      <div style="background: #F0F7FF; padding: 16px; border-radius: 0 0 16px 16px; text-align: center; border: 1px solid #D0E8F5; border-top: none;">
-        <p style="color: #7AAEC8; font-size: 12px; margin: 0;">
-          systemklar · CVR 46431596 ·
-          <a href="${SITE}/privatlivspolitik" style="color: #7AAEC8;">Privatlivspolitik</a>
-        </p>
-      </div>
-    </div>
-  `;
-}
+/** @deprecated Brug emailOuterHtml – bevares som alias for evt. import-steder. */
+export const baseTemplate = emailOuterHtml;
 
-function btn(text: string, url: string) {
+export function btn(text: string, url: string) {
   return `<a href="${url}" style="display:inline-block; background:#0A6EBD; color:white; padding:12px 28px; border-radius:999px; text-decoration:none; font-weight:600; font-size:14px; margin:16px 0;">${text}</a>`;
 }
 
+function interpolate(template: string, vars: Record<string, string>): string {
+  return template.replace(/\{\{(\w+)\}\}/g, (_, key: string) => vars[key] ?? "");
+}
+
+async function getTemplate(id: EmailTemplateId): Promise<{ subject: string; body: string }> {
+  const fb = EMAIL_TEMPLATE_FALLBACK_RECORD[id];
+  try {
+    const { createClient } = await import("@/lib/supabase/server");
+    const supabase = await createClient();
+    const { data } = await supabase.from("email_templates").select("subject, body").eq("id", id).maybeSingle();
+    if (data?.subject?.trim() && data?.body?.trim()) {
+      return { subject: data.subject, body: data.body };
+    }
+  } catch {
+    /* ignore */
+  }
+  try {
+    const { createServiceRoleClient } = await import("@/lib/supabase-service-role");
+    const admin = createServiceRoleClient();
+    if (admin) {
+      const { data } = await admin.from("email_templates").select("subject, body").eq("id", id).maybeSingle();
+      if (data?.subject?.trim() && data?.body?.trim()) {
+        return { subject: data.subject, body: data.body };
+      }
+    }
+  } catch {
+    /* ignore */
+  }
+  return fb ?? { subject: "", body: "" };
+}
+
 export async function sendWelcomeEmail(to: string, name: string, orgName: string) {
+  const template = await getTemplate("welcome");
+  const portalButton = btn("Gå til portalen", `${SITE}/portal`);
+  const vars = {
+    name: escapeHtml(name),
+    orgName: escapeHtml(orgName),
+    portalButton,
+  };
+  const subject = interpolate(template.subject, vars);
+  const bodyInner = interpolate(template.body, vars);
   return resend.emails.send({
     from: FROM,
     to,
-    subject: `Velkommen til systemklar, ${name}`,
-    html: baseTemplate(`
-      <h2 style="margin-top:0;">Velkommen til systemklar</h2>
-      <p>Hej ${name},</p>
-      <p>Din profil for <strong>${orgName}</strong> er nu klar. Du kan logge ind og komme i gang med det samme.</p>
-      ${btn("Gå til portalen", `${SITE}/portal`)}
-      <p style="color:#4A8CB5; font-size:13px;">Har du spørgsmål? Skriv til os på <a href="mailto:kontakt@systemklar.dk" style="color:#0A6EBD;">kontakt@systemklar.dk</a></p>
-    `),
+    subject,
+    html: emailOuterHtml(bodyInner),
   });
 }
 
@@ -54,17 +72,21 @@ export async function sendNewTicketEmailToAdmin(
   createdBy: string,
   ticketId: string
 ) {
+  const template = await getTemplate("new_ticket_admin");
+  const adminButton = btn("Se sagen i admin", `${SITE}/admin/tickets/${ticketId}`);
+  const vars = {
+    orgName: escapeHtml(orgName),
+    createdBy: escapeHtml(createdBy),
+    ticketTitle: escapeHtml(ticketTitle),
+    adminButton,
+  };
+  const subject = interpolate(template.subject, vars);
+  const bodyInner = interpolate(template.body, vars);
   return resend.emails.send({
     from: FROM,
     to: "kontakt@systemklar.dk",
-    subject: `Ny sag fra ${orgName}: ${ticketTitle}`,
-    html: baseTemplate(`
-      <h2 style="margin-top:0;">Ny supportssag</h2>
-      <p><strong>Virksomhed:</strong> ${orgName}</p>
-      <p><strong>Oprettet af:</strong> ${createdBy}</p>
-      <p><strong>Emne:</strong> ${ticketTitle}</p>
-      ${btn("Se sagen i admin", `${SITE}/admin/tickets/${ticketId}`)}
-    `),
+    subject,
+    html: emailOuterHtml(bodyInner),
   });
 }
 
@@ -75,19 +97,21 @@ export async function sendTicketReplyEmail(
   ticketId: string,
   preview: string
 ) {
+  const template = await getTemplate("ticket_reply");
+  const ticketButton = btn("Se svaret", `${SITE}/portal/support/${ticketId}`);
+  const vars = {
+    name: escapeHtml(name),
+    ticketTitle: escapeHtml(ticketTitle),
+    messagePreview: escapeHtml(preview),
+    ticketButton,
+  };
+  const subject = interpolate(template.subject, vars);
+  const bodyInner = interpolate(template.body, vars);
   return resend.emails.send({
     from: FROM,
     to,
-    subject: `Nyt svar på din sag: ${ticketTitle}`,
-    html: baseTemplate(`
-      <h2 style="margin-top:0;">Du har fået et svar</h2>
-      <p>Hej ${name},</p>
-      <p>Vi har svaret på din sag <strong>${ticketTitle}</strong>:</p>
-      <div style="background:#F0F7FF; border-left:3px solid #0A6EBD; padding:12px 16px; border-radius:0 8px 8px 0; margin:16px 0; color:#2C4A5E; font-size:14px;">
-        ${preview}
-      </div>
-      ${btn("Se svaret", `${SITE}/portal/support/${ticketId}`)}
-    `),
+    subject,
+    html: emailOuterHtml(bodyInner),
   });
 }
 
@@ -97,17 +121,20 @@ export async function sendTicketClosedEmail(
   ticketTitle: string,
   ticketId: string
 ) {
+  const template = await getTemplate("ticket_closed");
+  const ticketButton = btn("Se sagen", `${SITE}/portal/support/${ticketId}`);
+  const vars = {
+    name: escapeHtml(name),
+    ticketTitle: escapeHtml(ticketTitle),
+    ticketButton,
+  };
+  const subject = interpolate(template.subject, vars);
+  const bodyInner = interpolate(template.body, vars);
   return resend.emails.send({
     from: FROM,
     to,
-    subject: `Sag løst: ${ticketTitle}`,
-    html: baseTemplate(`
-      <h2 style="margin-top:0;">Din sag er løst</h2>
-      <p>Hej ${name},</p>
-      <p>Vi har markeret sagen <strong>${ticketTitle}</strong> som løst.</p>
-      <p>Har du stadig problemer? Svar på denne email eller opret en ny sag i portalen.</p>
-      ${btn("Se sagen", `${SITE}/portal/support/${ticketId}`)}
-    `),
+    subject,
+    html: emailOuterHtml(bodyInner),
   });
 }
 
@@ -118,17 +145,21 @@ export async function sendMonthlyReportEmail(
   reportId: string,
   month: string
 ) {
+  const template = await getTemplate("monthly_report");
+  const reportButton = btn("Se rapporten", `${SITE}/portal/rapport/${reportId}`);
+  const vars = {
+    name: escapeHtml(name),
+    orgName: escapeHtml(orgName),
+    month: escapeHtml(month),
+    reportButton,
+  };
+  const subject = interpolate(template.subject, vars);
+  const bodyInner = interpolate(template.body, vars);
   return resend.emails.send({
     from: FROM,
     to,
-    subject: `Din IT-rapport for ${month} er klar`,
-    html: baseTemplate(`
-      <h2 style="margin-top:0;">IT-rapport klar</h2>
-      <p>Hej ${name},</p>
-      <p>Din månedlige IT-rapport for <strong>${orgName}</strong> for ${month} er nu klar.</p>
-      <p>Rapporten giver dig et overblik over drift, hændelser og anbefalinger for måneden.</p>
-      ${btn("Se rapporten", `${SITE}/portal/rapport/${reportId}`)}
-    `),
+    subject,
+    html: emailOuterHtml(bodyInner),
   });
 }
 
@@ -138,18 +169,20 @@ export async function sendInviteEmail(
   orgName: string,
   inviteUrl: string
 ) {
+  const template = await getTemplate("invite");
+  const inviteButton = btn("Opret din profil", inviteUrl);
+  const vars = {
+    contactName: escapeHtml(contactName),
+    orgName: escapeHtml(orgName),
+    inviteButton,
+  };
+  const subject = interpolate(template.subject, vars);
+  const bodyInner = interpolate(template.body, vars);
   return resend.emails.send({
     from: FROM,
     to,
-    subject: `Du er inviteret til ${orgName} på systemklar`,
-    html: baseTemplate(`
-      <h2 style="margin-top:0;">Du er inviteret til systemklar</h2>
-      <p>Hej ${contactName},</p>
-      <p>Du er blevet inviteret til at få adgang til <strong>${orgName}</strong> på systemklar – en IT-platform der samler support, overblik og dokumentation ét sted.</p>
-      <p>Klik på knappen nedenfor for at oprette din profil. Det tager under 2 minutter.</p>
-      ${btn("Opret din profil", inviteUrl)}
-      <p style="color:#4A8CB5; font-size:13px;">Linket udløber om 7 dage. Har du spørgsmål? Skriv til os på <a href="mailto:kontakt@systemklar.dk" style="color:#0A6EBD;">kontakt@systemklar.dk</a></p>
-    `),
+    subject,
+    html: emailOuterHtml(bodyInner),
   });
 }
 
@@ -159,47 +192,49 @@ export async function sendBookDemoEmail(
   company: string,
   message: string
 ) {
+  const template = await getTemplate("book_demo");
+  const replyButton = btn("Svar på forespørgsel", `mailto:${to}`);
+  const vars = {
+    name: escapeHtml(name),
+    company: escapeHtml(company),
+    email: escapeHtml(to),
+    message: escapeHtml(message || "Ingen besked"),
+    replyButton,
+  };
+  const subject = interpolate(template.subject, vars);
+  const bodyInner = interpolate(template.body, vars);
   return resend.emails.send({
     from: FROM,
     to: "kontakt@systemklar.dk",
-    subject: `Demo-forespørgsel fra ${name} – ${company}`,
-    html: baseTemplate(`
-      <h2 style="margin-top:0;">Ny demo-forespørgsel</h2>
-      <p><strong>Navn:</strong> ${name}</p>
-      <p><strong>Virksomhed:</strong> ${company}</p>
-      <p><strong>Email:</strong> ${to}</p>
-      <p><strong>Besked:</strong></p>
-      <div style="background:#F0F7FF; border-left:3px solid #0A6EBD; padding:12px 16px; border-radius:0 8px 8px 0; margin:16px 0; color:#2C4A5E; font-size:14px;">
-        ${message || "Ingen besked"}
-      </div>
-      ${btn("Svar på forespørgsel", `mailto:${to}`)}
-    `),
+    subject,
+    html: emailOuterHtml(bodyInner),
   });
 }
 
 export async function sendContactEmail(
-  to: string,
+  toRecipient: string,
   name: string,
   company: string,
   email: string,
   phone: string,
   message: string
 ) {
+  const template = await getTemplate("contact");
+  const replyButton = btn("Svar på henvendelse", `mailto:${email}`);
+  const vars = {
+    name: escapeHtml(name),
+    company: escapeHtml(company),
+    email: escapeHtml(email),
+    phone: escapeHtml(phone || "—"),
+    message: escapeHtml(message),
+    replyButton,
+  };
+  const subject = interpolate(template.subject, vars);
+  const bodyInner = interpolate(template.body, vars);
   return resend.emails.send({
     from: FROM,
-    to,
-    subject: `Ny henvendelse fra ${name} – ${company}`,
-    html: baseTemplate(`
-      <h2 style="margin-top:0;">Ny kontakthenvendelse</h2>
-      <p><strong>Navn:</strong> ${name}</p>
-      <p><strong>Virksomhed:</strong> ${company}</p>
-      <p><strong>Email:</strong> <a href="mailto:${email}" style="color:#0A6EBD;">${email}</a></p>
-      ${phone ? `<p><strong>Telefon:</strong> ${phone}</p>` : ""}
-      <p><strong>Besked:</strong></p>
-      <div style="background:#F0F7FF; border-left:3px solid #0A6EBD; padding:12px 16px; border-radius:0 8px 8px 0; margin:16px 0; color:#2C4A5E; font-size:14px;">
-        ${message}
-      </div>
-      ${btn("Svar på henvendelse", `mailto:${email}`)}
-    `),
+    to: toRecipient,
+    subject,
+    html: emailOuterHtml(bodyInner),
   });
 }

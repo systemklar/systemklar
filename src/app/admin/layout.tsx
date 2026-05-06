@@ -18,6 +18,9 @@ function activeNavFromPath(pathname: string): AdminNavKey {
   if (pathname.startsWith("/admin/reports")) {
     return "reports";
   }
+  if (pathname.startsWith("/admin/emails")) {
+    return "emails";
+  }
   if (pathname.startsWith("/admin/systemer")) {
     return "systems";
   }
@@ -26,6 +29,8 @@ function activeNavFromPath(pathname: string): AdminNavKey {
 
 export default function AdminLayout({ children }: { children: ReactNode }) {
   const pathname = usePathname();
+  const access = useAdminAccess();
+
   if (
     pathname === "/admin/login" ||
     pathname === "/admin/forgot-password" ||
@@ -33,8 +38,8 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
   ) {
     return <>{children}</>;
   }
+
   const activeNav = activeNavFromPath(pathname);
-  const access = useAdminAccess();
 
   if (access === "loading") {
     return (
