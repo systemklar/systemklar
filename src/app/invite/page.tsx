@@ -140,6 +140,20 @@ function InviteContent() {
       return;
     }
 
+    try {
+      await fetch("/api/welcome", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: invitation.email,
+          name: fullName.trim(),
+          orgName: orgName || "systemklar",
+        }),
+      });
+    } catch (welcomeError) {
+      console.error("[invite] welcome email", welcomeError);
+    }
+
     router.replace("/portal");
   };
 

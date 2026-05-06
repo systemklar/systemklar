@@ -324,18 +324,21 @@ export function TicketMessageThread({
     setSendError(null);
     setShowTypingIndicator(false);
 
-    const { error } = await supabase.from("messages").insert({
-      ticket_id: ticketId,
-      user_id: user.id,
-      content: text,
-      is_admin: sendAsAdmin,
-      sender_name: senderName,
-      sender_role: sendAsAdmin ? "admin" : "customer",
+    const res = await fetch(`/api/tickets/${ticketId}/messages`, {
+      method: "POST",
+      credentials: "same-origin",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        content: text,
+        sendAsAdmin,
+        senderName,
+      }),
     });
+    const payload = (await res.json().catch(() => ({}))) as { error?: string };
 
-    if (error) {
-      const msg = formatSupabaseError(error);
-      console.error("[messages] insert", { raw: error, formatted: msg });
+    if (!res.ok) {
+      const msg = payload.error ?? "Kunne ikke sende besked.";
+      console.error("[messages] insert api", msg);
       setSendError(msg);
     } else {
       setSendError(null);

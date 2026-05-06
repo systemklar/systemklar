@@ -3,6 +3,7 @@ import { createClient } from "@supabase/supabase-js";
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 import { isAdminEmail } from "@/lib/admin-email";
+import { sendTicketClosedEmail } from "@/lib/email";
 
 const UUID_RE =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
@@ -79,7 +80,7 @@ export async function PATCH(
 
   const { data: ticketRow, error: fetchErr } = await admin
     .from("tickets")
-    .select("organisation_id")
+    .select("organisation_id,title")
     .eq("id", id)
     .maybeSingle();
 
@@ -104,6 +105,29 @@ export async function PATCH(
   if (updErr) {
     console.error("[api/tickets/[id]/status]", updErr);
     return NextResponse.json({ error: updErr.message }, { status: 400 });
+  }
+
+  if (statusRaw === "resolved") {
+    try {
+      const { data: recipients } = await admin
+        .from("profiles")
+        .select("email, full_name, notif_status_change")
+        .eq("organisation_id", ownerOrgId)
+        .eq("notif_status_change", true);
+      const title = ((ticketRow as { title?: string }).title ?? "Supportsag").trim() || "Supportsag";
+      for (const recipient of recipients ?? []) {
+        const email = (recipient.email as string | undefined)?.trim();
+        if (!email) continue;
+        await sendTicketClosedEmail(
+          email,
+          ((recipient.full_name as string | undefined)?.trim() || "der"),
+          title,
+          id
+        );
+      }
+    } catch (error) {
+      console.error("[api/tickets/[id]/status] sendTicketClosedEmail", error);
+    }
   }
 
   return NextResponse.json({ ok: true, status: statusRaw });

@@ -342,24 +342,24 @@ export default function AdminReportsPage() {
       return;
     }
 
-    const { error } = await supabase.from("reports").insert({
-      user_id: customerUserId,
-      title: title.trim(),
-      period: period.trim(),
-      status_summary: statusSummary.trim(),
-      incidents: incidents.trim(),
-      resolved: resolved.trim(),
-      recommendations: recommendations.trim(),
+    const res = await fetch("/api/admin/reports", {
+      method: "POST",
+      credentials: "same-origin",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        user_id: customerUserId,
+        title: title.trim(),
+        period: period.trim(),
+        status_summary: statusSummary.trim(),
+        incidents: incidents.trim(),
+        resolved: resolved.trim(),
+        recommendations: recommendations.trim(),
+      }),
     });
+    const payload = (await res.json().catch(() => ({}))) as { error?: string };
 
-    if (error) {
-      logSupabaseError("[admin/reports] insert", error);
-      const formatted = formatSupabaseError(error);
-      setFormError(
-        [formatted.message, formatted.code && `(${formatted.code})`, formatted.details && `— ${formatted.details}`]
-          .filter(Boolean)
-          .join(" "),
-      );
+    if (!res.ok) {
+      setFormError(payload.error ?? "Kunne ikke oprette rapport.");
       setSubmitting(false);
       return;
     }

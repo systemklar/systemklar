@@ -92,23 +92,19 @@ export default function PortalSupportPage() {
       setSubmitting(false);
       return;
     }
-    const profile = await fetchCurrentProfile(supabase, user.id);
-    if (!profile?.organisation_id) {
-      setErrorMessage("Organisation ikke fundet.");
-      setSubmitting(false);
-      return;
-    }
-
-    const { error } = await supabase.from("tickets").insert({
-      title: title.trim(),
-      description: description.trim() || null,
-      status: "active" as const,
-      organisation_id: profile.organisation_id,
-      created_by_name: profile.full_name ?? profile.email ?? "Kunde",
+    const res = await fetch("/api/tickets", {
+      method: "POST",
+      credentials: "same-origin",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        title: title.trim(),
+        description: description.trim(),
+      }),
     });
+    const payload = (await res.json().catch(() => ({}))) as { error?: string };
 
-    if (error) {
-      setErrorMessage(error.message);
+    if (!res.ok) {
+      setErrorMessage(payload.error ?? "Kunne ikke oprette sag.");
       setSubmitting(false);
       return;
     }
