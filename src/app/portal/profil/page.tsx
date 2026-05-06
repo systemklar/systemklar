@@ -9,11 +9,11 @@ type ProfileRow = {
   full_name: string | null;
   email: string | null;
   avatar_initials: string | null;
-  role: string;
+  role: string | null;
   notif_new_message: boolean | null;
   notif_status_change: boolean | null;
   notif_monthly_report: boolean | null;
-  organisations: { name: string } | null;
+  organisations: { name: string } | { name: string }[] | null;
 };
 
 function buildInitials(name: string) {
@@ -94,7 +94,7 @@ export default function PortalProfilePage() {
       return;
     }
 
-    const next = data as ProfileRow;
+    const next = data as unknown as ProfileRow;
     setProfile(next);
     setFullNameInput(next.full_name ?? "");
     setNotifNewMessage(next.notif_new_message ?? true);
@@ -194,7 +194,9 @@ export default function PortalProfilePage() {
   };
 
   const roleLabel = profile?.role === "org_admin" ? "Administrator" : "Medlem";
-  const organisationName = profile?.organisations?.name ?? "Ukendt organisation";
+  const organisationName = Array.isArray(profile?.organisations)
+    ? profile.organisations[0]?.name ?? "Ukendt organisation"
+    : profile?.organisations?.name ?? "Ukendt organisation";
   const avatarText = profile?.avatar_initials || buildInitials(profile?.full_name ?? "") || "??";
 
   return (
