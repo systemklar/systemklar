@@ -277,10 +277,10 @@ export function MarketingHomeContent() {
             {toolFeatures.map((item, index) => (
               <ScrollReveal key={item.title} staggerMs={index * 120} className="stagger-item">
                 <Link href={item.href} className="group block">
-                  <article className="rounded-2xl border border-sky-100 bg-white p-8 shadow-sm">
-                    <div className="mb-5 rounded-xl border border-sky-100 bg-[#F5FAFD] p-3">
+                  <article className="flex flex-col rounded-2xl border border-sky-100 bg-white p-6 shadow-sm">
+                    <div className="mb-5 flex h-32 w-full items-center justify-center overflow-hidden rounded-xl bg-[#F0F7FF] p-4">
                       {index === 0 ? (
-                        <div>
+                        <div className="w-full">
                           <div className="mb-2 text-[10px] text-[#4A8CB5]">Tilbud - VVS serviceaftale</div>
                           <div className="space-y-1">
                             <div className="h-1.5 w-full rounded bg-sky-100" />
@@ -293,7 +293,7 @@ export function MarketingHomeContent() {
                         </div>
                       ) : null}
                       {index === 1 ? (
-                        <div className="space-y-1.5">
+                        <div className="w-full space-y-1.5">
                           <div className="ml-auto max-w-[80%] rounded-xl rounded-tr-sm bg-sky-600 px-2 py-1 text-[10px] text-white">
                             Hvad betyder oppetid?
                           </div>
@@ -303,7 +303,7 @@ export function MarketingHomeContent() {
                         </div>
                       ) : null}
                       {index === 2 ? (
-                        <div className="space-y-1.5">
+                        <div className="w-full space-y-1.5">
                           {["Microsoft 365", "Dinero", "e-Boks"].map((row) => (
                             <div key={row} className="flex items-center justify-between rounded-lg bg-white px-2 py-1.5">
                               <span className="text-[10px] text-[#2C4A5E]">{row}</span>
