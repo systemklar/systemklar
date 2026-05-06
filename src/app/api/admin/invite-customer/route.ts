@@ -62,13 +62,23 @@ export async function POST(request: Request) {
     typeof body === "object" && body !== null && "company_name" in body
       ? (body as { company_name: unknown }).company_name
       : null;
+  const contactNameRaw =
+    typeof body === "object" && body !== null && "contact_name" in body
+      ? (body as { contact_name: unknown }).contact_name
+      : null;
+  const roleRaw =
+    typeof body === "object" && body !== null && "role" in body
+      ? (body as { role: unknown }).role
+      : null;
   const email = typeof emailRaw === "string" ? emailRaw.trim().toLowerCase() : "";
   const company_name =
     typeof companyRaw === "string" ? companyRaw.trim() : "";
+  const contact_name = typeof contactNameRaw === "string" ? contactNameRaw.trim() : "";
+  const role = roleRaw === "member" ? "member" : "org_admin";
 
-  if (!email || !company_name) {
+  if (!email || !company_name || !contact_name) {
     return NextResponse.json(
-      { error: "E-mail og virksomhedsnavn er påkrævet." },
+      { error: "E-mail, kontaktperson og virksomhedsnavn er påkrævet." },
       { status: 400 }
     );
   }
@@ -92,7 +102,8 @@ export async function POST(request: Request) {
     .insert({
       organisation_id: organisation.id,
       email,
-      role: "org_admin",
+      role,
+      contact_name,
       invited_by: adminUser.id,
       expires_at: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
     })
@@ -115,7 +126,7 @@ export async function POST(request: Request) {
       from: getResendFromAddress(),
       to: email,
       subject: "Du er inviteret til systemklar",
-      html: `<p>Hej, du er inviteret til ${organisation.name} på systemklar.</p>
+      html: `<p>Hej ${contact_name}, du er inviteret til ${organisation.name} på systemklar.</p>
 <p>Klik her for at oprette din profil: <a href="${inviteUrl}">${inviteUrl}</a></p>
 <p>Linket udløber om 7 dage.</p>`,
     });

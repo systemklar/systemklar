@@ -9,6 +9,7 @@ import { createClient } from "@/lib/supabase";
 type InvitationRow = {
   email: string;
   role: string;
+  contact_name: string | null;
   organisation_id: string;
   organisations: { name: string } | { name: string }[] | null;
 };
@@ -43,7 +44,7 @@ function InviteContent() {
       }
       const { data, error: inviteError } = await supabase
         .from("invitations")
-        .select("email, role, organisation_id, organisations(name)")
+        .select("email, role, contact_name, organisation_id, organisations(name)")
         .eq("token", token)
         .is("accepted_at", null)
         .gt("expires_at", new Date().toISOString())
@@ -55,6 +56,10 @@ function InviteContent() {
         setError("Dette invitationslink er ugyldigt eller udløbet.");
       } else {
         setInvitation(data as InvitationRow);
+        const inviteContactName = ((data as InvitationRow).contact_name ?? "").trim();
+        if (inviteContactName) {
+          setFullName(inviteContactName);
+        }
         setError(null);
       }
       setLoading(false);
