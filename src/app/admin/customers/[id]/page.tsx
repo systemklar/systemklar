@@ -1,40 +1,96 @@
 "use client";
 
 import Link from "next/link";
-import { useParams } from "next/navigation";
-import { useCallback, useEffect, useMemo, useState } from "react";
-import { CustomerStatusBadge } from "@/components/admin/CustomerStatusBadge";
-import { PlanBadge, type ProfilePlan } from "@/components/admin/PlanBadge";
-import { formatDanishDateTime, StatusBadge } from "@/components/tickets/StatusBadge";
+import { useParams, useRouter } from "next/navigation";
+import { FormEvent, useCallback, useEffect, useMemo, useState } from "react";
+import { StatusBadge, formatDanishDateTime } from "@/components/tickets/StatusBadge";
 import { createClient } from "@/lib/supabase";
 
-type ProfileRow = {
+type OrgProfile = {
   id: string;
-  email: string;
-  company_name: string;
-  plan: string;
-  status: string;
-  created_at: string;
-  user_id: string | null;
+  full_name: string | null;
+  email: string | null;
+  role: string | null;
+  avatar_initials: string | null;
+  created_at: string | null;
 };
 
-type TicketRow = {
+type OrgInvitation = {
   id: string;
-  title: string;
-  status: string;
-  created_at: string;
+  email: string | null;
+  contact_name: string | null;
+  role: string | null;
+  accepted_at: string | null;
+  created_at: string | null;
 };
+
+type OrgTicket = {
+  id: string;
+  title: string | null;
+  status: string | null;
+  created_by_name: string | null;
+  created_at: string | null;
+};
+
+type OrgSystem = {
+  id: string;
+  name: string | null;
+  type: "cloud" | "server" | "netværk" | "software" | null;
+  status: "ok" | "advarsel" | "nede" | null;
+  last_checked: string | null;
+};
+
+type OrganisationDetail = {
+  id: string;
+  name: string;
+  created_at: string;
+  profiles: OrgProfile[] | null;
+  invitations: OrgInvitation[] | null;
+  tickets: OrgTicket[] | null;
+  systems: OrgSystem[] | null;
+};
+
+const systemStatusStyles: Record<"ok" | "advarsel" | "nede", string> = {
+  ok: "bg-green-100 text-green-800",
+  advarsel: "bg-amber-100 text-amber-800",
+  nede: "bg-red-100 text-red-800",
+};
+
+const systemStatusLabel: Record<"ok" | "advarsel" | "nede", string> = {
+  ok: "OK",
+  advarsel: "Advarsel",
+  nede: "Nede",
+};
+
+function initialsOf(profile: OrgProfile | OrgInvitation) {
+  const source =
+    ("full_name" in profile ? profile.full_name : profile.contact_name) ||
+    profile.email ||
+    "U";
+  return source
+    .trim()
+    .split(/\s+/)
+    .map((p) => p[0] ?? "")
+    .join("")
+    .slice(0, 2)
+    .toUpperCase();
+}
 
 export default function AdminCustomerDetailPage() {
   const supabase = useMemo(() => createClient(), []);
   const params = useParams();
+  const router = useRouter();
   const id = typeof params.id === "string" ? params.id : "";
 
-  const [profile, setProfile] = useState<ProfileRow | null>(null);
-  const [tickets, setTickets] = useState<TicketRow[]>([]);
+  const [org, setOrg] = useState<OrganisationDetail | null>(null);
   const [loading, setLoading] = useState(true);
-  const [planSaving, setPlanSaving] = useState(false);
-  const [planError, setPlanError] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [inviteModalOpen, setInviteModalOpen] = useState(false);
+  const [inviteEmail, setInviteEmail] = useState("");
+  const [inviteContactName, setInviteContactName] = useState("");
+  const [inviteRole, setInviteRole] = useState<"org_admin" | "member">("member");
+  const [inviteSaving, setInviteSaving] = useState(false);
+  const [deleteBusy, setDeleteBusy] = useState(false);
 
   const load = useCallback(async () => {
     if (!id) {
@@ -42,42 +98,24 @@ export default function AdminCustomerDetailPage() {
       return;
     }
     setLoading(true);
-    setPlanError(null);
+    setError(null);
 
-    const { data: prof, error: pErr } = await supabase
-      .from("profiles")
-      .select("id, email, company_name, plan, status, created_at, user_id")
+    const { data, error: fetchError } = await supabase
+      .from("organisations")
+      .select(
+        "id,name,created_at,profiles(id, full_name, email, role, avatar_initials, created_at), invitations(id, email, contact_name, role, accepted_at, created_at), tickets(id, title, status, created_by_name, created_at), systems(id, name, type, status, last_checked)"
+      )
       .eq("id", id)
       .maybeSingle();
 
-    if (pErr || !prof) {
-      console.error("[admin/customer] profile", pErr);
-      setProfile(null);
-      setTickets([]);
+    if (fetchError || !data) {
+      setOrg(null);
+      setError(fetchError?.message ?? "Kunde ikke fundet.");
       setLoading(false);
       return;
     }
 
-    const row = prof as ProfileRow;
-    setProfile(row);
-
-    if (row.user_id) {
-      const { data: tix, error: tErr } = await supabase
-        .from("tickets")
-        .select("id, title, status, created_at")
-        .eq("user_id", row.user_id)
-        .order("created_at", { ascending: false });
-
-      if (tErr) {
-        console.error("[admin/customer] tickets", tErr);
-        setTickets([]);
-      } else {
-        setTickets((tix ?? []) as TicketRow[]);
-      }
-    } else {
-      setTickets([]);
-    }
-
+    setOrg(data as unknown as OrganisationDetail);
     setLoading(false);
   }, [id, supabase]);
 
@@ -87,102 +125,182 @@ export default function AdminCustomerDetailPage() {
     });
   }, [load]);
 
-  const handlePlanChange = async (next: ProfilePlan) => {
-    if (!profile) return;
-    setPlanSaving(true);
-    setPlanError(null);
-
-    const { error } = await supabase.from("profiles").update({ plan: next }).eq("id", profile.id);
-
-    if (error) {
-      console.error("[admin/customer] plan update", error);
-      setPlanError(error.message);
-    } else {
-      setProfile({ ...profile, plan: next });
+  const sendInvite = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (!org) return;
+    const email = inviteEmail.trim().toLowerCase();
+    const contact = inviteContactName.trim();
+    if (!email || !contact) {
+      setError("Udfyld navn og email.");
+      return;
     }
-    setPlanSaving(false);
+
+    setInviteSaving(true);
+    setError(null);
+    const res = await fetch(`/api/admin/organisations/${org.id}/invite`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      credentials: "same-origin",
+      body: JSON.stringify({
+        email,
+        contact_name: contact,
+        role: inviteRole,
+      }),
+    });
+    const payload = (await res.json().catch(() => ({}))) as { error?: string };
+    setInviteSaving(false);
+    if (!res.ok) {
+      setError(payload.error ?? "Kunne ikke sende invitation.");
+      return;
+    }
+    setInviteEmail("");
+    setInviteContactName("");
+    setInviteRole("member");
+    setInviteModalOpen(false);
+    void load();
   };
 
-  if (loading) {
-    return <p className="text-sm text-slate-600">Indlæser kunde...</p>;
-  }
+  const deleteOrganisation = async () => {
+    if (!org) return;
+    const ok = window.confirm(
+      `Er du sikker? Dette sletter alle brugere, sager og data for ${org.name}.`
+    );
+    if (!ok) return;
+    setDeleteBusy(true);
+    setError(null);
+    const res = await fetch(`/api/admin/organisations/${org.id}`, {
+      method: "DELETE",
+      credentials: "same-origin",
+    });
+    const payload = (await res.json().catch(() => ({}))) as { error?: string };
+    setDeleteBusy(false);
+    if (!res.ok) {
+      setError(payload.error ?? "Kunne ikke slette virksomhed.");
+      return;
+    }
+    router.push("/admin/customers");
+  };
 
-  if (!profile) {
+  if (loading) return <p className="text-sm text-slate-600">Indlaeser virksomhed...</p>;
+
+  if (!org) {
     return (
       <div>
-        <Link href="/admin/customers" className="text-sm font-semibold text-emerald-700 hover:underline">
-          ← Tilbage til kunder
+        <Link href="/admin/customers" className="text-sm font-semibold text-sky-700 hover:underline">
+          ← Kunder
         </Link>
-        <p className="mt-6 text-sm text-slate-600">Kunde ikke fundet.</p>
+        <p className="mt-6 text-sm text-slate-600">{error || "Virksomhed ikke fundet."}</p>
       </div>
     );
   }
 
+  const profiles = org.profiles ?? [];
+  const pendingInvites = (org.invitations ?? []).filter((i) => !i.accepted_at);
+  const tickets = org.tickets ?? [];
+  const systems = org.systems ?? [];
+  const isActive = profiles.length > 0;
+
   return (
-    <div>
-      <Link href="/admin/customers" className="text-sm font-semibold text-emerald-700 hover:underline">
-        ← Tilbage til kunder
-      </Link>
-
-      <div className="mt-6 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-        <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
+    <div className="space-y-8">
+      <header className="rounded-2xl border border-sky-100 bg-white p-6 shadow-sm">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
           <div>
-            <h1 className="text-2xl font-bold text-slate-900">{profile.company_name}</h1>
-            <p className="mt-2 text-slate-700">{profile.email}</p>
-            <p className="mt-3 text-sm text-slate-500">
-              Oprettet {formatDanishDateTime(profile.created_at)}
-            </p>
-            <div className="mt-4 flex flex-wrap items-center gap-2">
-              <CustomerStatusBadge status={profile.status} />
-              <PlanBadge plan={profile.plan} />
+            <Link href="/admin/customers" className="text-sm font-semibold text-sky-700 hover:underline">
+              ← Kunder
+            </Link>
+            <h1 className="mt-3 text-3xl font-bold text-[#0D1F2D]">{org.name}</h1>
+            <div className="mt-3">
+              <span
+                className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-semibold ${
+                  isActive ? "bg-green-100 text-green-800" : "bg-amber-100 text-amber-800"
+                }`}
+              >
+                {isActive ? "Aktiv" : "Afventer"}
+              </span>
             </div>
-            {profile.user_id ? (
-              <p className="mt-3 font-mono text-xs text-slate-500">Bruger-id: {profile.user_id}</p>
-            ) : (
-              <p className="mt-3 text-sm text-amber-800">
-                Ingen tilknyttet portal-bruger (<code className="rounded bg-amber-50 px-1">user_id</code> er tom).
-                Tickets vises først når profilen er koblet til en bruger.
-              </p>
-            )}
           </div>
-
-          <div className="shrink-0 rounded-xl border border-slate-200 bg-slate-50/80 p-4 lg:min-w-[220px]">
-            <label htmlFor="plan-select" className="block text-xs font-semibold uppercase tracking-wide text-slate-500">
-              Plan
-            </label>
-            <select
-              id="plan-select"
-              value={profile.plan as ProfilePlan}
-              disabled={planSaving}
-              onChange={(e) => void handlePlanChange(e.target.value as ProfilePlan)}
-              className="mt-2 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm font-medium text-slate-900 outline-none focus:border-emerald-600"
-            >
-              <option value="basis">Basis</option>
-              <option value="standard">Standard</option>
-              <option value="plus">Plus</option>
-            </select>
-            {planSaving && <p className="mt-2 text-xs text-slate-500">Gemmer...</p>}
-            {planError && <p className="mt-2 text-xs text-red-600">{planError}</p>}
-          </div>
+          <button
+            type="button"
+            onClick={() => setInviteModalOpen(true)}
+            className="rounded-full bg-sky-600 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-sky-700"
+          >
+            Inviter bruger
+          </button>
         </div>
-      </div>
+      </header>
 
-      <section className="mt-10">
-        <h2 className="text-lg font-semibold text-slate-900">Tickets</h2>
+      {error ? <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">{error}</p> : null}
+
+      <section>
+        <h2 className="mb-3 text-lg font-semibold text-[#0D1F2D]">Brugere</h2>
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+          {profiles.map((p) => (
+            <article key={p.id} className="rounded-2xl border border-sky-100 bg-white p-5 shadow-sm">
+              <div className="flex items-start gap-4">
+                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-sky-100 text-sm font-bold text-sky-700">
+                  {initialsOf(p)}
+                </div>
+                <div>
+                  <p className="font-semibold text-[#0D1F2D]">{p.full_name || p.email || "Ukendt bruger"}</p>
+                  <p className="text-sm text-[#4A8CB5]">{p.email || "—"}</p>
+                  <span
+                    className={`mt-1 inline-flex rounded-full px-2 py-0.5 text-xs ${
+                      p.role === "org_admin" ? "bg-sky-100 text-sky-700" : "bg-stone-100 text-stone-600"
+                    }`}
+                  >
+                    {p.role === "org_admin" ? "Administrator" : "Medlem"}
+                  </span>
+                  <p className="mt-2 text-xs text-slate-500">Oprettet {formatDanishDateTime(p.created_at || "")}</p>
+                </div>
+              </div>
+            </article>
+          ))}
+
+          {pendingInvites.map((inv) => (
+            <article key={inv.id} className="rounded-2xl border border-amber-200 bg-amber-50/40 p-5 shadow-sm">
+              <div className="flex items-start gap-4">
+                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-amber-100 text-sm font-bold text-amber-800">
+                  {initialsOf(inv)}
+                </div>
+                <div>
+                  <p className="font-semibold text-[#0D1F2D]">{inv.contact_name || inv.email || "Invitation"}</p>
+                  <p className="text-sm text-[#4A8CB5]">{inv.email || "—"}</p>
+                  <span className="mt-1 inline-flex rounded-full bg-amber-100 px-2 py-0.5 text-xs text-amber-800">
+                    Afventer
+                  </span>
+                  <p className="mt-2 text-xs text-slate-500">Inviteret {formatDanishDateTime(inv.created_at || "")}</p>
+                </div>
+              </div>
+            </article>
+          ))}
+
+          {profiles.length === 0 && pendingInvites.length === 0 ? (
+            <p className="text-sm text-slate-600">Ingen brugere eller invitationer endnu.</p>
+          ) : null}
+        </div>
+      </section>
+
+      <section>
+        <h2 className="mb-3 text-lg font-semibold text-[#0D1F2D]">Supportssager</h2>
         {tickets.length === 0 ? (
-          <p className="mt-3 text-sm text-slate-600">Ingen tickets for denne kunde.</p>
+          <p className="rounded-2xl border border-sky-100 bg-white p-5 text-sm text-slate-600 shadow-sm">
+            Ingen sager endnu
+          </p>
         ) : (
-          <ul className="mt-4 divide-y divide-slate-200 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
-            {tickets.map((t) => (
-              <li key={t.id}>
+          <ul className="overflow-hidden rounded-2xl border border-sky-100 bg-white shadow-sm">
+            {tickets.map((ticket) => (
+              <li key={ticket.id} className="border-b border-sky-50 last:border-b-0">
                 <Link
-                  href={`/admin/tickets/${t.id}`}
-                  className="flex flex-col gap-2 px-4 py-3 transition hover:bg-slate-50 sm:flex-row sm:items-center sm:justify-between"
+                  href={`/admin/tickets/${ticket.id}`}
+                  className="flex flex-col gap-2 px-4 py-3 transition hover:bg-sky-50 sm:flex-row sm:items-center sm:justify-between"
                 >
-                  <span className="font-medium text-emerald-700 hover:underline">{t.title}</span>
-                  <div className="flex flex-wrap items-center gap-3">
-                    <span className="text-sm text-slate-500">{formatDanishDateTime(t.created_at)}</span>
-                    <StatusBadge status={t.status} />
+                  <div>
+                    <p className="font-medium text-[#0D1F2D]">{ticket.title || "Uden titel"}</p>
+                    <p className="text-xs text-slate-500">{ticket.created_by_name || "Ukendt afsender"}</p>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <span className="text-xs text-slate-500">{formatDanishDateTime(ticket.created_at || "")}</span>
+                    <StatusBadge status={ticket.status || "open"} />
                   </div>
                 </Link>
               </li>
@@ -190,6 +308,114 @@ export default function AdminCustomerDetailPage() {
           </ul>
         )}
       </section>
+
+      <section>
+        <h2 className="mb-3 text-lg font-semibold text-[#0D1F2D]">Systemer</h2>
+        {systems.length === 0 ? (
+          <p className="rounded-2xl border border-sky-100 bg-white p-5 text-sm text-slate-600 shadow-sm">
+            Ingen systemer endnu
+          </p>
+        ) : (
+          <ul className="space-y-3">
+            {systems.map((system) => {
+              const status = system.status === "advarsel" || system.status === "nede" ? system.status : "ok";
+              return (
+                <li key={system.id} className="rounded-2xl border border-sky-100 bg-white p-5 shadow-sm">
+                  <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                    <div>
+                      <p className="font-semibold text-[#0D1F2D]">{system.name || "Ukendt system"}</p>
+                      <p className="text-sm text-[#4A8CB5]">{system.type || "—"}</p>
+                    </div>
+                    <div className="text-right">
+                      <span className={`inline-flex rounded-full px-2 py-0.5 text-xs ${systemStatusStyles[status]}`}>
+                        {systemStatusLabel[status]}
+                      </span>
+                      <p className="mt-2 text-xs text-slate-500">
+                        Sidst tjekket {system.last_checked ? formatDanishDateTime(system.last_checked) : "—"}
+                      </p>
+                    </div>
+                  </div>
+                </li>
+              );
+            })}
+          </ul>
+        )}
+      </section>
+
+      <section className="rounded-2xl border border-red-200 bg-white p-6 shadow-sm">
+        <h2 className="text-lg font-semibold text-red-800">Farlige handlinger</h2>
+        <p className="mt-2 text-sm text-red-700">
+          Slet virksomhed og alle tilknyttede brugere, sager og data.
+        </p>
+        <button
+          type="button"
+          onClick={() => void deleteOrganisation()}
+          disabled={deleteBusy}
+          className="mt-4 rounded-full bg-red-600 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-red-700 disabled:opacity-50"
+        >
+          {deleteBusy ? "Sletter..." : "Slet virksomhed"}
+        </button>
+      </section>
+
+      {inviteModalOpen ? (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 p-4"
+          onClick={(e) => e.target === e.currentTarget && setInviteModalOpen(false)}
+        >
+          <div className="w-full max-w-md rounded-2xl border border-sky-100 bg-white p-6 shadow-xl">
+            <h3 className="text-lg font-semibold text-[#0D1F2D]">Inviter bruger</h3>
+            <form className="mt-4 space-y-4" onSubmit={(e) => void sendInvite(e)}>
+              <div>
+                <label className="mb-1 block text-sm font-medium text-[#0D1F2D]">Kontaktpersonens fulde navn</label>
+                <input
+                  type="text"
+                  value={inviteContactName}
+                  onChange={(e) => setInviteContactName(e.target.value)}
+                  required
+                  className="w-full rounded-lg border border-sky-100 px-3 py-2 text-sm outline-none focus:border-sky-500"
+                />
+              </div>
+              <div>
+                <label className="mb-1 block text-sm font-medium text-[#0D1F2D]">Email</label>
+                <input
+                  type="email"
+                  value={inviteEmail}
+                  onChange={(e) => setInviteEmail(e.target.value)}
+                  required
+                  className="w-full rounded-lg border border-sky-100 px-3 py-2 text-sm outline-none focus:border-sky-500"
+                />
+              </div>
+              <div>
+                <label className="mb-1 block text-sm font-medium text-[#0D1F2D]">Rolle</label>
+                <select
+                  value={inviteRole}
+                  onChange={(e) => setInviteRole(e.target.value === "org_admin" ? "org_admin" : "member")}
+                  className="w-full rounded-lg border border-sky-100 px-3 py-2 text-sm outline-none focus:border-sky-500"
+                >
+                  <option value="member">Medlem</option>
+                  <option value="org_admin">Administrator</option>
+                </select>
+              </div>
+              <div className="flex justify-end gap-2">
+                <button
+                  type="button"
+                  onClick={() => setInviteModalOpen(false)}
+                  className="rounded-full px-4 py-2 text-sm text-slate-600 hover:bg-slate-100"
+                >
+                  Annuller
+                </button>
+                <button
+                  type="submit"
+                  disabled={inviteSaving}
+                  className="rounded-full bg-sky-600 px-5 py-2 text-sm font-semibold text-white hover:bg-sky-700 disabled:opacity-60"
+                >
+                  {inviteSaving ? "Sender..." : "Send invitation"}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      ) : null}
     </div>
   );
 }

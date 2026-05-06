@@ -1,38 +1,47 @@
 "use client";
 
+import Link from "next/link";
 import { type FormEvent, useCallback, useEffect, useMemo, useState } from "react";
-import { formatDanishDateTime } from "@/components/tickets/StatusBadge";
 import { createClient } from "@/lib/supabase";
 
-type AcceptedCustomerRow = {
+type OrgProfile = {
+  id: string;
+  full_name: string | null;
+  email: string | null;
+  role: string | null;
+  avatar_initials: string | null;
+  created_at: string | null;
+};
+
+type OrgInvitation = {
   id: string;
   email: string | null;
-  full_name: string | null;
-  role: string;
-  avatar_initials: string | null;
-  organisation_id: string | null;
-  created_at: string;
-  organisations: { name: string } | null;
-};
-
-type PendingInvitationRow = {
-  id: string;
-  email: string;
-  role: string;
   contact_name: string | null;
-  created_at: string;
-  expires_at: string;
-  organisations: { name: string } | null;
+  accepted_at: string | null;
+  created_at: string | null;
 };
 
-function orgNameOf(row: { organisations: { name: string } | null }) {
-  return row.organisations?.name ?? "Ukendt organisation";
+type OrganisationRow = {
+  id: string;
+  name: string;
+  created_at: string;
+  profiles: OrgProfile[] | null;
+  invitations: OrgInvitation[] | null;
+};
+
+function initialsFromName(name: string) {
+  return name
+    .trim()
+    .split(/\s+/)
+    .map((p) => p[0] ?? "")
+    .join("")
+    .slice(0, 2)
+    .toUpperCase();
 }
 
 export default function AdminCustomersPage() {
   const supabase = useMemo(() => createClient(), []);
-  const [customers, setCustomers] = useState<AcceptedCustomerRow[]>([]);
-  const [pendingInvites, setPendingInvites] = useState<PendingInvitationRow[]>([]);
+  const [orgs, setOrgs] = useState<OrganisationRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [modalOpen, setModalOpen] = useState(false);
   const [email, setEmail] = useState("");
@@ -41,37 +50,22 @@ export default function AdminCustomersPage() {
   const [role, setRole] = useState<"org_admin" | "member">("org_admin");
   const [submitting, setSubmitting] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
-  const [deletingId, setDeletingId] = useState<string | null>(null);
   const [actionError, setActionError] = useState<string | null>(null);
 
   const loadData = useCallback(async () => {
     setLoading(true);
-    const [customersRes, invitesRes] = await Promise.all([
-      supabase
-        .from("profiles")
-        .select("*, organisations(name)")
-        .not("organisation_id", "is", null)
-        .order("created_at", { ascending: false }),
-      supabase
-        .from("invitations")
-        .select("*, organisations(name)")
-        .is("accepted_at", null)
-        .gt("expires_at", new Date().toISOString())
-        .order("created_at", { ascending: false }),
-    ]);
+    const { data, error } = await supabase
+      .from("organisations")
+      .select("*, profiles(id, full_name, email, role, avatar_initials, created_at), invitations(id, email, contact_name, accepted_at, created_at)")
+      .order("created_at", { ascending: false });
 
-    if (customersRes.error) {
-      console.error("[admin/customers] customers list", customersRes.error);
-      setCustomers([]);
+    if (error) {
+      console.error("[admin/customers] organisations list", error);
+      setOrgs([]);
+      setActionError(error.message);
     } else {
-      setCustomers((customersRes.data ?? []) as AcceptedCustomerRow[]);
-    }
-
-    if (invitesRes.error) {
-      console.error("[admin/customers] pending invites list", invitesRes.error);
-      setPendingInvites([]);
-    } else {
-      setPendingInvites((invitesRes.data ?? []) as PendingInvitationRow[]);
+      setOrgs((data ?? []) as unknown as OrganisationRow[]);
+      setActionError(null);
     }
     setLoading(false);
   }, [supabase]);
@@ -139,187 +133,86 @@ export default function AdminCustomersPage() {
     void loadData();
   };
 
-  const handleDeleteCustomer = async (p: AcceptedCustomerRow) => {
-    const targetName = p.full_name?.trim() || p.email || "kunden";
-    const ok = window.confirm(`Er du sikker på at du vil slette ${targetName}?`);
-    if (!ok) return;
-
-    setDeletingId(p.id);
-    setActionError(null);
-
-    const res = await fetch(`/api/admin/customers/${p.id}`, {
-      method: "DELETE",
-      credentials: "same-origin",
-    });
-
-    const payload = (await res.json().catch(() => ({}))) as { error?: string; warning?: string };
-    setDeletingId(null);
-
-    if (!res.ok) {
-      setActionError(payload.error ?? "Sletning mislykkedes.");
-      return;
-    }
-    if (payload.warning) {
-      console.warn("[admin/customers] customer deleted with warning:", payload.warning);
-    }
-    void loadData();
-  };
-
-  const handleResendInvitation = async (invitationId: string) => {
-    setActionError(null);
-    const res = await fetch(`/api/admin/invitations/${invitationId}`, {
-      method: "POST",
-      credentials: "same-origin",
-    });
-    const payload = (await res.json().catch(() => ({}))) as { error?: string };
-    if (!res.ok) {
-      setActionError(payload.error ?? "Kunne ikke gensende invitation.");
-      return;
-    }
-    void loadData();
-  };
-
-  const handleCancelInvitation = async (invitationId: string) => {
-    const ok = window.confirm("Annuller denne invitation?");
-    if (!ok) return;
-    setActionError(null);
-    const res = await fetch(`/api/admin/invitations/${invitationId}`, {
-      method: "DELETE",
-      credentials: "same-origin",
-    });
-    const payload = (await res.json().catch(() => ({}))) as { error?: string };
-    if (!res.ok) {
-      setActionError(payload.error ?? "Kunne ikke annullere invitation.");
-      return;
-    }
-    void loadData();
-  };
-
   return (
     <div>
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900 md:text-3xl">Kunder</h1>
-          <p className="mt-2 text-sm text-slate-600">Kunder og invitationer på tværs af organisationer.</p>
+          <h1 className="text-2xl font-bold text-[#0D1F2D] md:text-3xl">Kunder</h1>
+          <p className="mt-2 text-sm text-[#4A8CB5]">Organisationer med brugere og invitationer.</p>
         </div>
-        <div className="flex shrink-0 flex-wrap items-center gap-3">
-          <button
-            type="button"
-            onClick={() => setModalOpen(true)}
-            className="rounded-full bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700"
-          >
-            Ny kunde
-          </button>
-        </div>
+        <button
+          type="button"
+          onClick={() => setModalOpen(true)}
+          className="rounded-full bg-sky-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-sky-700"
+        >
+          Ny kunde
+        </button>
       </div>
 
-      {actionError ? (
-        <p className="mt-4 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">{actionError}</p>
-      ) : null}
+      {actionError ? <p className="mt-4 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">{actionError}</p> : null}
 
       {loading ? (
         <p className="mt-10 text-sm text-slate-500">Henter kunder...</p>
+      ) : orgs.length === 0 ? (
+        <p className="mt-10 text-sm text-slate-600">Ingen kunder endnu. Opret den forste med "Ny kunde".</p>
       ) : (
-        <div className="mt-8 space-y-8">
-          <section>
-            <h2 className="text-lg font-semibold text-slate-900">Kunder</h2>
-            {customers.length === 0 ? (
-              <p className="mt-3 text-sm text-slate-600">Ingen accepterede kunder endnu.</p>
-            ) : (
-              <div className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-2">
-                {customers.map((c) => {
-                  const initials =
-                    c.avatar_initials ||
-                    (c.full_name ?? "")
-                      .split(/\s+/)
-                      .map((n) => n[0] ?? "")
-                      .join("")
-                      .slice(0, 2)
-                      .toUpperCase() ||
-                    "??";
-                  return (
-                    <article key={c.id} className="rounded-2xl border border-sky-100 bg-white p-5 shadow-sm">
-                      <div className="flex items-start justify-between gap-3">
-                        <div className="flex items-center gap-4">
-                          <div className="flex h-12 w-12 items-center justify-center rounded-full bg-sky-100 text-lg font-bold text-sky-700">
-                            {initials}
-                          </div>
-                          <div>
-                            <p className="text-base font-semibold text-[#0D1F2D]">
-                              {c.full_name || c.email || "Ukendt bruger"}
-                            </p>
-                            <p className="text-sm text-[#4A8CB5]">{orgNameOf(c)}</p>
-                            <p className="text-sm text-[#4A8CB5]">{c.email || "—"}</p>
-                          </div>
-                        </div>
-                        <span
-                          className={`rounded-full px-2 py-0.5 text-xs ${
-                            c.role === "org_admin" ? "bg-sky-100 text-sky-700" : "bg-stone-100 text-stone-600"
-                          }`}
-                        >
-                          {c.role === "org_admin" ? "Administrator" : "Medlem"}
-                        </span>
-                      </div>
-                      <div className="mt-4 flex items-center justify-between">
-                        <p className="text-xs text-slate-500">Oprettet {formatDanishDateTime(c.created_at)}</p>
-                        <button
-                          type="button"
-                          disabled={deletingId === c.id}
-                          onClick={() => void handleDeleteCustomer(c)}
-                          className="rounded-full border border-red-200 bg-red-50 px-3 py-1.5 text-xs font-semibold text-red-800 transition hover:bg-red-100 disabled:opacity-50"
-                        >
-                          {deletingId === c.id ? "Sletter..." : "Slet kunde"}
-                        </button>
-                      </div>
-                    </article>
-                  );
-                })}
-              </div>
-            )}
-          </section>
+        <div className="mt-8 grid grid-cols-1 gap-4">
+          {orgs.map((org) => {
+            const profiles = org.profiles ?? [];
+            const pendingInvites = (org.invitations ?? []).filter((inv) => !inv.accepted_at);
+            const statusActive = profiles.length > 0;
+            const stack = profiles.slice(0, 3);
 
-          <section>
-            <h2 className="text-lg font-semibold text-slate-900">Afventer invitation</h2>
-            {pendingInvites.length === 0 ? (
-              <p className="mt-3 text-sm text-slate-600">Ingen afventende invitationer.</p>
-            ) : (
-              <div className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-2">
-                {pendingInvites.map((inv) => (
-                  <article key={inv.id} className="rounded-2xl border border-sky-100 bg-white p-5 shadow-sm">
-                    <div className="flex items-start justify-between gap-3">
-                      <div>
-                        <p className="text-base font-semibold text-[#0D1F2D]">
-                          {inv.contact_name?.trim() || inv.email}
-                        </p>
-                        <p className="text-sm text-[#4A8CB5]">{orgNameOf(inv)}</p>
-                        <p className="text-sm text-[#4A8CB5]">{inv.email}</p>
-                        <p className="mt-2 text-xs text-slate-500">Inviteret {formatDanishDateTime(inv.created_at)}</p>
+            return (
+              <Link
+                key={org.id}
+                href={`/admin/customers/${org.id}`}
+                className="cursor-pointer rounded-2xl border border-sky-100 bg-white p-6 shadow-sm transition-all hover:border-sky-200 hover:shadow-md"
+              >
+                <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                  <div>
+                    <h2 className="text-xl font-semibold text-[#0D1F2D]">{org.name}</h2>
+                    <p className="mt-1 text-sm text-[#4A8CB5]">
+                      {profiles.length} aktive brugere · {pendingInvites.length} afventende invitationer
+                    </p>
+                  </div>
+                  <span
+                    className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-semibold ${
+                      statusActive ? "bg-green-100 text-green-800" : "bg-amber-100 text-amber-800"
+                    }`}
+                  >
+                    {statusActive ? "Aktiv" : "Afventer"}
+                  </span>
+                </div>
+
+                <div className="mt-4 flex items-center justify-between">
+                  <div className="flex items-center">
+                    {stack.length === 0 ? (
+                      <div className="flex h-9 w-9 items-center justify-center rounded-full bg-sky-100 text-xs font-semibold text-sky-700">
+                        ?
                       </div>
-                      <span className="rounded-full bg-amber-100 px-2 py-0.5 text-xs font-semibold text-amber-800">
-                        Afventer
-                      </span>
-                    </div>
-                    <div className="mt-4 flex gap-2">
-                      <button
-                        type="button"
-                        onClick={() => void handleResendInvitation(inv.id)}
-                        className="rounded-full border border-sky-200 px-3 py-1.5 text-xs font-semibold text-sky-700 hover:bg-sky-50"
-                      >
-                        Gensend invitation
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => void handleCancelInvitation(inv.id)}
-                        className="rounded-full border border-red-200 px-3 py-1.5 text-xs font-semibold text-red-700 hover:bg-red-50"
-                      >
-                        Annuller
-                      </button>
-                    </div>
-                  </article>
-                ))}
-              </div>
-            )}
-          </section>
+                    ) : (
+                      stack.map((profile, index) => {
+                        const text =
+                          profile.avatar_initials ||
+                          initialsFromName(profile.full_name || profile.email || "U");
+                        return (
+                          <div
+                            key={profile.id}
+                            className="flex h-9 w-9 items-center justify-center rounded-full border-2 border-white bg-sky-100 text-xs font-semibold text-sky-700"
+                            style={{ marginLeft: index === 0 ? 0 : -10, zIndex: 30 - index }}
+                          >
+                            {text}
+                          </div>
+                        );
+                      })
+                    )}
+                  </div>
+                  <span className="text-sm font-semibold text-sky-700">Se detaljer →</span>
+                </div>
+              </Link>
+            );
+          })}
         </div>
       )}
 
@@ -400,7 +293,7 @@ export default function AdminCustomersPage() {
                 </select>
               </div>
 
-              {formError && <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">{formError}</p>}
+              {formError ? <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">{formError}</p> : null}
 
               <div className="flex justify-end gap-3 pt-2">
                 <button
@@ -413,7 +306,7 @@ export default function AdminCustomersPage() {
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="rounded-full bg-blue-600 px-5 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700 disabled:opacity-50"
+                  className="rounded-full bg-sky-600 px-5 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-sky-700 disabled:opacity-50"
                 >
                   {submitting ? "Opretter..." : "Opret"}
                 </button>
