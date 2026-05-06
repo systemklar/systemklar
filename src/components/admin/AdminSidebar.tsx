@@ -14,7 +14,7 @@ type AdminSidebarProps = {
 
 function DotIcon({ path }: { path: string }) {
   return (
-    <svg viewBox="0 0 24 24" fill="none" className="h-4 w-4" aria-hidden>
+    <svg viewBox="0 0 24 24" fill="none" className="h-4 w-4 text-sky-600" aria-hidden>
       <path d={path} stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   );
@@ -38,12 +38,12 @@ export function AdminSidebar({ activeNav }: AdminSidebarProps) {
   };
 
   return (
-    <aside className="flex min-h-screen w-full max-w-72 shrink-0 flex-col border-r border-[#D0E8F5] bg-[#F8FAFC] p-6">
+    <aside className="flex min-h-screen w-full max-w-72 shrink-0 flex-col border-r border-sky-100 bg-[#F5FAFD] p-6">
       <div className="flex min-h-0 flex-1 flex-col">
         <Link href="/admin/dashboard" className="block">
-          <div className="rounded-xl border border-[#D0E8F5] bg-white px-3 py-2">
-            <SystemklarLogo label="systemklar admin" textClassName="text-sm font-bold leading-snug text-sky-600" />
-            <p className="mt-0.5 text-xs font-medium text-blue-700">Kontrolpanel</p>
+          <div className="rounded-xl border border-sky-100 bg-white px-3 py-2">
+            <SystemklarLogo textClassName="text-sm font-bold leading-snug text-sky-600" />
+            <p className="mt-0.5 text-xs font-medium text-[#4A8CB5]">Admin</p>
           </div>
         </Link>
 
@@ -54,10 +54,10 @@ export function AdminSidebar({ activeNav }: AdminSidebarProps) {
               <Link
                 key={item.key}
                 href={item.href}
-                className={`rounded-lg px-3 py-2.5 text-sm font-medium transition ${
+                className={`rounded-lg px-3 py-2 text-sm transition ${
                   isActive
-                    ? "bg-blue-50 text-blue-700 ring-1 ring-blue-100"
-                    : "text-slate-700 hover:bg-slate-50"
+                    ? "bg-sky-50 font-semibold text-sky-700"
+                    : "text-[#2C4A5E] hover:bg-sky-50 hover:text-sky-700"
                 }`}
               >
                 <span className="inline-flex items-center gap-2">
@@ -73,7 +73,7 @@ export function AdminSidebar({ activeNav }: AdminSidebarProps) {
       <button
         type="button"
         onClick={() => void handleLogout()}
-        className="btn-primary mt-8 w-full px-4 py-2.5 text-sm font-semibold"
+        className="mt-8 w-full rounded-full bg-[#062840] px-4 py-2 text-sm font-medium text-white transition hover:bg-[#0A3D5C]"
       >
         Log ud
       </button>

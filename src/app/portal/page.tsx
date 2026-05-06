@@ -81,15 +81,28 @@ function DashboardContent() {
 
   return (
     <div className="space-y-6">
-      <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm md:p-8">
-        <p className="text-sm text-slate-500">{today}</p>
-        <h1 className="mt-2 text-3xl font-bold tracking-tight">Goddag, {greetingName}</h1>
-        <p className="mt-3 text-slate-600">Her er dagens overblik over systemstatus, handlinger og seneste sager.</p>
+      <div className="rounded-2xl border border-sky-100 bg-white p-6 shadow-sm md:p-8">
+        <p className="text-sm text-[#4A8CB5]">{today}</p>
+        <h1 className="mt-2 text-2xl font-bold tracking-tight text-[#0D1F2D]">Goddag, {greetingName}</h1>
+        <p className="mt-3 text-sm text-[#4A8CB5]">Her er dagens overblik over systemstatus, handlinger og seneste sager.</p>
       </div>
 
-      <div className="card-hover rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+      <div className="grid gap-4 md:grid-cols-3">
+        {[
+          { value: systems.length, label: "Systemer" },
+          { value: recentTickets.length, label: "Seneste sager" },
+          { value: hasDown ? 1 : 0, label: "Advarsler" },
+        ].map((stat) => (
+          <article key={stat.label} className="rounded-2xl border border-sky-100 bg-white p-5 shadow-sm">
+            <p className="text-3xl font-bold text-sky-600">{stat.value}</p>
+            <p className="mt-1 text-xs text-[#4A8CB5]">{stat.label}</p>
+          </article>
+        ))}
+      </div>
+
+      <div className="card-hover rounded-2xl border border-sky-100 bg-white p-6 shadow-sm">
         <div className="flex items-center justify-between gap-4">
-          <h2 className="text-xl font-semibold text-slate-900">Mine systemer</h2>
+          <h2 className="text-xl font-semibold text-[#0D1F2D]">Mine systemer</h2>
           <Link href="/portal/systemer" className="text-sm font-semibold text-blue-600 hover:underline">
             Se alle
           </Link>
@@ -131,7 +144,7 @@ function DashboardContent() {
           { title: "Se systemer", href: "/portal/systemer", text: "Følg drift og status i realtid.", icon: "02" },
           { title: "Åbn kodebank", href: "/portal/kodebank", text: "Gem og find login-oplysninger sikkert.", icon: "03" },
         ].map((card) => (
-          <Link key={card.title} href={card.href} className="card-hover rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+          <Link key={card.title} href={card.href} className="card-hover rounded-2xl border border-sky-100 bg-white p-5 shadow-sm">
             <p className="text-sm font-semibold text-sky-300">{card.icon}</p>
             <h3 className="mt-3 text-lg font-semibold text-slate-900">{card.title}</h3>
             <p className="mt-1 text-sm text-slate-600">{card.text}</p>
@@ -139,7 +152,7 @@ function DashboardContent() {
         ))}
       </div>
 
-      <div className="card-hover rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+      <div className="card-hover rounded-2xl border border-sky-100 bg-white p-6 shadow-sm">
         <div className="flex items-center justify-between">
           <h2 className="text-xl font-semibold text-slate-900">Seneste sager</h2>
           <Link href="/portal/support" className="text-sm font-semibold text-blue-600 hover:underline">

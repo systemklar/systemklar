@@ -24,7 +24,7 @@ export type PortalNavKey =
 
 function LockIcon() {
   return (
-    <svg viewBox="0 0 24 24" fill="none" className="h-4 w-4" aria-hidden>
+    <svg viewBox="0 0 24 24" fill="none" className="h-4 w-4 text-sky-600" aria-hidden>
       <path
         d="M8 10V7a4 4 0 1 1 8 0v3M7 10h10a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1v-8a1 1 0 0 1 1-1Z"
         stroke="currentColor"
@@ -37,21 +37,21 @@ function LockIcon() {
 
 function HomeIcon() {
   return (
-    <svg viewBox="0 0 24 24" fill="none" className="h-4 w-4" aria-hidden>
+    <svg viewBox="0 0 24 24" fill="none" className="h-4 w-4 text-sky-600" aria-hidden>
       <path d="M4 10.5 12 4l8 6.5V20a1 1 0 0 1-1 1h-5v-6H10v6H5a1 1 0 0 1-1-1v-9.5Z" stroke="currentColor" strokeWidth="1.7" />
     </svg>
   );
 }
 function TicketIcon() {
   return (
-    <svg viewBox="0 0 24 24" fill="none" className="h-4 w-4" aria-hidden>
+    <svg viewBox="0 0 24 24" fill="none" className="h-4 w-4 text-sky-600" aria-hidden>
       <path d="M4 7a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v4a2 2 0 1 0 0 4v2a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-2a2 2 0 1 0 0-4V7Z" stroke="currentColor" strokeWidth="1.7" />
     </svg>
   );
 }
 function ReportIcon() {
   return (
-    <svg viewBox="0 0 24 24" fill="none" className="h-4 w-4" aria-hidden>
+    <svg viewBox="0 0 24 24" fill="none" className="h-4 w-4 text-sky-600" aria-hidden>
       <path d="M7 4h7l3 3v13H7z" stroke="currentColor" strokeWidth="1.7" />
       <path d="M14 4v3h3M10 12h4M10 15h4" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
     </svg>
@@ -59,14 +59,14 @@ function ReportIcon() {
 }
 function SystemsIcon() {
   return (
-    <svg viewBox="0 0 24 24" fill="none" className="h-4 w-4" aria-hidden>
+    <svg viewBox="0 0 24 24" fill="none" className="h-4 w-4 text-sky-600" aria-hidden>
       <path d="M12 3v4m0 10v4M3 12h4m10 0h4M6 6l3 3m6 6 3 3m0-12-3 3m-6 6-3 3" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
     </svg>
   );
 }
 function SparklesIcon() {
   return (
-    <svg viewBox="0 0 24 24" fill="none" className="h-4 w-4" aria-hidden>
+    <svg viewBox="0 0 24 24" fill="none" className="h-4 w-4 text-sky-600" aria-hidden>
       <path
         d="M12 3v2.5M12 18.5V21M3 12h2.5M18.5 12H21M5.6 5.6l1.8 1.8M16.6 16.6l1.8 1.8M5.6 18.4l1.8-1.8M16.6 7.4l1.8-1.8"
         stroke="currentColor"
@@ -84,7 +84,7 @@ function SparklesIcon() {
 }
 function AiIcon() {
   return (
-    <svg viewBox="0 0 24 24" fill="none" className="h-4 w-4" aria-hidden>
+    <svg viewBox="0 0 24 24" fill="none" className="h-4 w-4 text-sky-600" aria-hidden>
       <path d="M12 3v4m0 10v4M3 12h4m10 0h4M6.5 6.5l2.8 2.8m5.4 5.4 2.8 2.8m0-11-2.8 2.8m-5.4 5.4-2.8 2.8" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
       <circle cx="12" cy="12" r="2.5" stroke="currentColor" strokeWidth="1.7" />
     </svg>
@@ -186,13 +186,13 @@ export function PortalLayout({ children, activeNav }: PortalLayoutProps) {
 
   return (
     <PortalSessionContext.Provider value={{ email: userEmail }}>
-      <main className="surface-cards min-h-screen bg-[#F8FAFC] text-[#1C1917]">
+      <main className="surface-cards min-h-screen bg-[#F5FAFD] text-[#1C1917]">
         <div className="mx-auto flex min-h-screen w-full max-w-7xl">
-          <aside className="w-full max-w-72 border-r border-[#D0E8F5] bg-[#F8FAFC] p-6">
+          <aside className="w-full max-w-72 border-r border-sky-100 bg-[#F5FAFD] p-6">
             <Link href="/portal" className="block">
-              <div className="rounded-xl border border-[#D0E8F5] bg-white px-3 py-2">
-                <SystemklarLogo textClassName="text-lg font-bold tracking-tight text-sky-600" />
-                <p className="mt-0.5 text-xs font-medium text-blue-700">Kundeportal</p>
+              <div className="rounded-xl border border-sky-100 bg-white px-3 py-2">
+                <SystemklarLogo textClassName="text-sm font-bold tracking-tight text-sky-600" />
+                <p className="mt-0.5 text-xs font-medium text-[#4A8CB5]">Kundeportal</p>
               </div>
             </Link>
 
@@ -203,10 +203,10 @@ export function PortalLayout({ children, activeNav }: PortalLayoutProps) {
                   <Link
                     key={item.key}
                     href={item.href}
-                    className={`block rounded-lg px-3 py-2.5 text-sm font-medium transition ${
+                    className={`block rounded-lg px-3 py-2 text-sm transition ${
                       isActive
-                        ? "bg-blue-50 text-blue-700 ring-1 ring-blue-100"
-                        : "text-slate-700 hover:bg-slate-100"
+                        ? "bg-sky-50 font-semibold text-sky-700"
+                        : "text-[#2C4A5E] hover:bg-sky-50 hover:text-sky-700"
                     }`}
                   >
                     <span className="inline-flex items-center gap-2">
@@ -221,7 +221,7 @@ export function PortalLayout({ children, activeNav }: PortalLayoutProps) {
             <button
               type="button"
               onClick={handleLogout}
-              className="btn-primary mt-8 w-full px-4 py-2.5 text-sm font-semibold"
+              className="mt-8 w-full rounded-full bg-[#062840] px-4 py-2 text-sm font-medium text-white transition hover:bg-[#0A3D5C]"
             >
               Log ud
             </button>
