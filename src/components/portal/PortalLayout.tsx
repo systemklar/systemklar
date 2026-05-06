@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { User, Users } from "lucide-react";
+import { BookOpen, User, Users } from "lucide-react";
 import {
   createContext,
   useContext,
@@ -23,6 +23,7 @@ export type PortalNavKey =
   | "systems"
   | "vault"
   | "ai"
+  | "guides"
   | "team"
   | "profile";
 
@@ -108,6 +109,12 @@ const navItems: { label: string; href: string; key: PortalNavKey; icon?: ReactNo
     icon: <SparklesIcon />,
   },
   { label: "AI-assistent", href: "/portal/ai-assistent", key: "ai", icon: <AiIcon /> },
+  {
+    label: "Vejledninger",
+    href: "/portal/vejledninger",
+    key: "guides",
+    icon: <BookOpen className="h-4 w-4 text-sky-600" aria-hidden />,
+  },
   { label: "Team", href: "/portal/team", key: "team", icon: <Users className="h-4 w-4 text-sky-600" />, adminOnly: true },
   { label: "Profil", href: "/portal/profil", key: "profile", icon: <User className="h-4 w-4 text-sky-600" /> },
 ];
@@ -187,7 +194,7 @@ export function PortalLayout({ children, activeNav }: PortalLayoutProps) {
       cancelled = true;
       subscription.unsubscribe();
     };
-  }, [router]);
+  }, [router, supabase]);
 
   const handleLogout = async () => {
     await supabase.auth.signOut();

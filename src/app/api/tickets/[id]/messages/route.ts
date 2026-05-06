@@ -85,16 +85,20 @@ export async function POST(request: Request, context: { params: Promise<{ id: st
 
   const senderName =
     (profile?.full_name as string | null)?.trim() || user.user_metadata?.full_name || user.email || (sendAsAdmin ? "Admin" : "Kunde");
-  const { error: insertError } = await supabase.from("messages").insert({
-    ticket_id: id,
-    user_id: user.id,
-    content,
-    is_admin: sendAsAdmin,
-    sender_name: senderName,
-    sender_role: sendAsAdmin ? "admin" : "customer",
-  });
-  if (insertError) {
-    return NextResponse.json({ error: insertError.message }, { status: 400 });
+  const { data: insertedMessage, error: insertError } = await supabase
+    .from("messages")
+    .insert({
+      ticket_id: id,
+      user_id: user.id,
+      content,
+      is_admin: sendAsAdmin,
+      sender_name: senderName,
+      sender_role: sendAsAdmin ? "admin" : "customer",
+    })
+    .select("id")
+    .single();
+  if (insertError || !insertedMessage?.id) {
+    return NextResponse.json({ error: insertError?.message ?? "Kunne ikke gemme besked." }, { status: 400 });
   }
 
   if (sendAsAdmin) {
@@ -122,5 +126,5 @@ export async function POST(request: Request, context: { params: Promise<{ id: st
     }
   }
 
-  return NextResponse.json({ success: true });
+  return NextResponse.json({ success: true, messageId: insertedMessage.id as string });
 }

@@ -108,6 +108,7 @@ export default function AdminTicketDetailPage() {
 
         <TicketMessageThread
           ticketId={ticket.id}
+          organisationId={ticket.organisation_id}
           sendAsAdmin={true}
           customerCompanyLabel={companyFromTicketRow(ticket)}
         />

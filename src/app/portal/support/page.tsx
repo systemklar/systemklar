@@ -2,10 +2,13 @@
 
 import Link from "next/link";
 import { FormEvent, useCallback, useEffect, useMemo, useState } from "react";
-import { PortalLayout } from "@/components/portal/PortalLayout";
+import { PortalLayout, usePortalSession } from "@/components/portal/PortalLayout";
 import { TicketUnreadCountBadge } from "@/components/tickets/TicketUnreadCountBadge";
+import { AttachmentList } from "@/components/ui/AttachmentList";
+import { FileUpload } from "@/components/ui/FileUpload";
 import { formatDanishDateTime, StatusBadge } from "@/components/tickets/StatusBadge";
 import { fetchCurrentProfile } from "@/lib/current-profile";
+import type { TicketAttachment } from "@/lib/ticket-attachments";
 import {
   normalizeTicketWithProfile,
   TICKET_SELECT_BASE,
@@ -16,9 +19,32 @@ import { createClient } from "@/lib/supabase";
 
 export type { TicketWithProfileRow as TicketRow } from "@/lib/tickets-with-profile";
 
+function closeCreationState(setters: {
+  setShowForm: (v: boolean) => void;
+  setPostTicketId: (v: string | null) => void;
+  setPendingAttachments: (v: TicketAttachment[]) => void;
+  setTitle: (v: string) => void;
+  setDescription: (v: string) => void;
+  setErrorMessage: (v: string | null) => void;
+}) {
+  const { setShowForm, setPostTicketId, setPendingAttachments, setTitle, setDescription, setErrorMessage } =
+    setters;
+  setShowForm(false);
+  setPostTicketId(null);
+  setPendingAttachments([]);
+  setTitle("");
+  setDescription("");
+  setErrorMessage(null);
+}
+
 export default function PortalSupportPage() {
   const supabase = useMemo(() => createClient(), []);
+  const portalSession = usePortalSession();
+  const organisationId = portalSession?.organisationId ?? null;
+
   const [showForm, setShowForm] = useState(false);
+  const [postTicketId, setPostTicketId] = useState<string | null>(null);
+  const [pendingAttachments, setPendingAttachments] = useState<TicketAttachment[]>([]);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [tickets, setTickets] = useState<TicketWithProfileRow[]>([]);
@@ -77,7 +103,18 @@ export default function PortalSupportPage() {
     })();
   }, [fetchTickets]);
 
-  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
+  const resetCreation = () => {
+    closeCreationState({
+      setShowForm,
+      setPostTicketId,
+      setPendingAttachments,
+      setTitle,
+      setDescription,
+      setErrorMessage,
+    });
+  };
+
+  const handleCreateTicket = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setSubmitting(true);
     setErrorMessage(null);
@@ -92,6 +129,12 @@ export default function PortalSupportPage() {
       setSubmitting(false);
       return;
     }
+    if (!organisationId) {
+      setErrorMessage("Organisation ikke fundet.");
+      setSubmitting(false);
+      return;
+    }
+
     const res = await fetch("/api/tickets", {
       method: "POST",
       credentials: "same-origin",
@@ -101,7 +144,10 @@ export default function PortalSupportPage() {
         description: description.trim(),
       }),
     });
-    const payload = (await res.json().catch(() => ({}))) as { error?: string };
+    const payload = (await res.json().catch(() => ({}))) as {
+      error?: string;
+      ticket?: { id?: unknown };
+    };
 
     if (!res.ok) {
       setErrorMessage(payload.error ?? "Kunne ikke oprette sag.");
@@ -109,11 +155,24 @@ export default function PortalSupportPage() {
       return;
     }
 
-    setTitle("");
-    setDescription("");
-    setShowForm(false);
+    const tid =
+      typeof payload.ticket?.id === "string" ? payload.ticket.id : "";
+
+    if (!tid) {
+      setErrorMessage("Sag blev oprettet men mangler id – prøv at genindlæse siden.");
+      setSubmitting(false);
+      return;
+    }
+
+    setPostTicketId(tid);
+    setPendingAttachments([]);
     await fetchTickets();
     setSubmitting(false);
+  };
+
+  const finishCreation = async () => {
+    await fetchTickets();
+    resetCreation();
   };
 
   return (
@@ -124,8 +183,16 @@ export default function PortalSupportPage() {
           <button
             type="button"
             onClick={() => {
-              setShowForm((open) => !open);
-              setErrorMessage(null);
+              if (showForm) {
+                resetCreation();
+              } else {
+                setShowForm(true);
+                setPostTicketId(null);
+                setPendingAttachments([]);
+                setTitle("");
+                setDescription("");
+                setErrorMessage(null);
+              }
             }}
             className="rounded-full bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700"
           >
@@ -133,78 +200,115 @@ export default function PortalSupportPage() {
           </button>
         </div>
 
-        {showForm && (
-          <form
-            onSubmit={handleSubmit}
-            className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm"
-          >
-            <h2 className="text-lg font-semibold text-slate-900">Ny sag</h2>
-            <div className="mt-4 space-y-4">
-              <div>
-                <label htmlFor="ticket-title" className="mb-1 block text-sm font-medium">
-                  Titel
-                </label>
-                <input
-                  id="ticket-title"
-                  type="text"
-                  value={title}
-                  onChange={(e) => setTitle(e.target.value)}
-                  required
-                  className="w-full rounded-lg border border-slate-300 px-3 py-2 outline-none focus:border-slate-500"
-                  placeholder="Kort beskrivelse af problemet"
-                />
-              </div>
-              <div>
-                <label
-                  htmlFor="ticket-description"
-                  className="mb-1 block text-sm font-medium"
-                >
-                  Beskrivelse
-                </label>
-                <textarea
-                  id="ticket-description"
-                  value={description}
-                  onChange={(e) => setDescription(e.target.value)}
-                  rows={5}
-                  className="w-full rounded-lg border border-slate-300 px-3 py-2 outline-none focus:border-slate-500"
-                  placeholder="Uddyb problemet, fejlmeddelelser, hvornår det skete, osv."
-                />
-              </div>
-              {errorMessage && (
-                <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">
-                  {errorMessage}
+        {showForm ? (
+          <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+            <h2 className="text-lg font-semibold text-slate-900">
+              {!postTicketId ? "Ny sag" : "Sag oprettet"}
+            </h2>
+
+            {!postTicketId ? (
+              <form onSubmit={(e) => void handleCreateTicket(e)} className="mt-4 space-y-4">
+                <div>
+                  <label htmlFor="ticket-title" className="mb-1 block text-sm font-medium">
+                    Titel
+                  </label>
+                  <input
+                    id="ticket-title"
+                    type="text"
+                    value={title}
+                    onChange={(e) => setTitle(e.target.value)}
+                    required
+                    className="w-full rounded-lg border border-slate-300 px-3 py-2 outline-none focus:border-slate-500"
+                    placeholder="Kort beskrivelse af problemet"
+                  />
+                </div>
+                <div>
+                  <label htmlFor="ticket-description" className="mb-1 block text-sm font-medium">
+                    Beskrivelse
+                  </label>
+                  <textarea
+                    id="ticket-description"
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
+                    rows={5}
+                    className="w-full rounded-lg border border-slate-300 px-3 py-2 outline-none focus:border-slate-500"
+                    placeholder="Uddyb problemet, fejlmeddelelser, hvornår det skete, osv."
+                  />
+                </div>
+                {errorMessage ? (
+                  <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">{errorMessage}</p>
+                ) : null}
+                <div className="flex flex-wrap gap-3">
+                  <button
+                    type="submit"
+                    disabled={submitting}
+                    className="rounded-full bg-blue-600 px-5 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700 disabled:opacity-60"
+                  >
+                    {submitting ? "Sender..." : "Opret sag"}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => resetCreation()}
+                    className="rounded-full border border-slate-300 px-5 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50"
+                  >
+                    Annuller
+                  </button>
+                </div>
+              </form>
+            ) : (
+              <div className="mt-4 space-y-4">
+                <p className="text-sm text-slate-600">
+                  Din sag er oprettet. Du kan vedhænte filer (valgfrit) – tryk &quot;Færdig&quot; når du er færdig.
                 </p>
-              )}
-              <div className="flex flex-wrap gap-3">
-                <button
-                  type="submit"
-                  disabled={submitting}
-                  className="rounded-full bg-blue-600 px-5 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700 disabled:opacity-60"
-                >
-                  {submitting ? "Sender..." : "Opret sag"}
-                </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setShowForm(false);
-                    setErrorMessage(null);
-                  }}
-                  className="rounded-full border border-slate-300 px-5 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50"
-                >
-                  Annuller
-                </button>
+                <div className="mt-3">
+                  <p className="mb-2 text-xs text-[#4A8CB5]">Vedhæft filer (valgfrit)</p>
+                  {organisationId ? (
+                    <FileUpload
+                      ticketId={postTicketId}
+                      organisationId={organisationId}
+                      onUploadComplete={(a) =>
+                        setPendingAttachments((prev) => [...prev, a])
+                      }
+                    />
+                  ) : (
+                    <p className="text-sm text-red-600">Organisation ikke fundet.</p>
+                  )}
+                  <AttachmentList
+                    attachments={pendingAttachments}
+                    showDelete
+                    onDelete={(id) =>
+                      setPendingAttachments((prev) => prev.filter((x) => x.id !== id))
+                    }
+                  />
+                </div>
+                <div className="flex flex-wrap gap-3">
+                  <button
+                    type="button"
+                    onClick={() => void finishCreation()}
+                    className="rounded-full bg-blue-600 px-5 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700"
+                  >
+                    Færdig
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => resetCreation()}
+                    className="rounded-full border border-slate-300 px-5 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50"
+                    >
+                    Luk
+                  </button>
+                </div>
               </div>
-            </div>
-          </form>
-        )}
+            )}
+          </div>
+        ) : null}
 
         <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
           <h2 className="text-lg font-semibold">Dine sager</h2>
-          {errorMessage && !showForm && (
+          {errorMessage && !showForm ? (
             <p className="mt-3 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-900">
               {errorMessage}
             </p>
-          )}
+          ) : null}
           {listLoading ? (
             <p className="mt-4 text-sm text-slate-500">Henter sager...</p>
           ) : tickets.length === 0 ? (

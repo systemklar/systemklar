@@ -4,6 +4,9 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { PostgrestError, RealtimePostgresChangesPayload } from "@supabase/supabase-js";
 import { companyFromTicketRow, fetchTicketWithProfileById } from "@/lib/tickets-with-profile";
 import { createClient } from "@/lib/supabase";
+import { AttachmentList } from "@/components/ui/AttachmentList";
+import { FileUpload } from "@/components/ui/FileUpload";
+import { normalizeTicketAttachmentRow, type TicketAttachment } from "@/lib/ticket-attachments";
 import { formatDanishDateTime } from "./StatusBadge";
 
 export type MessageRow = {
@@ -53,6 +56,7 @@ function normalizeMessageRow(raw: Record<string, unknown>): MessageRow | null {
 
 type TicketMessageThreadProps = {
   ticketId: string;
+  organisationId: string;
   /** Kunde: false. Admin-svar: true. */
   sendAsAdmin: boolean;
   /**
@@ -117,6 +121,7 @@ function TypingDots() {
 
 export function TicketMessageThread({
   ticketId,
+  organisationId,
   sendAsAdmin,
   customerCompanyLabel,
   fullHeight = false,
@@ -135,10 +140,14 @@ export function TicketMessageThread({
   const lastTypingSentAtRef = useRef(0);
   const typingChannelRef = useRef<ReturnType<typeof supabase.channel> | null>(null);
 
+  const [attachments, setAttachments] = useState<TicketAttachment[]>([]);
+  const [authUserId, setAuthUserId] = useState<string | null>(null);
+
   useEffect(() => {
     if (customerCompanyLabel !== undefined) {
-      const trimmed = customerCompanyLabel.trim();
-      setCustomerSenderLabel(trimmed || "Kunde");
+      queueMicrotask(() => {
+        setCustomerSenderLabel(customerCompanyLabel.trim() || "Kunde");
+      });
       return;
     }
     let cancelled = false;
@@ -152,6 +161,54 @@ export function TicketMessageThread({
       cancelled = true;
     };
   }, [ticketId, supabase, customerCompanyLabel]);
+
+  useEffect(() => {
+    void supabase.auth.getSession().then(({ data: { session } }) => {
+      setAuthUserId(session?.user?.id ?? null);
+    });
+  }, [supabase]);
+
+  const loadAttachments = useCallback(async () => {
+    const { data, error } = await supabase
+      .from("attachments")
+      .select(
+        "id, ticket_id, message_id, organisation_id, uploaded_by, file_name, file_size, file_type, storage_path, created_at",
+      )
+      .eq("ticket_id", ticketId)
+      .order("created_at", { ascending: true });
+    if (error) {
+      console.error("[attachments] fetch", error);
+      setAttachments([]);
+      return;
+    }
+    const rows = (data ?? [])
+      .map((r) => normalizeTicketAttachmentRow(r as Record<string, unknown>))
+      .filter((a): a is TicketAttachment => a !== null);
+    setAttachments(rows);
+  }, [ticketId, supabase]);
+
+  useEffect(() => {
+    queueMicrotask(() => {
+      void loadAttachments();
+    });
+  }, [loadAttachments]);
+
+  const attachmentsByMessageId = useMemo(() => {
+    const map = new Map<string, TicketAttachment[]>();
+    for (const a of attachments) {
+      if (!a.message_id) continue;
+      const list = map.get(a.message_id) ?? [];
+      list.push(a);
+      map.set(a.message_id, list);
+    }
+    return map;
+  }, [attachments]);
+
+  const pendingAttachments = useMemo(() => {
+    const dangling = attachments.filter((a) => a.message_id == null);
+    if (!authUserId) return [];
+    return dangling.filter((a) => a.uploaded_by === authUserId);
+  }, [attachments, authUserId]);
 
   const appendMessage = useCallback(
     (raw: Record<string, unknown>) => {
@@ -342,11 +399,31 @@ export function TicketMessageThread({
       setSendError(msg);
     } else {
       setSendError(null);
+      const messageId =
+        typeof (payload as { messageId?: unknown }).messageId === "string"
+          ? (payload as { messageId: string }).messageId
+          : null;
+      if (messageId && user.id) {
+        await supabase
+          .from("attachments")
+          .update({ message_id: messageId })
+          .eq("ticket_id", ticketId)
+          .is("message_id", null)
+          .eq("uploaded_by", user.id);
+      }
       setDraft("");
-      await loadMessages();
+      await Promise.all([loadMessages(), loadAttachments()]);
     }
     setSending(false);
   };
+
+  const handleAttachmentUploaded = useCallback((a: TicketAttachment) => {
+    setAttachments((prev) => [...prev, a]);
+  }, []);
+
+  const handleAttachmentRemoved = useCallback((id: string) => {
+    setAttachments((prev) => prev.filter((x) => x.id !== id));
+  }, []);
 
   /** Admin-skærm: egne udkast til højre (Systemklar). Kundeportal: til venstre (DIG). */
   const typingOnRight = sendAsAdmin;
@@ -397,6 +474,15 @@ export function TicketMessageThread({
                 >
                   <p className="whitespace-pre-wrap leading-relaxed">{m.content}</p>
                 </div>
+                {attachmentsByMessageId.get(m.id)?.length ? (
+                  <div
+                    className={`mt-1 max-w-[min(100%,28rem)] ${
+                      m.sender_role === "customer" ? "self-end text-left" : "self-start text-left"
+                    }`}
+                  >
+                    <AttachmentList attachments={attachmentsByMessageId.get(m.id) ?? []} />
+                  </div>
+                ) : null}
               </div>
             ))}
 
@@ -437,35 +523,53 @@ export function TicketMessageThread({
         </div>
       )}
 
-      <div className="flex shrink-0 flex-col gap-2 border-t border-slate-100 bg-white p-4 sm:flex-row">
-        <input
-          type="text"
-          value={draft}
-          onChange={(e) => {
-            const next = e.target.value;
-            setDraft(next);
-            if (sendError) setSendError(null);
-            if (next.trim()) {
-              void maybeBroadcastTyping();
-            }
-          }}
-          onKeyDown={(e) => {
-            if (e.key === "Enter" && !e.shiftKey) {
-              e.preventDefault();
-              void handleSend();
-            }
-          }}
-          placeholder="Skriv en besked..."
-          className="min-w-0 flex-1 rounded-lg border border-slate-300 px-3 py-2 outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-500"
+      <div className="flex shrink-0 flex-col gap-2 border-t border-slate-100 bg-white px-4 pb-4 pt-2">
+        {pendingAttachments.length > 0 ? (
+          <div className="rounded-lg border border-sky-50 bg-slate-50/80 px-3 py-2">
+            <AttachmentList
+              attachments={pendingAttachments}
+              showDelete
+              canDelete={(a) => (authUserId ? a.uploaded_by === authUserId : false)}
+              onDelete={(id) => handleAttachmentRemoved(id)}
+            />
+          </div>
+        ) : null}
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+          <input
+            type="text"
+            value={draft}
+            onChange={(e) => {
+              const next = e.target.value;
+              setDraft(next);
+              if (sendError) setSendError(null);
+              if (next.trim()) {
+                void maybeBroadcastTyping();
+              }
+            }}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && !e.shiftKey) {
+                e.preventDefault();
+                void handleSend();
+              }
+            }}
+            placeholder="Skriv en besked..."
+            className="min-w-0 flex-1 rounded-lg border border-slate-300 px-3 py-2 outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-500"
+          />
+          <button
+            type="button"
+            disabled={sending || !draft.trim()}
+            onClick={() => void handleSend()}
+            className="rounded-full bg-blue-600 px-5 py-2 text-sm font-semibold text-white transition hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
+          >
+            {sending ? "Sender..." : "Send"}
+          </button>
+        </div>
+        <FileUpload
+          ticketId={ticketId}
+          organisationId={organisationId}
+          disabled={sending}
+          onUploadComplete={handleAttachmentUploaded}
         />
-        <button
-          type="button"
-          disabled={sending || !draft.trim()}
-          onClick={() => void handleSend()}
-          className="rounded-full bg-blue-600 px-5 py-2 text-sm font-semibold text-white transition hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
-        >
-          {sending ? "Sender..." : "Send"}
-        </button>
       </div>
     </div>
   );

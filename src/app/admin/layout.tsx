@@ -21,6 +21,9 @@ function activeNavFromPath(pathname: string): AdminNavKey {
   if (pathname.startsWith("/admin/emails")) {
     return "emails";
   }
+  if (pathname.startsWith("/admin/vejledninger")) {
+    return "guides";
+  }
   if (pathname.startsWith("/admin/systemer")) {
     return "systems";
   }

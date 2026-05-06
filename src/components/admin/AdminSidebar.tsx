@@ -2,12 +2,19 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Mail } from "lucide-react";
+import { BookOpen, Mail } from "lucide-react";
 import { useMemo, type ReactNode } from "react";
 import { SystemklarLogo } from "@/components/branding/SystemklarLogo";
 import { createClient } from "@/lib/supabase";
 
-export type AdminNavKey = "overview" | "customers" | "tickets" | "reports" | "emails" | "systems";
+export type AdminNavKey =
+  | "overview"
+  | "customers"
+  | "tickets"
+  | "reports"
+  | "emails"
+  | "guides"
+  | "systems";
 
 type AdminSidebarProps = {
   activeNav: AdminNavKey;
@@ -31,6 +38,12 @@ const navItems: { label: string; href: string; key: AdminNavKey; icon: ReactNode
     href: "/admin/emails",
     key: "emails",
     icon: <Mail className="h-4 w-4 text-sky-600" aria-hidden />,
+  },
+  {
+    label: "Vejledninger",
+    href: "/admin/vejledninger",
+    key: "guides",
+    icon: <BookOpen className="h-4 w-4 text-sky-600" aria-hidden />,
   },
   { label: "Systemer", href: "/admin/systemer", key: "systems", icon: <DotIcon path="M12 3v4m0 10v4M3 12h4m10 0h4M6 6l3 3m6 6 3 3m0-12-3 3m-6 6-3 3" /> },
 ];
