@@ -600,12 +600,15 @@ export function MarketingHomeContent() {
         </div>
       </section>
 
-      <section className="bg-[#F0F7FF] py-24 md:py-32">
+      <section className="bg-[#062840] py-24 md:py-32">
         <div className="mx-auto max-w-5xl px-6">
-          <h2 className="text-center text-3xl font-bold tracking-tight text-[#0D1F2D] md:text-4xl">
+          <p className="mx-auto inline-flex rounded-full border border-white/20 bg-white/10 px-4 py-1.5 text-xs font-semibold uppercase tracking-wide text-white">
+            AI-værktøjer
+          </p>
+          <h2 className="text-center text-3xl font-bold tracking-tight text-white md:text-4xl">
             Værktøjer der gør arbejdet for dig
           </h2>
-          <p className="mx-auto mt-4 max-w-2xl text-center text-base text-[#2C4A5E]">
+          <p className="mx-auto mt-4 max-w-2xl text-center text-base text-white/70">
             Tre enkle værktøjer, der hjælper dig med de opgaver, som normalt tager unødigt lang tid.
           </p>
           <div className="mt-16 grid gap-6 md:grid-cols-3 md:gap-8">
@@ -614,20 +617,20 @@ export function MarketingHomeContent() {
               return (
                 <AnimatedSection key={item.title} direction="up" delay={(index * 100) as 0 | 100 | 200 | 300}>
                   <Link href={item.href} className="group block">
-                    <article className="flex h-full flex-col rounded-2xl border border-sky-100 bg-white p-6 shadow-sm transition-all duration-200 hover:-translate-y-1 hover:shadow-md">
-                      <div className="mb-5 flex h-12 w-12 items-center justify-center rounded-xl bg-sky-50">
-                        <Icon className="h-6 w-6 text-sky-600" />
+                    <article className="flex h-full flex-col rounded-2xl border border-white/20 bg-white/10 p-6 backdrop-blur-sm transition-all duration-200 hover:bg-white/15">
+                      <div className="mb-5 flex h-12 w-12 items-center justify-center rounded-xl bg-white/10">
+                        <Icon className="h-6 w-6 text-white" />
                       </div>
-                      <h3 className="text-lg font-semibold text-[#0D1F2D]">{item.title}</h3>
-                      <p className="mt-3 text-sm leading-relaxed text-[#2C4A5E]">{item.text}</p>
+                      <h3 className="text-lg font-semibold text-white">{item.title}</h3>
+                      <p className="mt-3 text-sm leading-relaxed text-white/70">{item.text}</p>
                       {index === 1 ? (
-                        <div className="mt-4 rounded-xl bg-[#F0F7FF] p-3 text-xs">
-                          <div className="ml-auto max-w-[92%] rounded-xl rounded-tr-sm bg-sky-600 px-2 py-1 text-white">
+                        <div className="mt-4 rounded-xl border border-white/20 bg-white/10 p-3 text-xs">
+                          <div className="ml-auto max-w-[92%] rounded-xl rounded-tr-sm bg-white/20 px-2 py-1 text-white">
                             {typedQuestion}
                             <span className="animate-pulse">|</span>
                           </div>
                           <div
-                            className={`mt-2 max-w-[95%] rounded-xl rounded-tl-sm bg-white px-2 py-1 text-[#2C4A5E] transition-opacity duration-300 ${
+                            className={`mt-2 max-w-[95%] rounded-xl rounded-tl-sm border border-white/20 bg-white/10 px-2 py-1 text-white/80 transition-opacity duration-300 ${
                               showAnswer ? "opacity-100" : "opacity-0"
                             }`}
                           >
@@ -635,7 +638,7 @@ export function MarketingHomeContent() {
                           </div>
                         </div>
                       ) : null}
-                      <span className="mt-4 text-sm text-sky-600">Se mere →</span>
+                      <span className="mt-4 text-sm text-sky-300 transition-colors hover:text-sky-200">Se mere →</span>
                     </article>
                   </Link>
                 </AnimatedSection>
@@ -716,17 +719,20 @@ export function MarketingHomeContent() {
         </div>
       </section>
 
-      <section className="bg-[#F0F7FF] py-24">
+      <section className="bg-white py-24">
         <div className="mx-auto max-w-3xl px-6">
-          <p className="mx-auto inline-flex rounded-full bg-sky-50 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-sky-700">
-            IT-beregner
-          </p>
-          <h2 className="mt-4 text-center text-3xl font-bold tracking-tight text-[#0D1F2D] md:text-4xl">
-            Hvad koster IT-rod din virksomhed?
-          </h2>
-          <p className="mt-3 text-center text-base text-[#2C4A5E]">Besvar 3 hurtige spørgsmål og få et konkret svar.</p>
+          <p className="mb-2 text-center text-xs font-semibold uppercase tracking-widest text-sky-600">Prøv det selv →</p>
+          <div className="mx-auto max-w-3xl rounded-3xl bg-gradient-to-br from-[#0A6EBD] to-[#062840] p-1">
+            <div className="rounded-[22px] bg-[#F0F7FF] p-10">
+              <p className="mx-auto flex w-fit rounded-full bg-sky-50 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-sky-700">
+                IT-beregner
+              </p>
+              <h2 className="mt-4 text-center text-3xl font-bold tracking-tight text-[#0D1F2D] md:text-4xl">
+                Hvad koster IT-rod din virksomhed?
+              </h2>
+              <p className="mt-3 text-center text-base text-[#2C4A5E]">Besvar 3 hurtige spørgsmål og få et konkret svar.</p>
 
-          <div className="mt-8 flex items-center justify-center gap-3">
+              <div className="mt-8 flex items-center justify-center gap-3">
             {[1, 2, 3, 4, 5].map((stepNumber) => (
               <div key={stepNumber} className="flex items-center gap-3">
                 <div
@@ -739,9 +745,9 @@ export function MarketingHomeContent() {
                 {stepNumber < 5 ? <div className="h-[2px] w-8 bg-sky-200" aria-hidden /> : null}
               </div>
             ))}
-          </div>
+              </div>
 
-          <div className="relative mt-10 min-h-[660px]">
+              <div className="relative mt-10 min-h-[660px]">
             <div
               className={`transition-all duration-[400ms] ${
                 calculatorStep === 1 ? "translate-y-0 opacity-100" : "pointer-events-none absolute inset-0 translate-y-4 opacity-0"
@@ -884,13 +890,15 @@ export function MarketingHomeContent() {
                   );
                 })}
               </div>
-              <button
-                onClick={() => setCalculatorStep(6)}
-                disabled={selectedWaste.length === 0}
-                className="mt-8 inline-flex rounded-full bg-sky-600 px-8 py-3 font-semibold text-white disabled:cursor-not-allowed disabled:opacity-50"
-              >
-                Beregn resultat
-              </button>
+              <div className="mt-6 flex justify-center">
+                <button
+                  onClick={() => setCalculatorStep(6)}
+                  disabled={selectedWaste.length === 0}
+                  className="inline-flex rounded-full bg-sky-600 px-12 py-3 font-semibold text-white disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  Beregn resultat
+                </button>
+              </div>
             </div>
 
             <div
@@ -996,6 +1004,8 @@ export function MarketingHomeContent() {
               </AnimatedSection>
             </div>
           </div>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -1020,11 +1030,13 @@ export function MarketingHomeContent() {
               />
             </button>
             <span className={`text-sm font-medium ${yearly ? "text-[#0D1F2D]" : "text-[#4A8CB5]"}`}>Årlig</span>
-            {yearly ? (
-              <span className="rounded-full bg-green-100 px-2 py-0.5 text-xs font-semibold text-green-700">
-                Spar 2 måneder
-              </span>
-            ) : null}
+            <span
+              className={`rounded-full bg-green-100 px-2 py-0.5 text-xs font-semibold text-green-700 transition-opacity duration-200 ${
+                yearly ? "opacity-100" : "pointer-events-none opacity-0"
+              }`}
+            >
+              Spar 2 måneder
+            </span>
           </div>
           <div className="mt-14 grid gap-5 md:grid-cols-3">
             {displayPrice.map((plan, index) => (
