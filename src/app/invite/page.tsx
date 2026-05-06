@@ -1,6 +1,7 @@
 "use client";
 
 import { FormEvent, useEffect, useMemo, useState } from "react";
+import { Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { AuthSplitLayout } from "@/components/auth/AuthSplitLayout";
 import { createClient } from "@/lib/supabase";
@@ -12,7 +13,7 @@ type InvitationRow = {
   organisations: { name: string } | { name: string }[] | null;
 };
 
-export default function InvitePage() {
+function InviteContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const supabase = useMemo(() => createClient(), []);
@@ -196,5 +197,19 @@ export default function InvitePage() {
         </form>
       ) : null}
     </AuthSplitLayout>
+  );
+}
+
+export default function InvitePage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen flex items-center justify-center bg-[#F5FAFD]">
+          <div className="text-[#4A8CB5] text-sm">Indlæser invitation...</div>
+        </div>
+      }
+    >
+      <InviteContent />
+    </Suspense>
   );
 }
