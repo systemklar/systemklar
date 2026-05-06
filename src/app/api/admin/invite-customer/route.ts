@@ -1,8 +1,8 @@
-import { Resend } from "resend";
 import { createClient } from "@supabase/supabase-js";
 import { NextResponse } from "next/server";
 import { isAdminEmail } from "@/lib/admin-email";
-import { getAppOrigin, getResendFromAddress } from "@/lib/resend-welcome-email";
+import { sendInviteEmail } from "@/lib/email";
+import { getAppOrigin } from "@/lib/resend-welcome-email";
 
 function createUserClient(accessToken: string) {
   return createClient(
@@ -119,17 +119,10 @@ export async function POST(request: Request) {
   }
 
   const inviteUrl = `${getAppOrigin()}/invite?token=${encodeURIComponent(invitation.token as string)}`;
-  const resendKey = process.env.RESEND_API_KEY?.trim();
-  if (resendKey) {
-    const resend = new Resend(resendKey);
-    await resend.emails.send({
-      from: getResendFromAddress(),
-      to: email,
-      subject: "Du er inviteret til systemklar",
-      html: `<p>Hej ${contact_name}, du er inviteret til ${organisation.name} på systemklar.</p>
-<p>Klik her for at oprette din profil: <a href="${inviteUrl}">${inviteUrl}</a></p>
-<p>Linket udløber om 7 dage.</p>`,
-    });
+  try {
+    await sendInviteEmail(email, contact_name || email, organisation.name as string, inviteUrl);
+  } catch (error) {
+    console.error("[api/admin/invite-customer] sendInviteEmail", error);
   }
 
   return NextResponse.json({ ok: true, organisation_id: organisation.id });

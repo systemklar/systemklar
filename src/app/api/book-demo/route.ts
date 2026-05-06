@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
-import { Resend } from "resend";
-import { escapeHtml, getResendFromAddress } from "@/lib/resend-welcome-email";
+import { sendBookDemoEmail } from "@/lib/email";
 
 type DemoRequestBody = {
   name: string;
@@ -38,40 +37,13 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Email er ugyldig." }, { status: 400 });
   }
 
-  const resendKey = process.env.RESEND_API_KEY?.trim();
-  if (!resendKey) {
-    return NextResponse.json({ error: "RESEND_API_KEY mangler." }, { status: 500 });
-  }
-
-  const resend = new Resend(resendKey);
-  const subject = `Ny demo-anmodning fra ${companyName}`;
-  const html = `
-    <h2>Ny demo-anmodning</h2>
-    <p><strong>Navn:</strong> ${escapeHtml(name)}</p>
-    <p><strong>Virksomhedsnavn:</strong> ${escapeHtml(companyName)}</p>
-    <p><strong>Email:</strong> ${escapeHtml(email)}</p>
-    <p><strong>Telefonnummer:</strong> ${escapeHtml(phone || "-")}</p>
-    <p><strong>Antal ansatte:</strong> ${escapeHtml(employees || "-")}</p>
-    <p><strong>Besked / hvad ønsker de at se:</strong></p>
-    <p style="white-space:pre-wrap;border-left:3px solid #1D9E75;padding-left:12px;">
-      ${escapeHtml(message || "-")}
-    </p>
-  `;
-
-  const { error } = await resend.emails.send({
-    from: getResendFromAddress(),
-    to: "kontakt@systemklar.dk",
-    subject,
-    html,
-    replyTo: email,
-  });
-
-  if (error) {
-    const msg =
-      typeof error === "object" && error !== null && "message" in error
-        ? String((error as { message: unknown }).message)
-        : "Kunne ikke sende email.";
-    return NextResponse.json({ error: msg }, { status: 502 });
+  try {
+    const composedMessage = [message, phone ? `Telefon: ${phone}` : "", employees ? `Antal ansatte: ${employees}` : ""]
+      .filter(Boolean)
+      .join("\n");
+    await sendBookDemoEmail(email, name, companyName, composedMessage);
+  } catch (error) {
+    console.error("[api/book-demo] sendBookDemoEmail", error);
   }
 
   return NextResponse.json({

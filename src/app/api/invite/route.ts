@@ -1,8 +1,8 @@
 import { createServerClient, type CookieOptions } from "@supabase/ssr";
-import { Resend } from "resend";
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
-import { getAppOrigin, getResendFromAddress } from "@/lib/resend-welcome-email";
+import { sendInviteEmail } from "@/lib/email";
+import { getAppOrigin } from "@/lib/resend-welcome-email";
 
 export async function POST(request: Request) {
   const cookieStore = await cookies();
@@ -53,6 +53,10 @@ export async function POST(request: Request) {
     typeof body === "object" && body !== null && "email" in body ? (body as { email: unknown }).email : "";
   const roleRaw =
     typeof body === "object" && body !== null && "role" in body ? (body as { role: unknown }).role : "member";
+  const contactNameRaw =
+    typeof body === "object" && body !== null && "contact_name" in body
+      ? (body as { contact_name: unknown }).contact_name
+      : "";
   const organisationRaw =
     typeof body === "object" && body !== null && "organisation_id" in body
       ? (body as { organisation_id: unknown }).organisation_id
@@ -60,6 +64,7 @@ export async function POST(request: Request) {
 
   const email = typeof emailRaw === "string" ? emailRaw.trim().toLowerCase() : "";
   const role = roleRaw === "org_admin" ? "org_admin" : "member";
+  const contactName = typeof contactNameRaw === "string" ? contactNameRaw.trim() : "";
   const organisation_id = typeof organisationRaw === "string" ? organisationRaw : "";
 
   if (!email || !organisation_id) {
@@ -94,6 +99,7 @@ export async function POST(request: Request) {
       organisation_id,
       email,
       role,
+      contact_name: contactName || null,
       invited_by: senderProfile.id,
       expires_at: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
     })
@@ -111,24 +117,11 @@ export async function POST(request: Request) {
     .maybeSingle();
   const orgName = (orgData?.name as string | undefined)?.trim() || "din organisation";
 
-  const resendKey = process.env.RESEND_API_KEY?.trim();
-  if (resendKey) {
-    const resend = new Resend(resendKey);
-    const inviteUrl = `${getAppOrigin()}/invite?token=${encodeURIComponent(invitation.token as string)}`;
-    await resend.emails.send({
-      from: getResendFromAddress(),
-      to: email,
-      subject: `Du er inviteret til ${orgName} på systemklar`,
-      html: `<div style="font-family: Inter, sans-serif; max-width: 500px; margin: 0 auto;">
-  <h2>Du er inviteret til ${orgName}</h2>
-  <p>Du er blevet inviteret til at få adgang til systemklar for ${orgName}.</p>
-  <a href="${inviteUrl}" 
-     style="background: #0A6EBD; color: white; padding: 12px 24px; border-radius: 999px; text-decoration: none; display: inline-block; margin: 16px 0;">
-    Opret din profil
-  </a>
-  <p style="color: #4A8CB5; font-size: 14px;">Linket udløber om 7 dage.</p>
-</div>`,
-    });
+  const inviteUrl = `${getAppOrigin()}/invite?token=${encodeURIComponent(invitation.token as string)}`;
+  try {
+    await sendInviteEmail(email, contactName || email, orgName, inviteUrl);
+  } catch (error) {
+    console.error("[api/invite] sendInviteEmail", error);
   }
 
   return NextResponse.json({ success: true });

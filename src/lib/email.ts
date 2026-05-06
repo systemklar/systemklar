@@ -131,3 +131,75 @@ export async function sendMonthlyReportEmail(
     `),
   });
 }
+
+export async function sendInviteEmail(
+  to: string,
+  contactName: string,
+  orgName: string,
+  inviteUrl: string
+) {
+  return resend.emails.send({
+    from: FROM,
+    to,
+    subject: `Du er inviteret til ${orgName} på systemklar`,
+    html: baseTemplate(`
+      <h2 style="margin-top:0;">Du er inviteret til systemklar</h2>
+      <p>Hej ${contactName},</p>
+      <p>Du er blevet inviteret til at få adgang til <strong>${orgName}</strong> på systemklar – en IT-platform der samler support, overblik og dokumentation ét sted.</p>
+      <p>Klik på knappen nedenfor for at oprette din profil. Det tager under 2 minutter.</p>
+      ${btn("Opret din profil", inviteUrl)}
+      <p style="color:#4A8CB5; font-size:13px;">Linket udløber om 7 dage. Har du spørgsmål? Skriv til os på <a href="mailto:kontakt@systemklar.dk" style="color:#0A6EBD;">kontakt@systemklar.dk</a></p>
+    `),
+  });
+}
+
+export async function sendBookDemoEmail(
+  to: string,
+  name: string,
+  company: string,
+  message: string
+) {
+  return resend.emails.send({
+    from: FROM,
+    to: "kontakt@systemklar.dk",
+    subject: `Demo-forespørgsel fra ${name} – ${company}`,
+    html: baseTemplate(`
+      <h2 style="margin-top:0;">Ny demo-forespørgsel</h2>
+      <p><strong>Navn:</strong> ${name}</p>
+      <p><strong>Virksomhed:</strong> ${company}</p>
+      <p><strong>Email:</strong> ${to}</p>
+      <p><strong>Besked:</strong></p>
+      <div style="background:#F0F7FF; border-left:3px solid #0A6EBD; padding:12px 16px; border-radius:0 8px 8px 0; margin:16px 0; color:#2C4A5E; font-size:14px;">
+        ${message || "Ingen besked"}
+      </div>
+      ${btn("Svar på forespørgsel", `mailto:${to}`)}
+    `),
+  });
+}
+
+export async function sendContactEmail(
+  to: string,
+  name: string,
+  company: string,
+  email: string,
+  phone: string,
+  message: string
+) {
+  return resend.emails.send({
+    from: FROM,
+    to,
+    subject: `Ny henvendelse fra ${name} – ${company}`,
+    html: baseTemplate(`
+      <h2 style="margin-top:0;">Ny kontakthenvendelse</h2>
+      <p><strong>Navn:</strong> ${name}</p>
+      <p><strong>Virksomhed:</strong> ${company}</p>
+      <p><strong>Email:</strong> <a href="mailto:${email}" style="color:#0A6EBD;">${email}</a></p>
+      ${phone ? `<p><strong>Telefon:</strong> ${phone}</p>` : ""}
+      <p><strong>Besked:</strong></p>
+      <div style="background:#F0F7FF; border-left:3px solid #0A6EBD; padding:12px 16px; border-radius:0 8px 8px 0; margin:16px 0; color:#2C4A5E; font-size:14px;">
+        ${message}
+      </div>
+      ${btn("Svar på henvendelse", `mailto:${email}`)}
+    `),
+  });
+}

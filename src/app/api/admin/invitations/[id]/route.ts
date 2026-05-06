@@ -1,8 +1,8 @@
 import { randomUUID } from "crypto";
-import { Resend } from "resend";
 import { NextResponse } from "next/server";
+import { sendInviteEmail } from "@/lib/email";
 import { requireAdminSession } from "@/lib/require-admin-api";
-import { getAppOrigin, getResendFromAddress } from "@/lib/resend-welcome-email";
+import { getAppOrigin } from "@/lib/resend-welcome-email";
 import { createServiceRoleClient } from "@/lib/supabase-service-role";
 
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
@@ -51,17 +51,10 @@ export async function POST(_request: Request, context: { params: Promise<{ id: s
   const contactName = (invitation.contact_name as string | null)?.trim() || invitation.email;
   const inviteUrl = `${getAppOrigin()}/invite?token=${encodeURIComponent(token)}`;
 
-  const resendKey = process.env.RESEND_API_KEY?.trim();
-  if (resendKey) {
-    const resend = new Resend(resendKey);
-    await resend.emails.send({
-      from: getResendFromAddress(),
-      to: invitation.email as string,
-      subject: `Du er inviteret til ${orgName} på systemklar`,
-      html: `<p>Hej ${contactName}, du er inviteret til ${orgName} på systemklar.</p>
-<p>Klik her for at oprette din profil: <a href="${inviteUrl}">${inviteUrl}</a></p>
-<p>Linket udløber om 7 dage.</p>`,
-    });
+  try {
+    await sendInviteEmail(invitation.email as string, contactName, orgName, inviteUrl);
+  } catch (emailError) {
+    console.error("[api/admin/invitations/[id]] sendInviteEmail", emailError);
   }
 
   return NextResponse.json({ success: true });

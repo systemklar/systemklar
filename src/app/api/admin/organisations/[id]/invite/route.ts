@@ -1,7 +1,7 @@
 import { randomUUID } from "crypto";
-import { Resend } from "resend";
 import { NextResponse } from "next/server";
-import { getAppOrigin, getResendFromAddress } from "@/lib/resend-welcome-email";
+import { sendInviteEmail } from "@/lib/email";
+import { getAppOrigin } from "@/lib/resend-welcome-email";
 import { requireAdminSession } from "@/lib/require-admin-api";
 import { createServiceRoleClient } from "@/lib/supabase-service-role";
 
@@ -74,19 +74,11 @@ export async function POST(request: Request, context: { params: Promise<{ id: st
     return NextResponse.json({ error: invitationError.message }, { status: 400 });
   }
 
-  const resendKey = process.env.RESEND_API_KEY?.trim();
-  if (resendKey) {
-    const orgName = orgRes.data.name as string;
-    const inviteUrl = `${getAppOrigin()}/invite?token=${encodeURIComponent(token)}`;
-    const resend = new Resend(resendKey);
-    await resend.emails.send({
-      from: getResendFromAddress(),
-      to: email,
-      subject: `Du er inviteret til ${orgName} på systemklar`,
-      html: `<p>Hej ${contactName}, du er inviteret til ${orgName} på systemklar.</p>
-<p>Klik her for at oprette din profil: <a href="${inviteUrl}">${inviteUrl}</a></p>
-<p>Linket udløber om 7 dage.</p>`,
-    });
+  const inviteUrl = `${getAppOrigin()}/invite?token=${encodeURIComponent(token)}`;
+  try {
+    await sendInviteEmail(email, contactName || email, orgRes.data.name as string, inviteUrl);
+  } catch (error) {
+    console.error("[api/admin/organisations/[id]/invite] sendInviteEmail", error);
   }
 
   return NextResponse.json({ success: true });
