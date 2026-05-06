@@ -1,5 +1,6 @@
 import { MarketingShell } from "@/components/marketing/MarketingShell";
 import Link from "next/link";
+import { AnimatedSection } from "@/components/ui/AnimatedSection";
 
 function BrowserChrome({ path }: { path: string }) {
   return (
@@ -133,22 +134,23 @@ export default function PlatformenPage() {
   return (
     <MarketingShell>
       <main>
-        <section className="bg-gradient-to-br from-[#0A6EBD] to-[#062840] py-32 text-white">
+        <section className="bg-[#F0F7FF] py-20">
           <div className="mx-auto max-w-7xl px-6 text-center">
-            <p className="inline-flex rounded-full border border-white/30 bg-white/15 px-4 py-1.5 text-xs font-semibold uppercase tracking-wide">
+            <p className="inline-flex rounded-full bg-sky-50 px-4 py-1.5 text-xs font-semibold uppercase tracking-wide text-sky-600">
               Platformen
             </p>
-            <h1 className="mx-auto mt-6 max-w-4xl text-4xl font-bold tracking-tight md:text-6xl">
+            <h1 className="mx-auto mt-6 max-w-4xl text-4xl font-bold tracking-tight text-[#0D1F2D] md:text-5xl">
               Alt hvad din virksomhed har brug for – samlet ét sted
             </h1>
-            <p className="mx-auto mt-5 max-w-2xl text-lg text-white/80">
+            <p className="mx-auto mt-5 max-w-2xl text-center text-lg text-[#2C4A5E]">
               Ingen rodede systemer. Ingen forvirring. Bare overblik.
             </p>
+            <div className="mx-auto mt-8 h-px w-40 bg-sky-200" />
           </div>
         </section>
 
         <section className="bg-white py-24">
-          <div className="mx-auto grid max-w-7xl items-center gap-12 px-6 lg:grid-cols-2">
+          <AnimatedSection direction="left" className="mx-auto grid max-w-7xl items-center gap-12 px-6 lg:grid-cols-2">
             <div>
               <p className="text-xs font-semibold uppercase tracking-widest text-sky-600">OVERBLIK</p>
               <h2 className="mt-3 text-3xl font-bold text-[#0D1F2D]">Se status på alt med ét klik</h2>
@@ -157,47 +159,55 @@ export default function PlatformenPage() {
                 skal lede.
               </p>
             </div>
-            <DashboardMockup />
-          </div>
+            <AnimatedSection direction="right">
+              <DashboardMockup />
+            </AnimatedSection>
+          </AnimatedSection>
         </section>
 
         <section className="bg-[#F0F7FF] py-24">
           <div className="mx-auto grid max-w-7xl items-center gap-12 px-6 lg:grid-cols-2">
-            <ChatMockup />
-            <div>
+            <AnimatedSection direction="left">
+              <ChatMockup />
+            </AnimatedSection>
+            <AnimatedSection direction="right">
               <p className="text-xs font-semibold uppercase tracking-widest text-sky-600">SUPPORT</p>
               <h2 className="mt-3 text-3xl font-bold text-[#0D1F2D]">Få hjælp uden at ringe rundt</h2>
               <p className="mt-4 text-base leading-relaxed text-[#2C4A5E]">
                 Opret en sag direkte i systemet. Vi svarer hurtigt, og du kan følge status hele vejen.
               </p>
-            </div>
+            </AnimatedSection>
           </div>
         </section>
 
         <section className="bg-white py-24">
           <div className="mx-auto grid max-w-7xl items-center gap-12 px-6 lg:grid-cols-2">
-            <div>
+            <AnimatedSection direction="left">
               <p className="text-xs font-semibold uppercase tracking-widest text-sky-600">IT-RAPPORT</p>
               <h2 className="mt-3 text-3xl font-bold text-[#0D1F2D]">En månedlig rapport du faktisk forstår</h2>
               <p className="mt-4 text-base leading-relaxed text-[#2C4A5E]">
                 Ingen teknisk snak. Du får en kort oversigt over hvad der er sket, hvad vi har løst, og hvad du bør
                 gøre.
               </p>
-            </div>
-            <ReportMockup />
+            </AnimatedSection>
+            <AnimatedSection direction="right">
+              <ReportMockup />
+            </AnimatedSection>
           </div>
         </section>
 
         <section className="bg-[#F0F7FF] py-24">
           <div className="mx-auto grid max-w-7xl items-center gap-12 px-6 lg:grid-cols-2">
-            <VaultMockup />
-            <div>
+            <AnimatedSection direction="left">
+              <VaultMockup />
+            </AnimatedSection>
+            <AnimatedSection direction="right">
               <p className="text-xs font-semibold uppercase tracking-widest text-sky-600">KODEBANK</p>
               <h2 className="mt-3 text-3xl font-bold text-[#0D1F2D]">Adgangskoder samlet – aldrig væk</h2>
               <p className="mt-4 text-base leading-relaxed text-[#2C4A5E]">
                 Gem logins og passwords sikkert ét sted. Du og dit team kan altid finde det I har brug for.
               </p>
-            </div>
+            </AnimatedSection>
           </div>
         </section>
 

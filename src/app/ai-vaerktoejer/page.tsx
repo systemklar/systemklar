@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { MarketingShell } from "@/components/marketing/MarketingShell";
+import { AnimatedSection } from "@/components/ui/AnimatedSection";
 function BrowserChrome({ path }: { path: string }) {
   return (
     <div className="flex items-center gap-2 border-b border-sky-100 bg-[#F0F7FF] px-4 py-3">
@@ -85,15 +86,15 @@ export default function AiVaerktoejerPage() {
   return (
     <MarketingShell>
       <main>
-        <section className="bg-gradient-to-br from-[#0A6EBD] to-[#062840] py-32 text-white">
+        <section className="bg-gradient-to-b from-[#F0F7FF] to-white py-20">
           <div className="mx-auto max-w-7xl px-6 text-center">
-            <p className="inline-flex rounded-full border border-white/30 bg-white/15 px-4 py-1.5 text-xs font-semibold uppercase tracking-wide">
+            <p className="inline-flex rounded-full bg-sky-100 px-4 py-1.5 text-xs font-semibold uppercase tracking-wide text-sky-800">
               AI-værktøjer
             </p>
-            <h1 className="mx-auto mt-6 max-w-4xl text-4xl font-bold tracking-tight md:text-6xl">
+            <h1 className="mx-auto mt-6 max-w-4xl text-4xl font-bold tracking-tight text-[#0D1F2D] md:text-5xl">
               Værktøjer der gør arbejdet for dig
             </h1>
-            <p className="mx-auto mt-5 max-w-2xl text-lg text-white/80">
+            <p className="mx-auto mt-5 max-w-2xl text-lg text-[#2C4A5E]">
               Du behøver ikke forstå teknologi for at bruge dem.
             </p>
           </div>
@@ -101,41 +102,47 @@ export default function AiVaerktoejerPage() {
 
         <section className="bg-white py-24">
           <div className="mx-auto grid max-w-7xl items-center gap-12 px-6 lg:grid-cols-2">
-            <div>
+            <AnimatedSection direction="left">
               <p className="text-xs font-semibold uppercase tracking-widest text-sky-600">TILBUDSGENERATOR</p>
               <h2 className="mt-3 text-3xl font-bold text-[#0D1F2D]">Tilbud på 2 minutter</h2>
               <p className="mt-4 text-base leading-relaxed text-[#2C4A5E]">
                 Beskriv hvad kunden skal bruge. Få et professionelt tilbud klar til at sende – uden at bruge en time
                 på det.
               </p>
-            </div>
-            <QuoteMockup />
+            </AnimatedSection>
+            <AnimatedSection direction="right">
+              <QuoteMockup />
+            </AnimatedSection>
           </div>
         </section>
 
         <section className="bg-[#F0F7FF] py-24">
           <div className="mx-auto grid max-w-7xl items-center gap-12 px-6 lg:grid-cols-2">
-            <ChatMockup />
-            <div>
+            <AnimatedSection direction="left">
+              <ChatMockup />
+            </AnimatedSection>
+            <AnimatedSection direction="right">
               <p className="text-xs font-semibold uppercase tracking-widest text-sky-600">AI-ASSISTENT</p>
               <h2 className="mt-3 text-3xl font-bold text-[#0D1F2D]">Spørg løs – få svar på dansk</h2>
               <p className="mt-4 text-base leading-relaxed text-[#2C4A5E]">
                 Stil spørgsmål om din IT og få et svar du faktisk forstår. Ingen teknisk jargon.
               </p>
-            </div>
+            </AnimatedSection>
           </div>
         </section>
 
         <section className="bg-white py-24">
           <div className="mx-auto grid max-w-7xl items-center gap-12 px-6 lg:grid-cols-2">
-            <div>
+            <AnimatedSection direction="left">
               <p className="text-xs font-semibold uppercase tracking-widest text-sky-600">IT-RAPPORT</p>
               <h2 className="mt-3 text-3xl font-bold text-[#0D1F2D]">Din månedlige rapport – automatisk</h2>
               <p className="mt-4 text-base leading-relaxed text-[#2C4A5E]">
                 Hver måned genereres en rapport over drift, hændelser og anbefalinger. Du skal ikke gøre noget.
               </p>
-            </div>
-            <ReportMockup />
+            </AnimatedSection>
+            <AnimatedSection direction="right">
+              <ReportMockup />
+            </AnimatedSection>
           </div>
         </section>
 

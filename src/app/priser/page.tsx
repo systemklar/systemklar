@@ -18,15 +18,12 @@ export default function PriserPage() {
   return (
     <MarketingShell>
       <main>
-        <section className="bg-gradient-to-br from-[#0A6EBD] to-[#062840] py-32 text-white">
+        <section className="border-b border-sky-100 bg-white py-20">
           <div className="mx-auto max-w-7xl px-6 text-center">
-            <p className="inline-flex rounded-full border border-white/30 bg-white/15 px-4 py-1.5 text-xs font-semibold uppercase tracking-wide">
-              Priser
-            </p>
-            <h1 className="mx-auto mt-6 max-w-4xl text-4xl font-bold tracking-tight md:text-6xl">
+            <h1 className="mx-auto max-w-4xl text-4xl font-bold tracking-tight text-[#0D1F2D] md:text-5xl">
               Enkel pris. Ingen overraskelser.
             </h1>
-            <p className="mx-auto mt-5 max-w-2xl text-lg text-white/80">
+            <p className="mx-auto mt-5 max-w-2xl text-lg text-[#2C4A5E]">
               Vælg den plan der passer til jer – og skift når behovet ændrer sig.
             </p>
           </div>

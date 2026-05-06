@@ -203,7 +203,7 @@ export function PortalLayout({ children, activeNav }: PortalLayoutProps) {
                   <Link
                     key={item.key}
                     href={item.href}
-                    className={`block rounded-lg px-3 py-2 text-sm transition ${
+                    className={`block rounded-lg px-3 py-2 text-sm transition-colors duration-150 ${
                       isActive
                         ? "bg-sky-50 font-semibold text-sky-700"
                         : "text-[#2C4A5E] hover:bg-sky-50 hover:text-sky-700"

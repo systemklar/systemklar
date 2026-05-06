@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { PortalLayout, usePortalSession } from "@/components/portal/PortalLayout";
+import { AnimatedSection } from "@/components/ui/AnimatedSection";
 import { StatusBadge } from "@/components/tickets/StatusBadge";
 import { createClient } from "@/lib/supabase";
 
@@ -22,6 +23,24 @@ const statusStyles: Record<SystemRow["status"], string> = {
 function StatusDot({ status }: { status: SystemRow["status"] }) {
   const color = status === "ok" ? "bg-green-500" : status === "advarsel" ? "bg-amber-500" : "bg-red-500";
   return <span className={`inline-block h-2.5 w-2.5 rounded-full ${color}`} aria-hidden />;
+}
+
+function CountUp({ value }: { value: number }) {
+  const [display, setDisplay] = useState(0);
+  useEffect(() => {
+    const duration = 800;
+    const stepMs = 40;
+    const steps = Math.max(1, Math.floor(duration / stepMs));
+    let currentStep = 0;
+    const timer = window.setInterval(() => {
+      currentStep += 1;
+      const next = Math.round((value * currentStep) / steps);
+      setDisplay(next);
+      if (currentStep >= steps) window.clearInterval(timer);
+    }, stepMs);
+    return () => window.clearInterval(timer);
+  }, [value]);
+  return <>{display}</>;
 }
 
 function DashboardContent() {
@@ -81,26 +100,30 @@ function DashboardContent() {
 
   return (
     <div className="space-y-6">
-      <div className="rounded-2xl border border-sky-100 bg-white p-6 shadow-sm md:p-8">
+      <AnimatedSection direction="up" delay={0} className="rounded-2xl border border-sky-100 bg-white p-6 shadow-sm md:p-8">
         <p className="text-sm text-[#4A8CB5]">{today}</p>
         <h1 className="mt-2 text-2xl font-bold tracking-tight text-[#0D1F2D]">Goddag, {greetingName}</h1>
         <p className="mt-3 text-sm text-[#4A8CB5]">Her er dagens overblik over systemstatus, handlinger og seneste sager.</p>
-      </div>
+      </AnimatedSection>
 
       <div className="grid gap-4 md:grid-cols-3">
         {[
           { value: systems.length, label: "Systemer" },
           { value: recentTickets.length, label: "Seneste sager" },
           { value: hasDown ? 1 : 0, label: "Advarsler" },
-        ].map((stat) => (
-          <article key={stat.label} className="rounded-2xl border border-sky-100 bg-white p-5 shadow-sm">
-            <p className="text-3xl font-bold text-sky-600">{stat.value}</p>
+        ].map((stat, idx) => (
+          <AnimatedSection key={stat.label} direction="up" delay={(idx * 100) as 0 | 100 | 200 | 300}>
+          <article className="rounded-2xl border border-sky-100 bg-white p-5 shadow-sm">
+            <p className="text-3xl font-bold text-sky-600">
+              <CountUp value={stat.value} />
+            </p>
             <p className="mt-1 text-xs text-[#4A8CB5]">{stat.label}</p>
           </article>
+          </AnimatedSection>
         ))}
       </div>
 
-      <div className="card-hover rounded-2xl border border-sky-100 bg-white p-6 shadow-sm">
+      <AnimatedSection direction="up" delay={100} className="card-hover rounded-2xl border border-sky-100 bg-white p-6 shadow-sm">
         <div className="flex items-center justify-between gap-4">
           <h2 className="text-xl font-semibold text-[#0D1F2D]">Mine systemer</h2>
           <Link href="/portal/systemer" className="text-sm font-semibold text-blue-600 hover:underline">
@@ -136,7 +159,7 @@ function DashboardContent() {
             ))}
           </div>
         )}
-      </div>
+      </AnimatedSection>
 
       <div className="grid gap-4 md:grid-cols-3">
         {[
@@ -152,7 +175,7 @@ function DashboardContent() {
         ))}
       </div>
 
-      <div className="card-hover rounded-2xl border border-sky-100 bg-white p-6 shadow-sm">
+      <AnimatedSection direction="up" delay={200} className="card-hover rounded-2xl border border-sky-100 bg-white p-6 shadow-sm">
         <div className="flex items-center justify-between">
           <h2 className="text-xl font-semibold text-slate-900">Seneste sager</h2>
           <Link href="/portal/support" className="text-sm font-semibold text-blue-600 hover:underline">
@@ -182,7 +205,7 @@ function DashboardContent() {
             ))}
           </ul>
         )}
-      </div>
+      </AnimatedSection>
     </div>
   );
 }

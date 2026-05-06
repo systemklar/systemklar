@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { FileSignature, FileText, Lock, MessageSquare, Monitor, Sparkles } from "lucide-react";
-import { ScrollReveal } from "./ScrollReveal";
+import { AnimatedSection } from "@/components/ui/AnimatedSection";
 
 const toolFeatures = [
   {
@@ -72,37 +72,34 @@ export function MarketingHomeContent() {
             <span className="h-1.5 w-1.5 rounded-full bg-white" aria-hidden />
             IT-platform til danske SMV&apos;er
           </p>
-          <h1
-            className="fade-in-up mx-auto mt-8 max-w-4xl text-6xl font-extrabold tracking-tight text-white md:text-7xl md:leading-[0.98]"
-            style={{ animationDelay: "80ms" }}
-          >
-            Få styr på IT uden at bruge
-            <br className="hidden md:block" />
-            hele dagen på det
-          </h1>
-          <p
-            className="fade-in-up mx-auto mt-8 max-w-2xl text-xl text-white/80"
-            style={{ animationDelay: "160ms" }}
-          >
-            Du kan se hvad der sker, vi holder øje, og du får besked i tide.
-          </p>
-          <div
-            className="fade-in-up mt-12 flex flex-wrap items-center justify-center gap-4"
-            style={{ animationDelay: "240ms" }}
-          >
-            <Link
-              href="/book-demo"
-              className="inline-flex rounded-full bg-white px-6 py-3 text-sm font-semibold text-[#0A6EBD] transition-colors hover:bg-white/90"
-            >
-              Book gratis demo
-            </Link>
-            <Link
-              href="/platformen"
-              className="inline-flex rounded-full border border-white/50 px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-white/10"
-            >
-              Se hvordan det virker
-            </Link>
-          </div>
+          <AnimatedSection direction="up" delay={0}>
+            <h1 className="mx-auto mt-8 max-w-4xl text-6xl font-extrabold tracking-tight text-white md:text-7xl md:leading-[0.98]">
+              Få styr på IT uden at bruge
+              <br className="hidden md:block" />
+              hele dagen på det
+            </h1>
+          </AnimatedSection>
+          <AnimatedSection direction="up" delay={100}>
+            <p className="mx-auto mt-8 max-w-2xl text-xl text-white/80">
+              Du kan se hvad der sker, vi holder øje, og du får besked i tide.
+            </p>
+          </AnimatedSection>
+          <AnimatedSection direction="up" delay={200}>
+            <div className="mt-12 flex flex-wrap items-center justify-center gap-4">
+              <Link
+                href="/book-demo"
+                className="inline-flex rounded-full bg-white px-6 py-3 text-sm font-semibold text-[#0A6EBD] transition-all duration-100 hover:bg-white/90 active:scale-95"
+              >
+                Book gratis demo
+              </Link>
+              <Link
+                href="/platformen"
+                className="inline-flex rounded-full border border-white/50 px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-white/10"
+              >
+                Se hvordan det virker
+              </Link>
+            </div>
+          </AnimatedSection>
           <p
             className="fade-in-up mt-10 text-sm font-medium text-white/60"
             style={{ animationDelay: "320ms" }}
@@ -127,7 +124,7 @@ export function MarketingHomeContent() {
             Se hvordan platformen ser ud i praksis, med et overblik du kan forstå med det samme.
           </p>
           <div className="mt-16 space-y-16">
-            <ScrollReveal className="grid items-center gap-10 lg:grid-cols-2">
+            <AnimatedSection direction="right" className="grid items-center gap-10 lg:grid-cols-2">
               <div>
                 <p className="text-xs font-semibold uppercase tracking-widest text-sky-600">OVERBLIK</p>
                 <h3 className="mt-3 text-3xl font-bold text-[#0D1F2D]">Alt på ét sted – præcis som det er</h3>
@@ -179,9 +176,9 @@ export function MarketingHomeContent() {
                   </div>
                 </div>
               </div>
-            </ScrollReveal>
+            </AnimatedSection>
 
-            <ScrollReveal className="grid items-center gap-10 lg:grid-cols-2">
+            <AnimatedSection direction="left" className="grid items-center gap-10 lg:grid-cols-2">
               <div className="overflow-hidden rounded-2xl border border-sky-100 bg-white shadow-xl">
                 <div className="flex items-center gap-2 border-b border-sky-100 bg-[#F0F7FF] px-4 py-3">
                   <div className="flex gap-1.5">
@@ -217,9 +214,9 @@ export function MarketingHomeContent() {
                   kø.
                 </p>
               </div>
-            </ScrollReveal>
+            </AnimatedSection>
 
-            <ScrollReveal className="grid items-center gap-10 lg:grid-cols-2">
+            <AnimatedSection direction="right" className="grid items-center gap-10 lg:grid-cols-2">
               <div>
                 <p className="text-xs font-semibold uppercase tracking-widest text-sky-600">IT-RAPPORT</p>
                 <h3 className="mt-3 text-3xl font-bold text-[#0D1F2D]">En rapport du faktisk forstår</h3>
@@ -260,7 +257,7 @@ export function MarketingHomeContent() {
                   </div>
                 </div>
               </div>
-            </ScrollReveal>
+            </AnimatedSection>
           </div>
         </div>
       </section>
@@ -275,9 +272,9 @@ export function MarketingHomeContent() {
           </p>
           <div className="mt-16 grid gap-6 md:grid-cols-3 md:gap-8">
             {toolFeatures.map((item, index) => (
-              <ScrollReveal key={item.title} staggerMs={index * 120} className="stagger-item">
+              <AnimatedSection key={item.title} direction="up" delay={(index * 100) as 0 | 100 | 200 | 300}>
                 <Link href={item.href} className="group block">
-                  <article className="flex flex-col rounded-2xl border border-sky-100 bg-white p-6 shadow-sm">
+                  <article className="flex flex-col rounded-2xl border border-sky-100 bg-white p-6 shadow-sm transition-all duration-200 hover:-translate-y-1 hover:shadow-md">
                     <div className="mb-5 flex h-32 w-full items-center justify-center overflow-hidden rounded-xl bg-[#F0F7FF] p-4">
                       {index === 0 ? (
                         <div className="w-full">
@@ -317,7 +314,7 @@ export function MarketingHomeContent() {
                     <p className="mt-3 text-sm leading-relaxed text-[#2C4A5E]">{item.text}</p>
                   </article>
                 </Link>
-              </ScrollReveal>
+              </AnimatedSection>
             ))}
           </div>
         </div>
@@ -371,7 +368,8 @@ export function MarketingHomeContent() {
           </p>
           <div className="mt-14 grid gap-8 md:grid-cols-3">
             {steps.map((s, idx) => (
-              <div key={s.n} className="relative rounded-2xl border border-sky-100 bg-white p-6">
+              <AnimatedSection key={s.n} direction="up" delay={(idx * 100) as 0 | 100 | 200 | 300}>
+                <div className="relative rounded-2xl border border-sky-100 bg-white p-6">
                 <div className="flex items-start gap-3">
                   <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-sky-600 text-sm font-bold text-white">
                     {s.n}
@@ -386,7 +384,8 @@ export function MarketingHomeContent() {
                     →
                   </span>
                 ) : null}
-              </div>
+                </div>
+              </AnimatedSection>
             ))}
           </div>
         </div>
@@ -400,7 +399,7 @@ export function MarketingHomeContent() {
           </p>
           <div className="mt-14 grid gap-5 md:grid-cols-3">
             {pricePreview.map((plan, index) => (
-              <ScrollReveal key={plan.name} staggerMs={index * 100} className="stagger-item">
+              <AnimatedSection key={plan.name} direction="up" delay={(index * 100) as 0 | 100 | 200 | 300}>
                 <article
                   className={`rounded-3xl border px-8 py-10 text-center ${
                     plan.highlight
@@ -411,7 +410,7 @@ export function MarketingHomeContent() {
                   <p className="text-sm font-semibold uppercase tracking-wide text-[#4A8CB5]">{plan.name}</p>
                   <p className="mt-4 text-4xl font-bold text-[#0D1F2D]">{plan.price}</p>
                 </article>
-              </ScrollReveal>
+              </AnimatedSection>
             ))}
           </div>
           <div className="mt-8 text-center">

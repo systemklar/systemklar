@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { AnimatedSection } from "@/components/ui/AnimatedSection";
 import { StatusBadge } from "@/components/tickets/StatusBadge";
 import { createClient } from "@/lib/supabase";
 
@@ -22,11 +23,26 @@ function StatCard({
   hint: string;
   href?: string;
 }) {
+  const [display, setDisplay] = useState(0);
+  useEffect(() => {
+    if (value === null) return;
+    const duration = 800;
+    const stepMs = 40;
+    const steps = Math.max(1, Math.floor(duration / stepMs));
+    let currentStep = 0;
+    const timer = window.setInterval(() => {
+      currentStep += 1;
+      setDisplay(Math.round((value * currentStep) / steps));
+      if (currentStep >= steps) window.clearInterval(timer);
+    }, stepMs);
+    return () => window.clearInterval(timer);
+  }, [value]);
+
   const inner = (
-    <article className="card-hover rounded-2xl border border-slate-200 bg-white p-6 shadow-sm hover:border-blue-200">
+    <article className="card-hover rounded-2xl border border-slate-200 bg-white p-6 shadow-sm transition-all duration-200 hover:-translate-y-1 hover:border-blue-200 hover:shadow-md">
       <p className="text-sm font-medium text-slate-500">{title}</p>
       <p className="fade-scale visible mt-3 text-3xl font-bold tabular-nums text-slate-900">
-        {value === null ? "—" : value}
+        {value === null ? "—" : display}
       </p>
       <p className="mt-2 text-xs text-slate-500">{hint}</p>
     </article>
@@ -105,28 +121,34 @@ export default function AdminDashboardPage() {
         <p className="mt-10 text-sm text-slate-500">Henter tal...</p>
       ) : (
         <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          <StatCard
-            title="Kunder"
-            value={stats.customers}
-            hint="Antal rækker i profiler"
-            href="/admin/customers"
-          />
-          <StatCard
-            title="Aktive sager"
-            value={stats.ticketsActive}
-            hint="Status: aktiv"
-            href="/admin/tickets"
-          />
-          <StatCard
-            title="Løste sager"
-            value={stats.ticketsResolved}
-            hint="Status: løst"
-            href="/admin/tickets"
-          />
+          <AnimatedSection direction="up" delay={0}>
+            <StatCard
+              title="Kunder"
+              value={stats.customers}
+              hint="Antal rækker i profiler"
+              href="/admin/customers"
+            />
+          </AnimatedSection>
+          <AnimatedSection direction="up" delay={100}>
+            <StatCard
+              title="Aktive sager"
+              value={stats.ticketsActive}
+              hint="Status: aktiv"
+              href="/admin/tickets"
+            />
+          </AnimatedSection>
+          <AnimatedSection direction="up" delay={200}>
+            <StatCard
+              title="Løste sager"
+              value={stats.ticketsResolved}
+              hint="Status: løst"
+              href="/admin/tickets"
+            />
+          </AnimatedSection>
         </div>
       )}
 
-      <section className="card-hover rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+      <AnimatedSection direction="up" delay={200} className="card-hover rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
         <div className="flex items-center justify-between">
           <h2 className="text-lg font-semibold text-slate-900">Seneste supportsager</h2>
           <Link href="/admin/tickets" className="text-sm font-semibold text-blue-600 hover:underline">
@@ -169,7 +191,7 @@ export default function AdminDashboardPage() {
             </table>
           </div>
         )}
-      </section>
+      </AnimatedSection>
     </div>
   );
 }
