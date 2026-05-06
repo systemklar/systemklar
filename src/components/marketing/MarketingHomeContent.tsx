@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
-import { ChevronDown, FileSignature, Lock, Sparkles } from "lucide-react";
+import { FileSignature, FileText, Lock, MessageSquare, Monitor, Sparkles } from "lucide-react";
 import { AnimatedSection } from "@/components/ui/AnimatedSection";
 import { useInView } from "@/hooks/useInView";
 
@@ -52,6 +52,12 @@ const pricePreview = [
   },
 ];
 
+const platformHighlights = [
+  { icon: Monitor, title: "Systemoverblik", text: "Se om alt kører med ét klik" },
+  { icon: MessageSquare, title: "Support & sager", text: "Opret sager og følg status" },
+  { icon: FileText, title: "Månedlig rapport", text: "Få overblik uden teknisk snak" },
+];
+
 type TabKey = "Overblik" | "Support" | "IT-rapport";
 
 function useCountUp(target: number, duration: number, inView: boolean) {
@@ -80,7 +86,6 @@ export function MarketingHomeContent() {
   const [displayPrice, setDisplayPrice] = useState(pricePreview);
   const [activeTab, setActiveTab] = useState<TabKey>("Overblik");
   const [changing, setChanging] = useState(false);
-  const [openStep, setOpenStep] = useState<number | null>(null);
   const { ref: statsRef, inView: statsInView } = useInView(0.2);
 
   const typePairs = useMemo(
@@ -246,16 +251,8 @@ export function MarketingHomeContent() {
           <p className="mx-auto mt-4 max-w-2xl text-center text-base text-[#2C4A5E]">
             Se hvordan platformen ser ud i praksis, med et overblik du kan forstå med det samme.
           </p>
-          <div className="mt-16 space-y-16">
-            <AnimatedSection direction="right" className="grid items-center gap-10 lg:grid-cols-2">
-              <div>
-                <p className="text-xs font-semibold uppercase tracking-widest text-sky-600">OVERBLIK</p>
-                <h3 className="mt-3 text-3xl font-bold text-[#0D1F2D]">Alt på ét sted – præcis som det er</h3>
-                <p className="mt-4 text-base leading-relaxed text-[#2C4A5E]">
-                  Du logger ind og ser med det samme hvad der kører, hvad der mangler, og om noget kræver din
-                  opmærksomhed.
-                </p>
-              </div>
+          <div className="mt-16">
+            <AnimatedSection direction="up">
               <div className="overflow-hidden rounded-2xl border border-sky-100 bg-white shadow-xl">
                 <div className="flex items-center gap-2 border-b border-sky-100 bg-[#F0F7FF] px-4 py-3">
                   <div className="flex gap-1.5">
@@ -346,85 +343,18 @@ export function MarketingHomeContent() {
                 </div>
               </div>
             </AnimatedSection>
-
-            <AnimatedSection direction="left" className="grid items-center gap-10 lg:grid-cols-2">
-              <div className="overflow-hidden rounded-2xl border border-sky-100 bg-white shadow-xl">
-                <div className="flex items-center gap-2 border-b border-sky-100 bg-[#F0F7FF] px-4 py-3">
-                  <div className="flex gap-1.5">
-                    <div className="h-3 w-3 rounded-full bg-red-400" />
-                    <div className="h-3 w-3 rounded-full bg-amber-400" />
-                    <div className="h-3 w-3 rounded-full bg-green-400" />
-                  </div>
-                  <div className="flex-1 rounded-full bg-white px-3 py-1 text-xs text-[#4A8CB5]">systemklar.dk/support</div>
-                </div>
-                <div className="p-4" style={{ height: "280px" }}>
-                  <div className="mb-3 text-sm font-bold text-[#0D1F2D]">Support & sager</div>
-                  <div className="flex flex-col gap-2">
-                    <div className="max-w-xs self-end rounded-2xl rounded-tr-sm bg-sky-600 px-3 py-2 text-xs text-white">
-                      Vores printer printer ikke – det haster lidt
+            <AnimatedSection direction="up">
+              <div className="mt-16 grid gap-8 md:grid-cols-3">
+                {platformHighlights.map((item) => {
+                  const Icon = item.icon;
+                  return (
+                    <div key={item.title}>
+                      <Icon className="h-5 w-5 text-sky-600" />
+                      <p className="mt-3 text-base font-semibold text-[#0D1F2D]">{item.title}</p>
+                      <p className="mt-1 text-sm text-[#2C4A5E]">{item.text}</p>
                     </div>
-                    <div className="max-w-xs self-start rounded-2xl rounded-tl-sm bg-[#F0F7FF] px-3 py-2 text-xs text-[#2C4A5E]">
-                      Forstået! Vi kigger på det med det samme. Kan du se om der er fejlkode på displayet?
-                    </div>
-                    <div className="max-w-xs self-end rounded-2xl rounded-tr-sm bg-sky-600 px-3 py-2 text-xs text-white">
-                      Den siger "Paper jam 02"
-                    </div>
-                    <div className="max-w-xs self-start rounded-2xl rounded-tl-sm bg-[#F0F7FF] px-3 py-2 text-xs text-[#2C4A5E]">
-                      Det er en kendt fejl. Trin-for-trin guide er sendt til din mail nu.
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div>
-                <p className="text-xs font-semibold uppercase tracking-widest text-sky-600">SUPPORT</p>
-                <h3 className="mt-3 text-3xl font-bold text-[#0D1F2D]">Få hjælp uden at vente</h3>
-                <p className="mt-4 text-base leading-relaxed text-[#2C4A5E]">
-                  Opret en sag direkte i systemet. Du kan følge status og chatte med os – uden at ringe eller vente i
-                  kø.
-                </p>
-              </div>
-            </AnimatedSection>
-
-            <AnimatedSection direction="right" className="grid items-center gap-10 lg:grid-cols-2">
-              <div>
-                <p className="text-xs font-semibold uppercase tracking-widest text-sky-600">IT-RAPPORT</p>
-                <h3 className="mt-3 text-3xl font-bold text-[#0D1F2D]">En rapport du faktisk forstår</h3>
-                <p className="mt-4 text-base leading-relaxed text-[#2C4A5E]">
-                  Hver måned får du en overskuelig rapport med hvad der er sket, hvad vi har løst, og hvad du bør gøre
-                  nu.
-                </p>
-              </div>
-              <div className="overflow-hidden rounded-2xl border border-sky-100 bg-white shadow-xl">
-                <div className="flex items-center gap-2 border-b border-sky-100 bg-[#F0F7FF] px-4 py-3">
-                  <div className="flex gap-1.5">
-                    <div className="h-3 w-3 rounded-full bg-red-400" />
-                    <div className="h-3 w-3 rounded-full bg-amber-400" />
-                    <div className="h-3 w-3 rounded-full bg-green-400" />
-                  </div>
-                  <div className="flex-1 rounded-full bg-white px-3 py-1 text-xs text-[#4A8CB5]">systemklar.dk/rapport</div>
-                </div>
-                <div className="p-4" style={{ height: "280px" }}>
-                  <div className="mb-1 text-sm font-bold text-[#0D1F2D]">IT-rapport – april 2026</div>
-                  <div className="mb-3 text-xs text-[#4A8CB5]">Møllers VVS</div>
-                  <div className="mb-3 grid grid-cols-3 gap-2">
-                    <div className="rounded-lg bg-green-50 p-2 text-center">
-                      <div className="text-sm font-bold text-green-700">100%</div>
-                      <div className="text-[10px] text-green-600">Oppetid</div>
-                    </div>
-                    <div className="rounded-lg bg-[#F0F7FF] p-2 text-center">
-                      <div className="text-sm font-bold text-[#0A6EBD]">3</div>
-                      <div className="text-[10px] text-[#4A8CB5]">Løste sager</div>
-                    </div>
-                    <div className="rounded-lg bg-[#F0F7FF] p-2 text-center">
-                      <div className="text-sm font-bold text-[#0A6EBD]">0</div>
-                      <div className="text-[10px] text-[#4A8CB5]">Åbne sager</div>
-                    </div>
-                  </div>
-                  <div className="mb-1.5 text-xs font-semibold text-[#0D1F2D]">Anbefaling</div>
-                  <div className="rounded-lg border border-amber-100 bg-amber-50 px-3 py-2 text-xs text-amber-800">
-                    Opdater Windows på 2 maskiner inden næste måned.
-                  </div>
-                </div>
+                  );
+                })}
               </div>
             </AnimatedSection>
           </div>
@@ -440,32 +370,25 @@ export function MarketingHomeContent() {
             Tre enkle værktøjer, der hjælper dig med de opgaver, som normalt tager unødigt lang tid.
           </p>
           <div className="mt-16 grid gap-6 md:grid-cols-3 md:gap-8">
-            {toolFeatures.map((item, index) => (
-              <AnimatedSection key={item.title} direction="up" delay={(index * 100) as 0 | 100 | 200 | 300}>
-                <Link href={item.href} className="group block">
-                  <article className="flex flex-col rounded-2xl border border-sky-100 bg-white p-6 shadow-sm transition-all duration-200 hover:-translate-y-1 hover:shadow-md">
-                    <div className="mb-5 flex h-32 w-full items-center justify-center overflow-hidden rounded-xl bg-[#F0F7FF] p-4">
-                      {index === 0 ? (
-                        <div className="w-full">
-                          <div className="mb-2 text-[10px] text-[#4A8CB5]">Tilbud - VVS serviceaftale</div>
-                          <div className="space-y-1">
-                            <div className="h-1.5 w-full rounded bg-sky-100" />
-                            <div className="h-1.5 w-5/6 rounded bg-sky-100" />
-                            <div className="h-1.5 w-4/6 rounded bg-sky-100" />
-                          </div>
-                          <div className="mt-3 inline-flex rounded-full bg-green-100 px-2 py-0.5 text-[10px] font-semibold text-green-700">
-                            Klar til at sende ✓
-                          </div>
-                        </div>
-                      ) : null}
+            {toolFeatures.map((item, index) => {
+              const Icon = item.icon;
+              return (
+                <AnimatedSection key={item.title} direction="up" delay={(index * 100) as 0 | 100 | 200 | 300}>
+                  <Link href={item.href} className="group block">
+                    <article className="flex h-full flex-col rounded-2xl border border-sky-100 bg-white p-6 shadow-sm transition-all duration-200 hover:-translate-y-1 hover:shadow-md">
+                      <div className="mb-5 flex h-12 w-12 items-center justify-center rounded-xl bg-sky-50">
+                        <Icon className="h-6 w-6 text-sky-600" />
+                      </div>
+                      <h3 className="text-lg font-semibold text-[#0D1F2D]">{item.title}</h3>
+                      <p className="mt-3 text-sm leading-relaxed text-[#2C4A5E]">{item.text}</p>
                       {index === 1 ? (
-                        <div className="w-full space-y-2">
-                          <div className="ml-auto max-w-[85%] rounded-xl rounded-tr-sm bg-sky-600 px-2 py-1 text-[10px] text-white">
+                        <div className="mt-4 rounded-xl bg-[#F0F7FF] p-3 text-xs">
+                          <div className="ml-auto max-w-[92%] rounded-xl rounded-tr-sm bg-sky-600 px-2 py-1 text-white">
                             {typedQuestion}
                             <span className="animate-pulse">|</span>
                           </div>
                           <div
-                            className={`max-w-[90%] rounded-xl rounded-tl-sm bg-white px-2 py-1 text-[10px] text-[#2C4A5E] transition-opacity duration-300 ${
+                            className={`mt-2 max-w-[95%] rounded-xl rounded-tl-sm bg-white px-2 py-1 text-[#2C4A5E] transition-opacity duration-300 ${
                               showAnswer ? "opacity-100" : "opacity-0"
                             }`}
                           >
@@ -473,23 +396,12 @@ export function MarketingHomeContent() {
                           </div>
                         </div>
                       ) : null}
-                      {index === 2 ? (
-                        <div className="w-full space-y-1.5">
-                          {["Microsoft 365", "Dinero", "e-Boks"].map((row) => (
-                            <div key={row} className="flex items-center justify-between rounded-lg bg-white px-2 py-1.5">
-                              <span className="text-[10px] text-[#2C4A5E]">{row}</span>
-                              <span className="text-[10px] tracking-wider text-[#4A8CB5]">••••••••</span>
-                            </div>
-                          ))}
-                        </div>
-                      ) : null}
-                    </div>
-                    <h3 className="text-lg font-semibold text-[#0D1F2D]">{item.title}</h3>
-                    <p className="mt-3 text-sm leading-relaxed text-[#2C4A5E]">{item.text}</p>
-                  </article>
-                </Link>
-              </AnimatedSection>
-            ))}
+                      <span className="mt-4 text-sm text-sky-600">Se mere →</span>
+                    </article>
+                  </Link>
+                </AnimatedSection>
+              );
+            })}
           </div>
         </div>
       </section>
@@ -543,39 +455,21 @@ export function MarketingHomeContent() {
           <div className="mt-14 grid gap-8 md:grid-cols-3">
             {steps.map((s, idx) => (
               <AnimatedSection key={s.n} direction="up" delay={(idx * 100) as 0 | 100 | 200 | 300}>
-                <div
-                  className="relative cursor-pointer rounded-2xl border border-sky-100 bg-white p-6"
-                  onClick={() => setOpenStep(openStep === idx ? null : idx)}
-                >
-                  <div className="flex items-start justify-between gap-3">
-                    <div className="flex items-start gap-3">
-                      <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-sky-600 text-sm font-bold text-white">
-                        {s.n}
-                      </span>
-                      <div>
-                        <p className="text-lg font-semibold text-[#0D1F2D]">{s.title}</p>
-                        <p className="mt-1 text-sm text-[#2C4A5E]">{s.text}</p>
-                      </div>
+                <div className="relative rounded-2xl border border-sky-100 bg-white p-6">
+                  <div className="flex items-start gap-3">
+                    <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-sky-600 text-sm font-bold text-white">
+                      {s.n}
+                    </span>
+                    <div>
+                      <p className="text-lg font-semibold text-[#0D1F2D]">{s.title}</p>
+                      <p className="mt-1 text-sm text-[#2C4A5E]">{s.text}</p>
                     </div>
-                    <ChevronDown
-                      className={`h-5 w-5 text-sky-600 transition-transform duration-200 ${
-                        openStep === idx ? "rotate-180" : ""
-                      }`}
-                    />
                   </div>
-                  <div
-                    className={`overflow-hidden transition-all duration-300 ${
-                      openStep === idx ? "mt-3 max-h-32 opacity-100" : "max-h-0 opacity-0"
-                    }`}
-                  >
-                    <p className="text-sm text-[#2C4A5E]">
-                      {idx === 0
-                        ? "Vi ringer eller skriver til dig inden for én hverdag. Du behøver ikke forberede noget – vi guider dig igennem det hele."
-                        : idx === 1
-                          ? "Fortæl os hvilke systemer og programmer I bruger. Vi tilføjer dem i platformen og sætter overvågning op."
-                          : "Log ind og se status på alt fra dag ét. Opret supportssager, se rapporter og brug AI-assistenten når du har brug for det."}
-                    </p>
-                  </div>
+                  {idx < steps.length - 1 ? (
+                    <span className="absolute -right-5 top-1/2 hidden -translate-y-1/2 text-xl text-sky-300 md:block" aria-hidden>
+                      →
+                    </span>
+                  ) : null}
                 </div>
               </AnimatedSection>
             ))}
