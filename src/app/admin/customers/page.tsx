@@ -56,21 +56,47 @@ export default function AdminCustomersPage() {
 
   const loadData = useCallback(async () => {
     setLoading(true);
-    const { data, error } = await supabase
-      .from("organisations")
-      .select("*, profiles(id, full_name, email, role, avatar_initials, created_at), invitations(id, email, contact_name, accepted_at, created_at)")
-      .order("created_at", { ascending: false });
+    try {
+      const res = await fetch("/api/admin/organisations", {
+        credentials: "include",
+        redirect: "manual",
+      });
 
-    if (error) {
-      console.error("[admin/customers] organisations list", error);
-      setOrgs([]);
-      setActionError(error.message);
-    } else {
-      setOrgs((data ?? []) as unknown as OrganisationRow[]);
+      if (res.status >= 300 && res.status < 400) {
+        console.warn("[admin/customers] organisations list redirect", res.status);
+        setOrgs([]);
+        setActionError("Session udløbet eller ikke logget ind. Genindlæs siden.");
+        return;
+      }
+
+      const contentType = res.headers.get("content-type") ?? "";
+      if (!contentType.includes("application/json")) {
+        const text = await res.text();
+        console.error("[admin/customers] organisations non-JSON", res.status, text.slice(0, 300));
+        setOrgs([]);
+        setActionError("Uventet svar fra serveren.");
+        return;
+      }
+
+      const payload = (await res.json()) as { error?: string; organisations?: unknown };
+
+      if (!res.ok) {
+        console.error("[admin/customers] organisations list HTTP", res.status, payload.error);
+        setOrgs([]);
+        setActionError(payload.error ?? "Kunne ikke hente organisationer.");
+        return;
+      }
+
+      setOrgs((payload.organisations ?? []) as OrganisationRow[]);
       setActionError(null);
+    } catch (e) {
+      console.error("[admin/customers] organisations fetch", e);
+      setOrgs([]);
+      setActionError("Netværksfejl. Prøv igen.");
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
-  }, [supabase]);
+  }, []);
 
   useEffect(() => {
     queueMicrotask(() => {
