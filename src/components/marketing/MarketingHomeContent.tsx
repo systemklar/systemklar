@@ -2,7 +2,30 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
-import { CheckCircle, Clock, FileSignature, FileText, Lock, MessageSquare, Monitor, Sparkles, Users } from "lucide-react";
+import {
+  AlertTriangle,
+  Briefcase,
+  Building2,
+  Calendar,
+  CheckCircle,
+  Clock,
+  FileSignature,
+  FileText,
+  Heart,
+  HelpCircle,
+  Lock,
+  MessageSquare,
+  Monitor,
+  RefreshCw,
+  ShoppingBag,
+  Shuffle,
+  Sparkles,
+  Truck,
+  User,
+  UserCheck,
+  Users,
+  Wrench,
+} from "lucide-react";
 import { AnimatedSection } from "@/components/ui/AnimatedSection";
 import { useInView } from "@/hooks/useInView";
 
@@ -98,6 +121,71 @@ const wasteOptions = [
   },
 ] as const;
 
+const industryOptions = [
+  { id: "haandvaerk", icon: Wrench, title: "Håndværk & byg", multiplier: 1.35 },
+  { id: "handel", icon: ShoppingBag, title: "Handel & butik", multiplier: 1.25 },
+  { id: "kontor", icon: Briefcase, title: "Kontor & rådgivning", multiplier: 1.1 },
+  { id: "sundhed", icon: Heart, title: "Sundhed & pleje", multiplier: 1.3 },
+  { id: "transport", icon: Truck, title: "Transport & logistik", multiplier: 1.25 },
+  { id: "andet", icon: Building2, title: "Andet", multiplier: 1.15 },
+] as const;
+
+const setupOptions = [
+  {
+    id: "ingen",
+    icon: HelpCircle,
+    title: "Ingen fast løsning",
+    subtitle: "Vi klarer os selv så godt vi kan",
+    multiplier: 1.4,
+  },
+  {
+    id: "konsulent",
+    icon: UserCheck,
+    title: "Ekstern IT-konsulent",
+    subtitle: "Vi ringer nogen op når noget fejler",
+    multiplier: 1.2,
+  },
+  {
+    id: "intern",
+    icon: User,
+    title: "Intern medarbejder",
+    subtitle: "En kollega tager sig af IT ved siden af sit job",
+    multiplier: 1.1,
+  },
+  {
+    id: "blanding",
+    icon: Shuffle,
+    title: "En blanding",
+    subtitle: "Lidt af hvert afhængig af problemet",
+    multiplier: 1.25,
+  },
+] as const;
+
+const frequencyOptions = [
+  { id: "aldrig", icon: CheckCircle, title: "Næsten aldrig", subtitle: "IT bare virker hos os", multiplier: 0.3 },
+  {
+    id: "maaned",
+    icon: Calendar,
+    title: "Et par gange om måneden",
+    subtitle: "Af og til er der noget",
+    multiplier: 0.7,
+  },
+  {
+    id: "uge",
+    icon: RefreshCw,
+    title: "Ugentligt",
+    subtitle: "Vi har jævnligt noget der driller",
+    multiplier: 1.0,
+  },
+  {
+    id: "dag",
+    icon: AlertTriangle,
+    title: "Nærmest dagligt",
+    subtitle: "IT er en kilde til frustration",
+    multiplier: 1.5,
+  },
+] as const;
+
 type TabKey = "Overblik" | "Support" | "IT-rapport";
 
 function useCountUp(target: number, duration: number, inView: boolean) {
@@ -152,6 +240,9 @@ export function MarketingHomeContent() {
   const stepDelayRef = useRef<number | null>(null);
   const [calculatorStep, setCalculatorStep] = useState(1);
   const [selectedEmployees, setSelectedEmployees] = useState<(typeof employeeOptions)[number]["id"] | null>(null);
+  const [selectedIndustry, setSelectedIndustry] = useState<(typeof industryOptions)[number]["id"] | null>(null);
+  const [selectedSetup, setSelectedSetup] = useState<(typeof setupOptions)[number]["id"] | null>(null);
+  const [selectedFrequency, setSelectedFrequency] = useState<(typeof frequencyOptions)[number]["id"] | null>(null);
   const [selectedWaste, setSelectedWaste] = useState<Array<(typeof wasteOptions)[number]["id"]>>([]);
 
   useEffect(() => {
@@ -229,15 +320,23 @@ export function MarketingHomeContent() {
   const platformCount = useCountUp(1, 800, statsInView);
   const bindingCount = useCountUp(0, 800, statsInView);
   const selectedEmployeeOption = employeeOptions.find((option) => option.id === selectedEmployees) ?? null;
+  const selectedIndustryOption = industryOptions.find((option) => option.id === selectedIndustry) ?? null;
+  const selectedSetupOption = setupOptions.find((option) => option.id === selectedSetup) ?? null;
+  const selectedFrequencyOption = frequencyOptions.find((option) => option.id === selectedFrequency) ?? null;
   const employeeCount = selectedEmployeeOption?.employees ?? 0;
+  const industryMultiplier = selectedIndustryOption?.multiplier ?? 1;
+  const setupMultiplier = selectedSetupOption?.multiplier ?? 1;
+  const frequencyMultiplier = selectedFrequencyOption?.multiplier ?? 1;
   const wasteHoursPerPerson = selectedWaste.reduce((sum, categoryId) => {
     const category = wasteOptions.find((item) => item.id === categoryId);
     return sum + (category?.hours ?? 0);
   }, 0);
-  const weeklyWaste = employeeCount * wasteHoursPerPerson;
+  const weeklyWaste = employeeCount * wasteHoursPerPerson * frequencyMultiplier;
   const monthlyWasteHours = Math.round(weeklyWaste * 4);
-  const monthlyWasteCost = Math.round(weeklyWaste * 4 * hourlyRate);
-  const systemklarSavings = Math.round(monthlyWasteCost * 0.7);
+  const monthlyWasteCost = Math.round(weeklyWaste * 4 * hourlyRate * industryMultiplier * setupMultiplier);
+  const baseSavings = Math.round(monthlyWasteCost * 0.7);
+  const consultantSavings = selectedSetup === "konsulent" ? employeeCount * 150 : 0;
+  const systemklarSavings = baseSavings + consultantSavings;
   const plan =
     employeeCount <= 5
       ? { name: "Starter", price: 499 }
@@ -245,10 +344,12 @@ export function MarketingHomeContent() {
         ? { name: "Plus", price: 1299 }
         : { name: "Pro", price: 2499 };
   const netGain = systemklarSavings - plan.price;
-  const resultHours = useCountUp(monthlyWasteHours, 1000, calculatorStep === 3);
-  const resultLost = useCountUp(monthlyWasteCost, 1000, calculatorStep === 3);
-  const resultSavings = useCountUp(systemklarSavings, 1000, calculatorStep === 3);
-  const resultNet = useCountUp(Math.abs(netGain), 1000, calculatorStep === 3);
+  const resultHours = useCountUp(monthlyWasteHours, 1000, calculatorStep === 6);
+  const resultLost = useCountUp(monthlyWasteCost, 1000, calculatorStep === 6);
+  const resultSavings = useCountUp(systemklarSavings, 1000, calculatorStep === 6);
+  const resultNet = useCountUp(Math.abs(netGain), 1000, calculatorStep === 6);
+  const resultConsultant = useCountUp(consultantSavings, 1000, calculatorStep === 6);
+  const indicatorStep = Math.min(calculatorStep, 5);
   const formatNumber = (value: number) => new Intl.NumberFormat("da-DK").format(value);
 
   const toggleWaste = (id: (typeof wasteOptions)[number]["id"]) => {
@@ -261,11 +362,61 @@ export function MarketingHomeContent() {
     stepDelayRef.current = window.setTimeout(() => setCalculatorStep(2), 500);
   };
 
+  const handleIndustrySelect = (id: (typeof industryOptions)[number]["id"]) => {
+    setSelectedIndustry(id);
+    if (stepDelayRef.current) window.clearTimeout(stepDelayRef.current);
+    stepDelayRef.current = window.setTimeout(() => setCalculatorStep(3), 500);
+  };
+
+  const handleSetupSelect = (id: (typeof setupOptions)[number]["id"]) => {
+    setSelectedSetup(id);
+    if (stepDelayRef.current) window.clearTimeout(stepDelayRef.current);
+    stepDelayRef.current = window.setTimeout(() => setCalculatorStep(4), 500);
+  };
+
+  const handleFrequencySelect = (id: (typeof frequencyOptions)[number]["id"]) => {
+    setSelectedFrequency(id);
+    if (stepDelayRef.current) window.clearTimeout(stepDelayRef.current);
+    stepDelayRef.current = window.setTimeout(() => setCalculatorStep(5), 500);
+  };
+
   const resetCalculator = () => {
     setSelectedEmployees(null);
+    setSelectedIndustry(null);
+    setSelectedSetup(null);
+    setSelectedFrequency(null);
     setSelectedWaste([]);
     setCalculatorStep(1);
   };
+
+  const contextLine =
+    selectedIndustry === "haandvaerk" && selectedFrequency === "dag"
+      ? "For en håndværksvirksomhed med daglige IT-problemer er dette et konservativt estimat."
+      : selectedSetup === "konsulent"
+        ? "Dertil kommer hvad I betaler jeres IT-konsulent – systemklar erstatter mange af disse opkald."
+        : null;
+
+  const industryRecommendation =
+    selectedIndustry === "haandvaerk"
+      ? "Systemovervågning der virker selv ude på pladsen"
+      : selectedIndustry === "handel"
+        ? "Hold styr på systemer der holder butikken kørende"
+        : selectedIndustry === "sundhed"
+          ? "Sikker og hurtig adgang til de systemer der betyder noget"
+          : selectedIndustry === "transport"
+            ? "Overblik over IT selv når teamet er på farten"
+            : null;
+
+  const urgencyText =
+    selectedFrequency === "dag"
+      ? "⚠️ Med daglige problemer taber I tid hver eneste dag. Jo hurtigere I kommer i gang, jo bedre."
+      : selectedFrequency === "uge"
+        ? "Med ugentlige forstyrrelser er der meget at hente – hurtigt."
+        : selectedFrequency === "maaned"
+          ? "Selv få månedlige problemer koster mere end de fleste tror."
+          : selectedFrequency === "aldrig"
+            ? "Godt – men der er stadig tid at spare på bedre IT-overblik."
+            : "";
 
   return (
     <main>
@@ -576,21 +727,21 @@ export function MarketingHomeContent() {
           <p className="mt-3 text-center text-base text-[#2C4A5E]">Besvar 3 hurtige spørgsmål og få et konkret svar.</p>
 
           <div className="mt-8 flex items-center justify-center gap-3">
-            {[1, 2, 3].map((stepNumber) => (
+            {[1, 2, 3, 4, 5].map((stepNumber) => (
               <div key={stepNumber} className="flex items-center gap-3">
                 <div
                   className={`flex h-9 w-9 items-center justify-center rounded-full text-sm font-semibold ${
-                    calculatorStep === stepNumber ? "bg-sky-600 text-white" : "bg-sky-200 text-sky-700"
+                    indicatorStep === stepNumber ? "bg-sky-600 text-white" : "bg-sky-200 text-sky-700"
                   }`}
                 >
                   {stepNumber}
                 </div>
-                {stepNumber < 3 ? <div className="h-[2px] w-8 bg-sky-200" aria-hidden /> : null}
+                {stepNumber < 5 ? <div className="h-[2px] w-8 bg-sky-200" aria-hidden /> : null}
               </div>
             ))}
           </div>
 
-          <div className="relative mt-10 min-h-[580px]">
+          <div className="relative mt-10 min-h-[660px]">
             <div
               className={`transition-all duration-[400ms] ${
                 calculatorStep === 1 ? "translate-y-0 opacity-100" : "pointer-events-none absolute inset-0 translate-y-4 opacity-0"
@@ -620,6 +771,96 @@ export function MarketingHomeContent() {
                 calculatorStep === 2 ? "translate-y-0 opacity-100" : "pointer-events-none absolute inset-0 translate-y-4 opacity-0"
               }`}
             >
+              <h3 className="text-center text-2xl font-semibold text-[#0D1F2D]">Hvad laver din virksomhed?</h3>
+              <div className="mt-6 grid grid-cols-2 gap-3">
+                {industryOptions.map((option) => {
+                  const Icon = option.icon;
+                  return (
+                    <button
+                      key={option.id}
+                      onClick={() => handleIndustrySelect(option.id)}
+                      className={`rounded-2xl p-5 text-center transition-all ${
+                        selectedIndustry === option.id
+                          ? "border border-sky-600 bg-sky-600 text-white shadow-md"
+                          : "cursor-pointer border border-sky-100 bg-white hover:border-sky-400 hover:shadow-sm"
+                      }`}
+                    >
+                      <Icon className="mx-auto h-5 w-5" />
+                      <p className="mt-2 text-base font-semibold">{option.title}</p>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            <div
+              className={`transition-all duration-[400ms] ${
+                calculatorStep === 3 ? "translate-y-0 opacity-100" : "pointer-events-none absolute inset-0 translate-y-4 opacity-0"
+              }`}
+            >
+              <h3 className="text-center text-2xl font-semibold text-[#0D1F2D]">Hvordan håndterer I IT i dag?</h3>
+              <p className="mt-2 text-center text-sm text-[#2C4A5E]">Vær ærlig – det giver det mest præcise svar</p>
+              <div className="mt-6 grid grid-cols-2 gap-3">
+                {setupOptions.map((option) => {
+                  const Icon = option.icon;
+                  return (
+                    <button
+                      key={option.id}
+                      onClick={() => handleSetupSelect(option.id)}
+                      className={`rounded-2xl p-5 text-left transition-all ${
+                        selectedSetup === option.id
+                          ? "border border-sky-600 bg-sky-600 text-white shadow-md"
+                          : "cursor-pointer border border-sky-100 bg-white hover:border-sky-400 hover:shadow-sm"
+                      }`}
+                    >
+                      <Icon className="h-5 w-5" />
+                      <p className="mt-2 text-base font-semibold">{option.title}</p>
+                      <p className={`mt-1 text-sm ${selectedSetup === option.id ? "text-white/90" : "text-[#2C4A5E]"}`}>
+                        {option.subtitle}
+                      </p>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            <div
+              className={`transition-all duration-[400ms] ${
+                calculatorStep === 4 ? "translate-y-0 opacity-100" : "pointer-events-none absolute inset-0 translate-y-4 opacity-0"
+              }`}
+            >
+              <h3 className="text-center text-2xl font-semibold text-[#0D1F2D]">
+                Hvor tit oplever I IT-problemer eller forstyrrelser?
+              </h3>
+              <div className="mt-6 grid grid-cols-2 gap-3">
+                {frequencyOptions.map((option) => {
+                  const Icon = option.icon;
+                  return (
+                    <button
+                      key={option.id}
+                      onClick={() => handleFrequencySelect(option.id)}
+                      className={`rounded-2xl p-5 text-left transition-all ${
+                        selectedFrequency === option.id
+                          ? "border border-sky-600 bg-sky-600 text-white shadow-md"
+                          : "cursor-pointer border border-sky-100 bg-white hover:border-sky-400 hover:shadow-sm"
+                      }`}
+                    >
+                      <Icon className="h-5 w-5" />
+                      <p className="mt-2 text-base font-semibold">{option.title}</p>
+                      <p className={`mt-1 text-sm ${selectedFrequency === option.id ? "text-white/90" : "text-[#2C4A5E]"}`}>
+                        {option.subtitle}
+                      </p>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            <div
+              className={`transition-all duration-[400ms] ${
+                calculatorStep === 5 ? "translate-y-0 opacity-100" : "pointer-events-none absolute inset-0 translate-y-4 opacity-0"
+              }`}
+            >
               <h3 className="text-center text-2xl font-semibold text-[#0D1F2D]">Hvad bruger I unødigt tid på?</h3>
               <p className="mt-2 text-center text-sm text-[#2C4A5E]">Vælg alle der passer</p>
               <div className="mt-6 grid grid-cols-2 gap-3">
@@ -644,7 +885,7 @@ export function MarketingHomeContent() {
                 })}
               </div>
               <button
-                onClick={() => setCalculatorStep(3)}
+                onClick={() => setCalculatorStep(6)}
                 disabled={selectedWaste.length === 0}
                 className="mt-8 inline-flex rounded-full bg-sky-600 px-8 py-3 font-semibold text-white disabled:cursor-not-allowed disabled:opacity-50"
               >
@@ -654,7 +895,7 @@ export function MarketingHomeContent() {
 
             <div
               className={`transition-all duration-[400ms] ${
-                calculatorStep === 3 ? "translate-y-0 opacity-100" : "pointer-events-none absolute inset-0 translate-y-4 opacity-0"
+                calculatorStep === 6 ? "translate-y-0 opacity-100" : "pointer-events-none absolute inset-0 translate-y-4 opacity-0"
               }`}
             >
               <AnimatedSection direction="up">
@@ -680,6 +921,8 @@ export function MarketingHomeContent() {
                       <p className="mt-1 text-xs uppercase tracking-wide text-[#4A8CB5]">systemklar sparer jer pr. måned</p>
                     </div>
                   </div>
+
+                  {contextLine ? <p className="mt-4 text-sm text-[#2C4A5E]">{contextLine}</p> : null}
 
                   <div className="my-6 h-px bg-slate-200" />
 
@@ -712,6 +955,18 @@ export function MarketingHomeContent() {
                           <span>Månedlig IT-rapport – vi forklarer det for dig</span>
                         </li>
                       ) : null}
+                      {selectedSetup === "konsulent" ? (
+                        <li className="flex items-start gap-2 text-sm text-green-800">
+                          <CheckCircle className="mt-0.5 h-4 w-4 shrink-0" />
+                          <span>Reducér jeres IT-konsulent udgifter med ca. {formatNumber(resultConsultant)} kr/md</span>
+                        </li>
+                      ) : null}
+                      {industryRecommendation ? (
+                        <li className="flex items-start gap-2 text-sm text-green-800">
+                          <CheckCircle className="mt-0.5 h-4 w-4 shrink-0" />
+                          <span>{industryRecommendation}</span>
+                        </li>
+                      ) : null}
                     </ul>
                   </div>
 
@@ -719,6 +974,7 @@ export function MarketingHomeContent() {
                     Netto gevinst: {netGain < 0 ? "-" : "+"}
                     {formatNumber(resultNet)} kr/md efter abonnement
                   </p>
+                  {urgencyText ? <p className="mt-4 text-center text-sm text-[#2C4A5E]">{urgencyText}</p> : null}
 
                   <Link
                     href="/kontakt"
