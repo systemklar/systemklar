@@ -3,28 +3,26 @@
 import Link from "next/link";
 import { ScrollReveal } from "./ScrollReveal";
 
-const HERO_GRADIENT = "linear-gradient(135deg, #EFF6FF 0%, #FFFFFF 50%, #F0FDF4 100%)";
-
 const features = [
   {
-    icon: "🖥️",
-    title: "Platformen",
-    line1: "Samlet overblik over drift og systemer.",
-    line2: "Ét sted til status, hændelser og handling.",
+    n: "01",
+    title: "Samlet driftsoverblik",
+    line1: "Se systemstatus, support og handlinger ét sted.",
+    line2: "Mindre fragmentering, mere ro i hverdagen.",
     href: "/platformen",
   },
   {
-    icon: "🤖",
-    title: "AI-værktøjer",
-    line1: "Hurtigere tilbud og klarere rapporter.",
-    line2: "Bygget ind i jeres hverdag — ikke som ekstra rod.",
+    n: "02",
+    title: "Support der svarer hurtigt",
+    line1: "Dansk support med tydelig prioritering og opfølgning.",
+    line2: "I ved altid, hvad der sker, og hvornår.",
     href: "/ai-vaerktoejer",
   },
   {
-    icon: "💳",
-    title: "Priser",
-    line1: "Planer der skalerer med jeres team.",
-    line2: "Ingen skjulte gebyrer — kun det I bruger.",
+    n: "03",
+    title: "AI i daglig drift",
+    line1: "Automatiser rutiner og få bedre beslutningsgrundlag.",
+    line2: "Praktisk AI bygget til drift, ikke hype.",
     href: "/priser",
   },
 ];
@@ -37,98 +35,102 @@ const steps = [
 
 const pricePreview = [
   {
-    name: "Basis",
-    price: "499 kr./md.",
-    feats: ["IT-overblik", "Support & sager", "Op til 10 brugere"],
-  },
-  {
-    name: "Standard",
-    price: "1.299 kr./md.",
-    feats: ["Alt i Basis", "Prioriteret support", "Månedlig IT-rapport"],
+    name: "Starter",
+    price: "499 kr/md",
   },
   {
     name: "Plus",
-    price: "2.499 kr./md.",
-    feats: ["Alt i Standard", "AI-værktøjer", "Ubegrænset brug", "Dedikeret onboarding"],
+    price: "1.299 kr/md",
     highlight: true,
+  },
+  {
+    name: "Pro",
+    price: "2.499 kr/md",
   },
 ];
 
 export function MarketingHomeContent() {
   return (
     <main>
-      <section className="border-b border-gray-100" style={{ background: HERO_GRADIENT }}>
-        <div className="mx-auto max-w-5xl px-6 pb-28 pt-24 text-center md:pb-32 md:pt-28">
+      <section className="flex min-h-[90vh] items-center bg-white py-24 md:py-32">
+        <div className="mx-auto max-w-4xl px-6 text-center">
           <p
-            className="fade-in-up mb-8 inline-flex items-center gap-2 rounded-full border border-gray-200/80 bg-white/90 px-4 py-2 text-sm font-medium text-[#6B6B6B] shadow-sm backdrop-blur"
+            className="fade-in-up mb-10 inline-flex items-center rounded-full bg-stone-100 px-4 py-2 text-sm font-medium text-[#4A8CB5]"
             style={{ animationDelay: "0ms" }}
           >
-            🇩🇰 Dansk IT-platform
+            🇩🇰 Bygget til danske SMV&apos;er
           </p>
           <h1
-            className="fade-in-up mx-auto max-w-4xl text-5xl font-bold tracking-tight text-[#0A0A0A] md:text-7xl md:leading-none"
+            className="fade-in-up mx-auto max-w-4xl text-5xl font-bold tracking-tight text-[#0D1F2D] md:text-7xl md:leading-[0.98]"
             style={{ animationDelay: "80ms" }}
           >
-            <span className="block">Få overblik</span>
-            <span className="block">over jeres</span>
-            <span className="block">IT — uden</span>
-            <span className="block">stor IT-afdeling</span>
+            <span className="block">Din virksomheds IT.</span>
+            <span className="block">Samlet. Overskuet.</span>
           </h1>
           <p
-            className="fade-in-up mx-auto mt-8 max-w-2xl text-xl text-gray-500"
+            className="fade-in-up mx-auto mt-8 max-w-2xl text-lg text-[#4A8CB5]"
             style={{ animationDelay: "160ms" }}
           >
-            IT-support, overblik og AI — samlet på én dansk platform.
+            Support, overvågning og AI - i et simpelt overblik.
           </p>
           <div
-            className="fade-in-up mt-10 flex flex-wrap items-center justify-center gap-3"
+            className="fade-in-up mt-12 flex flex-wrap items-center justify-center gap-4"
             style={{ animationDelay: "240ms" }}
           >
             <Link
               href="/book-demo"
-              className="cta-pulse inline-flex rounded-full bg-[#2563EB] px-6 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-[#1D4ED8]"
+              className="inline-flex rounded-full bg-sky-600 px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-sky-700"
             >
-              Book demo
+              Book gratis demo
             </Link>
             <Link
               href="/platformen"
-              className="cta-pulse inline-flex rounded-full border border-gray-300 bg-white/80 px-6 py-2.5 text-sm font-semibold text-[#0A0A0A] transition-colors hover:border-gray-400 hover:bg-white"
+              className="inline-flex rounded-full border border-sky-200 px-6 py-3 text-sm font-semibold text-sky-800 transition-colors hover:bg-sky-50"
             >
-              Se platformen
+              Se hvordan det virker
             </Link>
           </div>
           <p
-            className="fade-in-up mt-10 text-sm font-medium text-[#6B6B6B]"
+            className="fade-in-up mt-10 text-sm font-medium text-slate-400"
             style={{ animationDelay: "320ms" }}
           >
             <span className="inline-flex flex-wrap items-center justify-center gap-x-6 gap-y-2">
               <span>✓ Ingen binding</span>
-              <span>✓ Gratis opsætning</span>
               <span>✓ Dansk support</span>
+              <span>✓ Gratis opsætning</span>
             </span>
           </p>
         </div>
       </section>
 
-      <section className="border-b border-gray-100 bg-white py-20 md:py-28">
-        <div className="mx-auto max-w-6xl px-6">
-          <div className="grid gap-8 md:grid-cols-3">
+      <section className="bg-[#F5FAFD] py-24 md:py-32">
+        <div className="mx-auto max-w-5xl px-6 text-center">
+          <p className="text-sm font-medium text-[#4A8CB5]">Betroet af virksomheder i hele Danmark</p>
+          <div className="mt-10 grid grid-cols-2 gap-4 text-sm font-medium text-stone-400 md:grid-cols-5 md:gap-8">
+            {["Nordic Byg", "CopenTech", "Berglund A/S", "RetailFlow", "Moller Gruppen"].map((name) => (
+              <span key={name} className="whitespace-nowrap">
+                {name}
+              </span>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="bg-white py-24 md:py-32">
+        <div className="mx-auto max-w-5xl px-6">
+          <h2 className="text-left text-3xl font-bold tracking-tight text-[#0D1F2D] md:text-4xl">Alt hvad I har brug for</h2>
+          <div className="mt-16 grid gap-14 md:grid-cols-3 md:gap-10">
             {features.map((item, index) => (
-              <ScrollReveal key={item.title} staggerMs={index * 100}>
-                <Link
-                  href={item.href}
-                  className="group flex h-full flex-col rounded-2xl border border-gray-100 bg-white p-8 shadow-sm transition duration-200 hover:-translate-y-1 hover:shadow-md"
-                >
-                  <span className="text-5xl leading-none" aria-hidden>
-                    {item.icon}
-                  </span>
-                  <h2 className="mt-6 text-xl font-semibold text-[#0A0A0A]">{item.title}</h2>
-                  <p className="mt-3 text-[#6B6B6B]">
+              <ScrollReveal key={item.title} staggerMs={index * 120}>
+                <Link href={item.href} className="group block">
+                  <p className="text-6xl font-bold leading-none text-sky-100">{item.n}</p>
+                  <h3 className="mt-6 text-2xl font-semibold text-[#0D1F2D]">{item.title}</h3>
+                  <p className="mt-4 text-base leading-relaxed text-[#4A8CB5]">
                     {item.line1}
                     <br />
                     {item.line2}
                   </p>
-                  <span className="mt-6 text-sm font-semibold text-[#2563EB] transition group-hover:text-[#1D4ED8]">
+                  <span className="mt-6 inline-block text-sm font-semibold text-sky-600 transition-colors group-hover:text-sky-700">
                     Læs mere →
                   </span>
                 </Link>
@@ -138,82 +140,62 @@ export function MarketingHomeContent() {
         </div>
       </section>
 
-      <section className="border-b border-gray-100 bg-[#F7F7F5] py-16 md:py-20">
-        <div className="mx-auto max-w-6xl px-6 text-center">
-          <p className="text-sm font-medium text-[#6B6B6B]">Betroet af virksomheder i hele Danmark</p>
-          <div className="mt-10 flex flex-wrap items-center justify-center gap-x-10 gap-y-4 text-sm font-medium text-gray-400 md:text-base">
-            {["Nordic Byg", "CopenTech", "Berglund A/S", "RetailFlow", "Møller Gruppen"].map((name) => (
-              <span key={name}>{name}</span>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section className="border-b border-gray-100 bg-white py-20 md:py-28">
-        <div className="mx-auto max-w-6xl px-6">
-          <h2 className="text-center text-2xl font-bold tracking-tight text-[#0A0A0A] md:text-3xl">Sådan virker det</h2>
-          <div className="mt-16 grid gap-12 md:grid-cols-3 md:gap-8">
-            {steps.map((s) => (
-              <div key={s.n} className="text-center md:text-left">
-                <p className="text-6xl font-bold leading-none text-gray-200 md:text-7xl">{s.n}</p>
-                <h3 className="mt-4 text-lg font-semibold text-[#0A0A0A]">{s.title}</h3>
-                <p className="mt-2 text-[#6B6B6B]">{s.text}</p>
+      <section className="bg-[#F5FAFD] py-24 md:py-32">
+        <div className="mx-auto max-w-5xl px-6">
+          <h2 className="text-center text-3xl font-bold tracking-tight text-[#0D1F2D] md:text-4xl">Sådan virker det</h2>
+          <div className="mt-14 flex flex-wrap items-center justify-center gap-4 text-center">
+            {steps.map((s, idx) => (
+              <div key={s.n} className="flex items-center gap-4">
+                <div className="text-left">
+                  <p className="text-4xl font-bold text-sky-200">{s.n}</p>
+                  <p className="mt-2 text-sm font-semibold text-[#0D1F2D]">{s.title}</p>
+                </div>
+                {idx < steps.length - 1 ? (
+                  <span className="pb-5 text-2xl text-[#4A8CB5]" aria-hidden>
+                    →
+                  </span>
+                ) : null}
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      <section className="border-b border-gray-100 bg-[#F7F7F5] py-20 md:py-28">
-        <div className="mx-auto max-w-6xl px-6">
-          <h2 className="text-center text-2xl font-bold tracking-tight text-[#0A0A0A] md:text-3xl">Priser</h2>
-          <p className="mx-auto mt-3 max-w-xl text-center text-[#6B6B6B]">Kort overblik — se alle detaljer på pris-siden.</p>
-          <div className="mt-12 grid gap-6 md:grid-cols-3">
-            {pricePreview.map((plan, index) => (
-              <ScrollReveal key={plan.name} staggerMs={index * 120}>
-                <article
-                  className={`relative flex h-full flex-col rounded-2xl border bg-white p-8 shadow-sm ${
-                    plan.highlight ? "border-[#2563EB]" : "border-gray-100"
-                  }`}
-                >
-                  {plan.highlight ? (
-                    <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-[#2563EB] px-3 py-1 text-xs font-semibold text-white">
-                      Mest populær
-                    </span>
-                  ) : null}
-                  <h3 className="text-lg font-semibold text-[#0A0A0A]">{plan.name}</h3>
-                  <p className={`mt-4 text-3xl font-bold ${plan.highlight ? "text-[#2563EB]" : "text-[#0A0A0A]"}`}>
-                    {plan.price}
-                  </p>
-                  <ul className="mt-6 flex-1 space-y-2 text-sm text-[#6B6B6B]">
-                    {plan.feats.map((f) => (
-                      <li key={f}>✓ {f}</li>
-                    ))}
-                  </ul>
-                  <Link
-                    href="/priser"
-                    className="mt-8 text-center text-sm font-semibold text-[#2563EB] hover:text-[#1D4ED8]"
-                  >
-                    Se alle planer →
-                  </Link>
-                </article>
-              </ScrollReveal>
+      <section className="bg-white py-24 md:py-32">
+        <div className="mx-auto max-w-5xl px-6">
+          <h2 className="text-center text-3xl font-bold tracking-tight text-[#0D1F2D] md:text-4xl">Priser</h2>
+          <div className="mt-14 grid gap-5 md:grid-cols-3">
+            {pricePreview.map((plan) => (
+              <article
+                key={plan.name}
+                className={`rounded-3xl border px-8 py-10 text-center ${
+                  plan.highlight ? "border-sky-600" : "border-[#D0E8F5]"
+                }`}
+              >
+                <p className="text-sm font-semibold uppercase tracking-wide text-[#4A8CB5]">{plan.name}</p>
+                <p className="mt-4 text-4xl font-bold text-[#0D1F2D]">{plan.price}</p>
+              </article>
             ))}
+          </div>
+          <div className="mt-8 text-center">
+            <Link href="/priser" className="text-sm font-semibold text-sky-600 hover:text-sky-700">
+              Se alle features →
+            </Link>
           </div>
         </div>
       </section>
 
-      <section id="cta" className="bg-[#0A0A0A] py-20 md:py-28">
+      <section id="cta" className="bg-[#062840] py-24 md:py-32">
         <div className="mx-auto max-w-3xl px-6 text-center">
-          <h2 className="text-3xl font-bold tracking-tight text-white md:text-4xl">Klar til at prøve Systemklar?</h2>
-          <p className="mx-auto mt-4 max-w-xl text-lg text-gray-400">
-            Book en demo — vi viser platformen ud fra jeres behov, uden pres.
+          <h2 className="text-4xl font-bold tracking-tight text-white md:text-5xl">Klar til at komme i gang?</h2>
+          <p className="mx-auto mt-5 max-w-xl text-lg text-sky-200">
+            Book en kort intro, og fa et klart overblik over mulighederne.
           </p>
           <Link
             href="/book-demo"
-            className="cta-pulse mt-10 inline-flex rounded-full bg-[#2563EB] px-8 py-3 text-sm font-semibold text-white transition-colors hover:bg-[#1D4ED8]"
+            className="mt-10 inline-flex rounded-full bg-sky-500 px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-sky-400"
           >
-            Book demo
+            Book gratis demo
           </Link>
         </div>
       </section>

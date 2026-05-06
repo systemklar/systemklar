@@ -36,10 +36,6 @@ export function MarketingNav() {
   }, [open]);
 
   useEffect(() => {
-    setOpen(false);
-  }, [pathname]);
-
-  useEffect(() => {
     const onScroll = () => {
       setScrolled(window.scrollY > 6);
     };
@@ -50,14 +46,14 @@ export function MarketingNav() {
 
   return (
     <header
-      className={`sticky top-0 z-50 border-b bg-white/80 backdrop-blur transition-[box-shadow,border-color] duration-300 ease-out ${
-        scrolled ? "border-gray-200/90 shadow-md shadow-gray-900/5" : "border-gray-100 shadow-none"
+      className={`sticky top-0 z-50 bg-white/95 backdrop-blur transition-shadow duration-300 ease-out ${
+        scrolled ? "shadow-[0_8px_24px_rgba(6,40,64,0.06)]" : "shadow-none"
       }`}
     >
-      <div ref={containerRef} className="relative mx-auto h-16 max-w-6xl px-6">
+      <div ref={containerRef} className="relative mx-auto h-16 w-full max-w-[1200px] px-6">
         <div className="flex h-full items-center justify-between gap-4">
-          <Link href="/" className="shrink-0 text-xl font-bold tracking-tight text-[#2563EB]">
-            Systemklar
+          <Link href="/" className="shrink-0 text-sm font-bold tracking-tight text-sky-600">
+            systemklar
           </Link>
 
           <nav className="hidden min-w-0 flex-1 items-center justify-center gap-8 md:flex" aria-label="Hovednavigation">
@@ -69,13 +65,13 @@ export function MarketingNav() {
           <div className="hidden shrink-0 items-center gap-3 md:flex">
             <Link
               href="/login"
-              className="text-sm font-medium text-gray-600 transition-colors hover:text-gray-900"
+              className="rounded-full px-3 py-1.5 text-xs font-medium text-slate-600 transition-colors hover:bg-slate-50 hover:text-slate-900"
             >
               Log ind
             </Link>
             <Link
               href="/book-demo"
-              className="rounded-full bg-[#2563EB] px-5 py-2 text-sm font-semibold text-white transition-colors hover:bg-[#1D4ED8]"
+              className="rounded-full bg-sky-600 px-4 py-1.5 text-xs font-semibold text-white transition-colors hover:bg-sky-700"
             >
               Book demo
             </Link>
@@ -83,7 +79,7 @@ export function MarketingNav() {
 
           <button
             type="button"
-            className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-lg text-gray-700 transition-colors hover:bg-gray-50 md:hidden"
+            className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-lg text-slate-700 transition-colors hover:bg-slate-50 md:hidden"
             onClick={() => setOpen((v) => !v)}
             aria-label={open ? "Luk menu" : "Åbn menu"}
             aria-expanded={open}
@@ -104,10 +100,10 @@ export function MarketingNav() {
         {open ? (
           <nav
             id="marketing-mobile-nav"
-            className="absolute left-0 right-0 top-full border-b border-gray-100 bg-white shadow-lg md:hidden"
+            className="absolute left-0 right-0 top-full border-t border-[#D0E8F5] bg-white md:hidden"
             aria-label="Mobil menu"
           >
-            <div className="mx-auto max-w-6xl space-y-1 px-6 py-4">
+            <div className="mx-auto w-full max-w-[1200px] space-y-1 px-6 py-4">
               {NAV.map((item) => {
                 const active = pathname === item.href;
                 return (
@@ -115,7 +111,9 @@ export function MarketingNav() {
                     key={item.href}
                     href={item.href}
                     className={`block min-w-max rounded-lg px-3 py-2.5 text-sm transition-colors ${
-                      active ? "bg-gray-50 font-semibold text-gray-900" : "font-medium text-gray-600 hover:bg-gray-50 hover:text-gray-900"
+                      active
+                        ? "bg-slate-50 font-semibold text-slate-900"
+                        : "font-medium text-slate-600 hover:bg-slate-50 hover:text-slate-900"
                     }`}
                   >
                     {item.label}
@@ -124,13 +122,13 @@ export function MarketingNav() {
               })}
               <Link
                 href="/login"
-                className="block min-w-max rounded-lg px-3 py-2.5 text-sm font-medium text-gray-600 hover:bg-gray-50 hover:text-gray-900"
+                className="block min-w-max rounded-lg px-3 py-2.5 text-sm font-medium text-slate-600 hover:bg-slate-50 hover:text-slate-900"
               >
                 Log ind
               </Link>
               <Link
                 href="/book-demo"
-                className="mt-2 block rounded-full bg-[#2563EB] px-5 py-2.5 text-center text-sm font-semibold text-white hover:bg-[#1D4ED8]"
+                className="mt-2 block rounded-full bg-sky-600 px-5 py-2.5 text-center text-sm font-semibold text-white hover:bg-sky-700"
               >
                 Book demo
               </Link>

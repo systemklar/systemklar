@@ -19,14 +19,14 @@ export function StableNavLink({
     <Link
       href={href}
       className={`relative inline-grid min-w-max shrink-0 place-items-center whitespace-nowrap text-sm transition-colors ${
-        active ? "text-gray-900" : "text-gray-600 hover:text-gray-900"
+        active ? "text-slate-900" : "text-slate-600 hover:text-slate-900"
       }`}
     >
       <span aria-hidden className="invisible col-start-1 row-start-1 px-px font-semibold">
         {label}
       </span>
       <span
-        className={`col-start-1 row-start-1 px-px ${active ? "font-semibold" : "font-medium"}`}
+        className={`col-start-1 row-start-1 px-px font-medium ${active ? "font-semibold" : ""}`}
         aria-current={active ? "page" : undefined}
       >
         {label}

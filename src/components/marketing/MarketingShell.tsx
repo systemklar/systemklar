@@ -4,7 +4,7 @@ import { MarketingNav } from "./MarketingNav";
 
 export function MarketingShell({ children }: { children: ReactNode }) {
   return (
-    <div className="flex min-h-screen flex-col bg-white text-[#0A0A0A]">
+    <div className="flex min-h-screen flex-col bg-white text-[#0D1F2D]">
       <MarketingNav />
       <div className="flex-1">{children}</div>
       <MarketingFooter />

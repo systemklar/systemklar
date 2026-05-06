@@ -4,17 +4,17 @@ import { MARKETING_CONTACT_EMAIL, MARKETING_CONTACT_PHONE_DISPLAY, MARKETING_CON
 export function MarketingFooter() {
   const year = new Date().getFullYear();
   return (
-    <footer className="border-t border-gray-900 bg-[#0A0A0A] text-sm text-gray-400">
-      <div className="mx-auto grid max-w-6xl gap-10 px-6 py-14 sm:grid-cols-2 lg:grid-cols-5">
-        <div className="sm:col-span-2 lg:col-span-1">
-          <p className="text-lg font-bold text-white">Systemklar</p>
-          <p className="mt-3 leading-relaxed">
-            Dansk IT-platform til drift, support og AI — bygget til virksomheder uden stor IT-afdeling.
+    <footer className="bg-[#062840] text-sm text-sky-100">
+      <div className="mx-auto grid max-w-5xl gap-12 px-6 py-24 md:grid-cols-2 lg:grid-cols-4">
+        <div className="md:col-span-2 lg:col-span-1">
+          <p className="text-base font-bold text-white">systemklar</p>
+          <p className="mt-4 leading-relaxed text-sky-200">
+            Drift, support og AI samlet i et roligt overblik.
           </p>
         </div>
         <div>
           <p className="font-semibold text-white">Produkt</p>
-          <ul className="mt-4 space-y-2">
+          <ul className="mt-5 space-y-3">
             <li>
               <Link href="/platformen" className="transition-colors hover:text-white">
                 Platformen
@@ -34,7 +34,7 @@ export function MarketingFooter() {
         </div>
         <div>
           <p className="font-semibold text-white">Virksomhed</p>
-          <ul className="mt-4 space-y-2">
+          <ul className="mt-5 space-y-3">
             <li>
               <Link href="/book-demo" className="transition-colors hover:text-white">
                 Book demo
@@ -53,36 +53,27 @@ export function MarketingFooter() {
           </ul>
         </div>
         <div>
-          <p className="font-semibold text-white">Support</p>
-          <ul className="mt-4 space-y-2">
+          <p className="font-semibold text-white">Kontakt</p>
+          <ul className="mt-5 space-y-3">
             <li>
-              <Link href="/platformen" className="transition-colors hover:text-white">
-                Dokumentation
-              </Link>
-            </li>
-          </ul>
-        </div>
-        <div>
-          <p className="font-semibold text-white">Kontakt os</p>
-          <ul className="mt-4 space-y-3">
-            <li>
-              <a href={`mailto:${MARKETING_CONTACT_EMAIL}`} className="flex items-start gap-2 transition-colors hover:text-white">
-                <span aria-hidden>📧</span>
-                <span>{MARKETING_CONTACT_EMAIL}</span>
+              <a href={`mailto:${MARKETING_CONTACT_EMAIL}`} className="transition-colors hover:text-white">
+                {MARKETING_CONTACT_EMAIL}
               </a>
             </li>
             <li>
-              <a href={`tel:${MARKETING_CONTACT_PHONE_TEL}`} className="flex items-start gap-2 transition-colors hover:text-white">
-                <span aria-hidden>📞</span>
-                <span>{MARKETING_CONTACT_PHONE_DISPLAY}</span>
+              <a href={`tel:${MARKETING_CONTACT_PHONE_TEL}`} className="transition-colors hover:text-white">
+                {MARKETING_CONTACT_PHONE_DISPLAY}
               </a>
+            </li>
+            <li>
+              <span>CVR 46431596</span>
             </li>
           </ul>
         </div>
       </div>
-      <div className="border-t border-gray-800">
-        <p className="mx-auto max-w-6xl px-6 py-6 text-gray-500">
-          © {year} Systemklar. Alle rettigheder forbeholdes. CVR 46431596
+      <div className="border-t border-sky-900/60">
+        <p className="mx-auto max-w-5xl px-6 py-6 text-sky-300">
+          © {year} systemklar. Alle rettigheder forbeholdes.
         </p>
       </div>
     </footer>
