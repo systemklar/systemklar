@@ -1,17 +1,49 @@
 export const EMAIL_SITE = process.env.NEXT_PUBLIC_SITE_URL ?? "https://systemklar.dk";
 
+/**
+ * Logo og footer er tabeller (Outlook/Gmail-kompatibelt) — ikke SVG.
+ * DB-rækker i `email_templates` indeholder kun subject/body; "Nulstil" i admin påvirker ikke denne wrapper.
+ * Ved deploy af layout: ingen SQL nødvendig — kør kun migrations der eksplicit ændrer seed/data.
+ */
+const EMAIL_HEADER_LOGO_AND_TAGLINE = `
+<table cellpadding="0" cellspacing="0" border="0" style="margin: 0 auto;">
+  <tr>
+    <td style="background:#ffffff; border-radius:8px; padding:6px 8px; display:inline-block;">
+      <table cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td>
+            <table cellpadding="0" cellspacing="0" border="0">
+              <tr>
+                <td style="width:10px; height:10px; background:#0A6EBD; border-radius:2px; font-size:0;">&nbsp;</td>
+                <td style="width:3px;">&nbsp;</td>
+                <td style="width:10px; height:10px; background:#4FA8E0; border-radius:2px; font-size:0;">&nbsp;</td>
+              </tr>
+              <tr><td colspan="3" style="height:3px;">&nbsp;</td></tr>
+              <tr>
+                <td style="width:10px; height:10px; background:#4FA8E0; border-radius:2px; font-size:0;">&nbsp;</td>
+                <td style="width:3px;">&nbsp;</td>
+                <td style="width:10px; height:10px; background:#0A6EBD; border-radius:2px; font-size:0;">&nbsp;</td>
+              </tr>
+            </table>
+          </td>
+          <td style="width:8px;">&nbsp;</td>
+          <td style="color:#ffffff; font-size:20px; font-weight:700; font-family:Inter,Arial,sans-serif; vertical-align:middle;">systemklar</td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+</table>
+<p style="color:rgba(255,255,255,0.7); font-size:12px; margin:8px 0 0 0; font-family:Inter,Arial,sans-serif;">
+  IT-platform til danske virksomheder
+</p>
+`;
+
 /** Ydre HTML-grid om email-indhold (marketing-header + footer). Bruges af send-flow og admin-preview. */
 export function emailOuterHtml(innerContent: string): string {
   return `
     <div style="font-family: Inter, Arial, sans-serif; max-width: 560px; margin: 0 auto; color: #0D1F2D;">
       <div style="background: linear-gradient(135deg, #0A6EBD, #062840); padding: 32px; border-radius: 16px 16px 0 0; text-align: center;">
-        <svg width="32" height="32" viewBox="0 0 18 18" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;">
-          <rect x="1" y="1" width="7" height="7" rx="1.5" fill="#ffffff"/>
-          <rect x="10" y="1" width="7" height="7" rx="1.5" fill="#4FA8E0"/>
-          <rect x="1" y="10" width="7" height="7" rx="1.5" fill="#4FA8E0"/>
-          <rect x="10" y="10" width="7" height="7" rx="1.5" fill="#ffffff"/>
-        </svg>
-        <span style="color: white; font-size: 20px; font-weight: 700; margin-left: 10px; vertical-align: middle;">systemklar</span>
+        ${EMAIL_HEADER_LOGO_AND_TAGLINE}
       </div>
       <div style="background: #ffffff; padding: 32px; border: 1px solid #D0E8F5; border-top: none;">
         ${innerContent}

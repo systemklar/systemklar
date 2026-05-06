@@ -10,11 +10,23 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 export const FROM = process.env.RESEND_FROM_EMAIL ?? "systemklar <kontakt@systemklar.dk>";
 export const SITE = EMAIL_SITE;
 
-/** @deprecated Brug emailOuterHtml – bevares som alias for evt. import-steder. */
+/**
+ * Samme som `emailOuterHtml` — alle send-funktioner wrapper body med denne (Outlook/Gmail-venlig header).
+ * @deprecated Brug `emailOuterHtml` til nye imports.
+ */
 export const baseTemplate = emailOuterHtml;
 
+/** Knap til HTML-mails — tabel-layout for bedre klient-understøttelse. */
 export function btn(text: string, url: string) {
-  return `<a href="${url}" style="display:inline-block; background:#0A6EBD; color:white; padding:12px 28px; border-radius:999px; text-decoration:none; font-weight:600; font-size:14px; margin:16px 0;">${text}</a>`;
+  return `
+    <table cellpadding="0" cellspacing="0" border="0" style="margin:16px 0;">
+      <tr>
+        <td style="background:#0A6EBD; border-radius:999px; padding:12px 28px;">
+          <a href="${url}" style="color:#ffffff; text-decoration:none; font-weight:600; font-size:14px; font-family:Inter,Arial,sans-serif; display:inline-block;">${text}</a>
+        </td>
+      </tr>
+    </table>
+  `;
 }
 
 function interpolate(template: string, vars: Record<string, string>): string {

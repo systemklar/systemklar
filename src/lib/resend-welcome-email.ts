@@ -1,4 +1,5 @@
 import { Resend } from "resend";
+import { emailOuterHtml } from "@/lib/email-layout";
 
 export function escapeHtml(s: string): string {
   return s
@@ -44,25 +45,26 @@ export async function sendWelcomeEmail(
   const resend = new Resend(resendKey);
   const from = getResendFromAddress();
   const portalUrl = `${getAppOrigin()}/portal`;
-  const htmlBody = `
+  const inner = `
         <p>Hej,</p>
-        <p>Velkommen til <strong>Systemklar</strong> – vi er glade for at have ${escapeHtml(
+        <p>Velkommen til <strong>systemklar</strong> – vi er glade for at have ${escapeHtml(
           companyName
         )} med.</p>
         <p>Du har modtaget en separat e-mail fra os med et link til at vælge adgangskode. Når du har sat adgangskoden, kan du logge ind på <a href="${portalUrl}">kundeportalen</a>.</p>
-        <p>Med venlig hilsen<br/>Systemklar</p>
+        <p>Med venlig hilsen<br/>systemklar</p>
       `;
+  const htmlBody = emailOuterHtml(inner);
 
   console.log("[sendWelcomeEmail] attempt", {
     from,
     to: toEmail,
-    subject: "Velkommen til Systemklar",
+    subject: "Velkommen til systemklar",
   });
 
   const { data, error } = await resend.emails.send({
     from,
     to: toEmail,
-    subject: "Velkommen til Systemklar",
+    subject: "Velkommen til systemklar",
     html: htmlBody,
   });
 

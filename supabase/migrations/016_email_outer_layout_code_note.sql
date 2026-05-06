@@ -1,0 +1,5 @@
+-- Email layout (logo, gradient-header, footer, knapper) leveres i applikationskoden:
+--   src/lib/email-layout.ts (emailOuterHtml) og src/lib/email.ts (btn).
+-- Tabellen public.email_templates gemmer KUN subject og body til skabelonindhold.
+-- "Nulstil til standard" i admin opdaterer ikke header/footer — ved behov deploy ny app-version.
+-- Ingen dataskemaændring her; filen dokumenterer deploy/noter ved siden af 013_email_templates.sql.
