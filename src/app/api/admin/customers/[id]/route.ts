@@ -69,7 +69,12 @@ export async function DELETE(
     return NextResponse.json({ error: "Kunde ikke fundet." }, { status: 404 });
   }
 
-  const userId = profile.user_id as string | null;
+  // Brugerens auth.uid() gemmes som profiles.user_id eller (ved invite-flow) som profiles.id.
+  const userIdRaw = profile.user_id as string | null | undefined;
+  const authUserId =
+    typeof userIdRaw === "string" && userIdRaw.trim()
+      ? userIdRaw.trim()
+      : id.trim() || null;
 
   const { error: profileError } = await admin.from("profiles").delete().eq("id", id);
 
@@ -78,17 +83,17 @@ export async function DELETE(
     return NextResponse.json({ error: profileError.message }, { status: 400 });
   }
 
-  if (userId) {
+  if (authUserId) {
     console.log("[api/admin/customers/[id]] delete auth user attempt", {
       profile_id: id,
-      user_id: userId,
+      auth_user_id: authUserId,
     });
-    const { error: authError } = await admin.auth.admin.deleteUser(userId);
+    const { error: authError } = await admin.auth.admin.deleteUser(authUserId);
     if (authError) {
       const detail = authError.message || "Ukendt fejl";
       console.error("[api/admin/customers/[id]] deleteUser failed", {
         profile_id: id,
-        user_id: userId,
+        auth_user_id: authUserId,
         detail,
       });
       // Profilen er allerede slettet; returnér 200 for at undgå forvirrende fejl i UI.
