@@ -23,7 +23,7 @@ function AdminLoginForm() {
 
     const { error } = await supabase.auth.signInWithOtp({
       email: normalizedEmail,
-      options: { redirectTo: "https://systemklar.dk/admin/dashboard" },
+      options: { emailRedirectTo: "https://systemklar.dk/admin/dashboard" },
     });
 
     if (error) {
