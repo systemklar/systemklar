@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { CookieBanner } from "@/components/ui/CookieBanner";
+import CrispChat from "@/components/ui/CrispChat";
 import "./globals.css";
 
 const inter = Inter({
@@ -26,6 +27,7 @@ export default function RootLayout({
       <body className={`${inter.className} min-h-full flex flex-col`}>
         {children}
         <CookieBanner />
+        <CrispChat />
       </body>
     </html>
   );

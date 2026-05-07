@@ -24,6 +24,7 @@ import {
   Wrench,
 } from "lucide-react";
 import { AnimatedSection } from "@/components/ui/AnimatedSection";
+import { DemoModal } from "@/components/ui/DemoModal";
 
 const featurePills = ["Realtids systemoverblik", "Support direkte i portalen", "Månedlig IT-rapport"];
 
@@ -225,6 +226,7 @@ export function MarketingHomeContent() {
   const [priceFading, setPriceFading] = useState(false);
   const [activeTab, setActiveTab] = useState<TabKey>("Overblik");
   const [changing, setChanging] = useState(false);
+  const [showDemoModal, setShowDemoModal] = useState(false);
 
   const stepDelayRef = useRef<number | null>(null);
   const [calculatorStep, setCalculatorStep] = useState(0);
@@ -495,12 +497,13 @@ export function MarketingHomeContent() {
               >
                 Se hvad IT-rod koster jer
               </button>
-              <a
-                href="/kontakt"
+              <button
+                type="button"
+                onClick={() => setShowDemoModal(true)}
                 className="rounded-full border border-white/40 px-8 py-4 text-base font-semibold text-white transition-all hover:bg-white/10"
               >
                 Book en gratis snak
-              </a>
+              </button>
             </div>
           </AnimatedSection>
           <div className="mt-8 flex flex-wrap items-center justify-center gap-6 text-sm text-white/60">
@@ -635,6 +638,17 @@ export function MarketingHomeContent() {
                 {feature}
               </span>
             ))}
+          </div>
+          <div className="mt-8 text-center">
+            <Link
+              href="/platformen"
+              className="inline-flex items-center gap-2 text-sm font-medium text-sky-600 transition-colors hover:text-sky-700"
+            >
+              Se alt hvad platformen kan
+              <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+              </svg>
+            </Link>
           </div>
         </div>
       </section>
@@ -1200,16 +1214,18 @@ export function MarketingHomeContent() {
             Book en gratis snak på 30 minutter. Vi gennemgår platformen og sætter det op til jer – samme dag.
           </p>
           <div className="flex justify-center">
-            <Link
-              href="/kontakt"
+            <button
+              type="button"
+              onClick={() => setShowDemoModal(true)}
               className="rounded-full bg-sky-500 px-7 py-3 text-sm font-semibold text-white transition-colors hover:bg-sky-400"
             >
               Book en gratis snak
-            </Link>
+            </button>
           </div>
           <p className="mt-3 text-xs text-white/70">30 min · gratis · uforpligtende · ingen binding</p>
         </div>
       </section>
+      <DemoModal isOpen={showDemoModal} onClose={() => setShowDemoModal(false)} subject="Demo" />
     </main>
   );
 }

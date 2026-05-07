@@ -1,9 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Link from "next/link";
 import { Calendar, CheckCircle, ChevronDown, MessageCircle, Shield } from "lucide-react";
 import { AnimatedSection } from "@/components/ui/AnimatedSection";
+import { DemoModal } from "@/components/ui/DemoModal";
 import { MarketingShell } from "@/components/marketing/MarketingShell";
 
 type Plan = {
@@ -111,6 +111,7 @@ export default function PriserPage() {
   const [yearly, setYearly] = useState(false);
   const [priceFading, setPriceFading] = useState(false);
   const [openFaq, setOpenFaq] = useState<number | null>(0);
+  const [modalSubject, setModalSubject] = useState<string | null>(null);
 
   useEffect(() => {
     const fadeTimer = window.setTimeout(() => setPriceFading(true), 0);
@@ -221,16 +222,17 @@ export default function PriserPage() {
                           </li>
                         ))}
                       </ul>
-                      <Link
-                        href={plan.cta.href}
+                      <button
+                        type="button"
+                        onClick={() => setModalSubject(`${plan.name} – ${plan.monthly}`)}
                         className={`mt-8 inline-flex w-full justify-center rounded-full px-5 py-3 font-semibold transition-colors ${
                           plan.buttonStyle === "primary"
                             ? "bg-sky-600 text-white hover:bg-sky-700"
                             : "border border-sky-200 text-sky-700 hover:bg-sky-50"
                         }`}
                       >
-                        {plan.cta.label}
-                      </Link>
+                        Vælg {plan.name}
+                      </button>
                     </article>
                   </div>
                 </AnimatedSection>
@@ -316,7 +318,26 @@ export default function PriserPage() {
           </div>
         </section>
 
+        <section className="bg-white py-20">
+          <div className="mx-auto max-w-2xl px-6 text-center">
+            <AnimatedSection direction="up">
+              <h2 className="text-3xl font-bold tracking-tight text-[#0D1F2D]">Vil du se det i praksis?</h2>
+              <p className="mx-auto mt-4 max-w-xl text-base text-[#2C4A5E]">
+                Book en gratis snak, så gennemgår vi hvilken plan der passer bedst til jer.
+              </p>
+              <button
+                type="button"
+                onClick={() => setModalSubject("Demo")}
+                className="mt-8 rounded-full bg-sky-600 px-7 py-3 font-semibold text-white transition-colors hover:bg-sky-700"
+              >
+                Book en gratis snak
+              </button>
+            </AnimatedSection>
+          </div>
+        </section>
+
       </main>
+      <DemoModal isOpen={modalSubject !== null} onClose={() => setModalSubject(null)} subject={modalSubject ?? "Demo"} />
     </MarketingShell>
   );
 }

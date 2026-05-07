@@ -29,7 +29,7 @@ type PricingSectionProps = {
   className?: string;
 };
 
-export function PricingSection({ sectionId = "priser", ctaHref = "/book-demo", className = "" }: PricingSectionProps) {
+export function PricingSection({ sectionId = "priser", ctaHref = "/kontakt", className = "" }: PricingSectionProps) {
   return (
     <div id={sectionId} className={`mx-auto max-w-6xl px-6 ${className}`}>
       <div className="grid gap-8 md:grid-cols-3 md:gap-10 lg:gap-12">

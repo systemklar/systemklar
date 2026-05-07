@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { SystemklarLogo } from "@/components/branding/SystemklarLogo";
+import { DemoModal } from "@/components/ui/DemoModal";
 import { StableNavLink } from "./StableNavLink";
 
 const NAV = [
@@ -18,6 +19,7 @@ export function MarketingNav() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [showModal, setShowModal] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -47,22 +49,21 @@ export function MarketingNav() {
   const transparent = !scrolled && !open;
 
   return (
+    <>
     <header
       className={`fixed left-0 right-0 top-0 z-50 transition-all duration-300 ${
         transparent
           ? "border-b border-transparent bg-transparent"
-          : "border-b border-sky-100 bg-white/90 shadow-sm backdrop-blur-md"
+          : "border-b border-white/10 bg-[#062840]/80 shadow-sm backdrop-blur-md"
       }`}
     >
       <div ref={containerRef} className="relative mx-auto h-16 w-full max-w-[1200px] px-6">
         <div className="flex h-full items-center justify-between gap-4">
           <SystemklarLogo
             href="/"
-            textClassName={`text-sm font-bold tracking-tight transition-colors ${
-              transparent ? "text-white" : "text-sky-600"
-            }`}
-            primaryFill={transparent ? "#ffffff" : undefined}
-            secondaryFill={transparent ? "rgba(255,255,255,0.7)" : undefined}
+            textClassName="text-sm font-bold tracking-tight text-white transition-colors"
+            primaryFill="#ffffff"
+            secondaryFill={transparent ? "rgba(255,255,255,0.7)" : "#4FA8E0"}
           />
 
           <nav className="hidden min-w-0 flex-1 items-center justify-center gap-8 md:flex" aria-label="Hovednavigation">
@@ -72,11 +73,7 @@ export function MarketingNav() {
                 href={item.href}
                 label={item.label}
                 active={pathname === item.href}
-                className={
-                  transparent
-                    ? "text-white/80 hover:text-white"
-                    : "text-[#2C4A5E] hover:text-sky-600"
-                }
+                className="text-white/70 hover:text-white"
               />
             ))}
           </nav>
@@ -84,31 +81,24 @@ export function MarketingNav() {
           <div className="hidden shrink-0 items-center gap-3 md:flex">
             <Link
               href="/login"
-              className={`rounded-full px-3 py-1.5 text-xs font-medium transition-colors ${
-                transparent
-                  ? "text-white/80 hover:text-white"
-                  : "text-[#2C4A5E] hover:bg-slate-50 hover:text-sky-600"
-              }`}
+              className="rounded-full px-3 py-1.5 text-xs font-medium text-white/70 transition-colors hover:text-white"
             >
               Log ind
             </Link>
-            <Link
-              href="/kontakt"
+            <button
+              type="button"
+              onClick={() => setShowModal(true)}
               className={`rounded-full px-4 py-1.5 text-xs font-semibold transition-colors ${
-                transparent
-                  ? "bg-white text-[#0A6EBD] hover:bg-white/90"
-                  : "bg-sky-600 text-white hover:bg-sky-700"
+                transparent ? "bg-white text-[#0A6EBD] hover:bg-white/90" : "bg-sky-500 text-white hover:bg-sky-400"
               }`}
             >
               Book demo
-            </Link>
+            </button>
           </div>
 
           <button
             type="button"
-            className={`inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-lg transition-colors md:hidden ${
-              transparent ? "text-white hover:bg-white/10" : "text-slate-700 hover:bg-slate-50"
-            }`}
+            className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-lg text-white transition-colors hover:bg-white/10 md:hidden"
             onClick={() => setOpen((v) => !v)}
             aria-label={open ? "Luk menu" : "Åbn menu"}
             aria-expanded={open}
@@ -155,16 +145,22 @@ export function MarketingNav() {
               >
                 Log ind
               </Link>
-              <Link
-                href="/kontakt"
-                className="mt-2 block rounded-full bg-sky-600 px-5 py-2.5 text-center text-sm font-semibold text-white hover:bg-sky-700"
+              <button
+                type="button"
+                onClick={() => {
+                  setOpen(false);
+                  setShowModal(true);
+                }}
+                className="mt-2 block w-full rounded-full bg-sky-500 px-5 py-2.5 text-center text-sm font-semibold text-white hover:bg-sky-400"
               >
                 Book demo
-              </Link>
+              </button>
             </div>
           </nav>
         ) : null}
       </div>
     </header>
+    <DemoModal isOpen={showModal} onClose={() => setShowModal(false)} subject="Demo" />
+    </>
   );
 }
