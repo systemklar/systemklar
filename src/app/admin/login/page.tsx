@@ -2,101 +2,42 @@
 
 import { FormEvent, Suspense, useState } from "react";
 import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
 import { AuthSplitLayout } from "@/components/auth/AuthSplitLayout";
 import { createClient } from "@/lib/supabase";
 
-function safeInternalPath(raw: string | null): string | null {
-  if (!raw || !raw.startsWith("/") || raw.startsWith("//")) return null;
-  return raw;
-}
-
-function toDanishAuthError(message: string): string {
-  const normalized = message.trim().toLowerCase();
-  if (normalized.includes("invalid login credentials")) {
-    return "Forkert e-mail eller adgangskode. Prøv igen.";
-  }
-  if (normalized.includes("email not confirmed")) {
-    return "Din e-mail er ikke bekræftet. Tjek din indbakke.";
-  }
-  return message;
-}
-
 function AdminLoginForm() {
-  const router = useRouter();
-  const searchParams = useSearchParams();
   const supabase = createClient();
 
   const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [rememberMe, setRememberMe] = useState(true);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [sent, setSent] = useState(false);
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setIsLoading(true);
     setErrorMessage(null);
+    setSent(false);
 
     const normalizedEmail = email.trim().toLowerCase();
 
-    const { error } = await (supabase.auth.signInWithPassword as unknown as (args: {
-      email: string;
-      password: string;
-      options?: { persistSession?: boolean };
-    }) => Promise<{ error: { message: string } | null }>)({
+    const { error } = await supabase.auth.signInWithOtp({
       email: normalizedEmail,
-      password,
-      options: { persistSession: rememberMe },
+      options: { redirectTo: "https://systemklar.dk/admin/dashboard" },
     });
 
     if (error) {
-      console.error("[admin/login] signInWithPassword failed", {
+      console.error("[admin/login] signInWithOtp failed", {
         email: normalizedEmail,
         error,
       });
-      setErrorMessage(toDanishAuthError(error.message));
+      setErrorMessage("Kunne ikke sende login-link. Prøv igen.");
       setIsLoading(false);
       return;
     }
 
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-
-    if (!user) {
-      await supabase.auth.signOut();
-      setErrorMessage("Kunne ikke hente bruger. Prøv igen.");
-      setIsLoading(false);
-      return;
-    }
-
-    const { data: adminRow, error: adminError } = await supabase
-      .from("admins")
-      .select("user_id")
-      .eq("user_id", user.id)
-      .maybeSingle();
-
-    if (adminError) {
-      console.error("[admin/login] admins lookup failed", adminError);
-      await supabase.auth.signOut();
-      setErrorMessage("Kunne ikke verificere admin-adgang. Prøv igen.");
-      setIsLoading(false);
-      return;
-    }
-
-    if (!adminRow) {
-      await supabase.auth.signOut();
-      setErrorMessage("Du har ikke adgang til admin-portalen.");
-      setIsLoading(false);
-      return;
-    }
-
-    const nextRaw = searchParams.get("next");
-    const next = safeInternalPath(nextRaw);
-    const dest = next && next.startsWith("/admin") ? next : "/admin/dashboard";
-    router.push(dest);
-    router.refresh();
+    setSent(true);
+    setIsLoading(false);
   };
 
   return (
@@ -124,37 +65,14 @@ function AdminLoginForm() {
             />
           </div>
 
-          <div>
-            <label htmlFor="password" className="mb-1 block text-sm font-medium">
-              Adgangskode
-            </label>
-            <input
-              id="password"
-              type="password"
-              value={password}
-              onChange={(event) => setPassword(event.target.value)}
-              required
-              className="w-full rounded-xl border border-sky-200 px-4 py-3 outline-none transition focus:ring-2 focus:ring-sky-500"
-              placeholder="••••••••"
-              autoComplete="current-password"
-            />
-          </div>
-
-          <label className="flex items-center gap-2 text-sm text-[#78716C]">
-            <input
-              type="checkbox"
-              checked={rememberMe}
-              onChange={(event) => setRememberMe(event.target.checked)}
-            />
-            Husk mig
-          </label>
-
-          <Link href="/admin/forgot-password" className="block text-sm font-semibold text-sky-600 hover:underline">
-            Glemt adgangskode?
-          </Link>
-
           {errorMessage ? (
             <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">{errorMessage}</p>
+          ) : null}
+
+          {sent ? (
+            <p className="rounded-lg bg-sky-50 px-3 py-2 text-sm text-sky-700">
+              Tjek din indbakke – vi har sendt et login-link til {email.trim().toLowerCase()}
+            </p>
           ) : null}
 
           <button
@@ -162,7 +80,7 @@ function AdminLoginForm() {
             disabled={isLoading}
             className="w-full rounded-full bg-sky-600 py-3 font-semibold text-white transition hover:bg-sky-700 disabled:opacity-60"
           >
-            {isLoading ? "Logger ind..." : "Log ind"}
+            {isLoading ? "Sender link..." : "Send login-link"}
           </button>
       </form>
 
