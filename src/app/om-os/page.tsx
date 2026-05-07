@@ -78,11 +78,11 @@ export default function OmOsPage() {
                 </div>
                 <div className="mt-6 flex flex-col gap-2">
                   <a
-                    href="mailto:kontakt@systemklar.dk"
+                    href="mailto:benjamin@systemklar.dk"
                     className="flex items-center gap-2 text-sm text-sky-600 hover:underline"
                   >
                     <Mail className="h-4 w-4" />
-                    kontakt@systemklar.dk
+                    benjamin@systemklar.dk
                   </a>
                   <a
                     href="tel:+4522631013"
@@ -148,7 +148,7 @@ export default function OmOsPage() {
                 <p className="mb-6 text-sm text-[#2C4A5E]">Vi svarer normalt inden for én hverdag.</p>
                 <div className="flex flex-col justify-center gap-3 sm:flex-row">
                   <a
-                    href="mailto:kontakt@systemklar.dk"
+                    href="mailto:benjamin@systemklar.dk"
                     className="flex items-center justify-center gap-2 rounded-full bg-sky-600 px-6 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-sky-700"
                   >
                     <Mail className="h-4 w-4" />
