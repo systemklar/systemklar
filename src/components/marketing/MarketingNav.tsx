@@ -11,6 +11,7 @@ const NAV = [
   { href: "/ai-vaerktoejer", label: "AI-værktøjer" },
   { href: "/priser", label: "Priser" },
   { href: "/kontakt", label: "Kontakt" },
+  { href: "/om-os", label: "Om os" },
 ] as const;
 
 export function MarketingNav() {

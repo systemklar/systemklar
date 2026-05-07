@@ -1,7 +1,22 @@
+import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import { CheckCircle } from "lucide-react";
 import { MarketingShell } from "@/components/marketing/MarketingShell";
 import { AnimatedSection } from "@/components/ui/AnimatedSection";
+
+export const metadata: Metadata = {
+  title: "AI-værktøjer – systemklar",
+  description:
+    "Tilbud på 2 minutter, AI-assistent og automatisk IT-rapport. Værktøjer der gør arbejdet for dig.",
+  openGraph: {
+    title: "AI-værktøjer – systemklar",
+    description: "Tilbud på 2 minutter, AI-assistent og automatisk IT-rapport.",
+    url: "https://systemklar.dk/ai-vaerktoejer",
+    siteName: "systemklar",
+    locale: "da_DK",
+    type: "website",
+  },
+};
 
 function FeatureCopy({
   label,

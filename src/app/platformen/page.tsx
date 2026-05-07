@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import {
   Activity,
@@ -25,6 +26,20 @@ import {
 } from "lucide-react";
 import { AnimatedSection } from "@/components/ui/AnimatedSection";
 import { MarketingShell } from "@/components/marketing/MarketingShell";
+
+export const metadata: Metadata = {
+  title: "Platformen – systemklar",
+  description:
+    "Se alt hvad systemklar kan gøre for din virksomhed. Overblik, support, kodebank, IT-rapport og teamadgang samlet ét sted.",
+  openGraph: {
+    title: "Platformen – systemklar",
+    description: "Alt hvad din virksomhed har brug for – samlet ét sted.",
+    url: "https://systemklar.dk/platformen",
+    siteName: "systemklar",
+    locale: "da_DK",
+    type: "website",
+  },
+};
 
 function BrowserChrome({ path }: { path: string }) {
   return (

@@ -105,15 +105,23 @@ export default function KontaktPage() {
                 </a>
               </div>
               <div className="my-6 h-px bg-sky-100" />
-              <div className="space-y-3 text-sm text-[#2C4A5E]">
-                <div className="flex items-center gap-3">
-                  <Mail className="h-4 w-4 text-sky-600" />
-                  <span>kontakt@systemklar.dk</span>
-                </div>
-                <div className="flex items-center gap-3">
+              <div className="mb-4 flex items-start gap-3">
+                <div className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-xl bg-sky-50">
                   <Phone className="h-4 w-4 text-sky-600" />
-                  <span>(udfyldes senere)</span>
                 </div>
+                <div>
+                  <p className="text-sm font-semibold text-[#0D1F2D]">Ring til os</p>
+                  <a href="tel:+4522631013" className="text-sm text-sky-600 hover:underline">
+                    +45 22 63 10 13
+                  </a>
+                  <p className="mt-0.5 text-xs text-[#4A8CB5]">Man–fre kl. 9–17</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-3 text-sm text-[#2C4A5E]">
+                <Mail className="h-4 w-4 text-sky-600" />
+                <a href="mailto:kontakt@systemklar.dk" className="text-sky-600 hover:underline">
+                  kontakt@systemklar.dk
+                </a>
               </div>
               <div className="my-6 h-px bg-sky-100" />
               <div className="flex items-start gap-3">
