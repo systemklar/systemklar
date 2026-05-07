@@ -231,6 +231,8 @@ export function MarketingHomeContent() {
   const [cvrLoading, setCvrLoading] = useState(false);
   const [cvrError, setCvrError] = useState<string | null>(null);
   const [cvrData, setCvrData] = useState<{ name: string; employees: number; industry: string } | null>(null);
+  const [heroOpacity, setHeroOpacity] = useState(1);
+  const [heroBgOpacity, setHeroBgOpacity] = useState(1);
 
   useEffect(() => {
     const fadeTimer = window.setTimeout(() => setPriceFading(true), 0);
@@ -240,6 +242,20 @@ export function MarketingHomeContent() {
       window.clearTimeout(restoreTimer);
     };
   }, [yearly]);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollY = window.scrollY;
+      const contentOpacity = Math.max(0, 1 - scrollY / 300);
+      const bgOpacity = Math.max(0, 1 - (scrollY - 200) / 400);
+      setHeroOpacity(contentOpacity);
+      setHeroBgOpacity(bgOpacity);
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    handleScroll();
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   useEffect(() => {
     return () => {
@@ -451,16 +467,25 @@ export function MarketingHomeContent() {
         .dot-drift { animation: drift 8s ease-in-out infinite; }
       `}</style>
 
-      <section className="relative overflow-hidden border-t border-black/5 bg-gradient-to-br from-[#0A6EBD] to-[#062840] py-32">
+      <section className="sticky top-0 z-0 flex min-h-screen items-center justify-center overflow-hidden border-t border-black/5 py-0">
         <div
-          className="dot-drift absolute inset-0 opacity-10"
+          className="absolute inset-0 bg-gradient-to-br from-[#0A6EBD] to-[#062840]"
+          style={{ opacity: heroBgOpacity }}
+          aria-hidden
+        />
+        <div
+          className="dot-drift absolute inset-0"
           style={{
             backgroundImage: "radial-gradient(circle, white 1px, transparent 1px)",
             backgroundSize: "32px 32px",
+            opacity: heroBgOpacity * 0.1,
           }}
           aria-hidden
         />
-        <div className="relative mx-auto max-w-2xl px-6 text-center">
+        <div
+          className="relative z-10 mx-auto max-w-4xl px-6 text-center"
+          style={{ opacity: heroOpacity, transform: `translateY(${(1 - heroOpacity) * -30}px)` }}
+        >
           <p
             className="fade-in-up inline-flex items-center gap-2 rounded-full border border-white/30 bg-white/20 px-4 py-1.5 text-xs font-semibold uppercase tracking-wide text-white"
             style={{ animationDelay: "40ms" }}
@@ -469,14 +494,14 @@ export function MarketingHomeContent() {
             Bygget til danske SMV&apos;er – uden IT-afdeling
           </p>
           <AnimatedSection direction="up" delay={0}>
-            <h1 className="mb-3 mt-6 text-5xl font-extrabold tracking-tight text-white">
+            <h1 className="mb-3 mt-6 text-6xl font-extrabold tracking-tight text-white md:text-7xl">
               Få styr på IT.
               <br />
               Brug tiden på din forretning.
             </h1>
           </AnimatedSection>
           <AnimatedSection direction="up" delay={100}>
-            <p className="mx-auto mb-6 max-w-lg text-base text-white/80">
+            <p className="mx-auto mb-6 max-w-2xl text-lg text-white/80 md:text-xl">
               systemklar samler support, systemoverblik og IT-dokumentation ét sted – så du aldrig igen skal jagte
               adgangskoder eller vente på IT-hjælp.
             </p>
@@ -485,19 +510,19 @@ export function MarketingHomeContent() {
             <div className="inline-flex flex-wrap items-center justify-center gap-3">
               <button
                 onClick={() => document.getElementById("roi-beregner")?.scrollIntoView({ behavior: "smooth" })}
-                className="rounded-full bg-white px-7 py-2.5 text-sm font-semibold text-[#0A6EBD] transition-all hover:bg-white/90"
+                className="rounded-full bg-white px-8 py-4 text-base font-semibold text-[#0A6EBD] transition-all hover:bg-white/90"
               >
                 Se hvad IT-rod koster jer
               </button>
               <a
                 href="/kontakt"
-                className="rounded-full border border-white/40 px-7 py-2.5 text-sm font-semibold text-white transition-all hover:bg-white/10"
+                className="rounded-full border border-white/40 px-8 py-4 text-base font-semibold text-white transition-all hover:bg-white/10"
               >
                 Book en gratis snak
               </a>
             </div>
           </AnimatedSection>
-          <div className="mt-6 flex flex-wrap items-center justify-center gap-4 text-xs text-white/60">
+          <div className="mt-8 flex flex-wrap items-center justify-center gap-6 text-sm text-white/60">
             {["Ingen binding", "Opsig når som helst", "Svar inden for 1 hverdag", "Dansk support"].map((t) => (
               <span key={t} className="flex items-center gap-1.5">
                 <svg className="h-3 w-3 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20" aria-hidden>
@@ -514,12 +539,12 @@ export function MarketingHomeContent() {
         </div>
       </section>
 
-      <section className="border-t border-black/5 bg-[#F0F7FF] py-24">
-        <div className="mx-auto max-w-xl px-6 text-center">
+      <section className="relative z-10 border-t border-black/5 bg-[#F0F7FF] py-24">
+        <div className="mx-auto max-w-2xl px-6 text-center">
           <h2 className="mb-3 text-3xl font-bold tracking-tight text-[#0D1F2D]">
             Alt på ét sted – præcis som det er
           </h2>
-          <p className="mb-6 text-lg text-[#2C4A5E]">
+          <p className="mx-auto mb-6 max-w-2xl text-lg text-[#2C4A5E]">
             Se hvordan platformen ser ud i praksis – med et overblik du kan forstå med det samme.
           </p>
         </div>
@@ -633,17 +658,17 @@ export function MarketingHomeContent() {
         </div>
       </section>
 
-      <section id="roi-beregner" className="border-t border-black/5 bg-white py-24">
-        <div className="mx-auto max-w-xl px-6 text-center">
+      <section id="roi-beregner" className="relative z-10 border-t border-black/5 bg-white py-24">
+        <div className="mx-auto max-w-2xl px-6 text-center">
           <p className="mb-2 text-xs font-semibold uppercase tracking-widest text-sky-600">Prøv det selv</p>
           <h2 className="mb-3 text-3xl font-bold text-[#0D1F2D]">Hvad koster IT-rod din virksomhed?</h2>
-          <p className="mb-6 text-lg text-[#2C4A5E]">
+          <p className="mx-auto mb-6 max-w-2xl text-lg text-[#2C4A5E]">
             Besvar 5 spørgsmål og få et præcist svar på hvad I taber – og hvad I kan spare.
           </p>
         </div>
         <div className="mx-auto max-w-3xl px-6">
           <div className="rounded-2xl bg-gradient-to-br from-sky-400 to-[#062840] p-[1px]">
-            <div className="rounded-[15px] bg-white p-6">
+            <div className="rounded-[15px] bg-white p-8">
               <div className="mb-4 flex justify-center gap-1.5">
                 {[0, 1, 2, 3, 4, 5].map((stepIndex) => (
                   <div
@@ -987,12 +1012,12 @@ export function MarketingHomeContent() {
         </div>
       </section>
 
-      <section className="border-t border-black/5 bg-[#062840] py-24">
-        <div className="mx-auto max-w-xl px-6 text-center">
+      <section className="relative z-10 border-t border-black/5 bg-[#062840] py-24">
+        <div className="mx-auto max-w-2xl px-6 text-center">
           <p className="mb-6 text-xs font-semibold uppercase tracking-widest text-sky-300">Hvad kunderne siger</p>
         </div>
-        <div className="mx-auto grid max-w-5xl grid-cols-1 gap-6 px-6 md:grid-cols-3">
-          <div className="flex flex-col justify-between rounded-2xl border border-white/10 bg-white/5 p-6 text-white md:col-span-2">
+        <div className="mx-auto grid max-w-5xl grid-cols-1 gap-8 px-6 md:grid-cols-3">
+          <div className="flex flex-col justify-between rounded-2xl border border-white/10 bg-white/5 p-8 text-white md:col-span-2">
             <div className="mb-4 flex gap-1">
               {[...Array(5)].map((_, i) => (
                 <svg key={i} className="h-4 w-4 text-amber-400" fill="currentColor" viewBox="0 0 20 20" aria-hidden>
@@ -1011,11 +1036,11 @@ export function MarketingHomeContent() {
               </div>
             </div>
           </div>
-          <div className="flex flex-col gap-6">
+          <div className="flex flex-col gap-8">
             {sideTestimonials.map((t) => (
               <div
                 key={t.name}
-                className="flex flex-1 flex-col justify-between rounded-2xl border border-white/10 bg-white/10 p-6"
+                className="flex flex-1 flex-col justify-between rounded-2xl border border-white/10 bg-white/10 p-8"
               >
                 <div className="mb-2 flex gap-0.5">
                   {[...Array(5)].map((_, s) => (
@@ -1046,10 +1071,10 @@ export function MarketingHomeContent() {
         </div>
       </section>
 
-      <section className="border-t border-black/5 bg-[#F0F7FF] py-24">
-        <div className="mx-auto max-w-xl px-6 text-center">
+      <section className="relative z-10 border-t border-black/5 bg-[#F0F7FF] py-24">
+        <div className="mx-auto max-w-2xl px-6 text-center">
           <h2 className="mb-3 text-3xl font-bold tracking-tight text-[#0D1F2D]">Priser</h2>
-          <p className="mb-6 text-lg text-[#2C4A5E]">
+          <p className="mx-auto mb-6 max-w-2xl text-lg text-[#2C4A5E]">
             Vælg den plan der passer til jer i dag, og skift når behovet ændrer sig.
           </p>
         </div>
@@ -1078,7 +1103,7 @@ export function MarketingHomeContent() {
               Spar 2 måneder
             </span>
           </div>
-          <div className="grid gap-6 md:grid-cols-3">
+          <div className="grid gap-8 md:grid-cols-3">
             {homePlans.map((priceCard, index) => (
               <AnimatedSection
                 key={priceCard.name}
@@ -1093,7 +1118,7 @@ export function MarketingHomeContent() {
                     />
                   ) : null}
                   <article
-                    className={`relative flex h-full flex-col rounded-2xl bg-white p-6 ${
+                    className={`relative flex h-full flex-col rounded-2xl bg-white p-8 ${
                       priceCard.highlight
                         ? "border-2 border-sky-600 shadow-md"
                         : "border border-sky-200 shadow-sm"
@@ -1109,10 +1134,10 @@ export function MarketingHomeContent() {
                     </p>
                     {yearly ? <p className="mt-0.5 text-[10px] text-[#4A8CB5]">faktureres årligt</p> : null}
                     <p className="mt-2 text-[10px] text-[#4A8CB5]">{priceCard.fits}</p>
-                    <ul className="mt-4 flex-1 space-y-1.5 text-xs text-[#2C4A5E]">
+                    <ul className="mt-4 flex-1 space-y-3 text-base text-[#2C4A5E]">
                       {priceCard.features.map((feature) => (
-                        <li key={feature} className="flex items-start gap-1.5">
-                          <CheckCircle className="mt-0.5 h-3 w-3 shrink-0 text-sky-600" />
+                        <li key={feature} className="flex items-start gap-2">
+                          <CheckCircle className="mt-1 h-4 w-4 shrink-0 text-sky-600" />
                           <span>{feature}</span>
                         </li>
                       ))}
@@ -1145,11 +1170,11 @@ export function MarketingHomeContent() {
 
       <section
         id="cta"
-        className="border-t border-black/5 bg-[#062840] py-24"
+        className="relative z-10 border-t border-black/5 bg-[#062840] py-24"
       >
-        <div className="mx-auto max-w-xl px-6 text-center">
+        <div className="mx-auto max-w-2xl px-6 text-center">
           <h2 className="mb-3 text-3xl font-bold tracking-tight text-white">Klar til at få IT ud af vejen?</h2>
-          <p className="mb-6 text-lg text-white/80">
+          <p className="mx-auto mb-6 max-w-2xl text-lg text-white/80">
             Book en gratis snak på 30 minutter. Vi gennemgår platformen og sætter det op til jer – samme dag.
           </p>
           <div className="flex justify-center">
