@@ -1,8 +1,7 @@
 import { createServerClient, type CookieOptions } from "@supabase/ssr";
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
-
-const ADMIN_EMAIL = "kontakt@systemklar.dk";
+import { createServiceRoleClient } from "@/lib/supabase-service-role";
 
 export async function middleware(request: NextRequest) {
   let response = NextResponse.next({
@@ -53,14 +52,34 @@ export async function middleware(request: NextRequest) {
   /** Alle stier under /portal (fx /portal/tilbudsgenerator) kræver login. */
   const isPortalArea = pathname.startsWith("/portal");
 
-  const isAdmin = (user?.email ?? "").trim().toLowerCase() === ADMIN_EMAIL;
-
   if (isAdminArea) {
     if (!user) {
       const login = new URL("/admin/login", request.url);
       login.searchParams.set("next", pathname + request.nextUrl.search);
       return NextResponse.redirect(login);
     }
+
+    /** Tjek om user.id findes i admins-tabellen. Service-role omgår RLS så
+     *  middleware ikke bliver afhængig af specifikke policies. */
+    let isAdmin = false;
+    const serviceClient = createServiceRoleClient();
+    if (serviceClient) {
+      const { data: adminRow } = await serviceClient
+        .from("admins")
+        .select("user_id")
+        .eq("user_id", user.id)
+        .maybeSingle();
+      isAdmin = Boolean(adminRow);
+    } else {
+      /** Fallback: user-context klient (kræver RLS-policy der lader bruger se egen række). */
+      const { data: adminRow } = await supabase
+        .from("admins")
+        .select("user_id")
+        .eq("user_id", user.id)
+        .maybeSingle();
+      isAdmin = Boolean(adminRow);
+    }
+
     if (!isAdmin) {
       const url = request.nextUrl.clone();
       url.pathname = "/admin/login";
