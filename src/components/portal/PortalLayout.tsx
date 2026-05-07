@@ -238,11 +238,11 @@ export function PortalLayout({ children, activeNav }: PortalLayoutProps) {
           ) : null}
 
           <aside
-            className={`fixed inset-y-0 left-0 z-30 flex h-screen w-64 shrink-0 flex-col border-r border-sky-100 bg-white p-4 transition-transform duration-300 md:static md:h-auto md:translate-x-0 ${
+            className={`fixed inset-y-0 left-0 z-30 flex h-full w-56 flex-shrink-0 flex-col border-r border-sky-100 bg-white transition-transform duration-300 md:static md:translate-x-0 ${
               sidebarOpen ? "translate-x-0" : "-translate-x-full"
             }`}
           >
-            <div className="mb-4 flex items-center justify-between border-b border-sky-50 pb-4">
+            <div className="flex flex-shrink-0 items-center justify-between border-b border-sky-50 p-4">
               <Link href="/portal" className="block">
                 <SystemklarLogo textClassName="text-sm font-bold tracking-tight text-sky-600" />
                 <p className="mt-0.5 text-xs font-medium text-[#4A8CB5]">Kundeportal</p>
@@ -257,7 +257,7 @@ export function PortalLayout({ children, activeNav }: PortalLayoutProps) {
               </button>
             </div>
 
-            <nav className="overflow-y-auto px-3 py-2">
+            <nav className="flex-1 overflow-y-auto p-3">
               {navGroups.map((group) => {
                 const items = visibleNavItems.filter((item) => group.keys.includes(item.key));
                 if (items.length === 0) return null;
@@ -288,7 +288,7 @@ export function PortalLayout({ children, activeNav }: PortalLayoutProps) {
               })}
             </nav>
 
-            <div className="mt-auto border-t border-sky-50 pt-3">
+            <div className="flex-shrink-0 border-t border-sky-50 p-3">
               <button
                 type="button"
                 onClick={handleLogout}
@@ -300,8 +300,8 @@ export function PortalLayout({ children, activeNav }: PortalLayoutProps) {
             </div>
           </aside>
 
-          <section className="flex-1 overflow-y-auto bg-[#F5FAFD]">
-            <div className="sticky top-0 z-10 flex items-center justify-between border-b border-sky-100 bg-white px-4 py-3 md:hidden">
+          <section className="flex min-w-0 flex-1 flex-col overflow-y-auto bg-[#F5FAFD]">
+            <div className="sticky top-0 z-10 flex flex-shrink-0 items-center justify-between border-b border-sky-100 bg-white px-4 py-3 md:hidden">
               <button
                 type="button"
                 onClick={() => setSidebarOpen(true)}
@@ -314,7 +314,7 @@ export function PortalLayout({ children, activeNav }: PortalLayoutProps) {
               <span className="w-9" aria-hidden />
             </div>
 
-            <div className="app-rhythm p-4 md:p-8">{children}</div>
+            <div className="app-rhythm min-w-0 flex-1 p-4 md:p-8">{children}</div>
           </section>
         </div>
       </main>

@@ -53,7 +53,9 @@ function DashboardContent() {
     { id: string; title: string; status: string; created_at: string }[]
   >([]);
   const [systemsLoading, setSystemsLoading] = useState(true);
-  const [companyName, setCompanyName] = useState<string | null>(null);
+  const [profileFullName, setProfileFullName] = useState<string | null>(null);
+  const [profileCompanyName, setProfileCompanyName] = useState<string | null>(null);
+  const [profileEmail, setProfileEmail] = useState<string | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -65,10 +67,14 @@ function DashboardContent() {
       const user = authSession?.user;
       if (!user) return;
       const profile = await fetchCurrentProfile(supabase, user.id);
+      if (!cancelled) {
+        setProfileFullName(profile?.full_name ?? null);
+        setProfileCompanyName(profile?.company_name ?? null);
+        setProfileEmail(profile?.email ?? user.email ?? null);
+      }
       if (!profile?.organisation_id) {
         setSystems([]);
         setRecentTickets([]);
-        setCompanyName(null);
         setSystemsLoading(false);
         return;
       }
@@ -96,11 +102,11 @@ function DashboardContent() {
       setRecentTickets(
         ((ticketsRes.data ?? []) as { id: string; title: string; status: string; created_at: string }[]) ?? [],
       );
-      setCompanyName(
-        companyRes.data?.name && companyRes.data.name.trim()
-          ? companyRes.data.name.trim()
-          : null,
-      );
+      const orgName =
+        companyRes.data?.name && companyRes.data.name.trim() ? companyRes.data.name.trim() : null;
+      if (orgName && !profile.company_name) {
+        setProfileCompanyName(orgName);
+      }
       setSystemsLoading(false);
     };
     void run();
@@ -111,7 +117,12 @@ function DashboardContent() {
 
   const hasDown = systems.some((s) => s.status === "nede");
   const today = new Intl.DateTimeFormat("da-DK", { dateStyle: "full" }).format(new Date());
-  const greetingName = companyName ?? session?.email ?? "der";
+  const emailFallback = profileEmail ?? session?.email ?? null;
+  const displayName =
+    profileFullName?.trim() ||
+    profileCompanyName?.trim() ||
+    emailFallback?.split("@")[0] ||
+    "der";
 
   const statCards = [
     { value: systems.length, label: "Systemer", icon: Monitor },
@@ -123,7 +134,7 @@ function DashboardContent() {
     <div className="space-y-6">
       <AnimatedSection direction="up" delay={0} className="border-b border-sky-100 pb-6">
         <p className="mb-1 text-xs text-[#4A8CB5]">{today}</p>
-        <h1 className="mt-2 text-2xl font-bold tracking-tight text-[#0D1F2D]">Goddag, {greetingName}</h1>
+        <h1 className="mt-2 text-2xl font-bold tracking-tight text-[#0D1F2D]">Goddag, {displayName}</h1>
         <p className="mt-2 text-sm text-[#4A8CB5]">Her er dagens overblik over systemstatus, handlinger og seneste sager.</p>
       </AnimatedSection>
 
