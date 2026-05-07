@@ -221,12 +221,16 @@ export function MarketingHomeContent() {
   const [changing, setChanging] = useState(false);
 
   const stepDelayRef = useRef<number | null>(null);
-  const [calculatorStep, setCalculatorStep] = useState(1);
+  const [calculatorStep, setCalculatorStep] = useState(0);
   const [selectedEmployees, setSelectedEmployees] = useState<(typeof employeeOptions)[number]["id"] | null>(null);
   const [selectedIndustry, setSelectedIndustry] = useState<(typeof industryOptions)[number]["id"] | null>(null);
   const [selectedSetup, setSelectedSetup] = useState<(typeof setupOptions)[number]["id"] | null>(null);
   const [selectedFrequency, setSelectedFrequency] = useState<(typeof frequencyOptions)[number]["id"] | null>(null);
   const [selectedWaste, setSelectedWaste] = useState<Array<(typeof wasteOptions)[number]["id"]>>([]);
+  const [cvrInput, setCvrInput] = useState("");
+  const [cvrLoading, setCvrLoading] = useState(false);
+  const [cvrError, setCvrError] = useState<string | null>(null);
+  const [cvrData, setCvrData] = useState<{ name: string; employees: number; industry: string } | null>(null);
 
   useEffect(() => {
     const fadeTimer = window.setTimeout(() => setPriceFading(true), 0);
@@ -319,7 +323,82 @@ export function MarketingHomeContent() {
     setSelectedSetup(null);
     setSelectedFrequency(null);
     setSelectedWaste([]);
-    setCalculatorStep(1);
+    setCvrInput("");
+    setCvrError(null);
+    setCvrData(null);
+    setCalculatorStep(0);
+  };
+
+  type EmployeeId = (typeof employeeOptions)[number]["id"];
+  type IndustryId = (typeof industryOptions)[number]["id"];
+
+  const handleCvrLookup = async () => {
+    if (cvrInput.trim().length < 2) return;
+    setCvrLoading(true);
+    setCvrError(null);
+    try {
+      const res = await fetch(
+        `https://cvrapi.dk/api?search=${encodeURIComponent(cvrInput.trim())}&country=dk`,
+        { headers: { "User-Agent": "systemklar.dk ROI-beregner" } },
+      );
+      if (!res.ok) throw new Error("Ikke fundet");
+      const data = (await res.json()) as {
+        name?: string;
+        employees?: number;
+        industrycode?: string | number;
+        industrydesc?: string;
+        error?: string | boolean;
+      };
+      if (data.error) throw new Error("Virksomhed ikke fundet");
+
+      const employees = data.employees ?? 1;
+      const industryCode = data.industrycode ?? "";
+      const industryDesc = data.industrydesc ?? "";
+
+      setCvrData({
+        name: data.name ?? cvrInput,
+        employees,
+        industry: industryDesc,
+      });
+
+      let employeeCategory: EmployeeId = "1-5";
+      if (employees >= 30) employeeCategory = "30+";
+      else if (employees >= 16) employeeCategory = "16-30";
+      else if (employees >= 6) employeeCategory = "6-15";
+      setSelectedEmployees(employeeCategory);
+
+      const code = String(industryCode);
+      let mappedIndustry: IndustryId = "andet";
+      if (code.startsWith("41") || code.startsWith("42") || code.startsWith("43")) mappedIndustry = "haandvaerk";
+      else if (code.startsWith("45") || code.startsWith("46") || code.startsWith("47")) mappedIndustry = "handel";
+      else if (
+        code.startsWith("49") ||
+        code.startsWith("50") ||
+        code.startsWith("51") ||
+        code.startsWith("52") ||
+        code.startsWith("53")
+      )
+        mappedIndustry = "transport";
+      else if (code.startsWith("86") || code.startsWith("87") || code.startsWith("88")) mappedIndustry = "sundhed";
+      else if (
+        code.startsWith("69") ||
+        code.startsWith("70") ||
+        code.startsWith("71") ||
+        code.startsWith("72") ||
+        code.startsWith("73") ||
+        code.startsWith("74") ||
+        code.startsWith("75")
+      )
+        mappedIndustry = "kontor";
+      setSelectedIndustry(mappedIndustry);
+
+      if (stepDelayRef.current) window.clearTimeout(stepDelayRef.current);
+      stepDelayRef.current = window.setTimeout(() => setCalculatorStep(1), 800);
+    } catch {
+      setCvrError("Vi kunne ikke finde virksomheden. Tjek CVR-nummer eller navn og prøv igen.");
+    } finally {
+      setCvrLoading(false);
+    }
   };
 
   const contextLine =
@@ -352,7 +431,7 @@ export function MarketingHomeContent() {
             : "";
 
   const stepCardClass = (active: boolean) =>
-    `flex flex-col items-start gap-1.5 rounded-xl border p-3 text-left text-xs transition-all ${
+    `relative flex flex-col items-start gap-1.5 rounded-xl border p-3 text-left text-xs transition-all ${
       active
         ? "border-sky-600 bg-sky-600 text-white shadow-sm"
         : "cursor-pointer border-sky-100 bg-white text-[#0D1F2D] hover:border-sky-400 hover:shadow-sm"
@@ -566,19 +645,80 @@ export function MarketingHomeContent() {
           <div className="rounded-2xl bg-gradient-to-br from-sky-400 to-[#062840] p-[1px]">
             <div className="rounded-[15px] bg-white p-6">
               <div className="mb-4 flex justify-center gap-1.5">
-                {[1, 2, 3, 4, 5].map((stepNumber) => (
+                {[0, 1, 2, 3, 4, 5].map((stepIndex) => (
                   <div
-                    key={stepNumber}
+                    key={stepIndex}
                     className={`flex h-6 w-6 items-center justify-center rounded-full text-xs font-semibold ${
-                      indicatorStep === stepNumber ? "bg-sky-600 text-white" : "bg-sky-100 text-sky-400"
+                      indicatorStep === stepIndex ? "bg-sky-600 text-white" : "bg-sky-100 text-sky-400"
                     }`}
                   >
-                    {stepNumber}
+                    {stepIndex + 1}
                   </div>
                 ))}
               </div>
 
               <div className="relative min-h-[420px]">
+                <div
+                  className={`transition-all duration-[400ms] ${
+                    calculatorStep === 0
+                      ? "translate-y-0 opacity-100"
+                      : "pointer-events-none absolute inset-0 translate-y-4 opacity-0"
+                  }`}
+                >
+                  <h3 className="mb-1 text-base font-semibold text-[#0D1F2D]">Hvad hedder din virksomhed?</h3>
+                  <p className="mb-3 text-xs text-[#4A8CB5]">
+                    Indtast CVR-nummer eller virksomhedsnavn – vi finder resten automatisk.
+                  </p>
+                  <input
+                    type="text"
+                    value={cvrInput}
+                    onChange={(e) => {
+                      setCvrInput(e.target.value);
+                      setCvrError(null);
+                    }}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") handleCvrLookup();
+                    }}
+                    placeholder="CVR-nummer eller virksomhedsnavn..."
+                    className="w-full rounded-xl border border-sky-200 px-4 py-3 text-sm outline-none focus:border-transparent focus:ring-2 focus:ring-sky-500"
+                  />
+                  <button
+                    onClick={handleCvrLookup}
+                    disabled={cvrLoading || cvrInput.trim().length < 2}
+                    className="mt-3 w-full rounded-full bg-sky-600 py-3 text-sm font-semibold text-white transition-all hover:bg-sky-700 disabled:opacity-50"
+                  >
+                    {cvrLoading ? "Søger..." : "Find virksomhed →"}
+                  </button>
+                  {cvrError ? <p className="mt-2 text-xs text-red-500">{cvrError}</p> : null}
+                  {cvrData ? (
+                    <div className="mt-3 flex items-center gap-3 rounded-xl border border-sky-200 bg-sky-50 p-4">
+                      <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-sky-600">
+                        <svg
+                          className="h-4 w-4 text-white"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                          aria-hidden
+                        >
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                        </svg>
+                      </div>
+                      <div>
+                        <p className="text-sm font-semibold text-[#0D1F2D]">{cvrData.name}</p>
+                        <p className="text-xs text-[#4A8CB5]">
+                          {cvrData.employees} ansatte · {cvrData.industry}
+                        </p>
+                      </div>
+                    </div>
+                  ) : null}
+                  <button
+                    onClick={() => setCalculatorStep(1)}
+                    className="mx-auto mt-4 block text-xs text-[#4A8CB5] transition-colors hover:text-sky-600"
+                  >
+                    Spring over og udfyld manuelt →
+                  </button>
+                </div>
+
                 <div
                   className={`transition-all duration-[400ms] ${
                     calculatorStep === 1
@@ -588,16 +728,24 @@ export function MarketingHomeContent() {
                 >
                   <h3 className="mb-3 text-base font-semibold text-[#0D1F2D]">Hvor mange ansatte har I?</h3>
                   <div className="grid grid-cols-2 gap-2">
-                    {employeeOptions.map((option) => (
-                      <button
-                        key={option.id}
-                        onClick={() => handleEmployeeSelect(option.id)}
-                        className={stepCardClass(selectedEmployees === option.id)}
-                      >
-                        <Users className="h-4 w-4" />
-                        <p className="text-xs font-medium">{option.label}</p>
-                      </button>
-                    ))}
+                    {employeeOptions.map((option) => {
+                      const active = selectedEmployees === option.id;
+                      return (
+                        <button
+                          key={option.id}
+                          onClick={() => handleEmployeeSelect(option.id)}
+                          className={stepCardClass(active)}
+                        >
+                          {active && cvrData ? (
+                            <span className="absolute -top-2 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full bg-green-500 px-2 py-0.5 text-[9px] font-semibold text-white">
+                              Fra CVR
+                            </span>
+                          ) : null}
+                          <Users className="h-4 w-4" />
+                          <p className="text-xs font-medium">{option.label}</p>
+                        </button>
+                      );
+                    })}
                   </div>
                 </div>
 
@@ -612,12 +760,18 @@ export function MarketingHomeContent() {
                   <div className="grid grid-cols-2 gap-2">
                     {industryOptions.map((option) => {
                       const Icon = option.icon;
+                      const active = selectedIndustry === option.id;
                       return (
                         <button
                           key={option.id}
                           onClick={() => handleIndustrySelect(option.id)}
-                          className={stepCardClass(selectedIndustry === option.id)}
+                          className={stepCardClass(active)}
                         >
+                          {active && cvrData ? (
+                            <span className="absolute -top-2 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full bg-green-500 px-2 py-0.5 text-[9px] font-semibold text-white">
+                              Fra CVR
+                            </span>
+                          ) : null}
                           <Icon className="h-4 w-4" />
                           <p className="text-xs font-medium">{option.title}</p>
                         </button>
@@ -731,6 +885,11 @@ export function MarketingHomeContent() {
                   }`}
                 >
                   <AnimatedSection direction="up">
+                    {cvrData ? (
+                      <p className="mb-4 text-center text-xs text-[#4A8CB5]">
+                        Beregning for <span className="font-semibold text-[#0D1F2D]">{cvrData.name}</span>
+                      </p>
+                    ) : null}
                     <div className="flex items-center justify-center gap-2">
                       <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-green-100">
                         <CheckCircle className="h-4 w-4 text-green-600" />
