@@ -1,10 +1,5 @@
-import { BookDemoPageContent } from "@/components/marketing/BookDemoPageContent";
-import { MarketingShell } from "@/components/marketing/MarketingShell";
+import { redirect } from "next/navigation";
 
 export default function BookDemoPage() {
-  return (
-    <MarketingShell>
-      <BookDemoPageContent />
-    </MarketingShell>
-  );
+  redirect("/kontakt");
 }

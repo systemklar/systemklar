@@ -436,11 +436,11 @@ export function MarketingHomeContent() {
             ? "Godt – men der er stadig tid at spare på bedre IT-overblik."
             : "";
 
-  const stepCardClass = (active: boolean) =>
-    `relative flex flex-col items-start gap-1.5 rounded-xl border p-3 text-left text-xs transition-all ${
+  const stepCardClass = (active: boolean, pulse = true) =>
+    `relative flex flex-col items-start rounded-2xl p-4 text-left transition-all duration-200 ${
       active
-        ? "border-sky-600 bg-sky-600 text-white shadow-sm"
-        : "cursor-pointer border-sky-100 bg-white text-[#0D1F2D] hover:border-sky-400 hover:shadow-sm"
+        ? `border border-sky-400/50 bg-sky-500/20 ring-1 ring-sky-400/30${pulse ? " animate-pulse" : ""}`
+        : "cursor-pointer border border-white/10 bg-white/5 hover:border-white/20 hover:bg-white/10"
     }`;
 
   return (
@@ -639,27 +639,35 @@ export function MarketingHomeContent() {
         </div>
       </section>
 
-      <section id="roi-beregner" className="relative z-10 border-t border-black/5 bg-white py-24">
-        <div className="mx-auto max-w-2xl px-6 text-center">
-          <p className="mb-2 text-xs font-semibold uppercase tracking-widest text-sky-600">Prøv det selv</p>
-          <h2 className="mb-3 text-3xl font-bold text-[#0D1F2D]">Hvad koster IT-rod din virksomhed?</h2>
-          <p className="mx-auto mb-6 max-w-2xl text-lg text-[#2C4A5E]">
-            Besvar 6 spørgsmål og få et præcist svar på hvad I taber – og hvad I kan spare.
+      <section id="roi-beregner" className="relative z-10 bg-[#062840] py-24">
+        <div className="mb-12 px-6 text-center">
+          <span className="inline-flex items-center rounded-full border border-sky-400/30 bg-sky-500/20 px-4 py-1.5 text-xs font-semibold uppercase tracking-wide text-sky-300">
+            Gratis beregner
+          </span>
+          <h2 className="mb-3 mt-4 text-3xl font-extrabold text-white md:text-4xl">
+            Hvad koster IT-rod
+            <br />
+            din virksomhed?
+          </h2>
+          <p className="mx-auto max-w-lg text-base text-white/60">
+            Indtast jeres CVR-nummer. Vi finder virksomheden og beregner hvad I taber på IT-rod hver måned.
           </p>
         </div>
-        <div className="mx-auto max-w-3xl px-6">
-          <div className="rounded-2xl bg-gradient-to-br from-sky-400 to-[#062840] p-[1px]">
-            <div className="rounded-[15px] bg-white p-8">
-              <div className="mb-4 flex justify-center gap-1.5">
-                {[0, 1, 2, 3, 4, 5].map((stepIndex) => (
+        <div className="mx-auto max-w-2xl px-6">
+          <div className="rounded-3xl bg-gradient-to-br from-sky-500/20 to-[#0A3D5C]/40 p-[1px]">
+            <div className="rounded-[23px] bg-[#0A2535] p-8">
+              <div className="mb-8 flex items-center justify-center gap-2">
+                {[0, 1, 2, 3, 4, 5].map((i) => (
                   <div
-                    key={stepIndex}
-                    className={`flex h-6 w-6 items-center justify-center rounded-full text-xs font-semibold ${
-                      indicatorStep === stepIndex ? "bg-sky-600 text-white" : "bg-sky-100 text-sky-400"
+                    key={i}
+                    className={`rounded-full transition-all duration-300 ${
+                      i === calculatorStep
+                        ? "h-2 w-6 bg-sky-400"
+                        : i < calculatorStep
+                          ? "h-2 w-2 bg-sky-600"
+                          : "h-2 w-2 bg-white/20"
                     }`}
-                  >
-                    {stepIndex + 1}
-                  </div>
+                  />
                 ))}
               </div>
 
@@ -671,8 +679,8 @@ export function MarketingHomeContent() {
                       : "pointer-events-none absolute inset-0 translate-y-4 opacity-0"
                   }`}
                 >
-                  <h3 className="mb-1 text-base font-semibold text-[#0D1F2D]">Hvad hedder din virksomhed?</h3>
-                  <p className="mb-3 text-xs text-[#4A8CB5]">
+                  <h3 className="mb-1 text-lg font-semibold text-white">Hvad hedder din virksomhed?</h3>
+                  <p className="mb-5 text-sm text-white/50">
                     Indtast CVR-nummer eller virksomhedsnavn – vi finder resten automatisk.
                   </p>
                   <input
@@ -686,32 +694,41 @@ export function MarketingHomeContent() {
                       if (e.key === "Enter") handleCvrLookup();
                     }}
                     placeholder="CVR-nummer eller virksomhedsnavn..."
-                    className="w-full rounded-xl border border-sky-200 px-4 py-3 text-sm outline-none focus:border-transparent focus:ring-2 focus:ring-sky-500"
+                    className="w-full rounded-2xl border border-white/10 bg-white/5 px-5 py-4 text-sm text-white outline-none placeholder:text-white/30 focus:border-sky-400/50"
                   />
                   <button
                     onClick={handleCvrLookup}
                     disabled={cvrLoading || cvrInput.trim().length < 2}
-                    className="mt-3 w-full rounded-full bg-sky-600 py-3 text-sm font-semibold text-white transition-all hover:bg-sky-700 disabled:opacity-50"
+                    className="mt-3 w-full rounded-2xl bg-sky-500 px-6 py-4 text-sm font-semibold text-white transition-all duration-200 hover:bg-sky-400 disabled:cursor-not-allowed disabled:opacity-40"
                   >
-                    {cvrLoading ? "Søger..." : "Find virksomhed →"}
-                  </button>
-                  {cvrError ? <p className="mt-2 text-xs text-red-500">{cvrError}</p> : null}
-                  {cvrData ? (
-                    <div className="mt-3 flex items-center gap-3 rounded-xl border border-sky-200 bg-sky-50 p-4">
-                      <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-sky-600">
-                        <svg
-                          className="h-4 w-4 text-white"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                          aria-hidden
-                        >
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    {cvrLoading ? (
+                      <span className="flex items-center justify-center gap-2">
+                        <svg className="h-4 w-4 animate-spin" fill="none" viewBox="0 0 24 24" aria-hidden>
+                          <circle
+                            className="opacity-25"
+                            cx="12"
+                            cy="12"
+                            r="10"
+                            stroke="currentColor"
+                            strokeWidth="4"
+                          />
+                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
                         </svg>
+                        Søger...
+                      </span>
+                    ) : (
+                      "Find virksomhed →"
+                    )}
+                  </button>
+                  {cvrError ? <p className="mt-2 text-xs text-red-400">{cvrError}</p> : null}
+                  {cvrData ? (
+                    <div className="mt-3 flex items-center gap-3 rounded-2xl border border-sky-400/20 bg-sky-500/10 px-5 py-4">
+                      <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full border border-green-400/30 bg-green-500/20">
+                        <CheckCircle className="h-4 w-4 text-green-400" />
                       </div>
                       <div>
-                        <p className="text-sm font-semibold text-[#0D1F2D]">{cvrData.name}</p>
-                        <p className="text-xs text-[#4A8CB5]">
+                        <p className="text-sm font-semibold text-white">{cvrData.name}</p>
+                        <p className="text-xs text-white/50">
                           {cvrData.employees} ansatte · {cvrData.industry}
                         </p>
                       </div>
@@ -719,7 +736,7 @@ export function MarketingHomeContent() {
                   ) : null}
                   <button
                     onClick={() => setCalculatorStep(1)}
-                    className="mx-auto mt-4 block text-xs text-[#4A8CB5] transition-colors hover:text-sky-600"
+                    className="mt-4 block w-full text-center text-xs text-white/30 transition-colors hover:text-white/60"
                   >
                     Spring over og udfyld manuelt →
                   </button>
@@ -732,8 +749,8 @@ export function MarketingHomeContent() {
                       : "pointer-events-none absolute inset-0 translate-y-4 opacity-0"
                   }`}
                 >
-                  <h3 className="mb-3 text-base font-semibold text-[#0D1F2D]">Hvor mange ansatte har I?</h3>
-                  <div className="grid grid-cols-2 gap-2">
+                  <h3 className="mb-5 text-lg font-semibold text-white">Hvor mange ansatte har I?</h3>
+                  <div className="grid grid-cols-2 gap-3">
                     {employeeOptions.map((option) => {
                       const active = selectedEmployees === option.id;
                       return (
@@ -743,12 +760,18 @@ export function MarketingHomeContent() {
                           className={stepCardClass(active)}
                         >
                           {active && cvrData ? (
-                            <span className="absolute -top-2 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full bg-green-500 px-2 py-0.5 text-[9px] font-semibold text-white">
+                            <span className="absolute -top-2 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full border border-sky-400/30 bg-sky-500/30 px-2 py-0.5 text-[9px] font-semibold text-sky-300">
                               Fra CVR
                             </span>
                           ) : null}
-                          <Users className="h-4 w-4" />
-                          <p className="text-xs font-medium">{option.label}</p>
+                          <div className="mb-3 flex h-8 w-8 items-center justify-center rounded-xl bg-white/10">
+                            <Users className={`h-4 w-4 ${active ? "text-sky-300" : "text-white/70"}`} />
+                          </div>
+                          <p
+                            className={`text-sm font-semibold ${active ? "text-sky-200" : "text-white"}`}
+                          >
+                            {option.label}
+                          </p>
                         </button>
                       );
                     })}
@@ -762,8 +785,8 @@ export function MarketingHomeContent() {
                       : "pointer-events-none absolute inset-0 translate-y-4 opacity-0"
                   }`}
                 >
-                  <h3 className="mb-3 text-base font-semibold text-[#0D1F2D]">Hvad laver din virksomhed?</h3>
-                  <div className="grid grid-cols-2 gap-2">
+                  <h3 className="mb-5 text-lg font-semibold text-white">Hvad laver din virksomhed?</h3>
+                  <div className="grid grid-cols-2 gap-3">
                     {industryOptions.map((option) => {
                       const Icon = option.icon;
                       const active = selectedIndustry === option.id;
@@ -774,12 +797,18 @@ export function MarketingHomeContent() {
                           className={stepCardClass(active)}
                         >
                           {active && cvrData ? (
-                            <span className="absolute -top-2 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full bg-green-500 px-2 py-0.5 text-[9px] font-semibold text-white">
+                            <span className="absolute -top-2 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full border border-sky-400/30 bg-sky-500/30 px-2 py-0.5 text-[9px] font-semibold text-sky-300">
                               Fra CVR
                             </span>
                           ) : null}
-                          <Icon className="h-4 w-4" />
-                          <p className="text-xs font-medium">{option.title}</p>
+                          <div className="mb-3 flex h-8 w-8 items-center justify-center rounded-xl bg-white/10">
+                            <Icon className={`h-4 w-4 ${active ? "text-sky-300" : "text-white/70"}`} />
+                          </div>
+                          <p
+                            className={`text-sm font-semibold ${active ? "text-sky-200" : "text-white"}`}
+                          >
+                            {option.title}
+                          </p>
                         </button>
                       );
                     })}
@@ -793,8 +822,8 @@ export function MarketingHomeContent() {
                       : "pointer-events-none absolute inset-0 translate-y-4 opacity-0"
                   }`}
                 >
-                  <h3 className="mb-3 text-base font-semibold text-[#0D1F2D]">Hvordan håndterer I IT i dag?</h3>
-                  <div className="grid grid-cols-2 gap-2">
+                  <h3 className="mb-5 text-lg font-semibold text-white">Hvordan håndterer I IT i dag?</h3>
+                  <div className="grid grid-cols-2 gap-3">
                     {setupOptions.map((option) => {
                       const Icon = option.icon;
                       const active = selectedSetup === option.id;
@@ -804,11 +833,15 @@ export function MarketingHomeContent() {
                           onClick={() => handleSetupSelect(option.id)}
                           className={stepCardClass(active)}
                         >
-                          <Icon className="h-4 w-4" />
-                          <p className="text-xs font-medium">{option.title}</p>
-                          <p className={`text-[10px] ${active ? "text-white/80" : "text-[#4A8CB5]"}`}>
-                            {option.subtitle}
+                          <div className="mb-3 flex h-8 w-8 items-center justify-center rounded-xl bg-white/10">
+                            <Icon className={`h-4 w-4 ${active ? "text-sky-300" : "text-white/70"}`} />
+                          </div>
+                          <p
+                            className={`text-sm font-semibold ${active ? "text-sky-200" : "text-white"}`}
+                          >
+                            {option.title}
                           </p>
+                          <p className="mt-0.5 text-xs text-white/40">{option.subtitle}</p>
                         </button>
                       );
                     })}
@@ -822,8 +855,8 @@ export function MarketingHomeContent() {
                       : "pointer-events-none absolute inset-0 translate-y-4 opacity-0"
                   }`}
                 >
-                  <h3 className="mb-3 text-base font-semibold text-[#0D1F2D]">Hvor tit oplever I IT-problemer?</h3>
-                  <div className="grid grid-cols-2 gap-2">
+                  <h3 className="mb-5 text-lg font-semibold text-white">Hvor tit oplever I IT-problemer?</h3>
+                  <div className="grid grid-cols-2 gap-3">
                     {frequencyOptions.map((option) => {
                       const Icon = option.icon;
                       const active = selectedFrequency === option.id;
@@ -833,11 +866,15 @@ export function MarketingHomeContent() {
                           onClick={() => handleFrequencySelect(option.id)}
                           className={stepCardClass(active)}
                         >
-                          <Icon className="h-4 w-4" />
-                          <p className="text-xs font-medium">{option.title}</p>
-                          <p className={`text-[10px] ${active ? "text-white/80" : "text-[#4A8CB5]"}`}>
-                            {option.subtitle}
+                          <div className="mb-3 flex h-8 w-8 items-center justify-center rounded-xl bg-white/10">
+                            <Icon className={`h-4 w-4 ${active ? "text-sky-300" : "text-white/70"}`} />
+                          </div>
+                          <p
+                            className={`text-sm font-semibold ${active ? "text-sky-200" : "text-white"}`}
+                          >
+                            {option.title}
                           </p>
+                          <p className="mt-0.5 text-xs text-white/40">{option.subtitle}</p>
                         </button>
                       );
                     })}
@@ -851,9 +888,9 @@ export function MarketingHomeContent() {
                       : "pointer-events-none absolute inset-0 translate-y-4 opacity-0"
                   }`}
                 >
-                  <h3 className="mb-1 text-base font-semibold text-[#0D1F2D]">Hvad bruger I unødigt tid på?</h3>
-                  <p className="mb-3 text-[10px] uppercase tracking-wide text-[#4A8CB5]">Vælg alle der passer</p>
-                  <div className="grid grid-cols-2 gap-2">
+                  <h3 className="mb-1 text-lg font-semibold text-white">Hvad bruger I unødigt tid på?</h3>
+                  <p className="mb-5 text-sm text-white/50">Vælg alle der passer</p>
+                  <div className="grid grid-cols-2 gap-3">
                     {wasteOptions.map((option) => {
                       const Icon = option.icon;
                       const selected = selectedWaste.includes(option.id);
@@ -861,26 +898,28 @@ export function MarketingHomeContent() {
                         <button
                           key={option.id}
                           onClick={() => toggleWaste(option.id)}
-                          className={stepCardClass(selected)}
+                          className={stepCardClass(selected, false)}
                         >
-                          <Icon className="h-4 w-4" />
-                          <p className="text-xs font-medium">{option.title}</p>
-                          <p className={`text-[10px] ${selected ? "text-white/80" : "text-[#4A8CB5]"}`}>
-                            {option.subtitle}
+                          <div className="mb-3 flex h-8 w-8 items-center justify-center rounded-xl bg-white/10">
+                            <Icon className={`h-4 w-4 ${selected ? "text-sky-300" : "text-white/70"}`} />
+                          </div>
+                          <p
+                            className={`text-sm font-semibold ${selected ? "text-sky-200" : "text-white"}`}
+                          >
+                            {option.title}
                           </p>
+                          <p className="mt-0.5 text-xs text-white/40">{option.subtitle}</p>
                         </button>
                       );
                     })}
                   </div>
-                  <div className="mt-4 flex justify-center">
-                    <button
-                      onClick={() => setCalculatorStep(6)}
-                      disabled={selectedWaste.length === 0}
-                      className="inline-flex rounded-full bg-sky-600 px-6 py-2 text-sm font-semibold text-white disabled:cursor-not-allowed disabled:opacity-50"
-                    >
-                      Beregn resultat
-                    </button>
-                  </div>
+                  <button
+                    onClick={() => setCalculatorStep(6)}
+                    disabled={selectedWaste.length === 0}
+                    className="mt-4 w-full rounded-2xl bg-sky-500 py-4 font-semibold text-white transition-all hover:bg-sky-400 disabled:cursor-not-allowed disabled:opacity-30"
+                  >
+                    Beregn resultat
+                  </button>
                 </div>
 
                 <div
@@ -892,101 +931,97 @@ export function MarketingHomeContent() {
                 >
                   <AnimatedSection direction="up">
                     {cvrData ? (
-                      <p className="mb-4 text-center text-xs text-[#4A8CB5]">
-                        Beregning for <span className="font-semibold text-[#0D1F2D]">{cvrData.name}</span>
+                      <p className="mb-5 text-center text-xs text-white/40">
+                        Beregning for <span className="font-semibold text-white">{cvrData.name}</span>
                       </p>
                     ) : null}
-                    <div className="flex items-center justify-center gap-2">
-                      <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-green-100">
-                        <CheckCircle className="h-4 w-4 text-green-600" />
-                      </span>
-                      <p className="text-sm font-semibold text-[#0D1F2D]">Her er jeres IT-regning</p>
-                    </div>
-                    <div className="mt-4 grid gap-2 md:grid-cols-3">
-                      <div className="rounded-xl border border-sky-100 bg-[#F8FCFF] p-3 text-center">
-                        <p className="text-2xl font-bold text-[#0D1F2D]">{formatNumber(resultHours)}</p>
-                        <p className="mt-0.5 text-[10px] uppercase tracking-wide text-[#4A8CB5]">Timer / md.</p>
+                    <div className="grid grid-cols-3 gap-4">
+                      <div className="rounded-2xl border border-white/10 bg-white/5 p-4 text-center">
+                        <p className="text-2xl font-bold text-white">{formatNumber(resultHours)}</p>
+                        <p className="mt-1 text-[10px] uppercase tracking-wider text-white/40">Timer / md.</p>
                       </div>
-                      <div className="rounded-xl border border-sky-100 bg-[#F8FCFF] p-3 text-center">
-                        <p className="text-2xl font-bold text-red-500">{formatNumber(resultLost)} kr</p>
-                        <p className="mt-0.5 text-[10px] uppercase tracking-wide text-[#4A8CB5]">Tabt arbejdstid</p>
+                      <div className="rounded-2xl border border-white/10 bg-white/5 p-4 text-center">
+                        <p className="text-2xl font-bold text-red-400">{formatNumber(resultLost)} kr</p>
+                        <p className="mt-1 text-[10px] uppercase tracking-wider text-white/40">Tabt arbejdstid</p>
                       </div>
-                      <div className="rounded-xl border border-sky-100 bg-[#F8FCFF] p-3 text-center">
-                        <p className="text-2xl font-bold text-sky-600">{formatNumber(resultSavings)} kr</p>
-                        <p className="mt-0.5 text-[10px] uppercase tracking-wide text-[#4A8CB5]">systemklar sparer</p>
+                      <div className="rounded-2xl border border-white/10 bg-white/5 p-4 text-center">
+                        <p className="text-2xl font-bold text-green-400">{formatNumber(resultSavings)} kr</p>
+                        <p className="mt-1 text-[10px] uppercase tracking-wider text-white/40">
+                          systemklar sparer
+                        </p>
                       </div>
                     </div>
-                    {contextLine ? <p className="mt-3 text-xs text-[#2C4A5E]">{contextLine}</p> : null}
-                    <div className="my-4 h-px bg-slate-200" />
-                    <div className="rounded-xl border border-green-100 bg-green-50 p-4 text-xs">
-                      <p className="font-semibold text-green-800">
+                    {contextLine ? <p className="mt-4 text-xs text-white/50">{contextLine}</p> : null}
+                    <div className="my-5 border-t border-white/10" />
+                    <div className="rounded-2xl border border-green-400/20 bg-green-500/10 p-5">
+                      <p className="mb-3 text-sm font-semibold text-green-300">
                         Med {plan.name}-planen til {formatNumber(plan.price)} kr/md får I:
                       </p>
-                      <ul className="mt-2 space-y-1.5">
+                      <ul className="space-y-2">
                         {selectedWaste.includes("passwords") ? (
-                          <li className="flex items-start gap-1.5 text-green-800">
-                            <CheckCircle className="mt-0.5 h-3 w-3 shrink-0" />
+                          <li className="flex items-start gap-2 text-xs text-white/70">
+                            <CheckCircle className="mt-0.5 h-3.5 w-3.5 shrink-0 text-green-400" />
                             <span>Sikker kodebank – find alle logins på sekunder</span>
                           </li>
                         ) : null}
                         {selectedWaste.includes("ventetid") ? (
-                          <li className="flex items-start gap-1.5 text-green-800">
-                            <CheckCircle className="mt-0.5 h-3 w-3 shrink-0" />
+                          <li className="flex items-start gap-2 text-xs text-white/70">
+                            <CheckCircle className="mt-0.5 h-3.5 w-3.5 shrink-0 text-green-400" />
                             <span>Support direkte i platformen – ingen ventetid</span>
                           </li>
                         ) : null}
                         {selectedWaste.includes("systemer") ? (
-                          <li className="flex items-start gap-1.5 text-green-800">
-                            <CheckCircle className="mt-0.5 h-3 w-3 shrink-0" />
+                          <li className="flex items-start gap-2 text-xs text-white/70">
+                            <CheckCircle className="mt-0.5 h-3.5 w-3.5 shrink-0 text-green-400" />
                             <span>Samlet systemoverblik – alt på ét sted</span>
                           </li>
                         ) : null}
                         {selectedWaste.includes("support") ? (
-                          <li className="flex items-start gap-1.5 text-green-800">
-                            <CheckCircle className="mt-0.5 h-3 w-3 shrink-0" />
+                          <li className="flex items-start gap-2 text-xs text-white/70">
+                            <CheckCircle className="mt-0.5 h-3.5 w-3.5 shrink-0 text-green-400" />
                             <span>Månedlig IT-rapport – vi forklarer det for dig</span>
                           </li>
                         ) : null}
                         {selectedSetup === "konsulent" ? (
-                          <li className="flex items-start gap-1.5 text-green-800">
-                            <CheckCircle className="mt-0.5 h-3 w-3 shrink-0" />
+                          <li className="flex items-start gap-2 text-xs text-white/70">
+                            <CheckCircle className="mt-0.5 h-3.5 w-3.5 shrink-0 text-green-400" />
                             <span>
                               Reducér jeres IT-konsulent udgifter med ca. {formatNumber(resultConsultant)} kr/md
                             </span>
                           </li>
                         ) : null}
                         {industryRecommendation ? (
-                          <li className="flex items-start gap-1.5 text-green-800">
-                            <CheckCircle className="mt-0.5 h-3 w-3 shrink-0" />
+                          <li className="flex items-start gap-2 text-xs text-white/70">
+                            <CheckCircle className="mt-0.5 h-3.5 w-3.5 shrink-0 text-green-400" />
                             <span>{industryRecommendation}</span>
                           </li>
                         ) : null}
                       </ul>
                     </div>
                     {selectedWaste.length === 0 && netGain <= 0 ? (
-                      <p className="mt-4 text-center text-sm text-[#4A8CB5]">
+                      <p className="mt-5 text-center text-sm text-white/40">
                         Udfyld alle trin for at se dit resultat
                       </p>
                     ) : netGain > 0 ? (
-                      <p className="mt-4 text-center text-lg font-bold text-green-700">
+                      <p className="mt-5 text-center text-xl font-bold text-green-400">
                         Netto gevinst: +{formatNumber(resultNet)} kr/md
                       </p>
                     ) : null}
-                    {urgencyText ? <p className="mt-2 text-center text-xs text-[#2C4A5E]">{urgencyText}</p> : null}
-                    <div className="mt-4 flex justify-center">
-                      <Link
-                        href="/kontakt"
-                        className="inline-flex rounded-full bg-sky-600 px-6 py-2 text-sm font-semibold text-white"
-                      >
-                        Book en gratis demo
-                      </Link>
-                    </div>
-                    <p className="mt-2 text-center text-[10px] text-[#7AAEC8]">
+                    {urgencyText ? (
+                      <p className="mt-2 text-center text-xs text-white/50">{urgencyText}</p>
+                    ) : null}
+                    <Link
+                      href="/kontakt"
+                      className="mt-5 block w-full rounded-2xl bg-sky-500 py-4 text-center text-sm font-semibold text-white transition-all hover:bg-sky-400"
+                    >
+                      Book en gratis demo
+                    </Link>
+                    <p className="mt-3 text-center text-[10px] text-white/25">
                       Beregningen er baseret på dansk timeløn (350 kr/t) og dokumenteret IT-tidsspild i SMV&apos;er.
                     </p>
                     <button
                       onClick={resetCalculator}
-                      className="mt-3 block w-full text-center text-xs text-[#4A8CB5] transition-colors hover:text-sky-600"
+                      className="mt-3 block w-full text-center text-xs text-white/30 transition-colors hover:text-white/60"
                     >
                       Start forfra
                     </button>

@@ -46,7 +46,7 @@ export function MarketingFooter() {
               </Link>
             </li>
             <li>
-              <Link href="/book-demo" className="transition-colors hover:text-white">
+              <Link href="/kontakt" className="transition-colors hover:text-white">
                 Book demo
               </Link>
             </li>
