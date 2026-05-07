@@ -52,7 +52,7 @@ export function DemoModal({ isOpen, onClose, subject }: DemoModalProps) {
           company,
           phone,
           subject: subject ?? subjectValue,
-          message: message.trim() || `Demoforespørgsel: ${subject ?? subjectValue || "Demo"}`,
+          message: message.trim() || `Demoforespørgsel: ${(subject ?? subjectValue) || "Demo"}`,
         }),
       });
 
