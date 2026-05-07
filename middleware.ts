@@ -1,7 +1,6 @@
 import { createServerClient, type CookieOptions } from "@supabase/ssr";
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
-import { createServiceRoleClient } from "@/lib/supabase-service-role";
 
 export async function middleware(request: NextRequest) {
   let response = NextResponse.next({
@@ -59,28 +58,15 @@ export async function middleware(request: NextRequest) {
       return NextResponse.redirect(login);
     }
 
-    /** Tjek om user.id findes i admins-tabellen. Service-role omgår RLS så
-     *  middleware ikke bliver afhængig af specifikke policies. */
-    let isAdmin = false;
-    const serviceClient = createServiceRoleClient();
-    if (serviceClient) {
-      const { data: adminRow } = await serviceClient
-        .from("admins")
-        .select("user_id")
-        .eq("user_id", user.id)
-        .maybeSingle();
-      isAdmin = Boolean(adminRow);
-    } else {
-      /** Fallback: user-context klient (kræver RLS-policy der lader bruger se egen række). */
-      const { data: adminRow } = await supabase
-        .from("admins")
-        .select("user_id")
-        .eq("user_id", user.id)
-        .maybeSingle();
-      isAdmin = Boolean(adminRow);
-    }
+    /** Slår user.id op i admins-tabellen via den authenticated klient.
+     *  Kræver RLS-policy på admins der tillader auth.uid() = user_id at SELECT. */
+    const { data: adminRow } = await supabase
+      .from("admins")
+      .select("user_id")
+      .eq("user_id", user.id)
+      .maybeSingle();
 
-    if (!isAdmin) {
+    if (!adminRow) {
       const url = request.nextUrl.clone();
       url.pathname = "/admin/login";
       url.search = "";
