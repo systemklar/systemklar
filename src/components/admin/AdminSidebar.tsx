@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { BookOpen, LogOut, Mail } from "lucide-react";
+import { BookOpen, LogOut, Mail, X } from "lucide-react";
 import { useMemo, type ReactNode } from "react";
 import { SystemklarLogo } from "@/components/branding/SystemklarLogo";
 import { createClient } from "@/lib/supabase";
@@ -18,6 +18,8 @@ export type AdminNavKey =
 
 type AdminSidebarProps = {
   activeNav: AdminNavKey;
+  open?: boolean;
+  onClose?: () => void;
 };
 
 function DotIcon({ path }: { path: string }) {
@@ -48,7 +50,7 @@ const navItems: { label: string; href: string; key: AdminNavKey; icon: ReactNode
   { label: "Systemer", href: "/admin/systemer", key: "systems", icon: <DotIcon path="M12 3v4m0 10v4M3 12h4m10 0h4M6 6l3 3m6 6 3 3m0-12-3 3m-6 6-3 3" /> },
 ];
 
-export function AdminSidebar({ activeNav }: AdminSidebarProps) {
+export function AdminSidebar({ activeNav, open = false, onClose }: AdminSidebarProps) {
   const router = useRouter();
   const supabase = useMemo(() => createClient(), []);
   const navGroups = [
@@ -64,12 +66,26 @@ export function AdminSidebar({ activeNav }: AdminSidebarProps) {
   };
 
   return (
-    <aside className="flex min-h-screen w-64 shrink-0 flex-col border-r border-sky-100 bg-white p-4">
+    <aside
+      className={`fixed inset-y-0 left-0 z-30 flex h-screen w-64 shrink-0 flex-col border-r border-sky-100 bg-white p-4 transition-transform duration-300 md:static md:h-auto md:min-h-screen md:translate-x-0 ${
+        open ? "translate-x-0" : "-translate-x-full"
+      }`}
+    >
       <div className="flex min-h-0 flex-1 flex-col">
-        <Link href="/admin/dashboard" className="mb-4 block border-b border-sky-50 pb-4">
-          <SystemklarLogo textClassName="text-sm font-bold leading-snug text-sky-600" />
-          <p className="mt-0.5 text-xs font-medium text-[#4A8CB5]">Admin</p>
-        </Link>
+        <div className="mb-4 flex items-center justify-between border-b border-sky-50 pb-4">
+          <Link href="/admin/dashboard" className="block">
+            <SystemklarLogo textClassName="text-sm font-bold leading-snug text-sky-600" />
+            <p className="mt-0.5 text-xs font-medium text-[#4A8CB5]">Admin</p>
+          </Link>
+          <button
+            type="button"
+            onClick={onClose}
+            className="p-2 text-[#2C4A5E] md:hidden"
+            aria-label="Luk menu"
+          >
+            <X className="h-5 w-5" />
+          </button>
+        </div>
 
         <nav className="px-3 py-2">
           {navGroups.map((group) => (

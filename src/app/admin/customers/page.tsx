@@ -315,7 +315,7 @@ export default function AdminCustomersPage() {
                   required
                   value={contactName}
                   onChange={(e) => setContactName(e.target.value)}
-                  className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-blue-600"
+                  className="w-full rounded-lg border border-slate-300 px-3 py-2 text-base outline-none focus:border-blue-600 md:text-sm"
                   placeholder="Fx Mette Jensen"
                 />
               </div>
@@ -329,7 +329,7 @@ export default function AdminCustomersPage() {
                   required
                   value={companyName}
                   onChange={(e) => setCompanyName(e.target.value)}
-                  className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-blue-600"
+                  className="w-full rounded-lg border border-slate-300 px-3 py-2 text-base outline-none focus:border-blue-600 md:text-sm"
                   placeholder="Firma A/S"
                 />
               </div>
@@ -343,7 +343,7 @@ export default function AdminCustomersPage() {
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-blue-600"
+                  className="w-full rounded-lg border border-slate-300 px-3 py-2 text-base outline-none focus:border-blue-600 md:text-sm"
                   placeholder="kunde@firma.dk"
                 />
               </div>
@@ -355,7 +355,7 @@ export default function AdminCustomersPage() {
                   id="cust-role"
                   value={role}
                   onChange={(e) => setRole(e.target.value === "member" ? "member" : "org_admin")}
-                  className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-blue-600"
+                  className="w-full rounded-lg border border-slate-300 px-3 py-2 text-base outline-none focus:border-blue-600 md:text-sm"
                 >
                   <option value="org_admin">Administrator</option>
                   <option value="member">Medlem</option>

@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
+import { Menu, X } from "lucide-react";
 import { SystemklarLogo } from "@/components/branding/SystemklarLogo";
 import { DemoModal } from "@/components/ui/DemoModal";
 import { StableNavLink } from "./StableNavLink";
@@ -17,27 +18,9 @@ const NAV = [
 
 export function MarketingNav() {
   const pathname = usePathname();
-  const [open, setOpen] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [showModal, setShowModal] = useState(false);
-  const containerRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (!open) return;
-    const onDocMouseDown = (e: MouseEvent) => {
-      if (containerRef.current?.contains(e.target as Node)) return;
-      setOpen(false);
-    };
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setOpen(false);
-    };
-    document.addEventListener("mousedown", onDocMouseDown);
-    document.addEventListener("keydown", onKey);
-    return () => {
-      document.removeEventListener("mousedown", onDocMouseDown);
-      document.removeEventListener("keydown", onKey);
-    };
-  }, [open]);
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 20);
@@ -46,121 +29,126 @@ export function MarketingNav() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  const transparent = !scrolled && !open;
+  useEffect(() => {
+    if (!mobileOpen) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setMobileOpen(false);
+    };
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, [mobileOpen]);
+
+  useEffect(() => {
+    queueMicrotask(() => setMobileOpen(false));
+  }, [pathname]);
+
+  const transparent = !scrolled && !mobileOpen;
 
   return (
     <>
-    <header
-      className={`fixed left-0 right-0 top-0 z-50 transition-all duration-300 ${
-        transparent
-          ? "border-b border-transparent bg-transparent"
-          : "border-b border-white/10 bg-[#062840]/80 shadow-sm backdrop-blur-md"
-      }`}
-    >
-      <div ref={containerRef} className="relative mx-auto h-16 w-full max-w-[1200px] px-6">
-        <div className="flex h-full items-center justify-between gap-4">
-          <SystemklarLogo
-            href="/"
-            textClassName="text-sm font-bold tracking-tight text-white transition-colors"
-            primaryFill="#ffffff"
-            secondaryFill={transparent ? "rgba(255,255,255,0.7)" : "#4FA8E0"}
-          />
+      <header
+        className={`fixed left-0 right-0 top-0 z-50 transition-all duration-300 ${
+          transparent
+            ? "border-b border-transparent bg-transparent"
+            : "border-b border-white/10 bg-[#062840]/80 shadow-sm backdrop-blur-md"
+        }`}
+      >
+        <div className="relative mx-auto h-16 w-full max-w-[1200px] px-6">
+          <div className="flex h-full items-center justify-between gap-4">
+            <SystemklarLogo
+              href="/"
+              textClassName="text-sm font-bold tracking-tight text-white transition-colors"
+              primaryFill="#ffffff"
+              secondaryFill={transparent ? "rgba(255,255,255,0.7)" : "#4FA8E0"}
+            />
 
-          <nav className="hidden min-w-0 flex-1 items-center justify-center gap-8 md:flex" aria-label="Hovednavigation">
-            {NAV.map((item) => (
-              <StableNavLink
-                key={item.href}
-                href={item.href}
-                label={item.label}
-                active={pathname === item.href}
-                className="text-white/70 hover:text-white"
-              />
-            ))}
-          </nav>
+            <nav className="hidden min-w-0 flex-1 items-center justify-center gap-8 md:flex" aria-label="Hovednavigation">
+              {NAV.map((item) => (
+                <StableNavLink
+                  key={item.href}
+                  href={item.href}
+                  label={item.label}
+                  active={pathname === item.href}
+                  className="text-white/70 hover:text-white"
+                />
+              ))}
+            </nav>
 
-          <div className="hidden shrink-0 items-center gap-3 md:flex">
-            <Link
-              href="/login"
-              className="rounded-full px-3 py-1.5 text-xs font-medium text-white/70 transition-colors hover:text-white"
-            >
-              Log ind
-            </Link>
-            <button
-              type="button"
-              onClick={() => setShowModal(true)}
-              className={`rounded-full px-4 py-1.5 text-xs font-semibold transition-colors ${
-                transparent ? "bg-white text-[#0A6EBD] hover:bg-white/90" : "bg-sky-500 text-white hover:bg-sky-400"
-              }`}
-            >
-              Book demo
-            </button>
-          </div>
-
-          <button
-            type="button"
-            className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-lg text-white transition-colors hover:bg-white/10 md:hidden"
-            onClick={() => setOpen((v) => !v)}
-            aria-label={open ? "Luk menu" : "Åbn menu"}
-            aria-expanded={open}
-            aria-controls="marketing-mobile-nav"
-          >
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="h-5 w-5">
-              {open ? (
-                <path d="M6 6l12 12M6 18L18 6" strokeLinecap="round" />
-              ) : (
-                <>
-                  <path d="M4 7h16M4 12h16M4 17h16" strokeLinecap="round" />
-                </>
-              )}
-            </svg>
-          </button>
-        </div>
-
-        {open ? (
-          <nav
-            id="marketing-mobile-nav"
-            className="absolute left-0 right-0 top-full border-t border-[#D0E8F5] bg-white md:hidden"
-            aria-label="Mobil menu"
-          >
-            <div className="mx-auto w-full max-w-[1200px] space-y-1 px-6 py-4">
-              {NAV.map((item) => {
-                const active = pathname === item.href;
-                return (
-                  <Link
-                    key={item.href}
-                    href={item.href}
-                    className={`block min-w-max rounded-lg px-3 py-2.5 text-sm transition-colors ${
-                      active
-                        ? "bg-slate-50 font-semibold text-slate-900"
-                        : "font-medium text-slate-600 hover:bg-slate-50 hover:text-slate-900"
-                    }`}
-                  >
-                    {item.label}
-                  </Link>
-                );
-              })}
+            <div className="hidden shrink-0 items-center gap-3 md:flex">
               <Link
                 href="/login"
-                className="block min-w-max rounded-lg px-3 py-2.5 text-sm font-medium text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+                className="rounded-full px-3 py-1.5 text-xs font-medium text-white/70 transition-colors hover:text-white"
               >
                 Log ind
               </Link>
               <button
                 type="button"
-                onClick={() => {
-                  setOpen(false);
-                  setShowModal(true);
-                }}
-                className="mt-2 block w-full rounded-full bg-sky-500 px-5 py-2.5 text-center text-sm font-semibold text-white hover:bg-sky-400"
+                onClick={() => setShowModal(true)}
+                className={`rounded-full px-4 py-1.5 text-xs font-semibold transition-colors ${
+                  transparent ? "bg-white text-[#0A6EBD] hover:bg-white/90" : "bg-sky-500 text-white hover:bg-sky-400"
+                }`}
               >
                 Book demo
               </button>
             </div>
+
+            <button
+              type="button"
+              onClick={() => setMobileOpen((v) => !v)}
+              className="p-2 text-white md:hidden"
+              aria-label={mobileOpen ? "Luk menu" : "Åbn menu"}
+              aria-expanded={mobileOpen}
+              aria-controls="marketing-mobile-nav"
+            >
+              {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+            </button>
+          </div>
+        </div>
+      </header>
+
+      {mobileOpen ? (
+        <div
+          id="marketing-mobile-nav"
+          className="fixed inset-0 top-[64px] z-40 flex flex-col gap-4 bg-[#062840]/95 p-6 backdrop-blur-md md:hidden"
+        >
+          <nav className="flex flex-col" aria-label="Mobil menu">
+            {NAV.map((item) => (
+              <Link
+                key={item.href}
+                href={item.href}
+                onClick={() => setMobileOpen(false)}
+                className={`block border-b border-white/10 py-3 text-lg ${
+                  pathname === item.href ? "font-semibold text-white" : "text-white/85 hover:text-white"
+                }`}
+              >
+                {item.label}
+              </Link>
+            ))}
           </nav>
-        ) : null}
-      </div>
-    </header>
-    <DemoModal isOpen={showModal} onClose={() => setShowModal(false)} subject="Demo" />
+
+          <div className="mt-auto flex flex-col gap-3">
+            <Link
+              href="/login"
+              onClick={() => setMobileOpen(false)}
+              className="block min-h-[44px] rounded-full border border-white/30 px-5 py-3 text-center text-sm font-semibold text-white hover:bg-white/10"
+            >
+              Log ind
+            </Link>
+            <button
+              type="button"
+              onClick={() => {
+                setMobileOpen(false);
+                setShowModal(true);
+              }}
+              className="block min-h-[44px] w-full rounded-full bg-sky-500 px-5 py-3 text-center text-sm font-semibold text-white hover:bg-sky-400"
+            >
+              Book demo
+            </button>
+          </div>
+        </div>
+      ) : null}
+
+      <DemoModal isOpen={showModal} onClose={() => setShowModal(false)} subject="Demo" />
     </>
   );
 }

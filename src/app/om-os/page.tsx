@@ -38,7 +38,7 @@ export default function OmOsPage() {
   return (
     <MarketingShell>
       <main>
-        <section className="relative overflow-hidden bg-gradient-to-br from-[#0A6EBD] to-[#062840] py-32 pt-40">
+        <section className="relative overflow-hidden bg-gradient-to-br from-[#0A6EBD] to-[#062840] py-20 pt-32 md:py-32 md:pt-40">
           <div
             className="absolute inset-0 opacity-10"
             style={{
@@ -52,19 +52,19 @@ export default function OmOsPage() {
               Om os
             </p>
             <AnimatedSection direction="up">
-              <h1 className="mt-6 text-4xl font-extrabold tracking-tight text-white md:text-5xl">
+              <h1 className="mt-6 text-3xl font-extrabold tracking-tight text-white md:text-5xl">
                 Vi hjælper danske virksomheder med at få styr på IT
               </h1>
             </AnimatedSection>
             <AnimatedSection direction="up" delay={100}>
-              <p className="mx-auto mt-4 max-w-xl text-lg text-white/80">
+              <p className="mx-auto mt-4 max-w-xl text-base text-white/80 md:text-lg">
                 systemklar er bygget af folk der kender frustrationen ved IT der ikke virker.
               </p>
             </AnimatedSection>
           </div>
         </section>
 
-        <section className="bg-white py-20">
+        <section className="bg-white py-16 md:py-20">
           <div className="mx-auto max-w-4xl px-6">
             <div className="grid grid-cols-1 items-center gap-12 md:grid-cols-2">
               <AnimatedSection direction="left">
@@ -117,26 +117,26 @@ export default function OmOsPage() {
           </div>
         </section>
 
-        <section className="bg-[#F0F7FF] py-14">
-          <div className="mx-auto grid max-w-2xl grid-cols-3 gap-6 px-6">
+        <section className="bg-[#F0F7FF] py-12 md:py-14">
+          <div className="mx-auto grid max-w-2xl grid-cols-1 gap-6 px-6 sm:grid-cols-3">
             {[
               { tal: "100%", label: "Dansk support" },
               { tal: "< 24t", label: "Svartid på sager" },
               { tal: "0", label: "Binding" },
             ].map(({ tal, label }) => (
               <div key={label} className="text-center">
-                <p className="text-4xl font-extrabold text-sky-600">{tal}</p>
+                <p className="text-3xl font-extrabold text-sky-600 md:text-4xl">{tal}</p>
                 <p className="mt-2 text-sm text-[#2C4A5E]">{label}</p>
               </div>
             ))}
           </div>
         </section>
 
-        <section className="bg-[#F0F7FF] py-20">
+        <section className="bg-[#F0F7FF] py-16 md:py-20">
           <div className="mx-auto max-w-5xl px-6">
             <AnimatedSection direction="up">
-              <div className="mb-12 text-center">
-                <h2 className="text-3xl font-bold tracking-tight text-[#0D1F2D]">Det vi tror på</h2>
+              <div className="mb-10 text-center md:mb-12">
+                <h2 className="text-2xl font-bold tracking-tight text-[#0D1F2D] md:text-3xl">Det vi tror på</h2>
                 <p className="mx-auto mt-3 max-w-xl text-base text-[#2C4A5E]">
                   Tre principper der styrer alt hvad vi bygger og gør.
                 </p>
@@ -160,9 +160,9 @@ export default function OmOsPage() {
               ))}
             </div>
             <AnimatedSection direction="up">
-              <div className="mx-auto my-12 max-w-2xl rounded-3xl bg-[#062840] p-8 text-center">
+              <div className="mx-auto my-10 max-w-2xl rounded-3xl bg-[#062840] p-6 text-center md:my-12 md:p-8">
                 <div className="mb-4 font-serif text-4xl text-sky-400">&ldquo;</div>
-                <p className="text-lg italic leading-relaxed text-white/90">
+                <p className="text-base italic leading-relaxed text-white/90 md:text-lg">
                   Vi byggede systemklar fordi SMV&apos;er fortjener samme IT-overblik som store virksomheder
                   – uden at betale for en hel IT-afdeling.
                 </p>

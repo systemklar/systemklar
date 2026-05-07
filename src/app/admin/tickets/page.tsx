@@ -101,7 +101,7 @@ export default function AdminTicketsPage() {
       ) : tickets.length === 0 ? (
         <p className="mt-8 text-sm text-slate-600">Ingen tickets.</p>
       ) : (
-        <div className="mt-8 grid gap-6 lg:grid-cols-[280px_minmax(0,1fr)]">
+        <div className="mt-8 grid grid-cols-1 gap-6 lg:grid-cols-[280px_minmax(0,1fr)]">
           <aside className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
             <p className="px-2 text-xs font-semibold uppercase tracking-wide text-slate-500">Kunder</p>
             <div className="mt-2 space-y-1">
@@ -139,7 +139,7 @@ export default function AdminTicketsPage() {
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 placeholder="Filtrer på kundenavn eller sagsnavn..."
-                className="mt-2 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+                className="mt-2 w-full rounded-lg border border-slate-300 px-3 py-2 text-base md:text-sm"
               />
             </div>
 

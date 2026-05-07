@@ -127,7 +127,7 @@ function DashboardContent() {
         <p className="mt-2 text-sm text-[#4A8CB5]">Her er dagens overblik over systemstatus, handlinger og seneste sager.</p>
       </AnimatedSection>
 
-      <div className="grid gap-4 md:grid-cols-3">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
         {statCards.map((stat, idx) => {
           const Icon = stat.icon;
           return (
@@ -183,7 +183,7 @@ function DashboardContent() {
         )}
       </AnimatedSection>
 
-      <div className="grid gap-4 md:grid-cols-3">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
         {[
           { title: "Opret sag", href: "/portal/support", text: "Få hurtig hjælp fra supportteamet.", icon: "01" },
           { title: "Se systemer", href: "/portal/systemer", text: "Følg drift og status i realtid.", icon: "02" },

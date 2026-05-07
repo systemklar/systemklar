@@ -126,7 +126,7 @@ export default function PriserPage() {
   return (
     <MarketingShell>
       <main>
-        <section className="relative overflow-hidden bg-gradient-to-br from-[#0A6EBD] to-[#062840] py-32 pt-40">
+        <section className="relative overflow-hidden bg-gradient-to-br from-[#0A6EBD] to-[#062840] py-20 pt-32 md:py-32 md:pt-40">
           <div
             className="absolute inset-0 opacity-10"
             style={{
@@ -140,19 +140,19 @@ export default function PriserPage() {
               Priser
             </p>
             <AnimatedSection direction="up">
-              <h1 className="mt-6 text-4xl font-extrabold tracking-tight text-white md:text-5xl">
+              <h1 className="mt-6 text-3xl font-extrabold tracking-tight text-white md:text-5xl">
                 Enkel pris. Ingen overraskelser.
               </h1>
             </AnimatedSection>
             <AnimatedSection direction="up" delay={100}>
-              <p className="mx-auto mt-4 max-w-xl text-lg text-white/80">
+              <p className="mx-auto mt-4 max-w-xl text-base text-white/80 md:text-lg">
                 Vælg den plan der passer til jer – og skift når behovet ændrer sig.
               </p>
             </AnimatedSection>
           </div>
         </section>
 
-        <section className="bg-white py-24">
+        <section className="bg-white py-16 md:py-24">
           <div className="mx-auto max-w-7xl px-6">
             <div className="mb-10 flex min-h-8 items-center justify-center gap-3">
               <span className={`text-sm font-medium ${!yearly ? "text-[#0D1F2D]" : "text-[#4A8CB5]"}`}>Månedlig</span>
@@ -179,7 +179,7 @@ export default function PriserPage() {
               </span>
             </div>
 
-            <div className="grid gap-6 md:grid-cols-3">
+            <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
               {plans.map((plan, index) => (
                 <AnimatedSection
                   key={plan.name}
@@ -226,7 +226,7 @@ export default function PriserPage() {
                       <button
                         type="button"
                         onClick={() => setModalSubject(`${plan.name} – ${plan.monthly}`)}
-                        className={`mt-8 inline-flex w-full justify-center rounded-full px-5 py-3 font-semibold transition-colors ${
+                        className={`mt-8 inline-flex min-h-[44px] w-full justify-center rounded-full px-5 py-3 font-semibold transition-colors ${
                           plan.buttonStyle === "primary"
                             ? "bg-sky-600 text-white hover:bg-sky-700"
                             : "border border-sky-200 text-sky-700 hover:bg-sky-50"
@@ -248,17 +248,17 @@ export default function PriserPage() {
           </div>
         </section>
 
-        <section className="bg-white py-20">
+        <section className="bg-white py-16 md:py-20">
           <div className="mx-auto max-w-5xl px-6">
             <AnimatedSection direction="up">
-              <h2 className="text-center text-3xl font-bold tracking-tight text-[#0D1F2D] md:text-4xl">
+              <h2 className="text-center text-2xl font-bold tracking-tight text-[#0D1F2D] md:text-4xl">
                 Prøv uden risiko
               </h2>
               <p className="mx-auto mt-4 max-w-2xl text-center text-base text-[#2C4A5E]">
                 Vi gør det enkelt at komme i gang – og endnu nemmere at stoppe igen, hvis det ikke passer.
               </p>
             </AnimatedSection>
-            <div className="mt-12 grid gap-6 md:grid-cols-3">
+            <div className="mt-10 grid grid-cols-1 gap-6 md:mt-12 md:grid-cols-3">
               {reassurance.map(({ icon: Icon, title, desc }, i) => (
                 <AnimatedSection
                   key={title}
@@ -278,10 +278,10 @@ export default function PriserPage() {
           </div>
         </section>
 
-        <section className="bg-[#F0F7FF] py-20">
+        <section className="bg-[#F0F7FF] py-16 md:py-20">
           <div className="mx-auto max-w-2xl px-6">
             <AnimatedSection direction="up">
-              <h2 className="text-center text-3xl font-bold tracking-tight text-[#0D1F2D] md:text-4xl">
+              <h2 className="text-center text-2xl font-bold tracking-tight text-[#0D1F2D] md:text-4xl">
                 Ofte stillede spørgsmål
               </h2>
             </AnimatedSection>
@@ -325,17 +325,17 @@ export default function PriserPage() {
           </div>
         </section>
 
-        <section className="bg-white py-20">
+        <section className="bg-white py-16 md:py-20">
           <div className="mx-auto max-w-2xl px-6 text-center">
             <AnimatedSection direction="up">
-              <h2 className="text-3xl font-bold tracking-tight text-[#0D1F2D]">Vil du se det i praksis?</h2>
+              <h2 className="text-2xl font-bold tracking-tight text-[#0D1F2D] md:text-3xl">Vil du se det i praksis?</h2>
               <p className="mx-auto mt-4 max-w-xl text-base text-[#2C4A5E]">
                 Book en gratis snak, så gennemgår vi hvilken plan der passer bedst til jer.
               </p>
               <button
                 type="button"
                 onClick={() => setModalSubject("Demo")}
-                className="mt-8 rounded-full bg-sky-600 px-7 py-3 font-semibold text-white transition-colors hover:bg-sky-700"
+                className="mt-8 min-h-[44px] rounded-full bg-sky-600 px-7 py-3 font-semibold text-white transition-colors hover:bg-sky-700"
               >
                 Book en gratis snak
               </button>

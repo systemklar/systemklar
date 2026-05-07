@@ -136,13 +136,13 @@ export default function PortalSupportTicketPage() {
 
   return (
     <PortalLayout activeNav="support">
-      <div className="flex h-[calc(100vh-7rem)] flex-col md:h-[calc(100vh-8rem)]">
+      <div className="flex min-h-0 flex-1 flex-col">
         <Link href="/portal/support" className="text-sm font-semibold text-sky-600 hover:underline">
           ← Tilbage til Support & sager
         </Link>
 
-        <div className="mt-4 grid min-h-0 flex-1 gap-5 lg:grid-cols-3">
-          <div className="min-h-0 lg:col-span-2">
+        <div className="mt-4 flex min-h-0 flex-1 flex-col gap-5 lg:grid lg:grid-cols-3">
+          <div className="min-h-[60vh] lg:col-span-2">
             <TicketMessageThread
               ticketId={ticket.id}
               organisationId={ticket.organisation_id}

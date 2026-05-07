@@ -1,8 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { BookOpen, LogOut, User, Users } from "lucide-react";
+import { usePathname, useRouter } from "next/navigation";
+import { BookOpen, LogOut, Menu, User, Users, X } from "lucide-react";
 import {
   createContext,
   useContext,
@@ -141,6 +141,7 @@ type PortalLayoutProps = {
 
 export function PortalLayout({ children, activeNav }: PortalLayoutProps) {
   const router = useRouter();
+  const pathname = usePathname();
   const supabase = useMemo(() => createClient(), []);
   const [isLoading, setIsLoading] = useState(true);
   const [userEmail, setUserEmail] = useState<string | null>(null);
@@ -148,6 +149,11 @@ export function PortalLayout({ children, activeNav }: PortalLayoutProps) {
   const [role, setRole] = useState<string | null>(null);
   const [organisationId, setOrganisationId] = useState<string | null>(null);
   const [fullName, setFullName] = useState<string | null>(null);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  useEffect(() => {
+    queueMicrotask(() => setSidebarOpen(false));
+  }, [pathname]);
 
   useEffect(() => {
     let cancelled = false;
@@ -221,14 +227,37 @@ export function PortalLayout({ children, activeNav }: PortalLayoutProps) {
   return (
     <PortalSessionContext.Provider value={{ email: userEmail, userId, organisationId, role, fullName }}>
       <main className="surface-cards min-h-screen bg-[#F5FAFD] text-[#0D1F2D]">
-        <div className="flex min-h-screen w-full">
-          <aside className="flex w-64 shrink-0 flex-col border-r border-sky-100 bg-white p-4">
-            <Link href="/portal" className="mb-4 block border-b border-sky-50 pb-4">
-              <SystemklarLogo textClassName="text-sm font-bold tracking-tight text-sky-600" />
-              <p className="mt-0.5 text-xs font-medium text-[#4A8CB5]">Kundeportal</p>
-            </Link>
+        <div className="flex h-screen w-full overflow-hidden">
+          {sidebarOpen ? (
+            <button
+              type="button"
+              aria-label="Luk menu"
+              className="fixed inset-0 z-20 bg-black/30 md:hidden"
+              onClick={() => setSidebarOpen(false)}
+            />
+          ) : null}
 
-            <nav className="px-3 py-2">
+          <aside
+            className={`fixed inset-y-0 left-0 z-30 flex h-screen w-64 shrink-0 flex-col border-r border-sky-100 bg-white p-4 transition-transform duration-300 md:static md:h-auto md:translate-x-0 ${
+              sidebarOpen ? "translate-x-0" : "-translate-x-full"
+            }`}
+          >
+            <div className="mb-4 flex items-center justify-between border-b border-sky-50 pb-4">
+              <Link href="/portal" className="block">
+                <SystemklarLogo textClassName="text-sm font-bold tracking-tight text-sky-600" />
+                <p className="mt-0.5 text-xs font-medium text-[#4A8CB5]">Kundeportal</p>
+              </Link>
+              <button
+                type="button"
+                onClick={() => setSidebarOpen(false)}
+                className="p-2 text-[#2C4A5E] md:hidden"
+                aria-label="Luk menu"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+
+            <nav className="overflow-y-auto px-3 py-2">
               {navGroups.map((group) => {
                 const items = visibleNavItems.filter((item) => group.keys.includes(item.key));
                 if (items.length === 0) return null;
@@ -271,7 +300,22 @@ export function PortalLayout({ children, activeNav }: PortalLayoutProps) {
             </div>
           </aside>
 
-          <section className="app-rhythm flex-1 bg-[#F5FAFD] p-8">{children}</section>
+          <section className="flex-1 overflow-y-auto bg-[#F5FAFD]">
+            <div className="sticky top-0 z-10 flex items-center justify-between border-b border-sky-100 bg-white px-4 py-3 md:hidden">
+              <button
+                type="button"
+                onClick={() => setSidebarOpen(true)}
+                className="p-2 text-[#2C4A5E]"
+                aria-label="Åbn menu"
+              >
+                <Menu className="h-5 w-5" />
+              </button>
+              <span className="text-sm font-bold text-sky-600">systemklar</span>
+              <span className="w-9" aria-hidden />
+            </div>
+
+            <div className="app-rhythm p-4 md:p-8">{children}</div>
+          </section>
         </div>
       </main>
     </PortalSessionContext.Provider>

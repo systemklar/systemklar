@@ -314,7 +314,7 @@ export default function PortalProfilePage() {
                       required
                       value={fullNameInput}
                       onChange={(e) => setFullNameInput(e.target.value)}
-                      className="w-full rounded-xl border border-sky-200 px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-sky-500"
+                      className="w-full rounded-xl border border-sky-200 px-4 py-3 text-base outline-none focus:ring-2 focus:ring-sky-500 md:text-sm"
                     />
                   </div>
                   <div className="flex gap-2">
@@ -349,7 +349,7 @@ export default function PortalProfilePage() {
                     type="password"
                     value={currentPassword}
                     onChange={(e) => setCurrentPassword(e.target.value)}
-                    className="w-full rounded-xl border border-sky-200 px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-sky-500"
+                    className="w-full rounded-xl border border-sky-200 px-4 py-3 text-base outline-none focus:ring-2 focus:ring-sky-500 md:text-sm"
                   />
                 </div>
                 <div>
@@ -362,7 +362,7 @@ export default function PortalProfilePage() {
                     minLength={8}
                     value={newPassword}
                     onChange={(e) => setNewPassword(e.target.value)}
-                    className="w-full rounded-xl border border-sky-200 px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-sky-500"
+                    className="w-full rounded-xl border border-sky-200 px-4 py-3 text-base outline-none focus:ring-2 focus:ring-sky-500 md:text-sm"
                   />
                 </div>
                 <div>
@@ -375,7 +375,7 @@ export default function PortalProfilePage() {
                     minLength={8}
                     value={confirmNewPassword}
                     onChange={(e) => setConfirmNewPassword(e.target.value)}
-                    className="w-full rounded-xl border border-sky-200 px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-sky-500"
+                    className="w-full rounded-xl border border-sky-200 px-4 py-3 text-base outline-none focus:ring-2 focus:ring-sky-500 md:text-sm"
                   />
                 </div>
                 <div>

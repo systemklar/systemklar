@@ -277,7 +277,7 @@ export default function AdminCustomerDetailPage() {
 
       <section>
         <h2 className="mb-3 text-lg font-semibold text-[#0D1F2D]">Brugere</h2>
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           {profiles.map((p) => (
             <article key={p.id} className="rounded-2xl border border-sky-100 bg-white p-5 shadow-sm">
               <div className="flex items-start gap-4">

@@ -404,7 +404,7 @@ function FeatureCopy({
   return (
     <div>
       <p className="text-xs font-semibold uppercase tracking-widest text-sky-600">{label}</p>
-      <h2 className="mt-3 text-3xl font-bold tracking-tight text-[#0D1F2D] md:text-4xl">{title}</h2>
+      <h2 className="mt-3 text-2xl font-bold tracking-tight text-[#0D1F2D] md:text-4xl">{title}</h2>
       <p className="mt-4 text-base leading-relaxed text-[#2C4A5E]">{description}</p>
       <ul className="mt-6 space-y-3">
         {points.map((p) => (
@@ -522,7 +522,7 @@ export default function PlatformenPage() {
           }
         `}</style>
 
-        <section className="relative overflow-hidden bg-gradient-to-br from-[#0A6EBD] to-[#062840] py-32 pt-40">
+        <section className="relative overflow-hidden bg-gradient-to-br from-[#0A6EBD] to-[#062840] py-20 pt-32 md:py-32 md:pt-40">
           <div
             className="absolute inset-0 opacity-10"
             style={{
@@ -536,12 +536,12 @@ export default function PlatformenPage() {
               Platformen
             </p>
             <AnimatedSection direction="up">
-              <h1 className="mt-6 text-4xl font-extrabold tracking-tight text-white md:text-5xl">
+              <h1 className="mt-6 text-3xl font-extrabold tracking-tight text-white md:text-5xl">
                 Alt hvad din virksomhed har brug for – samlet ét sted
               </h1>
             </AnimatedSection>
             <AnimatedSection direction="up" delay={100}>
-              <p className="mx-auto mt-4 max-w-xl text-lg text-white/80">
+              <p className="mx-auto mt-4 max-w-xl text-base text-white/80 md:text-lg">
                 Ingen rod. Ingen forvirring. Bare overblik.
               </p>
             </AnimatedSection>
@@ -551,8 +551,8 @@ export default function PlatformenPage() {
         {blocks.map((block) => {
           const { Mockup, textFirst, bg, label, title, description, points } = block;
           return (
-            <section key={label} className={`${bg} py-24`}>
-              <div className="mx-auto grid max-w-7xl items-center gap-12 px-6 lg:grid-cols-2">
+            <section key={label} className={`${bg} py-16 md:py-24`}>
+              <div className="mx-auto grid max-w-7xl items-center gap-10 px-6 md:gap-12 lg:grid-cols-2">
                 <AnimatedSection
                   direction={textFirst ? "left" : "right"}
                   className={textFirst ? "lg:order-1" : "lg:order-2"}
@@ -561,7 +561,7 @@ export default function PlatformenPage() {
                 </AnimatedSection>
                 <AnimatedSection
                   direction={textFirst ? "right" : "left"}
-                  className={textFirst ? "lg:order-2" : "lg:order-1"}
+                  className={`hidden md:block ${textFirst ? "lg:order-2" : "lg:order-1"}`}
                 >
                   <Mockup />
                 </AnimatedSection>

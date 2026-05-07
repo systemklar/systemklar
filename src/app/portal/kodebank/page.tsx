@@ -242,13 +242,13 @@ export default function PortalKodebankPage() {
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Søg i navn, brugernavn, URL..."
-            className="w-full max-w-sm rounded-xl border border-sky-200 bg-white px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-sky-500"
+            className="w-full rounded-xl border border-sky-200 bg-white px-4 py-2.5 text-base outline-none focus:ring-2 focus:ring-sky-500 md:max-w-sm md:text-sm"
           />
-          <div className="mt-3 flex flex-wrap gap-2">
+          <div className="-mx-1 mt-3 flex gap-2 overflow-x-auto px-1 pb-1 md:flex-wrap md:overflow-x-visible md:px-0">
             <button
               type="button"
               onClick={() => setCategory("")}
-              className={`rounded-full border px-3 py-1 text-xs transition ${
+              className={`shrink-0 rounded-full border px-3 py-1 text-xs transition ${
                 category === ""
                   ? "border-sky-400 bg-sky-50 text-sky-700"
                   : "border-sky-100 bg-white text-[#2C4A5E] hover:border-sky-400"
@@ -261,7 +261,7 @@ export default function PortalKodebankPage() {
                 key={c}
                 type="button"
                 onClick={() => setCategory(c)}
-                className={`rounded-full border px-3 py-1 text-xs transition ${
+                className={`shrink-0 rounded-full border px-3 py-1 text-xs transition ${
                   category === c
                     ? "border-sky-400 bg-sky-50 text-sky-700"
                     : "border-sky-100 bg-white text-[#2C4A5E] hover:border-sky-400"
@@ -291,7 +291,7 @@ export default function PortalKodebankPage() {
               return (
                 <article
                   key={entry.id}
-                  className="flex items-center gap-4 rounded-2xl border border-sky-100 bg-white p-4 shadow-sm transition-all hover:shadow-md"
+                  className="flex flex-col gap-4 rounded-2xl border border-sky-100 bg-white p-4 shadow-sm transition-all hover:shadow-md md:flex-row md:items-center"
                 >
                   <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-[#F0F7FF]">
                     <Lock className="h-4 w-4 text-sky-600" />
@@ -321,7 +321,7 @@ export default function PortalKodebankPage() {
                     </p>
                   </div>
 
-                  <div className="min-w-[12rem] rounded-xl border border-sky-100 bg-[#F0F7FF] px-3 py-2.5">
+                  <div className="w-full rounded-xl border border-sky-100 bg-[#F0F7FF] px-3 py-2.5 md:w-auto md:min-w-[12rem]">
                     <p className="text-xs font-medium text-[#4A8CB5]">Adgangskode</p>
                     <div className="mt-1 flex items-center justify-between gap-3">
                       <span className="truncate font-mono text-sm text-[#0D1F2D]">
@@ -394,7 +394,7 @@ export default function PortalKodebankPage() {
                   required
                   value={form.name}
                   onChange={(e) => setForm((prev) => ({ ...prev, name: e.target.value }))}
-                  className="w-full rounded-xl border border-sky-200 px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-sky-500"
+                  className="w-full rounded-xl border border-sky-200 px-4 py-3 text-base outline-none focus:ring-2 focus:ring-sky-500 md:text-sm"
                 />
               </div>
 
@@ -404,7 +404,7 @@ export default function PortalKodebankPage() {
                   <input
                     value={form.username}
                     onChange={(e) => setForm((prev) => ({ ...prev, username: e.target.value }))}
-                    className="w-full rounded-xl border border-sky-200 px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-sky-500"
+                    className="w-full rounded-xl border border-sky-200 px-4 py-3 text-base outline-none focus:ring-2 focus:ring-sky-500 md:text-sm"
                   />
                 </div>
                 <div>
@@ -414,7 +414,7 @@ export default function PortalKodebankPage() {
                     onChange={(e) =>
                       setForm((prev) => ({ ...prev, category: (e.target.value as VaultCategory | "") ?? "" }))
                     }
-                    className="w-full rounded-xl border border-sky-200 px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-sky-500"
+                    className="w-full rounded-xl border border-sky-200 px-4 py-3 text-base outline-none focus:ring-2 focus:ring-sky-500 md:text-sm"
                   >
                     <option value="">Ingen kategori</option>
                     {CATEGORIES.map((c) => (
@@ -433,7 +433,7 @@ export default function PortalKodebankPage() {
                     type="text"
                     value={form.password}
                     onChange={(e) => setForm((prev) => ({ ...prev, password: e.target.value }))}
-                    className="w-full rounded-xl border border-sky-200 px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-sky-500"
+                    className="w-full rounded-xl border border-sky-200 px-4 py-3 text-base outline-none focus:ring-2 focus:ring-sky-500 md:text-sm"
                   />
                 </div>
                 <div>
@@ -442,7 +442,7 @@ export default function PortalKodebankPage() {
                     type="url"
                     value={form.url}
                     onChange={(e) => setForm((prev) => ({ ...prev, url: e.target.value }))}
-                    className="w-full rounded-xl border border-sky-200 px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-sky-500"
+                    className="w-full rounded-xl border border-sky-200 px-4 py-3 text-base outline-none focus:ring-2 focus:ring-sky-500 md:text-sm"
                   />
                 </div>
               </div>
@@ -453,7 +453,7 @@ export default function PortalKodebankPage() {
                   rows={4}
                   value={form.notes}
                   onChange={(e) => setForm((prev) => ({ ...prev, notes: e.target.value }))}
-                  className="w-full rounded-xl border border-sky-200 px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-sky-500"
+                  className="w-full rounded-xl border border-sky-200 px-4 py-3 text-base outline-none focus:ring-2 focus:ring-sky-500 md:text-sm"
                 />
               </div>
 

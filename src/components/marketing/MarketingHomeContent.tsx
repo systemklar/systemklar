@@ -552,30 +552,30 @@ export function MarketingHomeContent() {
             Bygget til danske SMV&apos;er – uden IT-afdeling
           </p>
           <AnimatedSection direction="up" delay={0}>
-            <h1 className="mb-3 mt-6 text-6xl font-extrabold tracking-tight text-white md:text-7xl">
+            <h1 className="mb-3 mt-6 text-4xl font-extrabold tracking-tight text-white md:text-6xl lg:text-7xl">
               Få styr på IT.
               <br />
               Brug tiden på din forretning.
             </h1>
           </AnimatedSection>
           <AnimatedSection direction="up" delay={100}>
-            <p className="mx-auto mb-6 max-w-2xl text-lg text-white/80 md:text-xl">
+            <p className="mx-auto mb-6 max-w-2xl text-base text-white/80 md:text-xl">
               systemklar samler support, systemoverblik og IT-dokumentation ét sted – så du aldrig igen skal jagte
               adgangskoder eller vente på IT-hjælp.
             </p>
           </AnimatedSection>
           <AnimatedSection direction="up" delay={200}>
-            <div className="inline-flex flex-wrap items-center justify-center gap-3">
+            <div className="flex w-full flex-col items-stretch justify-center gap-3 sm:inline-flex sm:w-auto sm:flex-row sm:flex-wrap sm:items-center">
               <button
                 onClick={() => document.getElementById("roi-beregner")?.scrollIntoView({ behavior: "smooth" })}
-                className="rounded-full bg-white px-8 py-4 text-base font-semibold text-[#0A6EBD] transition-all hover:bg-white/90"
+                className="min-h-[44px] rounded-full bg-white px-8 py-4 text-base font-semibold text-[#0A6EBD] transition-all hover:bg-white/90"
               >
                 Se hvad IT-rod koster jer
               </button>
               <button
                 type="button"
                 onClick={() => setShowDemoModal(true)}
-                className="rounded-full border border-white/40 px-8 py-4 text-base font-semibold text-white transition-all hover:bg-white/10"
+                className="min-h-[44px] rounded-full border border-white/40 px-8 py-4 text-base font-semibold text-white transition-all hover:bg-white/10"
               >
                 Book en gratis snak
               </button>
@@ -598,18 +598,18 @@ export function MarketingHomeContent() {
         </div>
       </section>
 
-      <section className="relative z-10 border-t border-black/5 bg-[#F0F7FF] py-24">
+      <section className="relative z-10 border-t border-black/5 bg-[#F0F7FF] py-16 md:py-24">
         <div className="mx-auto max-w-2xl px-6 text-center">
-          <h2 className="mb-3 text-3xl font-bold tracking-tight text-[#0D1F2D]">
+          <h2 className="mb-3 text-2xl font-bold tracking-tight text-[#0D1F2D] md:text-3xl">
             Alt på ét sted – præcis som det er
           </h2>
-          <p className="mx-auto mb-6 max-w-2xl text-lg text-[#2C4A5E]">
+          <p className="mx-auto mb-6 max-w-2xl text-base text-[#2C4A5E] md:text-lg">
             Se hvordan platformen ser ud i praksis – med et overblik du kan forstå med det samme.
           </p>
         </div>
         <div className="mx-auto max-w-2xl px-6">
           <AnimatedSection direction="up">
-            <div className="overflow-hidden rounded-2xl border border-sky-100 bg-white shadow-md">
+            <div className="hidden overflow-hidden rounded-2xl border border-sky-100 bg-white shadow-md md:block">
               <div className="flex items-center gap-2 border-b border-sky-100 bg-[#F0F7FF] px-3 py-2">
                 <div className="flex gap-1">
                   <div className="h-2.5 w-2.5 rounded-full bg-red-400" />
@@ -728,12 +728,12 @@ export function MarketingHomeContent() {
         </div>
       </section>
 
-      <section id="roi-beregner" className="relative z-10 bg-white py-24">
+      <section id="roi-beregner" className="relative z-10 bg-white py-16 md:py-24">
         <div className="mb-12 px-6 text-center">
           <span className="inline-flex items-center rounded-full border border-sky-200 bg-sky-50 px-4 py-1.5 text-xs font-semibold uppercase tracking-wide text-sky-700">
             Gratis beregner
           </span>
-          <h2 className="mb-3 mt-4 text-3xl font-extrabold text-[#0D1F2D] md:text-4xl">
+          <h2 className="mb-3 mt-4 text-2xl font-extrabold text-[#0D1F2D] md:text-4xl">
             Hvad koster IT-rod
             <br />
             din virksomhed?
@@ -742,9 +742,9 @@ export function MarketingHomeContent() {
             Besvar 7 spørgsmål og få et præcist svar på hvad IT-rod koster jer.
           </p>
         </div>
-        <div className="mx-auto max-w-2xl px-6">
+        <div className="mx-auto max-w-2xl px-4 md:px-6">
           <div className="rounded-3xl bg-gradient-to-br from-sky-500/20 to-[#0A3D5C]/40 p-[1px]">
-            <div className="rounded-[23px] bg-[#0A2535] p-8">
+            <div className="rounded-[23px] bg-[#0A2535] p-5 md:p-8">
               <div className="mb-8 flex items-center justify-center gap-2">
                 {[0, 1, 2, 3, 4, 5, 6].map((i) => (
                   <div
@@ -1232,13 +1232,13 @@ export function MarketingHomeContent() {
         </div>
       </section>
 
-      <section className="relative z-10 border-t border-black/5 bg-[#062840] py-24">
+      <section className="relative z-10 border-t border-black/5 bg-[#062840] py-16 md:py-24">
         <div className="mx-auto max-w-2xl px-6 text-center">
           <p className="mb-3 text-xs font-semibold uppercase tracking-widest text-sky-300">Hvad kunderne siger</p>
           <h2 className="mb-8 text-center text-2xl font-bold text-white">Det siger vores kunder</h2>
         </div>
-        <div className="mx-auto grid max-w-5xl grid-cols-1 gap-8 px-6 md:grid-cols-3">
-          <div className="flex flex-col justify-between rounded-2xl border border-white/10 bg-white/5 p-8 text-white md:col-span-2">
+        <div className="mx-auto grid max-w-5xl grid-cols-1 gap-6 px-6 md:grid-cols-3 md:gap-8">
+          <div className="flex flex-col justify-between rounded-2xl border border-white/10 bg-white/5 p-6 text-white md:col-span-2 md:p-8">
             <div className="mb-4 flex gap-1">
               {[...Array(5)].map((_, i) => (
                 <svg key={i} className="h-4 w-4 text-amber-400" fill="currentColor" viewBox="0 0 20 20" aria-hidden>
@@ -1257,11 +1257,11 @@ export function MarketingHomeContent() {
               </div>
             </div>
           </div>
-          <div className="flex flex-col gap-8">
+          <div className="flex flex-col gap-6 md:gap-8">
             {sideTestimonials.map((t) => (
               <div
                 key={t.name}
-                className="flex flex-1 flex-col justify-between rounded-2xl border border-white/10 bg-white/10 p-8"
+                className="flex flex-1 flex-col justify-between rounded-2xl border border-white/10 bg-white/10 p-6 md:p-8"
               >
                 <div className="mb-2 flex gap-0.5">
                   {[...Array(5)].map((_, s) => (
@@ -1292,10 +1292,10 @@ export function MarketingHomeContent() {
         </div>
       </section>
 
-      <section className="relative z-10 border-t border-black/5 bg-[#F0F7FF] py-24">
+      <section className="relative z-10 border-t border-black/5 bg-[#F0F7FF] py-16 md:py-24">
         <div className="mx-auto max-w-2xl px-6 text-center">
-          <h2 className="mb-3 text-3xl font-bold tracking-tight text-[#0D1F2D]">Priser</h2>
-          <p className="mx-auto mb-6 max-w-2xl text-lg text-[#2C4A5E]">
+          <h2 className="mb-3 text-2xl font-bold tracking-tight text-[#0D1F2D] md:text-3xl">Priser</h2>
+          <p className="mx-auto mb-6 max-w-2xl text-base text-[#2C4A5E] md:text-lg">
             Vælg den plan der passer til jer i dag, og skift når behovet ændrer sig.
           </p>
         </div>
@@ -1324,7 +1324,7 @@ export function MarketingHomeContent() {
               Spar 2 måneder
             </span>
           </div>
-          <div className="grid gap-8 md:grid-cols-3">
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-3 md:gap-8">
             {homePlans.map((priceCard, index) => (
               <AnimatedSection
                 key={priceCard.name}
@@ -1391,18 +1391,18 @@ export function MarketingHomeContent() {
 
       <section
         id="cta"
-        className="relative z-10 border-t border-black/5 bg-[#062840] py-24"
+        className="relative z-10 border-t border-black/5 bg-[#062840] py-16 md:py-24"
       >
         <div className="mx-auto max-w-2xl px-6 text-center">
-          <h2 className="mb-3 text-3xl font-bold tracking-tight text-white">Klar til at få IT ud af vejen?</h2>
-          <p className="mx-auto mb-6 max-w-2xl text-lg text-white/80">
+          <h2 className="mb-3 text-2xl font-bold tracking-tight text-white md:text-3xl">Klar til at få IT ud af vejen?</h2>
+          <p className="mx-auto mb-6 max-w-2xl text-base text-white/80 md:text-lg">
             Book en gratis snak på 30 minutter. Vi gennemgår platformen og sætter det op til jer – samme dag.
           </p>
           <div className="flex justify-center">
             <button
               type="button"
               onClick={() => setShowDemoModal(true)}
-              className="rounded-full bg-sky-500 px-7 py-3 text-sm font-semibold text-white transition-colors hover:bg-sky-400"
+              className="min-h-[44px] rounded-full bg-sky-500 px-7 py-3 text-sm font-semibold text-white transition-colors hover:bg-sky-400"
             >
               Book en gratis snak
             </button>

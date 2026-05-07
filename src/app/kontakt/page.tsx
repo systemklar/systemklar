@@ -59,7 +59,7 @@ export default function KontaktPage() {
   return (
     <MarketingShell>
       <main>
-        <section className="relative overflow-hidden bg-gradient-to-br from-[#0A6EBD] to-[#062840] py-32 pt-40">
+        <section className="relative overflow-hidden bg-gradient-to-br from-[#0A6EBD] to-[#062840] py-20 pt-32 md:py-32 md:pt-40">
           <div
             className="absolute inset-0 opacity-10"
             style={{
@@ -72,18 +72,18 @@ export default function KontaktPage() {
             <p className="inline-flex rounded-full border border-white/30 bg-white/20 px-4 py-1.5 text-xs font-semibold uppercase tracking-wide text-white">
               Kontakt
             </p>
-            <h1 className="mt-6 text-4xl font-extrabold tracking-tight text-white md:text-5xl">
+            <h1 className="mt-6 text-3xl font-extrabold tracking-tight text-white md:text-5xl">
               Vi sidder klar til at hjælpe
             </h1>
-            <p className="mx-auto mt-4 max-w-xl text-lg text-white/80">
+            <p className="mx-auto mt-4 max-w-xl text-base text-white/80 md:text-lg">
               Book en demo, stil et spørgsmål, eller hør hvad systemklar kan gøre for jer.
             </p>
           </div>
         </section>
 
-        <section className="bg-white py-24">
+        <section className="bg-white py-16 md:py-24">
           <div className="mx-auto grid max-w-5xl gap-10 px-6 lg:grid-cols-2">
-            <div className="rounded-2xl border border-sky-100 bg-white p-8 shadow-sm">
+            <div className="rounded-2xl border border-sky-100 bg-white p-6 shadow-sm md:p-8">
               <h2 className="text-xl font-semibold text-[#0D1F2D]">Skriv til os</h2>
               <p className="mt-2 text-sm text-[#4A8CB5]">
                 Udfyld formularen, så vender vi tilbage inden for én hverdag.
@@ -94,14 +94,14 @@ export default function KontaktPage() {
                   onChange={(e) => setName(e.target.value)}
                   placeholder="Navn"
                   required
-                  className="w-full rounded-xl border border-sky-200 px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-sky-500"
+                  className="w-full rounded-xl border border-sky-200 px-4 py-3 text-base outline-none focus:ring-2 focus:ring-sky-500 md:text-sm"
                 />
                 <input
                   value={company}
                   onChange={(e) => setCompany(e.target.value)}
                   placeholder="Virksomhed"
                   required
-                  className="w-full rounded-xl border border-sky-200 px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-sky-500"
+                  className="w-full rounded-xl border border-sky-200 px-4 py-3 text-base outline-none focus:ring-2 focus:ring-sky-500 md:text-sm"
                 />
                 <input
                   type="email"
@@ -109,13 +109,13 @@ export default function KontaktPage() {
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="Email"
                   required
-                  className="w-full rounded-xl border border-sky-200 px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-sky-500"
+                  className="w-full rounded-xl border border-sky-200 px-4 py-3 text-base outline-none focus:ring-2 focus:ring-sky-500 md:text-sm"
                 />
                 <input
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
                   placeholder="Telefon (valgfrit)"
-                  className="w-full rounded-xl border border-sky-200 px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-sky-500"
+                  className="w-full rounded-xl border border-sky-200 px-4 py-3 text-base outline-none focus:ring-2 focus:ring-sky-500 md:text-sm"
                 />
                 <textarea
                   value={message}
@@ -123,7 +123,7 @@ export default function KontaktPage() {
                   placeholder="Besked"
                   required
                   rows={5}
-                  className="w-full rounded-xl border border-sky-200 px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-sky-500"
+                  className="w-full rounded-xl border border-sky-200 px-4 py-3 text-base outline-none focus:ring-2 focus:ring-sky-500 md:text-sm"
                 />
                 {error ? (
                   <p className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
@@ -138,7 +138,7 @@ export default function KontaktPage() {
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="w-full rounded-full bg-sky-600 px-6 py-3 font-semibold text-white transition hover:bg-sky-700 disabled:opacity-60"
+                  className="min-h-[44px] w-full rounded-full bg-sky-600 px-6 py-3 font-semibold text-white transition hover:bg-sky-700 disabled:opacity-60"
                 >
                   {submitting ? "Sender..." : "Send besked"}
                 </button>
@@ -146,7 +146,7 @@ export default function KontaktPage() {
             </div>
 
             <div className="space-y-6">
-              <aside className="rounded-2xl border border-sky-100 bg-white p-8 shadow-sm">
+              <aside className="rounded-2xl border border-sky-100 bg-white p-6 shadow-sm md:p-8">
                 <div>
                   <div className="flex items-center gap-3">
                     <CalendarDays className="h-5 w-5 text-sky-600" />
@@ -222,13 +222,13 @@ export default function KontaktPage() {
           </div>
         </section>
 
-        <section className="bg-[#062840] py-24">
+        <section className="bg-[#062840] py-16 md:py-24">
           <div className="mx-auto max-w-5xl px-6 text-center">
-            <h2 className="text-3xl font-bold text-white md:text-4xl">Klar til at komme i gang?</h2>
+            <h2 className="text-2xl font-bold text-white md:text-4xl">Klar til at komme i gang?</h2>
             <button
               type="button"
               onClick={() => setShowDemoModal(true)}
-              className="mt-8 inline-flex rounded-full bg-sky-500 px-6 py-3 font-semibold text-white transition hover:bg-sky-400"
+              className="mt-8 inline-flex min-h-[44px] rounded-full bg-sky-500 px-6 py-3 font-semibold text-white transition hover:bg-sky-400"
             >
               Book gratis demo
             </button>

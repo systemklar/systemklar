@@ -221,7 +221,7 @@ export default function PortalSupportPage() {
                     value={title}
                     onChange={(e) => setTitle(e.target.value)}
                     required
-                    className="w-full rounded-xl border border-sky-200 px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-sky-500"
+                    className="w-full rounded-xl border border-sky-200 px-4 py-3 text-base outline-none focus:ring-2 focus:ring-sky-500 md:text-sm"
                     placeholder="Kort beskrivelse af problemet"
                   />
                 </div>
@@ -234,7 +234,7 @@ export default function PortalSupportPage() {
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
                     rows={5}
-                    className="w-full rounded-xl border border-sky-200 px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-sky-500"
+                    className="w-full rounded-xl border border-sky-200 px-4 py-3 text-base outline-none focus:ring-2 focus:ring-sky-500 md:text-sm"
                     placeholder="Uddyb problemet, fejlmeddelelser, hvornår det skete, osv."
                   />
                 </div>

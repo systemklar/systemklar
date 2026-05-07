@@ -127,7 +127,7 @@ export default function AdminDashboardPage() {
       {loading ? (
         <p className="mt-10 text-sm text-[#4A8CB5]">Henter tal...</p>
       ) : (
-        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid grid-cols-1 gap-5 sm:grid-cols-3">
           <AnimatedSection direction="up" delay={0}>
             <StatCard
               title="Kunder"
