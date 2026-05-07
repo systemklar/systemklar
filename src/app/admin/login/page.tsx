@@ -6,8 +6,6 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { AuthSplitLayout } from "@/components/auth/AuthSplitLayout";
 import { createClient } from "@/lib/supabase";
 
-const ADMIN_EMAIL = "kontakt@systemklar.dk";
-
 function safeInternalPath(raw: string | null): string | null {
   if (!raw || !raw.startsWith("/") || raw.startsWith("//")) return null;
   return raw;
@@ -41,11 +39,6 @@ function AdminLoginForm() {
     setErrorMessage(null);
 
     const normalizedEmail = email.trim().toLowerCase();
-    if (normalizedEmail !== ADMIN_EMAIL) {
-      setErrorMessage("Denne side er kun til admin-login.");
-      setIsLoading(false);
-      return;
-    }
 
     const { error } = await (supabase.auth.signInWithPassword as unknown as (args: {
       email: string;
@@ -71,9 +64,30 @@ function AdminLoginForm() {
       data: { user },
     } = await supabase.auth.getUser();
 
-    if ((user?.email ?? "").trim().toLowerCase() !== ADMIN_EMAIL) {
+    if (!user) {
       await supabase.auth.signOut();
-      setErrorMessage("Kun kontakt@systemklar.dk kan logge ind som admin.");
+      setErrorMessage("Kunne ikke hente bruger. Prøv igen.");
+      setIsLoading(false);
+      return;
+    }
+
+    const { data: adminRow, error: adminError } = await supabase
+      .from("admins")
+      .select("user_id")
+      .eq("user_id", user.id)
+      .maybeSingle();
+
+    if (adminError) {
+      console.error("[admin/login] admins lookup failed", adminError);
+      await supabase.auth.signOut();
+      setErrorMessage("Kunne ikke verificere admin-adgang. Prøv igen.");
+      setIsLoading(false);
+      return;
+    }
+
+    if (!adminRow) {
+      await supabase.auth.signOut();
+      setErrorMessage("Du har ikke adgang til admin-portalen.");
       setIsLoading(false);
       return;
     }
@@ -105,7 +119,7 @@ function AdminLoginForm() {
               onChange={(event) => setEmail(event.target.value)}
               required
               className="w-full rounded-xl border border-sky-200 px-4 py-3 outline-none transition focus:ring-2 focus:ring-sky-500"
-              placeholder="kontakt@systemklar.dk"
+              placeholder="din@email.dk"
               autoComplete="email"
             />
           </div>
