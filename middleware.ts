@@ -62,19 +62,12 @@ export async function middleware(request: NextRequest) {
     /** Service-role klient omgår RLS, så admins-opslaget ikke afhænger af
      *  auth.uid()-policies. SUPABASE_SERVICE_ROLE_KEY må aldrig eksponeres
      *  til klienten — middleware kører kun server-side. */
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-    const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-    if (!supabaseUrl || !serviceRoleKey) {
-      console.error("[middleware] SUPABASE_SERVICE_ROLE_KEY eller NEXT_PUBLIC_SUPABASE_URL mangler");
-      const url = request.nextUrl.clone();
-      url.pathname = "/admin/login";
-      url.search = "";
-      return NextResponse.redirect(url);
-    }
-    const serviceClient = createClient(supabaseUrl, serviceRoleKey, {
-      auth: { autoRefreshToken: false, persistSession: false },
-    });
-    const { data: adminRow } = await serviceClient
+    const { data: adminRow } = await createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.SUPABASE_SERVICE_ROLE_KEY!,
+      { auth: { autoRefreshToken: false, persistSession: false } }
+    )
+      .schema("public")
       .from("admins")
       .select("user_id")
       .eq("user_id", user.id)
