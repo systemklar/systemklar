@@ -1,4 +1,5 @@
 import { createServerClient, type CookieOptions } from "@supabase/ssr";
+import { createClient } from "@supabase/supabase-js";
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 
@@ -58,9 +59,22 @@ export async function middleware(request: NextRequest) {
       return NextResponse.redirect(login);
     }
 
-    /** Slår user.id op i admins-tabellen via den authenticated klient.
-     *  Kræver RLS-policy på admins der tillader auth.uid() = user_id at SELECT. */
-    const { data: adminRow } = await supabase
+    /** Service-role klient omgår RLS, så admins-opslaget ikke afhænger af
+     *  auth.uid()-policies. SUPABASE_SERVICE_ROLE_KEY må aldrig eksponeres
+     *  til klienten — middleware kører kun server-side. */
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+    const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+    if (!supabaseUrl || !serviceRoleKey) {
+      console.error("[middleware] SUPABASE_SERVICE_ROLE_KEY eller NEXT_PUBLIC_SUPABASE_URL mangler");
+      const url = request.nextUrl.clone();
+      url.pathname = "/admin/login";
+      url.search = "";
+      return NextResponse.redirect(url);
+    }
+    const serviceClient = createClient(supabaseUrl, serviceRoleKey, {
+      auth: { autoRefreshToken: false, persistSession: false },
+    });
+    const { data: adminRow } = await serviceClient
       .from("admins")
       .select("user_id")
       .eq("user_id", user.id)
