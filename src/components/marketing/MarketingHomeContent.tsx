@@ -81,6 +81,24 @@ const platformHighlights = [
   { icon: FileText, title: "Månedlig rapport", text: "Få overblik uden teknisk snak" },
 ];
 
+const testimonials = [
+  {
+    quote: "Endelig ét sted hvor vi kan se om alt kører. Jeg vidste ikke altid om vores systemer var oppe.",
+    name: "Mads K.",
+    company: "VVS-virksomhed, Aarhus",
+  },
+  {
+    quote: "Vi fik svar på vores IT-problem samme dag. Det plejede at tage dage.",
+    name: "Lotte P.",
+    company: "Regnskabskontor, Odense",
+  },
+  {
+    quote: "Rapporten hver måned giver os ro. Vi ved hvad der sker uden at forstå teknik.",
+    name: "Henrik B.",
+    company: "Tømrermester, København",
+  },
+];
+
 const hourlyRate = 350;
 
 const employeeOptions = [
@@ -258,12 +276,15 @@ export function MarketingHomeContent() {
           { name: "Plus", price: "1.299 kr/md", highlight: true },
           { name: "Pro", price: "2.499 kr/md", highlight: false },
         ];
-    setPriceFading(true);
+    const fadeTimer = window.setTimeout(() => setPriceFading(true), 0);
     const timer = window.setTimeout(() => {
       setDisplayPrice(prices);
       setPriceFading(false);
     }, 150);
-    return () => window.clearTimeout(timer);
+    return () => {
+      window.clearTimeout(fadeTimer);
+      window.clearTimeout(timer);
+    };
   }, [yearly]);
 
   useEffect(() => {
@@ -410,7 +431,7 @@ export function MarketingHomeContent() {
 
   const urgencyText =
     selectedFrequency === "dag"
-      ? "⚠️ Med daglige problemer taber I tid hver eneste dag. Jo hurtigere I kommer i gang, jo bedre."
+      ? "Med daglige problemer taber I tid hver eneste dag. Jo hurtigere I kommer i gang, jo bedre."
       : selectedFrequency === "uge"
         ? "Med ugentlige forstyrrelser er der meget at hente – hurtigt."
         : selectedFrequency === "maaned"
@@ -420,9 +441,9 @@ export function MarketingHomeContent() {
             : "";
 
   return (
-    <main>
+    <main className="flex flex-col">
       <section
-        className="relative flex min-h-[90vh] scroll-mt-20 items-center overflow-hidden bg-gradient-to-br from-[#0A6EBD] via-[#1A8FD1] to-[#062840] py-48"
+        className="relative order-1 flex min-h-[90vh] scroll-mt-20 items-center overflow-hidden bg-gradient-to-br from-[#0A6EBD] via-[#1A8FD1] to-[#062840] py-48"
       >
         <div
           className="absolute inset-0 opacity-10"
@@ -438,52 +459,90 @@ export function MarketingHomeContent() {
             style={{ animationDelay: "40ms" }}
           >
             <span className="h-1.5 w-1.5 rounded-full bg-white" aria-hidden />
-            IT-platform til danske SMV&apos;er
+            Bygget til danske SMV&apos;er – uden IT-afdeling
           </p>
           <AnimatedSection direction="up" delay={0}>
             <h1 className="mx-auto mt-8 max-w-4xl text-6xl font-extrabold tracking-tight text-white md:text-7xl md:leading-[0.98]">
-              Få styr på IT uden at bruge
+              Få styr på IT.
               <br className="hidden md:block" />
-              hele dagen på det
+              Brug tiden på din forretning.
             </h1>
           </AnimatedSection>
           <AnimatedSection direction="up" delay={100}>
-            <p className="mx-auto mt-8 max-w-2xl text-xl text-white/80">
-              Du kan se hvad der sker, vi holder øje, og du får besked i tide.
+            <p className="mx-auto mt-8 max-w-3xl text-xl text-white/80">
+              systemklar samler support, systemoverblik og IT-dokumentation ét sted – så du aldrig igen skal jagte
+              adgangskoder eller vente på IT-hjælp.
             </p>
           </AnimatedSection>
           <AnimatedSection direction="up" delay={200}>
             <div className="mt-12 flex flex-wrap items-center justify-center gap-4">
-              <Link
-                href="/book-demo"
-                className="inline-flex rounded-full bg-white px-6 py-3 text-sm font-semibold text-[#0A6EBD] transition-all duration-100 hover:bg-white/90 active:scale-95"
+              <button
+                onClick={() => document.getElementById("roi-beregner")?.scrollIntoView({ behavior: "smooth" })}
+                className="rounded-full bg-white px-7 py-3.5 text-base font-semibold text-[#0A6EBD] transition-all hover:bg-white/90"
               >
-                Book gratis demo
-              </Link>
-              <Link
-                href="/platformen"
-                className="inline-flex rounded-full border border-white/50 px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-white/10"
+                Se hvad IT-rod koster jer
+              </button>
+              <a
+                href="/kontakt"
+                className="rounded-full border border-white/40 px-7 py-3.5 text-base font-semibold text-white transition-all hover:bg-white/10"
               >
-                Se hvordan det virker
-              </Link>
+                Book en gratis snak
+              </a>
             </div>
           </AnimatedSection>
-          <p
-            className="fade-in-up mt-10 text-sm font-medium text-white/60"
-            style={{ animationDelay: "320ms" }}
-          >
-            <span className="inline-flex flex-wrap items-center justify-center gap-x-6 gap-y-2">
-              <span>Ingen binding</span>
-              <span>·</span>
-              <span>Opsig når som helst</span>
-              <span>·</span>
-              <span>Gratis at starte</span>
-            </span>
-          </p>
+          <div className="mt-7 flex flex-wrap items-center justify-center gap-5 text-sm text-white/60">
+            {["Ingen binding", "Opsig når som helst", "Svar inden for 1 hverdag", "Dansk support"].map((t) => (
+              <span key={t} className="flex items-center gap-1.5">
+                <svg className="h-3.5 w-3.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                  <path
+                    fillRule="evenodd"
+                    d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+                {t}
+              </span>
+            ))}
+          </div>
         </div>
       </section>
 
-      <section className="bg-[#F0F7FF] py-24 md:py-32">
+      <section className="order-2 bg-white py-20">
+        <div className="mx-auto max-w-3xl px-6 text-center">
+          <h2 className="mb-5 text-3xl font-bold leading-tight text-[#0D1F2D] md:text-4xl">
+            Du startede ikke din virksomhed
+            <br />
+            for at rode med IT
+          </h2>
+          <p className="mb-10 text-lg leading-relaxed text-[#2C4A5E]">
+            Men adgangskoder forsvinder, systemer driller, og IT-hjælp tager dage. systemklar tager det fra dig – så du
+            kan fokusere på det du er god til.
+          </p>
+          <div className="grid grid-cols-1 gap-6 text-left md:grid-cols-3">
+            {[
+              { problem: "Bruger tid på at finde logins", solution: "Alle adgangskoder samlet sikkert ét sted" },
+              { problem: "Venter dage på IT-hjælp", solution: "Opret en sag – vi svarer samme dag" },
+              { problem: "Ved ikke om systemerne kører", solution: "Live overblik – du ser det med det samme" },
+            ].map((item, i) => (
+              <div key={i} className="rounded-2xl border border-sky-100 bg-[#F0F7FF] p-5">
+                <p className="mb-2 text-sm font-medium text-red-500 line-through">{item.problem}</p>
+                <p className="flex items-start gap-2 text-sm font-semibold text-[#0D1F2D]">
+                  <svg className="mt-0.5 h-4 w-4 flex-shrink-0 text-sky-600" fill="currentColor" viewBox="0 0 20 20">
+                    <path
+                      fillRule="evenodd"
+                      d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                      clipRule="evenodd"
+                    />
+                  </svg>
+                  {item.solution}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="order-3 bg-[#F0F7FF] py-24 md:py-32">
         <div className="mx-auto max-w-5xl px-6">
           <h2 className="text-center text-3xl font-bold tracking-tight text-[#0D1F2D] md:text-4xl">
             Alt på ét sted – præcis som det er
@@ -601,7 +660,7 @@ export function MarketingHomeContent() {
         </div>
       </section>
 
-      <section className="bg-[#062840] py-24 md:py-32">
+      <section className="order-5 bg-[#062840] py-24 md:py-32">
         <div className="mx-auto max-w-5xl px-6">
           <p className="mx-auto inline-flex rounded-full border border-white/20 bg-white/10 px-4 py-1.5 text-xs font-semibold uppercase tracking-wide text-white">
             AI-værktøjer
@@ -672,7 +731,7 @@ export function MarketingHomeContent() {
         </div>
       </section>
 
-      <section className="bg-white py-24 md:py-32">
+      <section className="order-6 bg-white py-24 md:py-32">
         <div ref={statsRef} className="mx-auto grid max-w-5xl gap-12 px-6 lg:grid-cols-2 lg:items-center">
           <div>
             <p className="text-sm font-semibold uppercase tracking-wide text-[#4A8CB5]">Om systemklar</p>
@@ -680,8 +739,8 @@ export function MarketingHomeContent() {
               Vi hjælper små virksomheder med at få ro på IT
             </h2>
             <p className="mt-5 max-w-xl text-base leading-relaxed text-[#2C4A5E]">
-              Du får et enkelt overblik over support, systemer og opgaver. Det betyder færre overraskelser, hurtigere
-              svar og mindre tid brugt på at jagte status.
+              Vi har talt med tømrere, frisører og rådgivere om hvad der frustrerer dem ved IT. Svaret var altid det
+              samme: for mange systemer, for lidt overblik, og for lang ventetid. systemklar er svaret.
             </p>
             <div className="mt-8 grid gap-5 sm:grid-cols-3">
               <div>
@@ -705,14 +764,40 @@ export function MarketingHomeContent() {
             </div>
             <div className="bg-[#062840] px-8 py-8">
               <p className="text-lg leading-relaxed text-white">
-                "Vi byggede systemklar fordi SMV&apos;er fortjener samme IT-overblik som store virksomheder."
+                &quot;Vi byggede systemklar fordi SMV&apos;er fortjener samme IT-overblik som store virksomheder.&quot;
               </p>
             </div>
           </div>
         </div>
       </section>
 
-      <section className="bg-white py-24 md:py-32">
+      <section className="order-7 bg-white py-20">
+        <div className="mx-auto max-w-5xl px-6">
+          <p className="mb-10 text-center text-xs font-semibold uppercase tracking-widest text-sky-600">
+            Hvad kunderne siger
+          </p>
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+            {testimonials.map((t, i) => (
+              <div key={i} className="flex flex-col rounded-2xl border border-sky-100 bg-[#F0F7FF] p-6">
+                <div className="mb-4 flex gap-0.5">
+                  {[...Array(5)].map((_, s) => (
+                    <svg key={s} className="h-4 w-4 text-amber-400" fill="currentColor" viewBox="0 0 20 20">
+                      <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                    </svg>
+                  ))}
+                </div>
+                <p className="mb-5 flex-1 text-sm leading-relaxed text-[#2C4A5E]">&quot;{t.quote}&quot;</p>
+                <div className="border-t border-sky-100 pt-4">
+                  <p className="text-sm font-semibold text-[#0D1F2D]">{t.name}</p>
+                  <p className="text-xs text-[#4A8CB5]">{t.company}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="order-8 bg-white py-24 md:py-32">
         <div className="mx-auto max-w-5xl px-6">
           <h2 className="text-center text-3xl font-bold tracking-tight text-[#0D1F2D] md:text-4xl">Sådan fungerer det</h2>
           <p className="mx-auto mt-4 max-w-2xl text-center text-base text-[#2C4A5E]">
@@ -743,7 +828,7 @@ export function MarketingHomeContent() {
         </div>
       </section>
 
-      <section className="bg-[#F0F7FF] py-24">
+      <section id="roi-beregner" className="order-4 bg-[#F0F7FF] py-24">
         <div className="mx-auto max-w-3xl px-6">
           <p className="mb-2 text-center text-xs font-semibold uppercase tracking-widest text-sky-600">Prøv det selv →</p>
           <div className="mx-auto max-w-3xl rounded-3xl bg-gradient-to-br from-[#0A6EBD] to-[#062840] p-1">
@@ -1033,11 +1118,20 @@ export function MarketingHomeContent() {
         </div>
       </section>
 
-      <section className="bg-white py-24 md:py-32">
+      <section className="order-9 bg-white py-24 md:py-32">
         <div className="mx-auto max-w-5xl px-6">
           <h2 className="text-center text-3xl font-bold tracking-tight text-[#0D1F2D] md:text-4xl">Priser</h2>
           <p className="mx-auto mt-4 max-w-2xl text-center text-base text-[#2C4A5E]">
             Vælg den plan der passer til jer i dag, og skift når behovet ændrer sig.
+          </p>
+          <p className="mx-auto mb-10 mt-4 max-w-xl text-center text-[#2C4A5E]">
+            Prisen betaler sig typisk ind på den første uge.
+            <button
+              onClick={() => document.getElementById("roi-beregner")?.scrollIntoView({ behavior: "smooth" })}
+              className="ml-1 font-medium text-sky-600 hover:underline"
+            >
+              Se hvad IT-rod koster jer →
+            </button>
           </p>
           <div className="mt-10 flex min-h-8 items-center justify-center gap-3">
             <span className={`text-sm font-medium ${!yearly ? "text-[#0D1F2D]" : "text-[#4A8CB5]"}`}>Månedlig</span>
@@ -1085,26 +1179,29 @@ export function MarketingHomeContent() {
             <Link href="/priser" className="text-sm font-semibold text-sky-600 hover:text-sky-700">
               Se alle features →
             </Link>
+            <p className="mt-4 text-center text-sm text-[#4A8CB5]">
+              Ingen binding · Opsig når som helst · Kom i gang på 10 minutter
+            </p>
           </div>
         </div>
       </section>
 
       <section
         id="cta"
-        className="relative flex min-h-[400px] items-center border-b border-sky-900/70 bg-[#062840] bg-gradient-to-br from-[#062840] to-[#0A3D5C] py-24 md:py-32"
+        className="relative order-10 flex min-h-[400px] items-center border-b border-sky-900/70 bg-[#062840] bg-gradient-to-br from-[#062840] to-[#0A3D5C] py-24 md:py-32"
       >
         <div className="mx-auto max-w-3xl px-6 text-center">
-          <h2 className="text-4xl font-bold tracking-tight text-white md:text-5xl">Klar til at komme i gang?</h2>
+          <h2 className="text-4xl font-bold tracking-tight text-white md:text-5xl">Klar til at få IT ud af vejen?</h2>
           <p className="mx-auto mt-5 max-w-xl text-lg text-[#7AAEC8]">
-            Få en kort gennemgang, så du ved præcis hvordan det virker i din hverdag.
+            Book en gratis snak på 30 minutter. Vi gennemgår platformen og sætter det op til jer – samme dag.
           </p>
-          <p className="mt-4 text-sm text-[#7AAEC8]">Ingen binding · Opsig når som helst</p>
           <Link
-            href="/book-demo"
+            href="/kontakt"
             className="mt-10 inline-flex rounded-full bg-sky-500 px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-sky-400"
           >
-            Book gratis demo
+            Book en gratis snak
           </Link>
+          <p className="mt-4 text-sm text-[#7AAEC8]">30 min · gratis · uforpligtende · ingen binding</p>
         </div>
       </section>
     </main>
