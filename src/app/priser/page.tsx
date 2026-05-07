@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Calendar, CheckCircle, ChevronDown, MessageCircle, Minus, Shield } from "lucide-react";
+import { Calendar, CheckCircle, ChevronDown, MessageCircle, Shield } from "lucide-react";
 import { AnimatedSection } from "@/components/ui/AnimatedSection";
 import { MarketingShell } from "@/components/marketing/MarketingShell";
 
@@ -66,40 +66,6 @@ const plans: Plan[] = [
   },
 ];
 
-type Cell = { kind: "yes" } | { kind: "no" } | { kind: "text"; value: string };
-
-const yes: Cell = { kind: "yes" };
-const no: Cell = { kind: "no" };
-const text = (value: string): Cell => ({ kind: "text", value });
-
-const comparisonRows: Array<{ label: string; cells: [Cell, Cell, Cell] }> = [
-  { label: "Systemoverblik", cells: [yes, yes, yes] },
-  { label: "Support & sager", cells: [yes, yes, yes] },
-  { label: "Kodebank", cells: [yes, yes, yes] },
-  { label: "IT-rapport", cells: [yes, yes, yes] },
-  { label: "AI-assistent", cells: [no, yes, yes] },
-  { label: "AI Tilbudsgenerator", cells: [no, yes, yes] },
-  { label: "Teammedlemmer", cells: [text("Op til 3"), text("Op til 15"), text("Ubegrænset")] },
-  { label: "Prioriteret support", cells: [no, yes, yes] },
-  { label: "Dedikeret kontakt", cells: [no, no, yes] },
-  { label: "SLA-garanti", cells: [no, no, yes] },
-];
-
-const withoutItems: Array<[string, string]> = [
-  ["Ekstern IT-konsulent", "2.000–8.000 kr./md."],
-  ["Adgangskode-manager", "49–99 kr./md."],
-  ["Overvågningsværktøj", "199–499 kr./md."],
-  ["Tabt arbejdstid til IT-rod", "1.400–3.500 kr./md."],
-];
-
-const withItems: Array<[string, string]> = [
-  ["IT-overblik og systemer", "Inkluderet"],
-  ["Support & sager", "Inkluderet"],
-  ["Sikker kodebank", "Inkluderet"],
-  ["Månedlig IT-rapport", "Inkluderet"],
-  ["Team-adgang", "Inkluderet"],
-];
-
 const reassurance = [
   {
     icon: Calendar,
@@ -141,12 +107,6 @@ const faq: Array<{ q: string; a: string }> = [
   },
 ];
 
-function ComparisonCell({ cell }: { cell: Cell }) {
-  if (cell.kind === "yes") return <CheckCircle className="mx-auto h-5 w-5 text-sky-600" aria-label="Inkluderet" />;
-  if (cell.kind === "no") return <Minus className="mx-auto h-5 w-5 text-slate-300" aria-label="Ikke inkluderet" />;
-  return <span className="text-sm text-[#2C4A5E]">{cell.value}</span>;
-}
-
 export default function PriserPage() {
   const [yearly, setYearly] = useState(false);
   const [priceFading, setPriceFading] = useState(false);
@@ -176,66 +136,6 @@ export default function PriserPage() {
                 Vælg den plan der passer til jer – og skift når behovet ændrer sig.
               </p>
             </AnimatedSection>
-          </div>
-        </section>
-
-        <section className="bg-[#F0F7FF] py-16">
-          <div className="mx-auto max-w-5xl px-6">
-            <AnimatedSection direction="up">
-              <div className="mb-10 text-center">
-                <p className="text-xs font-semibold uppercase tracking-widest text-sky-600">
-                  Hvad du betaler i dag
-                </p>
-                <h2 className="mt-3 text-3xl font-bold tracking-tight text-[#0D1F2D] md:text-4xl">
-                  Sammenlign – og se hvor meget I sparer
-                </h2>
-              </div>
-            </AnimatedSection>
-            <div className="mx-auto grid max-w-4xl grid-cols-1 gap-8 md:grid-cols-2">
-              <AnimatedSection direction="left">
-                <div className="rounded-2xl border border-red-100 bg-white p-8 shadow-sm">
-                  <div className="mb-6 flex items-center gap-2">
-                    <div className="h-2 w-2 rounded-full bg-red-400" />
-                    <p className="text-sm font-semibold text-[#0D1F2D]">Uden systemklar</p>
-                  </div>
-                  <div className="mb-6 space-y-3">
-                    {withoutItems.map(([name, price]) => (
-                      <div key={name} className="flex items-center justify-between border-b border-red-50 py-2">
-                        <span className="text-sm text-[#2C4A5E]">{name}</span>
-                        <span className="text-sm font-medium text-red-500">{price}</span>
-                      </div>
-                    ))}
-                  </div>
-                  <div className="flex items-center justify-between pt-2">
-                    <span className="font-semibold text-[#0D1F2D]">Total</span>
-                    <span className="text-lg font-bold text-red-500">3.650–12.100 kr./md.</span>
-                  </div>
-                </div>
-              </AnimatedSection>
-              <AnimatedSection direction="right">
-                <div className="relative overflow-hidden rounded-2xl bg-[#062840] p-8 text-white shadow-md">
-                  <div className="absolute right-4 top-4 rounded-full bg-sky-500 px-3 py-1 text-xs font-semibold text-white">
-                    Besparelse 70–90%
-                  </div>
-                  <div className="mb-6 flex items-center gap-2">
-                    <div className="h-2 w-2 rounded-full bg-green-400" />
-                    <p className="text-sm font-semibold text-white">Med systemklar</p>
-                  </div>
-                  <div className="mb-6 space-y-3">
-                    {withItems.map(([name, value]) => (
-                      <div key={name} className="flex items-center justify-between border-b border-white/10 py-2">
-                        <span className="text-sm text-white/80">{name}</span>
-                        <span className="text-sm font-medium text-green-400">{value}</span>
-                      </div>
-                    ))}
-                  </div>
-                  <div className="flex items-center justify-between pt-2">
-                    <span className="font-semibold text-white">Alt inkluderet fra</span>
-                    <span className="text-2xl font-bold text-white">499 kr./md.</span>
-                  </div>
-                </div>
-              </AnimatedSection>
-            </div>
           </div>
         </section>
 
@@ -325,42 +225,6 @@ export default function PriserPage() {
                 </AnimatedSection>
               ))}
             </div>
-          </div>
-        </section>
-
-        <section className="bg-[#F0F7FF] py-20">
-          <div className="mx-auto max-w-5xl px-6">
-            <AnimatedSection direction="up">
-              <h2 className="text-center text-3xl font-bold tracking-tight text-[#0D1F2D] md:text-4xl">
-                Se præcis hvad der er inkluderet
-              </h2>
-            </AnimatedSection>
-            <AnimatedSection direction="up" delay={100}>
-              <div className="mt-10 overflow-x-auto rounded-2xl border border-sky-100 shadow-sm">
-                <table className="w-full min-w-[680px] border-collapse text-left text-sm">
-                  <thead>
-                    <tr className="bg-[#062840] text-white">
-                      <th className="px-5 py-4 text-left font-semibold">Funktion</th>
-                      <th className="px-5 py-4 text-center font-semibold">Starter</th>
-                      <th className="px-5 py-4 text-center font-semibold">Plus</th>
-                      <th className="px-5 py-4 text-center font-semibold">Pro</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {comparisonRows.map((row, idx) => (
-                      <tr key={row.label} className={idx % 2 === 0 ? "bg-white" : "bg-[#F0F7FF]"}>
-                        <td className="px-5 py-3.5 font-medium text-[#0D1F2D]">{row.label}</td>
-                        {row.cells.map((cell, cellIdx) => (
-                          <td key={cellIdx} className="px-5 py-3.5 text-center">
-                            <ComparisonCell cell={cell} />
-                          </td>
-                        ))}
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </AnimatedSection>
           </div>
         </section>
 

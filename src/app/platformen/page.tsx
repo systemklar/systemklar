@@ -43,7 +43,9 @@ function BrowserChrome({ path }: { path: string }) {
 
 function MockupCard({ children }: { children: ReactNode }) {
   return (
-    <div className="overflow-hidden rounded-2xl border border-sky-100 bg-white shadow-xl">{children}</div>
+    <div className="cursor-default overflow-hidden rounded-2xl border border-sky-100 bg-white shadow-xl transition-transform duration-500 hover:scale-[1.02]">
+      {children}
+    </div>
   );
 }
 
@@ -101,7 +103,7 @@ function DashboardMockup() {
               <div
                 key={stat.label}
                 className={`rounded-xl p-2.5 text-center ${stat.cls}`}
-                style={{ animation: `fadeInUp 0.4s ease-out ${i * 0.1}s both` }}
+                style={{ animation: `mockupFadeIn 0.4s ease-out ${i * 0.1}s both` }}
               >
                 <div className="text-base font-bold">{stat.value}</div>
                 <div className="mt-0.5 text-[10px]">{stat.label}</div>
@@ -113,7 +115,7 @@ function DashboardMockup() {
             <div
               key={c.title}
               className="mb-1.5 flex items-center justify-between rounded-lg bg-[#F0F7FF] px-3 py-2"
-              style={{ animation: `fadeInUp 0.4s ease-out ${0.3 + i * 0.1}s both` }}
+              style={{ animation: `mockupFadeIn 0.4s ease-out ${0.3 + i * 0.1}s both` }}
             >
               <span className="text-xs text-[#2C4A5E]">{c.title}</span>
               <span className={`rounded-full px-2 py-0.5 text-[10px] font-medium ${c.cls}`}>{c.status}</span>
@@ -155,7 +157,7 @@ function SupportMockup() {
                   ? "self-end rounded-tr-sm bg-sky-600 text-white"
                   : "self-start rounded-tl-sm bg-[#F0F7FF] text-[#2C4A5E]"
               }`}
-              style={{ animation: `fadeInUp 0.4s ease-out ${i * 0.15}s both` }}
+              style={{ animation: `mockupFadeIn 0.4s ease-out ${i * 0.15}s both` }}
             >
               {m.text}
             </div>
@@ -197,7 +199,7 @@ function ReportMockup() {
             <div
               key={s.label}
               className={`rounded-xl p-3 text-center ${s.cls}`}
-              style={{ animation: `fadeInUp 0.4s ease-out ${i * 0.1}s both` }}
+              style={{ animation: `mockupFadeIn 0.4s ease-out ${i * 0.1}s both` }}
             >
               <div className="text-base font-bold">{s.value}</div>
               <div className="mt-0.5 text-[10px]">{s.label}</div>
@@ -207,7 +209,7 @@ function ReportMockup() {
         <div className="mt-4 mb-1.5 text-xs font-semibold text-[#0D1F2D]">Anbefaling til næste måned</div>
         <div
           className="flex items-start gap-2 rounded-lg border border-amber-100 bg-amber-50 px-3 py-2 text-xs text-amber-800"
-          style={{ animation: "fadeInUp 0.4s ease-out 0.3s both" }}
+          style={{ animation: "mockupFadeIn 0.4s ease-out 0.3s both" }}
         >
           <AlertTriangle className="mt-0.5 h-3.5 w-3.5 shrink-0" />
           <span>Opdater Windows på 2 maskiner inden næste måned for fortsat sikkerhed.</span>
@@ -252,7 +254,7 @@ function VaultMockup() {
             <div
               key={entry.name}
               className="flex items-center justify-between rounded-lg bg-[#F0F7FF] px-3 py-2"
-              style={{ animation: `fadeInUp 0.4s ease-out ${i * 0.08}s both` }}
+              style={{ animation: `mockupFadeIn 0.4s ease-out ${i * 0.08}s both` }}
             >
               <div>
                 <div className="text-xs font-semibold text-[#0D1F2D]">{entry.name}</div>
@@ -302,7 +304,7 @@ function SystemsMockup() {
               <div
                 key={sys.name}
                 className="flex items-center justify-between rounded-lg border border-sky-100 bg-[#F8FCFF] px-3 py-2.5"
-                style={{ animation: `fadeInUp 0.4s ease-out ${i * 0.1}s both` }}
+                style={{ animation: `mockupFadeIn 0.4s ease-out ${i * 0.1}s both` }}
               >
                 <div className="flex items-center gap-2.5">
                   <span className={`h-2 w-2 rounded-full ${cfg.dot}`} aria-hidden />
@@ -348,7 +350,7 @@ function TeamMockup() {
             <div
               key={m.name}
               className="flex items-center justify-between rounded-lg border border-sky-100 bg-[#F8FCFF] px-3 py-2.5"
-              style={{ animation: `fadeInUp 0.4s ease-out ${i * 0.1}s both` }}
+              style={{ animation: `mockupFadeIn 0.4s ease-out ${i * 0.1}s both` }}
             >
               <div className="flex items-center gap-2.5">
                 <div
@@ -367,7 +369,7 @@ function TeamMockup() {
         </div>
         <button
           className="mt-3 inline-flex w-full items-center justify-center gap-1.5 rounded-lg border border-dashed border-sky-200 px-3 py-2 text-xs font-medium text-sky-600"
-          style={{ animation: "fadeInUp 0.4s ease-out 0.4s both" }}
+          style={{ animation: "mockupFadeIn 0.4s ease-out 0.4s both" }}
         >
           <UserPlus className="h-3 w-3" />
           Inviter en kollega
@@ -512,8 +514,8 @@ export default function PlatformenPage() {
     <MarketingShell>
       <main>
         <style>{`
-          @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(16px); }
+          @keyframes mockupFadeIn {
+            from { opacity: 0; transform: translateY(8px); }
             to { opacity: 1; transform: translateY(0); }
           }
         `}</style>
