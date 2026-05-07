@@ -65,7 +65,13 @@ const homePlans: HomePlan[] = [
     monthly: "499 kr/md",
     yearly: "415 kr/md",
     fits: "Passer til 1-5 ansatte",
-    features: ["IT-overblik", "Support & sager", "Sikker kodebank"],
+    features: [
+      "IT-overblik",
+      "Support & sager",
+      "Sikker kodebank",
+      "Månedlig IT-rapport",
+      "Op til 3 teammedlemmer",
+    ],
   },
   {
     name: "Plus",
@@ -663,7 +669,7 @@ export function MarketingHomeContent() {
           <p className="mb-2 text-xs font-semibold uppercase tracking-widest text-sky-600">Prøv det selv</p>
           <h2 className="mb-3 text-3xl font-bold text-[#0D1F2D]">Hvad koster IT-rod din virksomhed?</h2>
           <p className="mx-auto mb-6 max-w-2xl text-lg text-[#2C4A5E]">
-            Besvar 5 spørgsmål og få et præcist svar på hvad I taber – og hvad I kan spare.
+            Besvar 6 spørgsmål og få et præcist svar på hvad I taber – og hvad I kan spare.
           </p>
         </div>
         <div className="mx-auto max-w-3xl px-6">
@@ -982,10 +988,15 @@ export function MarketingHomeContent() {
                         ) : null}
                       </ul>
                     </div>
-                    <p className="mt-4 text-center text-lg font-bold text-green-700">
-                      Netto gevinst: {netGain < 0 ? "-" : "+"}
-                      {formatNumber(resultNet)} kr/md
-                    </p>
+                    {selectedWaste.length === 0 && netGain <= 0 ? (
+                      <p className="mt-4 text-center text-sm text-[#4A8CB5]">
+                        Udfyld alle trin for at se dit resultat
+                      </p>
+                    ) : netGain > 0 ? (
+                      <p className="mt-4 text-center text-lg font-bold text-green-700">
+                        Netto gevinst: +{formatNumber(resultNet)} kr/md
+                      </p>
+                    ) : null}
                     {urgencyText ? <p className="mt-2 text-center text-xs text-[#2C4A5E]">{urgencyText}</p> : null}
                     <div className="mt-4 flex justify-center">
                       <Link
@@ -1014,7 +1025,8 @@ export function MarketingHomeContent() {
 
       <section className="relative z-10 border-t border-black/5 bg-[#062840] py-24">
         <div className="mx-auto max-w-2xl px-6 text-center">
-          <p className="mb-6 text-xs font-semibold uppercase tracking-widest text-sky-300">Hvad kunderne siger</p>
+          <p className="mb-3 text-xs font-semibold uppercase tracking-widest text-sky-300">Hvad kunderne siger</p>
+          <h2 className="mb-8 text-center text-2xl font-bold text-white">Det siger vores kunder</h2>
         </div>
         <div className="mx-auto grid max-w-5xl grid-cols-1 gap-8 px-6 md:grid-cols-3">
           <div className="flex flex-col justify-between rounded-2xl border border-white/10 bg-white/5 p-8 text-white md:col-span-2">

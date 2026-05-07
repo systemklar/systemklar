@@ -14,7 +14,7 @@ export function MarketingFooter() {
             iconClassName="opacity-95"
           />
           <p className="mt-4 leading-relaxed text-sky-200">
-            Drift, support og AI samlet i et roligt overblik.
+            IT-platform til danske SMV&apos;er – uden en IT-afdeling.
           </p>
         </div>
         <div>
@@ -40,6 +40,11 @@ export function MarketingFooter() {
         <div>
           <p className="font-semibold text-white">Virksomhed</p>
           <ul className="mt-5 space-y-3">
+            <li>
+              <Link href="/om-os" className="transition-colors hover:text-white">
+                Om os
+              </Link>
+            </li>
             <li>
               <Link href="/book-demo" className="transition-colors hover:text-white">
                 Book demo

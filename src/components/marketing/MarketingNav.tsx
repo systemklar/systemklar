@@ -70,7 +70,7 @@ export function MarketingNav() {
               Log ind
             </Link>
             <Link
-              href="/book-demo"
+              href="/kontakt"
               className="rounded-full bg-sky-600 px-4 py-1.5 text-xs font-semibold text-white transition-colors hover:bg-sky-700"
             >
               Book demo
@@ -127,7 +127,7 @@ export function MarketingNav() {
                 Log ind
               </Link>
               <Link
-                href="/book-demo"
+                href="/kontakt"
                 className="mt-2 block rounded-full bg-sky-600 px-5 py-2.5 text-center text-sm font-semibold text-white hover:bg-sky-700"
               >
                 Book demo
