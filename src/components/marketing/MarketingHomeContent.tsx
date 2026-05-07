@@ -5,6 +5,7 @@ import Link from "next/link";
 import {
   AlertTriangle,
   Briefcase,
+  Building,
   Building2,
   Calendar,
   CheckCircle,
@@ -17,6 +18,7 @@ import {
   RefreshCw,
   ShoppingBag,
   Shuffle,
+  TrendingUp,
   Truck,
   User,
   UserCheck,
@@ -91,7 +93,52 @@ const homePlans: HomePlan[] = [
   },
 ];
 
-const hourlyRate = 350;
+const BRANCH_HOURLY_RATE: Record<string, number> = {
+  haandvaerk: 315,
+  handel: 295,
+  kontor: 425,
+  sundhed: 385,
+  transport: 310,
+  andet: 350,
+};
+
+type CvrResult = {
+  name: string;
+  cvr: string;
+  city: string;
+  industry: string;
+  employees: number;
+  industrycode: number;
+};
+
+type CvrApiItem = {
+  name?: string;
+  vat?: string | number;
+  cvr?: string | number;
+  city?: string;
+  industrydesc?: string;
+  industrycode?: string | number;
+  employees?: number;
+  error?: string | boolean;
+};
+
+function mapCvrResult(d: CvrApiItem): CvrResult {
+  return {
+    name: d.name ?? "",
+    cvr: String(d.vat ?? d.cvr ?? ""),
+    city: d.city ?? "",
+    industry: d.industrydesc ?? "",
+    employees: d.employees ?? 0,
+    industrycode: Number(d.industrycode ?? 0),
+  };
+}
+
+const itSpendOptions = [
+  { value: 0, icon: Building2, title: "Under 500 kr", subtitle: "Næsten ingen IT-udgifter" },
+  { value: 1250, icon: TrendingUp, title: "500–2.000 kr", subtitle: "Lidt ekstern hjælp" },
+  { value: 4000, icon: Briefcase, title: "2.000–6.000 kr", subtitle: "Fast IT-konsulent" },
+  { value: 6000, icon: Building, title: "Over 6.000 kr", subtitle: "Større IT-setup" },
+] as const;
 
 const employeeOptions = [
   { id: "1-5", label: "1-5 ansatte", employees: 3 },
@@ -239,6 +286,11 @@ export function MarketingHomeContent() {
   const [cvrLoading, setCvrLoading] = useState(false);
   const [cvrError, setCvrError] = useState<string | null>(null);
   const [cvrData, setCvrData] = useState<{ name: string; employees: number; industry: string } | null>(null);
+  const [cvrResults, setCvrResults] = useState<CvrResult[]>([]);
+  const [showDropdown, setShowDropdown] = useState(false);
+  const cvrSearchTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [currentItSpend, setCurrentItSpend] = useState<number | null>(null);
+  const [showEstimateInfo, setShowEstimateInfo] = useState(false);
 
   useEffect(() => {
     const fadeTimer = window.setTimeout(() => setPriceFading(true), 0);
@@ -276,12 +328,14 @@ export function MarketingHomeContent() {
     const category = wasteOptions.find((item) => item.id === categoryId);
     return sum + (category?.hours ?? 0);
   }, 0);
+  const hourlyRate = BRANCH_HOURLY_RATE[selectedIndustry ?? "andet"] ?? 350;
   const weeklyWaste = employeeCount * wasteHoursPerPerson * frequencyMultiplier;
   const monthlyWasteHours = Math.round(weeklyWaste * 4);
   const monthlyWasteCost = Math.round(weeklyWaste * 4 * hourlyRate * industryMultiplier * setupMultiplier);
-  const baseSavings = Math.round(monthlyWasteCost * 0.7);
+  const currentItCost = currentItSpend ?? 0;
+  const totalMonthlyBurden = monthlyWasteCost + currentItCost;
+  const systemklarSavings = Math.round(totalMonthlyBurden * 0.7);
   const consultantSavings = selectedSetup === "konsulent" ? employeeCount * 150 : 0;
-  const systemklarSavings = baseSavings + consultantSavings;
   const plan =
     employeeCount <= 5
       ? { name: "Starter", price: 499 }
@@ -289,12 +343,12 @@ export function MarketingHomeContent() {
         ? { name: "Plus", price: 1299 }
         : { name: "Pro", price: 2499 };
   const netGain = systemklarSavings - plan.price;
-  const resultHours = useCountUp(monthlyWasteHours, 1000, calculatorStep === 6);
-  const resultLost = useCountUp(monthlyWasteCost, 1000, calculatorStep === 6);
-  const resultSavings = useCountUp(systemklarSavings, 1000, calculatorStep === 6);
-  const resultNet = useCountUp(Math.abs(netGain), 1000, calculatorStep === 6);
-  const resultConsultant = useCountUp(consultantSavings, 1000, calculatorStep === 6);
-  const indicatorStep = Math.min(calculatorStep, 5);
+  const resultHours = useCountUp(monthlyWasteHours, 1000, calculatorStep === 7);
+  const resultLost = useCountUp(monthlyWasteCost, 1000, calculatorStep === 7);
+  const resultSavings = useCountUp(systemklarSavings, 1000, calculatorStep === 7);
+  const resultNet = useCountUp(Math.abs(netGain), 1000, calculatorStep === 7);
+  const resultConsultant = useCountUp(consultantSavings, 1000, calculatorStep === 7);
+  const resultItCost = useCountUp(currentItCost, 1000, calculatorStep === 7);
   const formatNumber = (value: number) => new Intl.NumberFormat("da-DK").format(value);
 
   const toggleWaste = (id: (typeof wasteOptions)[number]["id"]) => {
@@ -313,16 +367,22 @@ export function MarketingHomeContent() {
     stepDelayRef.current = window.setTimeout(() => setCalculatorStep(3), 500);
   };
 
+  const handleItSpendSelect = (value: number) => {
+    setCurrentItSpend(value);
+    if (stepDelayRef.current) window.clearTimeout(stepDelayRef.current);
+    stepDelayRef.current = window.setTimeout(() => setCalculatorStep(4), 500);
+  };
+
   const handleSetupSelect = (id: (typeof setupOptions)[number]["id"]) => {
     setSelectedSetup(id);
     if (stepDelayRef.current) window.clearTimeout(stepDelayRef.current);
-    stepDelayRef.current = window.setTimeout(() => setCalculatorStep(4), 500);
+    stepDelayRef.current = window.setTimeout(() => setCalculatorStep(5), 500);
   };
 
   const handleFrequencySelect = (id: (typeof frequencyOptions)[number]["id"]) => {
     setSelectedFrequency(id);
     if (stepDelayRef.current) window.clearTimeout(stepDelayRef.current);
-    stepDelayRef.current = window.setTimeout(() => setCalculatorStep(5), 500);
+    stepDelayRef.current = window.setTimeout(() => setCalculatorStep(6), 500);
   };
 
   const resetCalculator = () => {
@@ -334,79 +394,94 @@ export function MarketingHomeContent() {
     setCvrInput("");
     setCvrError(null);
     setCvrData(null);
+    setCvrResults([]);
+    setShowDropdown(false);
+    setCurrentItSpend(null);
+    setShowEstimateInfo(false);
     setCalculatorStep(0);
   };
 
   type EmployeeId = (typeof employeeOptions)[number]["id"];
   type IndustryId = (typeof industryOptions)[number]["id"];
 
-  const handleCvrLookup = async () => {
-    if (cvrInput.trim().length < 2) return;
+  useEffect(() => {
+    function handleClickOutside(e: MouseEvent) {
+      const target = e.target as Element | null;
+      if (!target?.closest(".cvr-dropdown-wrapper")) {
+        setShowDropdown(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      if (cvrSearchTimeoutRef.current) clearTimeout(cvrSearchTimeoutRef.current);
+    };
+  }, []);
+
+  const searchCvr = async (query: string) => {
     setCvrLoading(true);
     setCvrError(null);
     try {
       const res = await fetch(
-        `https://cvrapi.dk/api?search=${encodeURIComponent(cvrInput.trim())}&country=dk`,
-        { headers: { "User-Agent": "systemklar.dk ROI-beregner" } },
+        `https://cvrapi.dk/api?search=${encodeURIComponent(query.trim())}&country=dk&maxresults=8`,
+        { signal: AbortSignal.timeout(5000) },
       );
-      if (!res.ok) throw new Error("Ikke fundet");
-      const data = (await res.json()) as {
-        name?: string;
-        employees?: number;
-        industrycode?: string | number;
-        industrydesc?: string;
-        error?: string | boolean;
-      };
-      if (data.error) throw new Error("Virksomhed ikke fundet");
-
-      const employees = data.employees ?? 1;
-      const industryCode = data.industrycode ?? "";
-      const industryDesc = data.industrydesc ?? "";
-
-      setCvrData({
-        name: data.name ?? cvrInput,
-        employees,
-        industry: industryDesc,
-      });
-
-      let employeeCategory: EmployeeId = "1-5";
-      if (employees >= 30) employeeCategory = "30+";
-      else if (employees >= 16) employeeCategory = "16-30";
-      else if (employees >= 6) employeeCategory = "6-15";
-      setSelectedEmployees(employeeCategory);
-
-      const code = String(industryCode);
-      let mappedIndustry: IndustryId = "andet";
-      if (code.startsWith("41") || code.startsWith("42") || code.startsWith("43")) mappedIndustry = "haandvaerk";
-      else if (code.startsWith("45") || code.startsWith("46") || code.startsWith("47")) mappedIndustry = "handel";
-      else if (
-        code.startsWith("49") ||
-        code.startsWith("50") ||
-        code.startsWith("51") ||
-        code.startsWith("52") ||
-        code.startsWith("53")
-      )
-        mappedIndustry = "transport";
-      else if (code.startsWith("86") || code.startsWith("87") || code.startsWith("88")) mappedIndustry = "sundhed";
-      else if (
-        code.startsWith("69") ||
-        code.startsWith("70") ||
-        code.startsWith("71") ||
-        code.startsWith("72") ||
-        code.startsWith("73") ||
-        code.startsWith("74") ||
-        code.startsWith("75")
-      )
-        mappedIndustry = "kontor";
-      setSelectedIndustry(mappedIndustry);
-
-      if (stepDelayRef.current) window.clearTimeout(stepDelayRef.current);
-      stepDelayRef.current = window.setTimeout(() => setCalculatorStep(1), 800);
+      if (!res.ok) throw new Error();
+      const data: unknown = await res.json();
+      const results: CvrResult[] = Array.isArray(data)
+        ? (data as CvrApiItem[]).map(mapCvrResult)
+        : (data as CvrApiItem).error
+          ? []
+          : [mapCvrResult(data as CvrApiItem)];
+      setCvrResults(results);
+      setShowDropdown(results.length > 0);
     } catch {
-      setCvrError("Vi kunne ikke finde virksomheden. Tjek CVR-nummer eller navn og prøv igen.");
+      setCvrResults([]);
     } finally {
       setCvrLoading(false);
     }
+  };
+
+  const handleCvrInput = (value: string) => {
+    setCvrInput(value);
+    setCvrError(null);
+    setCvrData(null);
+    setShowDropdown(false);
+    if (cvrSearchTimeoutRef.current) clearTimeout(cvrSearchTimeoutRef.current);
+    if (value.trim().length < 2) {
+      setCvrResults([]);
+      return;
+    }
+    cvrSearchTimeoutRef.current = setTimeout(() => searchCvr(value), 400);
+  };
+
+  const selectCvrResult = (result: CvrResult) => {
+    setShowDropdown(false);
+    setCvrResults([]);
+    setCvrInput(result.name);
+
+    let employeeCategory: EmployeeId = "1-5";
+    if (result.employees >= 30) employeeCategory = "30+";
+    else if (result.employees >= 16) employeeCategory = "16-30";
+    else if (result.employees >= 6) employeeCategory = "6-15";
+    setSelectedEmployees(employeeCategory);
+
+    const code = String(result.industrycode);
+    let mappedIndustry: IndustryId = "andet";
+    if (["41", "42", "43"].some((p) => code.startsWith(p))) mappedIndustry = "haandvaerk";
+    else if (["45", "46", "47"].some((p) => code.startsWith(p))) mappedIndustry = "handel";
+    else if (["49", "50", "51", "52", "53"].some((p) => code.startsWith(p))) mappedIndustry = "transport";
+    else if (["86", "87", "88"].some((p) => code.startsWith(p))) mappedIndustry = "sundhed";
+    else if (["69", "70", "71", "72", "73", "74", "75"].some((p) => code.startsWith(p))) mappedIndustry = "kontor";
+    setSelectedIndustry(mappedIndustry);
+
+    setCvrData({ name: result.name, employees: result.employees, industry: result.industry });
+
+    if (stepDelayRef.current) window.clearTimeout(stepDelayRef.current);
+    stepDelayRef.current = window.setTimeout(() => setCalculatorStep(1), 800);
   };
 
   const contextLine =
@@ -664,14 +739,14 @@ export function MarketingHomeContent() {
             din virksomhed?
           </h2>
           <p className="mx-auto max-w-lg text-base text-white/60">
-            Indtast jeres CVR-nummer. Vi finder virksomheden og beregner hvad I taber på IT-rod hver måned.
+            Besvar 7 spørgsmål og få et præcist svar på hvad IT-rod koster jer.
           </p>
         </div>
         <div className="mx-auto max-w-2xl px-6">
           <div className="rounded-3xl bg-gradient-to-br from-sky-500/20 to-[#0A3D5C]/40 p-[1px]">
             <div className="rounded-[23px] bg-[#0A2535] p-8">
               <div className="mb-8 flex items-center justify-center gap-2">
-                {[0, 1, 2, 3, 4, 5].map((i) => (
+                {[0, 1, 2, 3, 4, 5, 6].map((i) => (
                   <div
                     key={i}
                     className={`rounded-full transition-all duration-300 ${
@@ -695,29 +770,27 @@ export function MarketingHomeContent() {
                 >
                   <h3 className="mb-1 text-lg font-semibold text-white">Hvad hedder din virksomhed?</h3>
                   <p className="mb-5 text-sm text-white/50">
-                    Indtast CVR-nummer eller virksomhedsnavn – vi finder resten automatisk.
+                    Begynd at skrive virksomhedsnavn eller CVR – vi finder resten automatisk.
                   </p>
-                  <input
-                    type="text"
-                    value={cvrInput}
-                    onChange={(e) => {
-                      setCvrInput(e.target.value);
-                      setCvrError(null);
-                    }}
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter") handleCvrLookup();
-                    }}
-                    placeholder="CVR-nummer eller virksomhedsnavn..."
-                    className="w-full rounded-2xl border border-white/10 bg-white/5 px-5 py-4 text-sm text-white outline-none placeholder:text-white/30 focus:border-sky-400/50"
-                  />
-                  <button
-                    onClick={handleCvrLookup}
-                    disabled={cvrLoading || cvrInput.trim().length < 2}
-                    className="mt-3 w-full rounded-2xl bg-sky-500 px-6 py-4 text-sm font-semibold text-white transition-all duration-200 hover:bg-sky-400 disabled:cursor-not-allowed disabled:opacity-40"
-                  >
+                  <div className="cvr-dropdown-wrapper relative">
+                    <input
+                      type="text"
+                      value={cvrInput}
+                      onChange={(e) => handleCvrInput(e.target.value)}
+                      onFocus={() => {
+                        if (cvrResults.length > 0) setShowDropdown(true);
+                      }}
+                      placeholder="CVR-nummer eller virksomhedsnavn..."
+                      className="w-full rounded-2xl border border-white/10 bg-white/5 px-5 py-4 pr-12 text-sm text-white outline-none placeholder:text-white/30 focus:border-sky-400/50"
+                    />
                     {cvrLoading ? (
-                      <span className="flex items-center justify-center gap-2">
-                        <svg className="h-4 w-4 animate-spin" fill="none" viewBox="0 0 24 24" aria-hidden>
+                      <div className="absolute right-4 top-1/2 -translate-y-1/2">
+                        <svg
+                          className="h-4 w-4 animate-spin text-white/40"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          aria-hidden
+                        >
                           <circle
                             className="opacity-25"
                             cx="12"
@@ -728,14 +801,44 @@ export function MarketingHomeContent() {
                           />
                           <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
                         </svg>
-                        Søger...
-                      </span>
-                    ) : (
-                      "Find virksomhed →"
-                    )}
-                  </button>
+                      </div>
+                    ) : null}
+                    {showDropdown && cvrResults.length > 0 ? (
+                      <div className="absolute left-0 right-0 top-full z-20 mt-1 overflow-hidden rounded-2xl border border-white/10 bg-[#0A2535] shadow-xl">
+                        <div className="border-b border-white/5 px-4 py-2">
+                          <p className="text-[10px] uppercase tracking-wider text-white/30">
+                            {cvrResults.length} resultater
+                          </p>
+                        </div>
+                        {cvrResults.map((r, i) => (
+                          <button
+                            key={`${r.cvr}-${i}`}
+                            type="button"
+                            onClick={() => selectCvrResult(r)}
+                            className="w-full border-b border-white/5 px-4 py-3 text-left transition-colors last:border-0 hover:bg-white/5"
+                          >
+                            <div className="flex items-start justify-between gap-3">
+                              <div className="min-w-0 flex-1">
+                                <p className="truncate text-sm font-medium text-white">{r.name}</p>
+                                <p className="mt-0.5 text-xs text-white/40">
+                                  CVR {r.cvr}
+                                  {r.city ? ` · ${r.city}` : ""}
+                                </p>
+                              </div>
+                              <div className="shrink-0 text-right">
+                                <p className="max-w-[120px] truncate text-xs text-white/30">{r.industry}</p>
+                                {r.employees > 0 ? (
+                                  <p className="mt-0.5 text-[10px] text-white/20">{r.employees} ansatte</p>
+                                ) : null}
+                              </div>
+                            </div>
+                          </button>
+                        ))}
+                      </div>
+                    ) : null}
+                  </div>
                   {cvrError ? <p className="mt-2 text-xs text-red-400">{cvrError}</p> : null}
-                  {cvrData ? (
+                  {cvrData && !showDropdown ? (
                     <div className="mt-3 flex items-center gap-3 rounded-2xl border border-sky-400/20 bg-sky-500/10 px-5 py-4">
                       <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full border border-green-400/30 bg-green-500/20">
                         <CheckCircle className="h-4 w-4 text-green-400" />
@@ -749,6 +852,7 @@ export function MarketingHomeContent() {
                     </div>
                   ) : null}
                   <button
+                    type="button"
                     onClick={() => setCalculatorStep(1)}
                     className="mt-4 block w-full text-center text-xs text-white/30 transition-colors hover:text-white/60"
                   >
@@ -836,6 +940,41 @@ export function MarketingHomeContent() {
                       : "pointer-events-none absolute inset-0 translate-y-4 opacity-0"
                   }`}
                 >
+                  <h3 className="mb-1 text-lg font-semibold text-white">
+                    Hvad betaler I ca. for IT-hjælp og systemer om måneden?
+                  </h3>
+                  <p className="mb-5 text-sm text-white/50">Inkludér konsulenter, software og support</p>
+                  <div className="grid grid-cols-2 gap-3">
+                    {itSpendOptions.map((option) => {
+                      const Icon = option.icon;
+                      const active = currentItSpend === option.value;
+                      return (
+                        <button
+                          key={option.value}
+                          type="button"
+                          onClick={() => handleItSpendSelect(option.value)}
+                          className={stepCardClass(active)}
+                        >
+                          <div className="mb-3 flex h-8 w-8 items-center justify-center rounded-xl bg-white/10">
+                            <Icon className={`h-4 w-4 ${active ? "text-sky-300" : "text-white/70"}`} />
+                          </div>
+                          <p className={`text-sm font-semibold ${active ? "text-sky-200" : "text-white"}`}>
+                            {option.title}
+                          </p>
+                          <p className="mt-0.5 text-xs text-white/40">{option.subtitle}</p>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                <div
+                  className={`transition-all duration-[400ms] ${
+                    calculatorStep === 4
+                      ? "translate-y-0 opacity-100"
+                      : "pointer-events-none absolute inset-0 translate-y-4 opacity-0"
+                  }`}
+                >
                   <h3 className="mb-5 text-lg font-semibold text-white">Hvordan håndterer I IT i dag?</h3>
                   <div className="grid grid-cols-2 gap-3">
                     {setupOptions.map((option) => {
@@ -864,7 +1003,7 @@ export function MarketingHomeContent() {
 
                 <div
                   className={`transition-all duration-[400ms] ${
-                    calculatorStep === 4
+                    calculatorStep === 5
                       ? "translate-y-0 opacity-100"
                       : "pointer-events-none absolute inset-0 translate-y-4 opacity-0"
                   }`}
@@ -897,7 +1036,7 @@ export function MarketingHomeContent() {
 
                 <div
                   className={`transition-all duration-[400ms] ${
-                    calculatorStep === 5
+                    calculatorStep === 6
                       ? "translate-y-0 opacity-100"
                       : "pointer-events-none absolute inset-0 translate-y-4 opacity-0"
                   }`}
@@ -928,7 +1067,7 @@ export function MarketingHomeContent() {
                     })}
                   </div>
                   <button
-                    onClick={() => setCalculatorStep(6)}
+                    onClick={() => setCalculatorStep(7)}
                     disabled={selectedWaste.length === 0}
                     className="mt-4 w-full rounded-2xl bg-sky-500 py-4 font-semibold text-white transition-all hover:bg-sky-400 disabled:cursor-not-allowed disabled:opacity-30"
                   >
@@ -938,12 +1077,52 @@ export function MarketingHomeContent() {
 
                 <div
                   className={`transition-all duration-[400ms] ${
-                    calculatorStep === 6
+                    calculatorStep === 7
                       ? "translate-y-0 opacity-100"
                       : "pointer-events-none absolute inset-0 translate-y-4 opacity-0"
                   }`}
                 >
                   <AnimatedSection direction="up">
+                    <div className="mb-4 flex items-center justify-center gap-2">
+                      <p className="text-sm font-semibold text-white">Her er jeres IT-regning</p>
+                      <button
+                        type="button"
+                        onClick={() => setShowEstimateInfo(!showEstimateInfo)}
+                        aria-expanded={showEstimateInfo}
+                        aria-label="Sådan beregner vi"
+                        className="flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full border border-white/20 bg-white/10 text-[10px] font-bold text-white/50 transition-all hover:bg-white/20 hover:text-white/80"
+                      >
+                        i
+                      </button>
+                    </div>
+                    {showEstimateInfo ? (
+                      <div className="mb-4 rounded-2xl border border-white/10 bg-white/5 p-4 text-left">
+                        <p className="mb-2 text-xs font-semibold text-white/70">Om denne beregning</p>
+                        <ul className="space-y-1.5 text-[11px] leading-relaxed text-white/50">
+                          <li className="flex items-start gap-1.5">
+                            <span className="mt-0.5 flex-shrink-0 text-sky-400">·</span>
+                            Timeløn baseret på Danmarks Statistiks lønstatistik for branchen (
+                            {BRANCH_HOURLY_RATE[selectedIndustry ?? "andet"]} kr/t)
+                          </li>
+                          <li className="flex items-start gap-1.5">
+                            <span className="mt-0.5 flex-shrink-0 text-sky-400">·</span>
+                            Tidsspild baseret på undersøgelser af IT-tidsspild i danske SMV&apos;er
+                          </li>
+                          <li className="flex items-start gap-1.5">
+                            <span className="mt-0.5 flex-shrink-0 text-sky-400">·</span>
+                            Virksomhedsdata hentet fra Det Centrale Virksomhedsregister (CVR)
+                          </li>
+                          <li className="flex items-start gap-1.5">
+                            <span className="mt-0.5 flex-shrink-0 text-sky-400">·</span>
+                            Besparelse estimeret til 70% – konservativt baseret på kundeerfaringer
+                          </li>
+                        </ul>
+                        <p className="mt-3 border-t border-white/10 pt-3 text-[10px] text-white/30">
+                          Dette er et estimat. Faktiske besparelser afhænger af jeres specifikke situation.
+                          systemklar påtager sig ikke ansvar for beregningens nøjagtighed.
+                        </p>
+                      </div>
+                    ) : null}
                     {cvrData ? (
                       <p className="mb-5 text-center text-xs text-white/40">
                         Beregning for <span className="font-semibold text-white">{cvrData.name}</span>
@@ -962,6 +1141,11 @@ export function MarketingHomeContent() {
                         <p className="text-2xl font-bold text-green-400">{formatNumber(resultSavings)} kr</p>
                         <p className="mt-1 text-[10px] uppercase tracking-wider text-white/40">
                           systemklar sparer
+                        </p>
+                      </div>
+                      <div className="col-span-3 mt-2 rounded-2xl border border-white/10 bg-white/5 p-3 text-center">
+                        <p className="text-xs text-white/40">
+                          Nuværende IT-udgifter medregnet: {formatNumber(resultItCost)} kr/md
                         </p>
                       </div>
                     </div>
@@ -1031,7 +1215,8 @@ export function MarketingHomeContent() {
                       Book en gratis demo
                     </Link>
                     <p className="mt-3 text-center text-[10px] text-white/25">
-                      Beregningen er baseret på dansk timeløn (350 kr/t) og dokumenteret IT-tidsspild i SMV&apos;er.
+                      Beregningen er baseret på Danmarks Statistiks branchelønnen ({hourlyRate} kr/t) og
+                      dokumenteret IT-tidsspild i SMV&apos;er.
                     </p>
                     <button
                       onClick={resetCalculator}
