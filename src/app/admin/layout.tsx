@@ -4,7 +4,6 @@ import { usePathname } from "next/navigation";
 import { useEffect, useState, type ReactNode } from "react";
 import { Menu } from "lucide-react";
 import { AdminSidebar, type AdminNavKey } from "@/components/admin/AdminSidebar";
-import { useAdminAccess } from "./use-admin-access";
 
 function activeNavFromPath(pathname: string): AdminNavKey {
   if (pathname === "/admin" || pathname.startsWith("/admin/dashboard")) {
@@ -31,9 +30,12 @@ function activeNavFromPath(pathname: string): AdminNavKey {
   return "overview";
 }
 
+/**
+ * Layout antager at adgang allerede er valideret server-side via `requireAdmin()`
+ * i hver admin-page. Layoutet rendrer udelukkende sidebar/topbar-skellet.
+ */
 export default function AdminLayout({ children }: { children: ReactNode }) {
   const pathname = usePathname();
-  const access = useAdminAccess();
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   useEffect(() => {
@@ -49,23 +51,6 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
   }
 
   const activeNav = activeNavFromPath(pathname);
-
-  if (access === "loading") {
-    return (
-      <div className="flex min-h-screen items-center justify-center bg-[#F5FAFD] text-[#2C4A5E]">
-        <p>Indlæser...</p>
-      </div>
-    );
-  }
-
-  if (access === "denied") {
-    return (
-      <main className="min-h-screen bg-[#F5FAFD] px-6 py-20 text-[#0D1F2D]">
-        <h1 className="text-xl font-semibold">Adgang nægtet</h1>
-        <p className="mt-2 text-sm text-[#2C4A5E]">Du har ikke adgang til admin-området.</p>
-      </main>
-    );
-  }
 
   return (
     <div className="surface-cards flex h-screen overflow-hidden bg-[#F5FAFD] text-[#0D1F2D]">

@@ -1,5 +1,4 @@
 import { createServerClient, type CookieOptions } from "@supabase/ssr";
-import { createClient } from "@supabase/supabase-js";
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 
@@ -52,32 +51,16 @@ export async function middleware(request: NextRequest) {
   /** Alle stier under /portal (fx /portal/tilbudsgenerator) kræver login. */
   const isPortalArea = pathname.startsWith("/portal");
 
+  /**
+   * Middleware verificerer kun at brugeren er logget ind. Selve admin-tjekket
+   * (om brugeren findes i public.admins) ligger i `requireAdmin()` og kaldes
+   * fra hver admin-page server-side.
+   */
   if (isAdminArea) {
     if (!user) {
       const login = new URL("/admin/login", request.url);
       login.searchParams.set("next", pathname + request.nextUrl.search);
       return NextResponse.redirect(login);
-    }
-
-    /** Service-role klient omgår RLS, så admins-opslaget ikke afhænger af
-     *  auth.uid()-policies. SUPABASE_SERVICE_ROLE_KEY må aldrig eksponeres
-     *  til klienten — middleware kører kun server-side. */
-    const { data: adminRow } = await createClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.SUPABASE_SERVICE_ROLE_KEY!,
-      { auth: { autoRefreshToken: false, persistSession: false } }
-    )
-      .schema("public")
-      .from("admins")
-      .select("user_id")
-      .eq("user_id", user.id)
-      .maybeSingle();
-
-    if (!adminRow) {
-      const url = request.nextUrl.clone();
-      url.pathname = "/admin/login";
-      url.search = "";
-      return NextResponse.redirect(url);
     }
     return response;
   }
