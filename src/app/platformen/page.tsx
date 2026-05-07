@@ -1,5 +1,4 @@
 import type { ReactNode } from "react";
-import Link from "next/link";
 import {
   Activity,
   AlertTriangle,
@@ -22,7 +21,6 @@ import {
   Share2,
   Shield,
   Tag,
-  Users,
   UserPlus,
 } from "lucide-react";
 import { AnimatedSection } from "@/components/ui/AnimatedSection";
@@ -571,31 +569,6 @@ export default function PlatformenPage() {
           );
         })}
 
-        <section className="bg-[#062840] py-20">
-          <div className="mx-auto max-w-3xl px-6 text-center">
-            <AnimatedSection direction="up">
-              <h2 className="text-3xl font-bold tracking-tight text-white md:text-4xl">
-                Klar til at prøve platformen?
-              </h2>
-              <p className="mx-auto mt-4 max-w-xl text-base text-white/70">
-                30 min · gratis · uforpligtende
-              </p>
-              <div className="mt-8 flex justify-center">
-                <Link
-                  href="/kontakt"
-                  className="inline-flex items-center gap-2 rounded-full bg-sky-500 px-7 py-3.5 text-sm font-semibold text-white transition-colors hover:bg-sky-400"
-                >
-                  Book en gratis snak
-                  <ChevronRight className="h-4 w-4" />
-                </Link>
-              </div>
-              <p className="mt-4 inline-flex items-center gap-1.5 text-xs text-white/50">
-                <Users className="h-3.5 w-3.5" />
-                Ingen binding · Opsig når som helst
-              </p>
-            </AnimatedSection>
-          </div>
-        </section>
       </main>
     </MarketingShell>
   );

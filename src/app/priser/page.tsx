@@ -305,27 +305,6 @@ export default function PriserPage() {
           </div>
         </section>
 
-        <section className="bg-[#062840] py-20">
-          <div className="mx-auto max-w-3xl px-6 text-center">
-            <AnimatedSection direction="up">
-              <h2 className="text-3xl font-bold tracking-tight text-white md:text-4xl">
-                Klar til at få styr på IT?
-              </h2>
-              <p className="mx-auto mt-5 max-w-xl text-base text-[#7AAEC8]">
-                Book en gratis snak på 30 minutter. Vi gennemgår platformen og sætter det op til jer.
-              </p>
-              <div className="mt-8 flex justify-center">
-                <Link
-                  href="/kontakt"
-                  className="inline-flex rounded-full bg-sky-500 px-7 py-3.5 text-sm font-semibold text-white transition-colors hover:bg-sky-400"
-                >
-                  Book en gratis snak
-                </Link>
-              </div>
-              <p className="mt-4 text-xs text-[#7AAEC8]">30 min · gratis · uforpligtende · ingen binding</p>
-            </AnimatedSection>
-          </div>
-        </section>
       </main>
     </MarketingShell>
   );

@@ -1,6 +1,5 @@
 import type { ReactNode } from "react";
-import Link from "next/link";
-import { CheckCircle, ChevronRight } from "lucide-react";
+import { CheckCircle } from "lucide-react";
 import { MarketingShell } from "@/components/marketing/MarketingShell";
 import { AnimatedSection } from "@/components/ui/AnimatedSection";
 
@@ -335,27 +334,6 @@ export default function AiVaerktoejerPage() {
           );
         })}
 
-        <section className="bg-[#062840] py-20">
-          <div className="mx-auto max-w-3xl px-6 text-center">
-            <AnimatedSection direction="up">
-              <h2 className="text-3xl font-bold tracking-tight text-white md:text-4xl">
-                Vil du se AI-værktøjerne i aktion?
-              </h2>
-              <p className="mx-auto mt-4 max-w-xl text-base text-white/70">
-                30 min · gratis · uforpligtende – vi viser dig hvordan det virker hos jer.
-              </p>
-              <div className="mt-8 flex justify-center">
-                <Link
-                  href="/kontakt"
-                  className="inline-flex items-center gap-2 rounded-full bg-sky-500 px-7 py-3.5 text-sm font-semibold text-white transition-colors hover:bg-sky-400"
-                >
-                  Book en gratis snak
-                  <ChevronRight className="h-4 w-4" />
-                </Link>
-              </div>
-            </AnimatedSection>
-          </div>
-        </section>
       </main>
     </MarketingShell>
   );

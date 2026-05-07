@@ -25,12 +25,6 @@ import {
 } from "lucide-react";
 import { AnimatedSection } from "@/components/ui/AnimatedSection";
 
-const empathyItems = [
-  { problem: "Bruger tid på at finde logins", solution: "Alle adgangskoder samlet sikkert ét sted" },
-  { problem: "Venter dage på IT-hjælp", solution: "Opret en sag – vi svarer samme dag" },
-  { problem: "Ved ikke om systemerne kører", solution: "Live overblik – du ser det med det samme" },
-];
-
 const featurePills = ["Realtids systemoverblik", "Support direkte i portalen", "Månedlig IT-rapport"];
 
 const featuredTestimonial = {
@@ -378,7 +372,7 @@ export function MarketingHomeContent() {
         .dot-drift { animation: drift 8s ease-in-out infinite; }
       `}</style>
 
-      <section className="relative overflow-hidden border-t border-black/5 bg-gradient-to-br from-[#0A6EBD] to-[#062840] py-24">
+      <section className="relative overflow-hidden border-t border-black/5 bg-gradient-to-br from-[#0A6EBD] to-[#062840] py-32">
         <div
           className="dot-drift absolute inset-0 opacity-10"
           style={{
@@ -441,48 +435,12 @@ export function MarketingHomeContent() {
         </div>
       </section>
 
-      <section className="border-t border-black/5 bg-white py-14">
+      <section className="border-t border-black/5 bg-[#F0F7FF] py-24">
         <div className="mx-auto max-w-xl px-6 text-center">
-          <h2 className="mb-3 text-2xl font-bold leading-tight text-[#0D1F2D]">
-            Du startede ikke din virksomhed for at rode med IT
-          </h2>
-          <p className="mb-6 text-base leading-relaxed text-[#2C4A5E]">
-            Adgangskoder forsvinder, systemer driller, og IT-hjælp tager dage. systemklar tager det fra dig.
-          </p>
-        </div>
-        <div className="mx-auto grid max-w-3xl grid-cols-1 gap-4 px-6 text-left md:grid-cols-3">
-          {empathyItems.map((item) => (
-            <div
-              key={item.problem}
-              className="cursor-default rounded-2xl border border-sky-100 bg-[#F0F7FF] p-4 transition-all duration-300 hover:scale-105 hover:shadow-md"
-            >
-              <p className="mb-2 text-xs font-medium text-red-500 line-through">{item.problem}</p>
-              <p className="flex items-start gap-1.5 text-xs font-semibold text-[#0D1F2D]">
-                <svg
-                  className="mt-0.5 h-3.5 w-3.5 flex-shrink-0 text-sky-600"
-                  fill="currentColor"
-                  viewBox="0 0 20 20"
-                  aria-hidden
-                >
-                  <path
-                    fillRule="evenodd"
-                    d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                    clipRule="evenodd"
-                  />
-                </svg>
-                {item.solution}
-              </p>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      <section className="border-t border-black/5 bg-[#F0F7FF] py-16">
-        <div className="mx-auto max-w-xl px-6 text-center">
-          <h2 className="mb-3 text-2xl font-bold tracking-tight text-[#0D1F2D]">
+          <h2 className="mb-3 text-3xl font-bold tracking-tight text-[#0D1F2D]">
             Alt på ét sted – præcis som det er
           </h2>
-          <p className="mb-6 text-base text-[#2C4A5E]">
+          <p className="mb-6 text-lg text-[#2C4A5E]">
             Se hvordan platformen ser ud i praksis – med et overblik du kan forstå med det samme.
           </p>
         </div>
@@ -596,11 +554,11 @@ export function MarketingHomeContent() {
         </div>
       </section>
 
-      <section id="roi-beregner" className="border-t border-black/5 bg-white py-16">
+      <section id="roi-beregner" className="border-t border-black/5 bg-white py-24">
         <div className="mx-auto max-w-xl px-6 text-center">
           <p className="mb-2 text-xs font-semibold uppercase tracking-widest text-sky-600">Prøv det selv</p>
-          <h2 className="mb-3 text-2xl font-bold text-[#0D1F2D]">Hvad koster IT-rod din virksomhed?</h2>
-          <p className="mb-6 text-base text-[#2C4A5E]">
+          <h2 className="mb-3 text-3xl font-bold text-[#0D1F2D]">Hvad koster IT-rod din virksomhed?</h2>
+          <p className="mb-6 text-lg text-[#2C4A5E]">
             Besvar 5 spørgsmål og få et præcist svar på hvad I taber – og hvad I kan spare.
           </p>
         </div>
@@ -870,11 +828,11 @@ export function MarketingHomeContent() {
         </div>
       </section>
 
-      <section className="border-t border-black/5 bg-[#062840] py-16">
+      <section className="border-t border-black/5 bg-[#062840] py-24">
         <div className="mx-auto max-w-xl px-6 text-center">
           <p className="mb-6 text-xs font-semibold uppercase tracking-widest text-sky-300">Hvad kunderne siger</p>
         </div>
-        <div className="mx-auto grid max-w-5xl grid-cols-1 gap-4 px-6 md:grid-cols-3">
+        <div className="mx-auto grid max-w-5xl grid-cols-1 gap-6 px-6 md:grid-cols-3">
           <div className="flex flex-col justify-between rounded-2xl border border-white/10 bg-white/5 p-6 text-white md:col-span-2">
             <div className="mb-4 flex gap-1">
               {[...Array(5)].map((_, i) => (
@@ -894,11 +852,11 @@ export function MarketingHomeContent() {
               </div>
             </div>
           </div>
-          <div className="flex flex-col gap-4">
+          <div className="flex flex-col gap-6">
             {sideTestimonials.map((t) => (
               <div
                 key={t.name}
-                className="flex flex-1 flex-col justify-between rounded-2xl border border-white/10 bg-white/10 p-4"
+                className="flex flex-1 flex-col justify-between rounded-2xl border border-white/10 bg-white/10 p-6"
               >
                 <div className="mb-2 flex gap-0.5">
                   {[...Array(5)].map((_, s) => (
@@ -929,10 +887,10 @@ export function MarketingHomeContent() {
         </div>
       </section>
 
-      <section className="border-t border-black/5 bg-[#F0F7FF] py-16">
+      <section className="border-t border-black/5 bg-[#F0F7FF] py-24">
         <div className="mx-auto max-w-xl px-6 text-center">
-          <h2 className="mb-3 text-2xl font-bold tracking-tight text-[#0D1F2D]">Priser</h2>
-          <p className="mb-6 text-base text-[#2C4A5E]">
+          <h2 className="mb-3 text-3xl font-bold tracking-tight text-[#0D1F2D]">Priser</h2>
+          <p className="mb-6 text-lg text-[#2C4A5E]">
             Vælg den plan der passer til jer i dag, og skift når behovet ændrer sig.
           </p>
         </div>
@@ -961,7 +919,7 @@ export function MarketingHomeContent() {
               Spar 2 måneder
             </span>
           </div>
-          <div className="grid gap-4 md:grid-cols-3">
+          <div className="grid gap-6 md:grid-cols-3">
             {homePlans.map((priceCard, index) => (
               <AnimatedSection
                 key={priceCard.name}
@@ -1028,17 +986,17 @@ export function MarketingHomeContent() {
 
       <section
         id="cta"
-        className="border-t border-black/5 bg-[#0A6EBD] py-14"
+        className="border-t border-black/5 bg-[#062840] py-24"
       >
         <div className="mx-auto max-w-xl px-6 text-center">
-          <h2 className="mb-3 text-2xl font-bold tracking-tight text-white">Klar til at få IT ud af vejen?</h2>
-          <p className="mb-6 text-sm text-white/80">
+          <h2 className="mb-3 text-3xl font-bold tracking-tight text-white">Klar til at få IT ud af vejen?</h2>
+          <p className="mb-6 text-lg text-white/80">
             Book en gratis snak på 30 minutter. Vi gennemgår platformen og sætter det op til jer – samme dag.
           </p>
           <div className="flex justify-center">
             <Link
               href="/kontakt"
-              className="rounded-full bg-white px-7 py-2.5 text-sm font-semibold text-[#0A6EBD] transition-colors hover:bg-white/90"
+              className="rounded-full bg-sky-500 px-7 py-3 text-sm font-semibold text-white transition-colors hover:bg-sky-400"
             >
               Book en gratis snak
             </Link>
