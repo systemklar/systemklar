@@ -728,17 +728,17 @@ export function MarketingHomeContent() {
         </div>
       </section>
 
-      <section id="roi-beregner" className="relative z-10 bg-[#062840] py-24">
+      <section id="roi-beregner" className="relative z-10 bg-white py-24">
         <div className="mb-12 px-6 text-center">
-          <span className="inline-flex items-center rounded-full border border-sky-400/30 bg-sky-500/20 px-4 py-1.5 text-xs font-semibold uppercase tracking-wide text-sky-300">
+          <span className="inline-flex items-center rounded-full border border-sky-200 bg-sky-50 px-4 py-1.5 text-xs font-semibold uppercase tracking-wide text-sky-700">
             Gratis beregner
           </span>
-          <h2 className="mb-3 mt-4 text-3xl font-extrabold text-white md:text-4xl">
+          <h2 className="mb-3 mt-4 text-3xl font-extrabold text-[#0D1F2D] md:text-4xl">
             Hvad koster IT-rod
             <br />
             din virksomhed?
           </h2>
-          <p className="mx-auto max-w-lg text-base text-white/60">
+          <p className="mx-auto max-w-lg text-base text-[#4A8CB5]">
             Besvar 7 spørgsmål og få et præcist svar på hvad IT-rod koster jer.
           </p>
         </div>

@@ -1,7 +1,8 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useState } from "react";
-import { Calendar, CheckCircle, ChevronDown, MessageCircle, Shield } from "lucide-react";
+import { CalendarDays, CheckCircle, ChevronDown, MessageCircle, Shield } from "lucide-react";
 import { AnimatedSection } from "@/components/ui/AnimatedSection";
 import { DemoModal } from "@/components/ui/DemoModal";
 import { MarketingShell } from "@/components/marketing/MarketingShell";
@@ -68,7 +69,7 @@ const plans: Plan[] = [
 
 const reassurance = [
   {
-    icon: Calendar,
+    icon: CalendarDays,
     title: "Ingen binding",
     desc: "Opsig når som helst. Opsigelse træder i kraft ved udgangen af indeværende betalingsperiode.",
   },
@@ -238,6 +239,12 @@ export default function PriserPage() {
                 </AnimatedSection>
               ))}
             </div>
+            <p className="mt-8 text-center text-sm text-[#4A8CB5]">
+              Ikke sikker på hvilken plan?{" "}
+              <Link href="/#roi-beregner" className="font-medium text-sky-600 hover:underline">
+                Beregn hvad IT-rod koster jer →
+              </Link>
+            </p>
           </div>
         </section>
 

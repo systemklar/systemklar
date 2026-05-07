@@ -117,6 +117,21 @@ export default function OmOsPage() {
           </div>
         </section>
 
+        <section className="bg-[#F0F7FF] py-14">
+          <div className="mx-auto grid max-w-2xl grid-cols-3 gap-6 px-6">
+            {[
+              { tal: "100%", label: "Dansk support" },
+              { tal: "< 24t", label: "Svartid på sager" },
+              { tal: "0", label: "Binding" },
+            ].map(({ tal, label }) => (
+              <div key={label} className="text-center">
+                <p className="text-4xl font-extrabold text-sky-600">{tal}</p>
+                <p className="mt-2 text-sm text-[#2C4A5E]">{label}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+
         <section className="bg-[#F0F7FF] py-20">
           <div className="mx-auto max-w-5xl px-6">
             <AnimatedSection direction="up">
@@ -144,6 +159,16 @@ export default function OmOsPage() {
                 </AnimatedSection>
               ))}
             </div>
+            <AnimatedSection direction="up">
+              <div className="mx-auto my-12 max-w-2xl rounded-3xl bg-[#062840] p-8 text-center">
+                <div className="mb-4 font-serif text-4xl text-sky-400">&ldquo;</div>
+                <p className="text-lg italic leading-relaxed text-white/90">
+                  Vi byggede systemklar fordi SMV&apos;er fortjener samme IT-overblik som store virksomheder
+                  – uden at betale for en hel IT-afdeling.
+                </p>
+                <p className="mt-4 text-sm text-sky-300">– Benjamin Sørensen, Grundlægger</p>
+              </div>
+            </AnimatedSection>
           </div>
         </section>
 
