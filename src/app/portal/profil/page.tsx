@@ -53,6 +53,7 @@ function Toggle({
 export default function PortalProfilePage() {
   const supabase = useMemo(() => createClient(), []);
   const session = usePortalSession();
+  const userId = session?.userId ?? null;
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
@@ -73,7 +74,7 @@ export default function PortalProfilePage() {
   const [savingNotifications, setSavingNotifications] = useState(false);
 
   const loadProfile = useCallback(async () => {
-    if (!session?.userId) {
+    if (!userId) {
       setProfile(null);
       setLoading(false);
       return;
@@ -84,7 +85,7 @@ export default function PortalProfilePage() {
       .select(
         "id,full_name,email,avatar_initials,role,notif_new_message,notif_status_change,notif_monthly_report,organisations(name)"
       )
-      .eq("id", session.userId)
+      .eq("id", userId)
       .maybeSingle();
 
     if (profileError || !data) {
@@ -140,10 +141,12 @@ export default function PortalProfilePage() {
     setNotifStatusChange(next.notif_status_change ?? true);
     setNotifMonthlyReport(next.notif_monthly_report ?? true);
     setLoading(false);
-  }, [session?.userId, supabase]);
+  }, [userId, supabase]);
 
   useEffect(() => {
-    void loadProfile();
+    queueMicrotask(() => {
+      void loadProfile();
+    });
   }, [loadProfile]);
 
   const saveName = async (event: FormEvent<HTMLFormElement>) => {
@@ -251,7 +254,7 @@ export default function PortalProfilePage() {
   return (
     <PortalLayout activeNav="profile">
       <div className="space-y-6">
-        <h1 className="text-3xl font-bold text-[#0D1F2D]">Profil</h1>
+        <h1 className="text-2xl font-bold text-[#0D1F2D]">Profil</h1>
 
         {error ? <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">{error}</p> : null}
         {success ? <p className="rounded-lg bg-green-50 px-3 py-2 text-sm text-green-700">{success}</p> : null}
@@ -260,11 +263,11 @@ export default function PortalProfilePage() {
           <p className="text-sm text-[#4A8CB5]">Indlæser profil...</p>
         ) : (
           <>
-            <section className="rounded-2xl border border-sky-100 bg-white p-6 shadow-sm">
-              <h2 className="text-lg font-semibold text-[#0D1F2D]">Min profil</h2>
+            <section className="mb-4 rounded-2xl border border-sky-100 bg-white p-6 shadow-sm">
+              <h2 className="mb-4 border-b border-sky-50 pb-3 text-base font-semibold text-[#0D1F2D]">Min profil</h2>
               <div className="mt-5 flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
                 <div className="flex items-start gap-4">
-                  <div className="flex h-20 w-20 items-center justify-center rounded-full bg-sky-100 text-2xl font-bold text-sky-700">
+                  <div className="flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-sky-400 to-sky-600 text-2xl font-bold text-white">
                     {avatarText}
                   </div>
                   <div>
@@ -311,14 +314,14 @@ export default function PortalProfilePage() {
                       required
                       value={fullNameInput}
                       onChange={(e) => setFullNameInput(e.target.value)}
-                      className="w-full rounded-lg border border-sky-100 px-3 py-2 text-sm outline-none focus:border-sky-500"
+                      className="w-full rounded-xl border border-sky-200 px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-sky-500"
                     />
                   </div>
                   <div className="flex gap-2">
                     <button
                       type="button"
                       onClick={() => setEditingName(false)}
-                      className="rounded-full px-4 py-2 text-sm text-slate-600 hover:bg-slate-100"
+                      className="rounded-full border border-sky-200 px-4 py-2 text-sm font-semibold text-sky-700 hover:bg-sky-50"
                     >
                       Annuller
                     </button>
@@ -334,8 +337,8 @@ export default function PortalProfilePage() {
               ) : null}
             </section>
 
-            <section className="rounded-2xl border border-sky-100 bg-white p-6 shadow-sm">
-              <h2 className="text-lg font-semibold text-[#0D1F2D]">Skift adgangskode</h2>
+            <section className="mb-4 rounded-2xl border border-sky-100 bg-white p-6 shadow-sm">
+              <h2 className="mb-4 border-b border-sky-50 pb-3 text-base font-semibold text-[#0D1F2D]">Skift adgangskode</h2>
               <form className="mt-4 grid grid-cols-1 gap-4 md:max-w-xl" onSubmit={(e) => void savePassword(e)}>
                 <div>
                   <label htmlFor="current_password" className="mb-1 block text-sm font-medium text-[#0D1F2D]">
@@ -346,7 +349,7 @@ export default function PortalProfilePage() {
                     type="password"
                     value={currentPassword}
                     onChange={(e) => setCurrentPassword(e.target.value)}
-                    className="w-full rounded-lg border border-sky-100 px-3 py-2 text-sm outline-none focus:border-sky-500"
+                    className="w-full rounded-xl border border-sky-200 px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-sky-500"
                   />
                 </div>
                 <div>
@@ -359,7 +362,7 @@ export default function PortalProfilePage() {
                     minLength={8}
                     value={newPassword}
                     onChange={(e) => setNewPassword(e.target.value)}
-                    className="w-full rounded-lg border border-sky-100 px-3 py-2 text-sm outline-none focus:border-sky-500"
+                    className="w-full rounded-xl border border-sky-200 px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-sky-500"
                   />
                 </div>
                 <div>
@@ -372,7 +375,7 @@ export default function PortalProfilePage() {
                     minLength={8}
                     value={confirmNewPassword}
                     onChange={(e) => setConfirmNewPassword(e.target.value)}
-                    className="w-full rounded-lg border border-sky-100 px-3 py-2 text-sm outline-none focus:border-sky-500"
+                    className="w-full rounded-xl border border-sky-200 px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-sky-500"
                   />
                 </div>
                 <div>
@@ -387,8 +390,8 @@ export default function PortalProfilePage() {
               </form>
             </section>
 
-            <section className="rounded-2xl border border-sky-100 bg-white p-6 shadow-sm">
-              <h2 className="text-lg font-semibold text-[#0D1F2D]">Notifikationer</h2>
+            <section className="mb-4 rounded-2xl border border-sky-100 bg-white p-6 shadow-sm">
+              <h2 className="mb-4 border-b border-sky-50 pb-3 text-base font-semibold text-[#0D1F2D]">Notifikationer</h2>
               <div className="mt-4 space-y-4">
                 <div className="flex items-center justify-between gap-4">
                   <p className="text-sm text-[#2C4A5E]">Email ved ny besked i supportssag</p>

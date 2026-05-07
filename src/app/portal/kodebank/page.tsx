@@ -1,6 +1,7 @@
 "use client";
 
 import { FormEvent, useEffect, useMemo, useState } from "react";
+import { Lock } from "lucide-react";
 import { PortalLayout } from "@/components/portal/PortalLayout";
 
 type VaultCategory = "microsoft" | "google" | "regnskab" | "webshop" | "hr" | "it" | "andet";
@@ -222,36 +223,54 @@ export default function PortalKodebankPage() {
     <PortalLayout activeNav="vault">
       <div className="space-y-6">
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <h1 className="text-3xl font-bold text-slate-900">Kodebank</h1>
+          <div>
+            <h1 className="text-2xl font-bold text-[#0D1F2D]">Kodebank</h1>
+            <p className="mt-2 text-sm text-[#4A8CB5]">Gem og find login-oplysninger sikkert ét sted.</p>
+          </div>
           <button
             type="button"
             onClick={openCreate}
-            className="rounded-full bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700"
+            className="rounded-full bg-sky-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-sky-700"
           >
             Tilføj login
           </button>
         </div>
 
-        <div className="grid gap-3 md:grid-cols-[1fr_220px]">
+        <div>
           <input
             type="text"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Søg i navn, brugernavn, URL..."
-            className="rounded-xl border border-slate-300 bg-white px-4 py-2.5 outline-none focus:border-slate-500"
+            className="w-full max-w-sm rounded-xl border border-sky-200 bg-white px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-sky-500"
           />
-          <select
-            value={category}
-            onChange={(e) => setCategory((e.target.value as VaultCategory | "") ?? "")}
-            className="rounded-xl border border-slate-300 bg-white px-3 py-2.5 outline-none focus:border-slate-500"
-          >
-            <option value="">Alle kategorier</option>
+          <div className="mt-3 flex flex-wrap gap-2">
+            <button
+              type="button"
+              onClick={() => setCategory("")}
+              className={`rounded-full border px-3 py-1 text-xs transition ${
+                category === ""
+                  ? "border-sky-400 bg-sky-50 text-sky-700"
+                  : "border-sky-100 bg-white text-[#2C4A5E] hover:border-sky-400"
+              }`}
+            >
+              Alle
+            </button>
             {CATEGORIES.map((c) => (
-              <option key={c} value={c}>
+              <button
+                key={c}
+                type="button"
+                onClick={() => setCategory(c)}
+                className={`rounded-full border px-3 py-1 text-xs transition ${
+                  category === c
+                    ? "border-sky-400 bg-sky-50 text-sky-700"
+                    : "border-sky-100 bg-white text-[#2C4A5E] hover:border-sky-400"
+                }`}
+              >
                 {categoryLabel[c]}
-              </option>
+              </button>
             ))}
-          </select>
+          </div>
         </div>
 
         {error && (
@@ -259,40 +278,40 @@ export default function PortalKodebankPage() {
         )}
 
         {loading ? (
-          <p className="text-sm text-slate-500">Henter logins...</p>
+          <p className="text-sm text-[#4A8CB5]">Henter logins...</p>
         ) : filtered.length === 0 ? (
-          <p className="rounded-xl border border-slate-200 bg-white px-4 py-5 text-sm text-slate-600">
+          <p className="rounded-2xl border border-sky-100 bg-white px-4 py-5 text-sm text-[#4A8CB5] shadow-sm">
             Ingen logins fundet.
           </p>
         ) : (
-          <div className="grid gap-4 md:grid-cols-2">
+          <div className="space-y-3">
             {filtered.map((entry) => {
               const isVisible = !!visiblePasswords[entry.id];
               const copyStatus = copyState[entry.id] ?? "idle";
               return (
                 <article
                   key={entry.id}
-                  className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"
+                  className="flex items-center gap-4 rounded-2xl border border-sky-100 bg-white p-4 shadow-sm transition-all hover:shadow-md"
                 >
-                  <div className="flex items-start justify-between gap-3">
-                    <h2 className="text-lg font-semibold text-slate-900">{entry.name}</h2>
-                    <span className="rounded-full bg-slate-100 px-2.5 py-1 text-xs font-medium text-slate-600">
-                      {entry.category ? categoryLabel[entry.category] : "Ingen kategori"}
-                    </span>
+                  <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-[#F0F7FF]">
+                    <Lock className="h-4 w-4 text-sky-600" />
                   </div>
 
-                  <div className="mt-3 space-y-1.5 text-sm text-slate-700">
-                    <p>
-                      <span className="font-medium">Brugernavn:</span> {entry.username || "-"}
-                    </p>
-                    <p className="break-all">
-                      <span className="font-medium">URL:</span>{" "}
+                  <div className="min-w-0 flex-1">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <h2 className="text-sm font-semibold text-[#0D1F2D]">{entry.name}</h2>
+                      <span className="rounded-full bg-sky-50 px-2 py-0.5 text-xs text-sky-700">
+                        {entry.category ? categoryLabel[entry.category] : "Ingen kategori"}
+                      </span>
+                    </div>
+                    <p className="mt-1 truncate text-xs text-[#4A8CB5]">{entry.username || "-"}</p>
+                    <p className="mt-0.5 truncate text-xs text-[#4A8CB5]">
                       {entry.url ? (
                         <a
                           href={entry.url}
                           target="_blank"
                           rel="noreferrer"
-                          className="text-blue-600 underline"
+                          className="text-sky-600 hover:underline"
                         >
                           {entry.url}
                         </a>
@@ -302,17 +321,17 @@ export default function PortalKodebankPage() {
                     </p>
                   </div>
 
-                  <div className="mt-4 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2.5">
-                    <p className="text-xs font-medium text-slate-500">Adgangskode</p>
+                  <div className="min-w-[12rem] rounded-xl border border-sky-100 bg-[#F0F7FF] px-3 py-2.5">
+                    <p className="text-xs font-medium text-[#4A8CB5]">Adgangskode</p>
                     <div className="mt-1 flex items-center justify-between gap-3">
-                      <span className="truncate text-sm font-medium text-slate-800">
+                      <span className="truncate font-mono text-sm text-[#0D1F2D]">
                         {isVisible ? entry.password || "-" : entry.password ? "••••••••" : "-"}
                       </span>
                       <div className="flex items-center gap-2">
                         <button
                           type="button"
                           onClick={() => togglePassword(entry.id)}
-                          className="inline-flex items-center gap-1 rounded-md border border-slate-300 bg-white px-2 py-1 text-xs font-semibold text-slate-700 hover:bg-slate-100"
+                          className="inline-flex items-center gap-1 text-xs font-semibold text-sky-600 hover:underline"
                         >
                           <EyeIcon off={isVisible} />
                           {isVisible ? "Skjul" : "Vis"}
@@ -321,7 +340,7 @@ export default function PortalKodebankPage() {
                           type="button"
                           onClick={() => void copyPassword(entry)}
                           disabled={!entry.password}
-                          className="rounded-md border border-slate-300 bg-white px-2 py-1 text-xs font-semibold text-slate-700 hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-50"
+                          className="text-xs font-semibold text-sky-600 hover:underline disabled:cursor-not-allowed disabled:opacity-50"
                         >
                           {copyStatus === "copied"
                             ? "Kopieret"
@@ -334,23 +353,23 @@ export default function PortalKodebankPage() {
                   </div>
 
                   {entry.notes && (
-                    <p className="mt-3 whitespace-pre-wrap rounded-lg bg-slate-50 px-3 py-2 text-sm text-slate-600">
+                    <p className="hidden max-w-[12rem] whitespace-pre-wrap rounded-xl bg-[#F0F7FF] px-3 py-2 text-xs text-[#4A8CB5] xl:block">
                       {entry.notes}
                     </p>
                   )}
 
-                  <div className="mt-4 flex gap-2">
+                  <div className="flex flex-shrink-0 gap-2">
                     <button
                       type="button"
                       onClick={() => openEdit(entry)}
-                      className="rounded-full border border-slate-300 px-4 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-100"
+                      className="rounded-full border border-sky-200 px-4 py-1.5 text-xs font-semibold text-sky-700 hover:bg-sky-50"
                     >
                       Rediger
                     </button>
                     <button
                       type="button"
                       onClick={() => void handleDelete(entry.id)}
-                      className="rounded-full border border-red-300 px-4 py-1.5 text-xs font-semibold text-red-700 hover:bg-red-50"
+                      className="rounded-full border border-red-200 bg-red-50 px-4 py-1.5 text-xs font-semibold text-red-600 hover:bg-red-100"
                     >
                       Slet
                     </button>
@@ -364,38 +383,38 @@ export default function PortalKodebankPage() {
 
       {showModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/40 p-4">
-          <div className="w-full max-w-xl rounded-2xl border border-slate-200 bg-white p-6 shadow-xl">
-            <h2 className="text-xl font-bold text-slate-900">
+          <div className="w-full max-w-xl rounded-2xl border border-sky-100 bg-white p-6 shadow-xl">
+            <h2 className="text-xl font-bold text-[#0D1F2D]">
               {editingId ? "Rediger login" : "Tilføj login"}
             </h2>
             <form className="mt-4 space-y-4" onSubmit={handleSubmit}>
               <div>
-                <label className="mb-1 block text-sm font-medium text-slate-700">Navn</label>
+                <label className="mb-1 block text-sm font-medium text-[#0D1F2D]">Navn</label>
                 <input
                   required
                   value={form.name}
                   onChange={(e) => setForm((prev) => ({ ...prev, name: e.target.value }))}
-                  className="w-full rounded-lg border border-slate-300 px-3 py-2 outline-none focus:border-slate-500"
+                  className="w-full rounded-xl border border-sky-200 px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-sky-500"
                 />
               </div>
 
               <div className="grid gap-4 md:grid-cols-2">
                 <div>
-                  <label className="mb-1 block text-sm font-medium text-slate-700">Brugernavn</label>
+                  <label className="mb-1 block text-sm font-medium text-[#0D1F2D]">Brugernavn</label>
                   <input
                     value={form.username}
                     onChange={(e) => setForm((prev) => ({ ...prev, username: e.target.value }))}
-                    className="w-full rounded-lg border border-slate-300 px-3 py-2 outline-none focus:border-slate-500"
+                    className="w-full rounded-xl border border-sky-200 px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-sky-500"
                   />
                 </div>
                 <div>
-                  <label className="mb-1 block text-sm font-medium text-slate-700">Kategori</label>
+                  <label className="mb-1 block text-sm font-medium text-[#0D1F2D]">Kategori</label>
                   <select
                     value={form.category}
                     onChange={(e) =>
                       setForm((prev) => ({ ...prev, category: (e.target.value as VaultCategory | "") ?? "" }))
                     }
-                    className="w-full rounded-lg border border-slate-300 px-3 py-2 outline-none focus:border-slate-500"
+                    className="w-full rounded-xl border border-sky-200 px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-sky-500"
                   >
                     <option value="">Ingen kategori</option>
                     {CATEGORIES.map((c) => (
@@ -409,32 +428,32 @@ export default function PortalKodebankPage() {
 
               <div className="grid gap-4 md:grid-cols-2">
                 <div>
-                  <label className="mb-1 block text-sm font-medium text-slate-700">Adgangskode</label>
+                  <label className="mb-1 block text-sm font-medium text-[#0D1F2D]">Adgangskode</label>
                   <input
                     type="text"
                     value={form.password}
                     onChange={(e) => setForm((prev) => ({ ...prev, password: e.target.value }))}
-                    className="w-full rounded-lg border border-slate-300 px-3 py-2 outline-none focus:border-slate-500"
+                    className="w-full rounded-xl border border-sky-200 px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-sky-500"
                   />
                 </div>
                 <div>
-                  <label className="mb-1 block text-sm font-medium text-slate-700">URL</label>
+                  <label className="mb-1 block text-sm font-medium text-[#0D1F2D]">URL</label>
                   <input
                     type="url"
                     value={form.url}
                     onChange={(e) => setForm((prev) => ({ ...prev, url: e.target.value }))}
-                    className="w-full rounded-lg border border-slate-300 px-3 py-2 outline-none focus:border-slate-500"
+                    className="w-full rounded-xl border border-sky-200 px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-sky-500"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="mb-1 block text-sm font-medium text-slate-700">Notater</label>
+                <label className="mb-1 block text-sm font-medium text-[#0D1F2D]">Notater</label>
                 <textarea
                   rows={4}
                   value={form.notes}
                   onChange={(e) => setForm((prev) => ({ ...prev, notes: e.target.value }))}
-                  className="w-full rounded-lg border border-slate-300 px-3 py-2 outline-none focus:border-slate-500"
+                  className="w-full rounded-xl border border-sky-200 px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-sky-500"
                 />
               </div>
 
@@ -446,14 +465,14 @@ export default function PortalKodebankPage() {
                     setEditingId(null);
                     setForm(emptyForm);
                   }}
-                  className="rounded-full border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-100"
+                  className="rounded-full border border-sky-200 px-4 py-2 text-sm font-semibold text-sky-700 hover:bg-sky-50"
                 >
                   Annuller
                 </button>
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="rounded-full bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700 disabled:opacity-50"
+                  className="rounded-full bg-sky-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-sky-700 disabled:opacity-50"
                 >
                   {submitting ? "Gemmer..." : editingId ? "Gem ændringer" : "Opret login"}
                 </button>

@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { BookOpen, Mail } from "lucide-react";
+import { BookOpen, LogOut, Mail } from "lucide-react";
 import { useMemo, type ReactNode } from "react";
 import { SystemklarLogo } from "@/components/branding/SystemklarLogo";
 import { createClient } from "@/lib/supabase";
@@ -22,7 +22,7 @@ type AdminSidebarProps = {
 
 function DotIcon({ path }: { path: string }) {
   return (
-    <svg viewBox="0 0 24 24" fill="none" className="h-4 w-4 text-sky-600" aria-hidden>
+    <svg viewBox="0 0 24 24" fill="none" className="h-4 w-4 flex-shrink-0" aria-hidden>
       <path d={path} stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   );
@@ -37,13 +37,13 @@ const navItems: { label: string; href: string; key: AdminNavKey; icon: ReactNode
     label: "Email-skabeloner",
     href: "/admin/emails",
     key: "emails",
-    icon: <Mail className="h-4 w-4 text-sky-600" aria-hidden />,
+    icon: <Mail className="h-4 w-4 flex-shrink-0" aria-hidden />,
   },
   {
     label: "Vejledninger",
     href: "/admin/vejledninger",
     key: "guides",
-    icon: <BookOpen className="h-4 w-4 text-sky-600" aria-hidden />,
+    icon: <BookOpen className="h-4 w-4 flex-shrink-0" aria-hidden />,
   },
   { label: "Systemer", href: "/admin/systemer", key: "systems", icon: <DotIcon path="M12 3v4m0 10v4M3 12h4m10 0h4M6 6l3 3m6 6 3 3m0-12-3 3m-6 6-3 3" /> },
 ];
@@ -51,6 +51,12 @@ const navItems: { label: string; href: string; key: AdminNavKey; icon: ReactNode
 export function AdminSidebar({ activeNav }: AdminSidebarProps) {
   const router = useRouter();
   const supabase = useMemo(() => createClient(), []);
+  const navGroups = [
+    { label: "Overblik", keys: ["overview"] as AdminNavKey[] },
+    { label: "Kunder", keys: ["customers", "tickets"] as AdminNavKey[] },
+    { label: "Indhold", keys: ["reports", "guides", "emails"] as AdminNavKey[] },
+    { label: "System", keys: ["systems"] as AdminNavKey[] },
+  ];
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
@@ -58,45 +64,53 @@ export function AdminSidebar({ activeNav }: AdminSidebarProps) {
   };
 
   return (
-    <aside className="flex min-h-screen w-full max-w-72 shrink-0 flex-col border-r border-sky-100 bg-[#F5FAFD] p-6">
+    <aside className="flex min-h-screen w-64 shrink-0 flex-col border-r border-sky-100 bg-white p-4">
       <div className="flex min-h-0 flex-1 flex-col">
-        <Link href="/admin/dashboard" className="block">
-          <div className="rounded-xl border border-sky-100 bg-white px-3 py-2">
-            <SystemklarLogo textClassName="text-sm font-bold leading-snug text-sky-600" />
-            <p className="mt-0.5 text-xs font-medium text-[#4A8CB5]">Admin</p>
-          </div>
+        <Link href="/admin/dashboard" className="mb-4 block border-b border-sky-50 pb-4">
+          <SystemklarLogo textClassName="text-sm font-bold leading-snug text-sky-600" />
+          <p className="mt-0.5 text-xs font-medium text-[#4A8CB5]">Admin</p>
         </Link>
 
-        <nav className="mt-10 flex flex-col gap-1">
-          {navItems.map((item) => {
-            const isActive = item.key === activeNav;
-            return (
-              <Link
-                key={item.key}
-                href={item.href}
-                className={`rounded-lg px-3 py-2 text-sm transition-colors duration-150 ${
-                  isActive
-                    ? "bg-sky-50 font-semibold text-sky-700"
-                    : "text-[#2C4A5E] hover:bg-sky-50 hover:text-sky-700"
-                }`}
-              >
-                <span className="inline-flex items-center gap-2">
-                  {item.icon}
-                  {item.label}
-                </span>
-              </Link>
-            );
-          })}
+        <nav className="px-3 py-2">
+          {navGroups.map((group) => (
+            <div key={group.label} className="space-y-0.5">
+              <p className="mb-1 mt-4 px-3 text-[10px] font-semibold uppercase tracking-widest text-[#7AAEC8]">
+                {group.label}
+              </p>
+              {navItems
+                .filter((item) => group.keys.includes(item.key))
+                .map((item) => {
+                  const isActive = item.key === activeNav;
+                  return (
+                    <Link
+                      key={item.key}
+                      href={item.href}
+                      className={`flex cursor-pointer items-center gap-3 rounded-xl px-3 py-2.5 text-sm transition-all ${
+                        isActive
+                          ? "border border-sky-100 bg-sky-50 font-semibold text-sky-700"
+                          : "text-[#2C4A5E] hover:bg-[#F0F7FF] hover:text-sky-700"
+                      }`}
+                    >
+                      {item.icon}
+                      {item.label}
+                    </Link>
+                  );
+                })}
+            </div>
+          ))}
         </nav>
       </div>
 
-      <button
-        type="button"
-        onClick={() => void handleLogout()}
-        className="mt-8 w-full rounded-full bg-[#062840] px-4 py-2 text-sm font-medium text-white transition hover:bg-[#0A3D5C]"
-      >
-        Log ud
-      </button>
+      <div className="mt-auto border-t border-sky-50 pt-3">
+        <button
+          type="button"
+          onClick={() => void handleLogout()}
+          className="flex w-full items-center gap-2 rounded-xl px-3 py-2.5 text-sm text-[#4A8CB5] transition-all hover:bg-red-50 hover:text-red-500"
+        >
+          <LogOut className="h-4 w-4" />
+          Log ud
+        </button>
+      </div>
     </aside>
   );
 }

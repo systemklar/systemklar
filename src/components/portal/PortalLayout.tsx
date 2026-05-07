@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { BookOpen, User, Users } from "lucide-react";
+import { BookOpen, LogOut, User, Users } from "lucide-react";
 import {
   createContext,
   useContext,
@@ -29,7 +29,7 @@ export type PortalNavKey =
 
 function LockIcon() {
   return (
-    <svg viewBox="0 0 24 24" fill="none" className="h-4 w-4 text-sky-600" aria-hidden>
+    <svg viewBox="0 0 24 24" fill="none" className="h-4 w-4 flex-shrink-0" aria-hidden>
       <path
         d="M8 10V7a4 4 0 1 1 8 0v3M7 10h10a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1v-8a1 1 0 0 1 1-1Z"
         stroke="currentColor"
@@ -42,21 +42,21 @@ function LockIcon() {
 
 function HomeIcon() {
   return (
-    <svg viewBox="0 0 24 24" fill="none" className="h-4 w-4 text-sky-600" aria-hidden>
+    <svg viewBox="0 0 24 24" fill="none" className="h-4 w-4 flex-shrink-0" aria-hidden>
       <path d="M4 10.5 12 4l8 6.5V20a1 1 0 0 1-1 1h-5v-6H10v6H5a1 1 0 0 1-1-1v-9.5Z" stroke="currentColor" strokeWidth="1.7" />
     </svg>
   );
 }
 function TicketIcon() {
   return (
-    <svg viewBox="0 0 24 24" fill="none" className="h-4 w-4 text-sky-600" aria-hidden>
+    <svg viewBox="0 0 24 24" fill="none" className="h-4 w-4 flex-shrink-0" aria-hidden>
       <path d="M4 7a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v4a2 2 0 1 0 0 4v2a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-2a2 2 0 1 0 0-4V7Z" stroke="currentColor" strokeWidth="1.7" />
     </svg>
   );
 }
 function ReportIcon() {
   return (
-    <svg viewBox="0 0 24 24" fill="none" className="h-4 w-4 text-sky-600" aria-hidden>
+    <svg viewBox="0 0 24 24" fill="none" className="h-4 w-4 flex-shrink-0" aria-hidden>
       <path d="M7 4h7l3 3v13H7z" stroke="currentColor" strokeWidth="1.7" />
       <path d="M14 4v3h3M10 12h4M10 15h4" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
     </svg>
@@ -64,14 +64,14 @@ function ReportIcon() {
 }
 function SystemsIcon() {
   return (
-    <svg viewBox="0 0 24 24" fill="none" className="h-4 w-4 text-sky-600" aria-hidden>
+    <svg viewBox="0 0 24 24" fill="none" className="h-4 w-4 flex-shrink-0" aria-hidden>
       <path d="M12 3v4m0 10v4M3 12h4m10 0h4M6 6l3 3m6 6 3 3m0-12-3 3m-6 6-3 3" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
     </svg>
   );
 }
 function SparklesIcon() {
   return (
-    <svg viewBox="0 0 24 24" fill="none" className="h-4 w-4 text-sky-600" aria-hidden>
+    <svg viewBox="0 0 24 24" fill="none" className="h-4 w-4 flex-shrink-0" aria-hidden>
       <path
         d="M12 3v2.5M12 18.5V21M3 12h2.5M18.5 12H21M5.6 5.6l1.8 1.8M16.6 16.6l1.8 1.8M5.6 18.4l1.8-1.8M16.6 7.4l1.8-1.8"
         stroke="currentColor"
@@ -89,7 +89,7 @@ function SparklesIcon() {
 }
 function AiIcon() {
   return (
-    <svg viewBox="0 0 24 24" fill="none" className="h-4 w-4 text-sky-600" aria-hidden>
+    <svg viewBox="0 0 24 24" fill="none" className="h-4 w-4 flex-shrink-0" aria-hidden>
       <path d="M12 3v4m0 10v4M3 12h4m10 0h4M6.5 6.5l2.8 2.8m5.4 5.4 2.8 2.8m0-11-2.8 2.8m-5.4 5.4-2.8 2.8" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
       <circle cx="12" cy="12" r="2.5" stroke="currentColor" strokeWidth="1.7" />
     </svg>
@@ -113,10 +113,10 @@ const navItems: { label: string; href: string; key: PortalNavKey; icon?: ReactNo
     label: "Vejledninger",
     href: "/portal/vejledninger",
     key: "guides",
-    icon: <BookOpen className="h-4 w-4 text-sky-600" aria-hidden />,
+    icon: <BookOpen className="h-4 w-4 flex-shrink-0" aria-hidden />,
   },
-  { label: "Team", href: "/portal/team", key: "team", icon: <Users className="h-4 w-4 text-sky-600" />, adminOnly: true },
-  { label: "Profil", href: "/portal/profil", key: "profile", icon: <User className="h-4 w-4 text-sky-600" /> },
+  { label: "Team", href: "/portal/team", key: "team", icon: <Users className="h-4 w-4 flex-shrink-0" />, adminOnly: true },
+  { label: "Profil", href: "/portal/profil", key: "profile", icon: <User className="h-4 w-4 flex-shrink-0" /> },
 ];
 
 type PortalSession = {
@@ -212,51 +212,66 @@ export function PortalLayout({ children, activeNav }: PortalLayoutProps) {
   }
 
   const visibleNavItems = navItems.filter((item) => !item.adminOnly || role === "org_admin");
+  const navGroups = [
+    { label: "Platform", keys: ["dashboard", "support", "rapport", "systems"] as PortalNavKey[] },
+    { label: "Værktøjer", keys: ["vault", "tilbudsgenerator", "ai"] as PortalNavKey[] },
+    { label: "Konto", keys: ["guides", "team", "profile"] as PortalNavKey[] },
+  ];
 
   return (
     <PortalSessionContext.Provider value={{ email: userEmail, userId, organisationId, role, fullName }}>
-      <main className="surface-cards min-h-screen bg-[#F5FAFD] text-[#1C1917]">
-        <div className="mx-auto flex min-h-screen w-full max-w-7xl">
-          <aside className="w-full max-w-72 border-r border-sky-100 bg-[#F5FAFD] p-6">
-            <Link href="/portal" className="block">
-              <div className="rounded-xl border border-sky-100 bg-white px-3 py-2">
-                <SystemklarLogo textClassName="text-sm font-bold tracking-tight text-sky-600" />
-                <p className="mt-0.5 text-xs font-medium text-[#4A8CB5]">Kundeportal</p>
-              </div>
+      <main className="surface-cards min-h-screen bg-[#F5FAFD] text-[#0D1F2D]">
+        <div className="flex min-h-screen w-full">
+          <aside className="flex w-64 shrink-0 flex-col border-r border-sky-100 bg-white p-4">
+            <Link href="/portal" className="mb-4 block border-b border-sky-50 pb-4">
+              <SystemklarLogo textClassName="text-sm font-bold tracking-tight text-sky-600" />
+              <p className="mt-0.5 text-xs font-medium text-[#4A8CB5]">Kundeportal</p>
             </Link>
 
-            <nav className="mt-6 space-y-1.5">
-              {visibleNavItems.map((item) => {
-                const isActive = item.key === activeNav;
+            <nav className="px-3 py-2">
+              {navGroups.map((group) => {
+                const items = visibleNavItems.filter((item) => group.keys.includes(item.key));
+                if (items.length === 0) return null;
                 return (
-                  <Link
-                    key={item.key}
-                    href={item.href}
-                    className={`block rounded-lg px-3 py-2 text-sm transition-colors duration-150 ${
-                      isActive
-                        ? "bg-sky-50 font-semibold text-sky-700"
-                        : "text-[#2C4A5E] hover:bg-sky-50 hover:text-sky-700"
-                    }`}
-                  >
-                    <span className="inline-flex items-center gap-2">
-                      {item.icon}
-                      {item.label}
-                    </span>
-                  </Link>
+                  <div key={group.label} className="space-y-0.5">
+                    <p className="mb-1 mt-4 px-3 text-[10px] font-semibold uppercase tracking-widest text-[#7AAEC8]">
+                      {group.label}
+                    </p>
+                    {items.map((item) => {
+                      const isActive = item.key === activeNav;
+                      return (
+                        <Link
+                          key={item.key}
+                          href={item.href}
+                          className={`flex cursor-pointer items-center gap-3 rounded-xl px-3 py-2.5 text-sm transition-all ${
+                            isActive
+                              ? "border border-sky-100 bg-sky-50 font-semibold text-sky-700"
+                              : "text-[#2C4A5E] hover:bg-[#F0F7FF] hover:text-sky-700"
+                          }`}
+                        >
+                          {item.icon}
+                          {item.label}
+                        </Link>
+                      );
+                    })}
+                  </div>
                 );
               })}
             </nav>
 
-            <button
-              type="button"
-              onClick={handleLogout}
-              className="mt-8 w-full rounded-full bg-[#062840] px-4 py-2 text-sm font-medium text-white transition hover:bg-[#0A3D5C]"
-            >
-              Log ud
-            </button>
+            <div className="mt-auto border-t border-sky-50 pt-3">
+              <button
+                type="button"
+                onClick={handleLogout}
+                className="flex w-full items-center gap-2 rounded-xl px-3 py-2.5 text-sm text-[#4A8CB5] transition-all hover:bg-red-50 hover:text-red-500"
+              >
+                <LogOut className="h-4 w-4" />
+                Log ud
+              </button>
+            </div>
           </aside>
 
-          <section className="app-rhythm flex-1 p-6 md:p-10">{children}</section>
+          <section className="app-rhythm flex-1 bg-[#F5FAFD] p-8">{children}</section>
         </div>
       </main>
     </PortalSessionContext.Provider>

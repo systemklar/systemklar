@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
+import { AlertTriangle, Monitor, Ticket } from "lucide-react";
 import { PortalLayout, usePortalSession } from "@/components/portal/PortalLayout";
 import { AnimatedSection } from "@/components/ui/AnimatedSection";
 import { fetchCurrentProfile } from "@/lib/current-profile";
@@ -112,35 +113,43 @@ function DashboardContent() {
   const today = new Intl.DateTimeFormat("da-DK", { dateStyle: "full" }).format(new Date());
   const greetingName = companyName ?? session?.email ?? "der";
 
+  const statCards = [
+    { value: systems.length, label: "Systemer", icon: Monitor },
+    { value: recentTickets.length, label: "Seneste sager", icon: Ticket },
+    { value: hasDown ? 1 : 0, label: "Advarsler", icon: AlertTriangle },
+  ];
+
   return (
     <div className="space-y-6">
-      <AnimatedSection direction="up" delay={0} className="rounded-2xl border border-sky-100 bg-white p-6 shadow-sm md:p-8">
-        <p className="text-sm text-[#4A8CB5]">{today}</p>
+      <AnimatedSection direction="up" delay={0} className="border-b border-sky-100 pb-6">
+        <p className="mb-1 text-xs text-[#4A8CB5]">{today}</p>
         <h1 className="mt-2 text-2xl font-bold tracking-tight text-[#0D1F2D]">Goddag, {greetingName}</h1>
-        <p className="mt-3 text-sm text-[#4A8CB5]">Her er dagens overblik over systemstatus, handlinger og seneste sager.</p>
+        <p className="mt-2 text-sm text-[#4A8CB5]">Her er dagens overblik over systemstatus, handlinger og seneste sager.</p>
       </AnimatedSection>
 
       <div className="grid gap-4 md:grid-cols-3">
-        {[
-          { value: systems.length, label: "Systemer" },
-          { value: recentTickets.length, label: "Seneste sager" },
-          { value: hasDown ? 1 : 0, label: "Advarsler" },
-        ].map((stat, idx) => (
+        {statCards.map((stat, idx) => {
+          const Icon = stat.icon;
+          return (
           <AnimatedSection key={stat.label} direction="up" delay={(idx * 100) as 0 | 100 | 200 | 300}>
-          <article className="rounded-2xl border border-sky-100 bg-white p-5 shadow-sm">
-            <p className="text-3xl font-bold text-sky-600">
-              <CountUp value={stat.value} />
-            </p>
-            <p className="mt-1 text-xs text-[#4A8CB5]">{stat.label}</p>
-          </article>
+            <article className="rounded-2xl border border-sky-100 bg-white p-5 shadow-sm">
+              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#F0F7FF]">
+                <Icon className="h-4 w-4 text-sky-600" />
+              </div>
+              <p className="mt-3 text-3xl font-bold text-[#0D1F2D]">
+                <CountUp value={stat.value} />
+              </p>
+              <p className="mt-1 text-xs text-[#4A8CB5]">{stat.label}</p>
+            </article>
           </AnimatedSection>
-        ))}
+        );
+        })}
       </div>
 
-      <AnimatedSection direction="up" delay={100} className="card-hover rounded-2xl border border-sky-100 bg-white p-6 shadow-sm">
+      <AnimatedSection direction="up" delay={100} className="rounded-2xl border border-sky-100 bg-white p-5 shadow-sm">
         <div className="flex items-center justify-between gap-4">
-          <h2 className="text-xl font-semibold text-[#0D1F2D]">Mine systemer</h2>
-          <Link href="/portal/systemer" className="text-sm font-semibold text-blue-600 hover:underline">
+          <h2 className="text-base font-semibold text-[#0D1F2D]">Mine systemer</h2>
+          <Link href="/portal/systemer" className="text-sm font-semibold text-sky-600 hover:underline">
             Se alle
           </Link>
         </div>
@@ -150,22 +159,21 @@ function DashboardContent() {
           </p>
         ) : null}
         {systemsLoading ? (
-          <p className="mt-4 text-sm text-slate-500">Henter systemer...</p>
+          <p className="mt-4 text-sm text-[#4A8CB5]">Henter systemer...</p>
         ) : systems.length === 0 ? (
-          <div className="mt-4 rounded-xl border border-dashed border-slate-300 bg-slate-50 p-6 text-center">
-            <p className="text-2xl text-sky-500">System</p>
-            <p className="mt-2 text-sm font-medium text-slate-700">Ingen systemer endnu</p>
-            <p className="mt-1 text-sm text-slate-500">Tilføj jeres systemer for at få status-overblik.</p>
+          <div className="mt-4 rounded-2xl border border-dashed border-sky-100 bg-[#F0F7FF] p-6 text-center">
+            <p className="text-sm font-medium text-[#0D1F2D]">Ingen systemer endnu</p>
+            <p className="mt-1 text-sm text-[#4A8CB5]">Tilføj jeres systemer for at få status-overblik.</p>
           </div>
         ) : (
           <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
             {systems.map((s) => (
-              <article key={s.id} className="card-hover rounded-xl border border-slate-200 p-4 shadow-sm">
+              <article key={s.id} className="rounded-2xl border border-sky-100 bg-white p-4 shadow-sm">
                 <div className="flex items-start justify-between gap-2">
-                  <p className="font-semibold text-slate-900">{s.name}</p>
+                  <p className="font-semibold text-[#0D1F2D]">{s.name}</p>
                   <StatusDot status={s.status} />
                 </div>
-                <p className="mt-1 text-xs text-slate-500">{s.type}</p>
+                <p className="mt-1 text-xs text-[#4A8CB5]">{s.type}</p>
                 <span className={`mt-3 inline-flex rounded-full px-2.5 py-0.5 text-xs font-semibold ${statusStyles[s.status]}`}>
                   {s.status === "ok" ? "Aktiv" : s.status === "advarsel" ? "Advarsel" : "Nede"}
                 </span>
@@ -181,35 +189,38 @@ function DashboardContent() {
           { title: "Se systemer", href: "/portal/systemer", text: "Følg drift og status i realtid.", icon: "02" },
           { title: "Åbn kodebank", href: "/portal/kodebank", text: "Gem og find login-oplysninger sikkert.", icon: "03" },
         ].map((card) => (
-          <Link key={card.title} href={card.href} className="card-hover rounded-2xl border border-sky-100 bg-white p-5 shadow-sm">
-            <p className="text-sm font-semibold text-sky-300">{card.icon}</p>
-            <h3 className="mt-3 text-lg font-semibold text-slate-900">{card.title}</h3>
-            <p className="mt-1 text-sm text-slate-600">{card.text}</p>
+          <Link
+            key={card.title}
+            href={card.href}
+            className="cursor-pointer rounded-2xl border border-sky-100 bg-white p-5 transition-all hover:border-sky-200 hover:shadow-md"
+          >
+            <p className="mb-2 text-xs font-bold text-sky-400">{card.icon}</p>
+            <h3 className="text-sm font-semibold text-[#0D1F2D]">{card.title}</h3>
+            <p className="mt-1 text-xs text-[#4A8CB5]">{card.text}</p>
           </Link>
         ))}
       </div>
 
-      <AnimatedSection direction="up" delay={200} className="card-hover rounded-2xl border border-sky-100 bg-white p-6 shadow-sm">
+      <AnimatedSection direction="up" delay={200} className="rounded-2xl border border-sky-100 bg-white p-5 shadow-sm">
         <div className="flex items-center justify-between">
-          <h2 className="text-xl font-semibold text-slate-900">Seneste sager</h2>
-          <Link href="/portal/support" className="text-sm font-semibold text-blue-600 hover:underline">
+          <h2 className="text-base font-semibold text-[#0D1F2D]">Seneste sager</h2>
+          <Link href="/portal/support" className="text-sm font-semibold text-sky-600 hover:underline">
             Se alle
           </Link>
         </div>
         {recentTickets.length === 0 ? (
-          <div className="mt-4 rounded-xl border border-dashed border-slate-300 bg-slate-50 p-6 text-center">
-            <p className="text-2xl text-slate-400">Ingen</p>
-            <p className="mt-2 text-sm font-medium text-slate-700">Ingen sager endnu</p>
-            <p className="mt-1 text-sm text-slate-500">Opret en sag hvis du har brug for hjælp.</p>
+          <div className="mt-4 rounded-2xl border border-dashed border-sky-100 bg-[#F0F7FF] p-6 text-center">
+            <p className="text-sm font-medium text-[#0D1F2D]">Ingen sager endnu</p>
+            <p className="mt-1 text-sm text-[#4A8CB5]">Opret en sag hvis du har brug for hjælp.</p>
           </div>
         ) : (
-          <ul className="mt-4 divide-y divide-slate-100">
+          <ul className="mt-4">
             {recentTickets.map((t) => (
-              <li key={t.id}>
-                <Link href={`/portal/support/${t.id}`} className="flex items-center justify-between gap-3 rounded-lg px-2 py-3 hover:bg-slate-50">
+              <li key={t.id} className="border-b border-sky-50 last:border-0">
+                <Link href={`/portal/support/${t.id}`} className="flex items-center justify-between gap-3 py-3">
                   <div>
-                    <p className="font-medium text-slate-900">{t.title}</p>
-                    <p className="text-xs text-slate-500">
+                    <p className="text-sm font-medium text-[#0D1F2D]">{t.title}</p>
+                    <p className="text-xs text-[#4A8CB5]">
                       {new Intl.DateTimeFormat("da-DK", { dateStyle: "medium" }).format(new Date(t.created_at))}
                     </p>
                   </div>

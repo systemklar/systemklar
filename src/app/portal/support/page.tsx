@@ -178,8 +178,11 @@ export default function PortalSupportPage() {
   return (
     <PortalLayout activeNav="support">
       <div className="flex flex-col gap-6">
-        <div className="flex flex-wrap items-center justify-between gap-4">
-          <h1 className="text-3xl font-bold">Support & sager</h1>
+        <div className="flex flex-wrap items-center justify-between gap-4 border-b border-sky-100 pb-6">
+          <div>
+            <h1 className="text-2xl font-bold text-[#0D1F2D]">Support & sager</h1>
+            <p className="mt-2 text-sm text-[#4A8CB5]">Følg åbne sager og opret nye henvendelser til support.</p>
+          </div>
           <button
             type="button"
             onClick={() => {
@@ -194,22 +197,22 @@ export default function PortalSupportPage() {
                 setErrorMessage(null);
               }
             }}
-            className="rounded-full bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700"
+            className="rounded-full bg-sky-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-sky-700"
           >
             Opret ny sag
           </button>
         </div>
 
         {showForm ? (
-          <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-            <h2 className="text-lg font-semibold text-slate-900">
+          <div className="rounded-2xl border border-sky-100 bg-white p-6 shadow-sm">
+            <h2 className="text-lg font-semibold text-[#0D1F2D]">
               {!postTicketId ? "Ny sag" : "Sag oprettet"}
             </h2>
 
             {!postTicketId ? (
               <form onSubmit={(e) => void handleCreateTicket(e)} className="mt-4 space-y-4">
                 <div>
-                  <label htmlFor="ticket-title" className="mb-1 block text-sm font-medium">
+                  <label htmlFor="ticket-title" className="mb-1 block text-sm font-medium text-[#0D1F2D]">
                     Titel
                   </label>
                   <input
@@ -218,12 +221,12 @@ export default function PortalSupportPage() {
                     value={title}
                     onChange={(e) => setTitle(e.target.value)}
                     required
-                    className="w-full rounded-lg border border-slate-300 px-3 py-2 outline-none focus:border-slate-500"
+                    className="w-full rounded-xl border border-sky-200 px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-sky-500"
                     placeholder="Kort beskrivelse af problemet"
                   />
                 </div>
                 <div>
-                  <label htmlFor="ticket-description" className="mb-1 block text-sm font-medium">
+                  <label htmlFor="ticket-description" className="mb-1 block text-sm font-medium text-[#0D1F2D]">
                     Beskrivelse
                   </label>
                   <textarea
@@ -231,7 +234,7 @@ export default function PortalSupportPage() {
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
                     rows={5}
-                    className="w-full rounded-lg border border-slate-300 px-3 py-2 outline-none focus:border-slate-500"
+                    className="w-full rounded-xl border border-sky-200 px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-sky-500"
                     placeholder="Uddyb problemet, fejlmeddelelser, hvornår det skete, osv."
                   />
                 </div>
@@ -242,14 +245,14 @@ export default function PortalSupportPage() {
                   <button
                     type="submit"
                     disabled={submitting}
-                    className="rounded-full bg-blue-600 px-5 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700 disabled:opacity-60"
+                    className="rounded-full bg-sky-600 px-5 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-sky-700 disabled:opacity-60"
                   >
                     {submitting ? "Sender..." : "Opret sag"}
                   </button>
                   <button
                     type="button"
                     onClick={() => resetCreation()}
-                    className="rounded-full border border-slate-300 px-5 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50"
+                    className="rounded-full border border-sky-200 px-5 py-2 text-sm font-semibold text-sky-700 hover:bg-sky-50"
                   >
                     Annuller
                   </button>
@@ -257,7 +260,7 @@ export default function PortalSupportPage() {
               </form>
             ) : (
               <div className="mt-4 space-y-4">
-                <p className="text-sm text-slate-600">
+                <p className="text-sm text-[#4A8CB5]">
                   Din sag er oprettet. Du kan vedhænte filer (valgfrit) – tryk &quot;Færdig&quot; når du er færdig.
                 </p>
                 <div className="mt-3">
@@ -285,14 +288,14 @@ export default function PortalSupportPage() {
                   <button
                     type="button"
                     onClick={() => void finishCreation()}
-                    className="rounded-full bg-blue-600 px-5 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700"
+                    className="rounded-full bg-sky-600 px-5 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-sky-700"
                   >
                     Færdig
                   </button>
                   <button
                     type="button"
                     onClick={() => resetCreation()}
-                    className="rounded-full border border-slate-300 px-5 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50"
+                    className="rounded-full border border-sky-200 px-5 py-2 text-sm font-semibold text-sky-700 hover:bg-sky-50"
                     >
                     Luk
                   </button>
@@ -302,36 +305,48 @@ export default function PortalSupportPage() {
           </div>
         ) : null}
 
-        <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-          <h2 className="text-lg font-semibold">Dine sager</h2>
+        <div className="rounded-2xl border border-sky-100 bg-white p-5 shadow-sm">
+          <h2 className="text-base font-semibold text-[#0D1F2D]">Dine sager</h2>
           {errorMessage && !showForm ? (
             <p className="mt-3 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-900">
               {errorMessage}
             </p>
           ) : null}
           {listLoading ? (
-            <p className="mt-4 text-sm text-slate-500">Henter sager...</p>
+            <p className="mt-4 text-sm text-[#4A8CB5]">Henter sager...</p>
           ) : tickets.length === 0 ? (
-            <p className="mt-4 text-sm text-slate-600">
-              Du har ingen sager endnu. Klik på &quot;Opret ny sag&quot; for at komme i gang.
-            </p>
+            <div className="mt-4 rounded-2xl border border-sky-100 bg-white p-12 text-center">
+              <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-[#F0F7FF] text-sky-600">
+                <span className="text-sm font-bold">0</span>
+              </div>
+              <p className="mt-4 text-sm text-[#4A8CB5]">
+                Du har ingen sager endnu. Klik på &quot;Opret ny sag&quot; for at komme i gang.
+              </p>
+              <button
+                type="button"
+                onClick={() => setShowForm(true)}
+                className="mt-5 rounded-full bg-sky-600 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-sky-700"
+              >
+                Opret ny sag
+              </button>
+            </div>
           ) : (
-            <ul className="mt-4 divide-y divide-slate-100">
+            <ul className="mt-4 space-y-3">
               {tickets.map((ticket) => (
                 <li key={ticket.id}>
                   <Link
                     href={`/portal/support/${ticket.id}`}
-                    className="-mx-2 flex flex-col gap-2 rounded-lg px-2 py-4 transition first:pt-2 hover:bg-slate-50 md:flex-row md:items-center md:justify-between"
+                    className="flex cursor-pointer flex-col gap-2 rounded-2xl border border-sky-100 bg-white p-5 shadow-sm transition-all hover:border-sky-200 hover:shadow-md md:flex-row md:items-center md:justify-between"
                   >
                     <div>
                       <div className="flex flex-wrap items-center gap-2">
-                        <p className="font-medium text-slate-900">{ticket.title}</p>
+                        <p className="text-base font-semibold text-[#0D1F2D]">{ticket.title}</p>
                         <TicketUnreadCountBadge count={unreadByTicket[ticket.id] ?? 0} />
                       </div>
                       {companyName ? (
-                        <p className="mt-1 text-xs text-slate-500">{companyName}</p>
+                        <p className="mt-1 text-xs text-[#4A8CB5]">{companyName}</p>
                       ) : null}
-                      <p className="mt-0.5 text-sm text-slate-500">
+                      <p className="mt-0.5 text-xs text-[#4A8CB5]">
                         {formatDanishDateTime(ticket.created_at)}
                       </p>
                     </div>

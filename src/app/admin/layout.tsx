@@ -46,7 +46,7 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
 
   if (access === "loading") {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-[#F5FAFD] text-slate-600">
+      <div className="flex min-h-screen items-center justify-center bg-[#F5FAFD] text-[#2C4A5E]">
         <p>Indlæser...</p>
       </div>
     );
@@ -54,18 +54,18 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
 
   if (access === "denied") {
     return (
-      <main className="min-h-screen bg-[#F5FAFD] px-6 py-20 text-slate-900">
+      <main className="min-h-screen bg-[#F5FAFD] px-6 py-20 text-[#0D1F2D]">
         <h1 className="text-xl font-semibold">Adgang nægtet</h1>
-        <p className="mt-2 text-sm text-slate-600">Du har ikke adgang til admin-området.</p>
+        <p className="mt-2 text-sm text-[#2C4A5E]">Du har ikke adgang til admin-området.</p>
       </main>
     );
   }
 
   return (
-    <div className="surface-cards flex min-h-screen bg-[#F5FAFD] text-slate-900">
+    <div className="surface-cards flex min-h-screen bg-[#F5FAFD] text-[#0D1F2D]">
       <AdminSidebar activeNav={activeNav} />
       <div className="min-w-0 flex-1 overflow-y-auto">
-        <div className="app-rhythm mx-auto w-full max-w-6xl px-6 py-10 md:px-8 md:py-12">{children}</div>
+        <div className="app-rhythm mx-auto w-full max-w-6xl p-8">{children}</div>
       </div>
     </div>
   );

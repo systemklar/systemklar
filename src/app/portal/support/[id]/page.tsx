@@ -129,29 +129,48 @@ export default function PortalSupportTicketPage() {
   if (loading || !ticket) {
     return (
       <PortalLayout activeNav="support">
-        <p className="text-slate-600">Indlæser sag...</p>
+        <p className="text-sm text-[#4A8CB5]">Indlæser sag...</p>
       </PortalLayout>
     );
   }
 
   return (
     <PortalLayout activeNav="support">
-      <div className="mx-auto flex h-[calc(100vh-7rem)] max-w-3xl flex-col md:h-[calc(100vh-9rem)]">
-        <Link href="/portal/support" className="text-sm font-semibold text-blue-600 hover:underline">
+      <div className="flex h-[calc(100vh-7rem)] flex-col md:h-[calc(100vh-8rem)]">
+        <Link href="/portal/support" className="text-sm font-semibold text-sky-600 hover:underline">
           ← Tilbage til Support & sager
         </Link>
 
-        <header className="mt-4 shrink-0 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-          <div className="flex flex-wrap items-start justify-between gap-4">
-            <div>
-              <h1 className="text-2xl font-bold text-slate-900">{ticket.title}</h1>
+        <div className="mt-4 grid min-h-0 flex-1 gap-5 lg:grid-cols-3">
+          <div className="min-h-0 lg:col-span-2">
+            <TicketMessageThread
+              ticketId={ticket.id}
+              organisationId={ticket.organisation_id}
+              sendAsAdmin={false}
+              customerCompanyLabel={companyName ?? "Kunde"}
+              fullHeight
+            />
+          </div>
+
+          <aside className="space-y-4">
+            <section className="rounded-2xl border border-sky-100 bg-white p-5 shadow-sm">
+              <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-[#4A8CB5]">Sag-info</p>
+              <div className="border-b border-sky-50 py-2">
+                <p className="text-xs text-[#4A8CB5]">Titel</p>
+                <h1 className="mt-1 text-base font-semibold text-[#0D1F2D]">{ticket.title}</h1>
+              </div>
               {companyName ? (
-                <p className="mt-2 text-sm font-medium text-slate-700">{companyName}</p>
+                <div className="border-b border-sky-50 py-2">
+                  <p className="text-xs text-[#4A8CB5]">Virksomhed</p>
+                  <p className="mt-1 text-sm text-[#0D1F2D]">{companyName}</p>
+                </div>
               ) : null}
-              <p className="mt-1 text-sm text-slate-500">
-                Oprettet {formatDanishDateTime(ticket.created_at)}
-              </p>
-            </div>
+              <div className="border-b border-sky-50 py-2">
+                <p className="text-xs text-[#4A8CB5]">Oprettet</p>
+                <p className="mt-1 text-sm text-[#0D1F2D]">{formatDanishDateTime(ticket.created_at)}</p>
+              </div>
+              <div className="py-2">
+                <p className="mb-2 text-xs text-[#4A8CB5]">Status</p>
             <TicketStatusToggle
               ticketId={ticket.id}
               status={ticket.status}
@@ -159,16 +178,21 @@ export default function PortalSupportTicketPage() {
                 setTicket((t) => (t ? { ...t, status: next } : null))
               }
             />
-          </div>
+              </div>
+            </section>
+
+            <section className="rounded-2xl border border-sky-100 bg-white p-5 shadow-sm">
+              <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-[#4A8CB5]">Beskrivelse</p>
           {ticket.description ? (
-            <p className="mt-4 whitespace-pre-wrap text-slate-700">{ticket.description}</p>
+                <p className="whitespace-pre-wrap text-sm text-[#2C4A5E]">{ticket.description}</p>
           ) : (
-            <p className="mt-4 text-sm text-slate-500">Ingen beskrivelse.</p>
+                <p className="text-sm text-[#4A8CB5]">Ingen beskrivelse.</p>
           )}
+            </section>
 
           {ticketLevelAttachments.length > 0 ? (
-            <div className="mt-4 rounded-xl border border-sky-100 bg-slate-50/80 px-4 py-3">
-              <h2 className="text-sm font-semibold text-slate-800">Vedhæftninger til sagen</h2>
+            <section className="rounded-2xl border border-sky-100 bg-white p-5 shadow-sm">
+              <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-[#4A8CB5]">Vedhæftninger</p>
               <AttachmentList
                 attachments={ticketLevelAttachments}
                 showDelete
@@ -177,27 +201,18 @@ export default function PortalSupportTicketPage() {
                   setTicketLevelAttachments((prev) => prev.filter((x) => x.id !== removedId))
                 }
               />
-            </div>
+            </section>
           ) : null}
 
           <button
             type="button"
             disabled={deleting}
             onClick={() => void handleDelete()}
-            className="mt-6 rounded-full bg-red-600 px-5 py-2 text-sm font-semibold text-white transition hover:bg-red-700 disabled:opacity-50"
+            className="rounded-full border border-red-200 bg-red-50 px-5 py-2.5 text-sm font-semibold text-red-600 transition hover:bg-red-100 disabled:opacity-50"
           >
             {deleting ? "Sletter..." : "Slet sag"}
           </button>
-        </header>
-
-        <div className="mt-4 min-h-0 flex-1">
-          <TicketMessageThread
-            ticketId={ticket.id}
-            organisationId={ticket.organisation_id}
-            sendAsAdmin={false}
-            customerCompanyLabel={companyName ?? "Kunde"}
-            fullHeight
-          />
+          </aside>
         </div>
       </div>
     </PortalLayout>

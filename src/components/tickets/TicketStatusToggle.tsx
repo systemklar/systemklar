@@ -43,7 +43,7 @@ export function TicketStatusToggle({ ticketId, status, onUpdated }: Props) {
         type="button"
         disabled={busy}
         onClick={() => void handleClick()}
-        className="rounded-full border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-800 shadow-sm transition hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
+        className="rounded-full border border-sky-200 bg-white px-4 py-2 text-sm font-semibold text-sky-700 shadow-sm transition hover:bg-sky-50 focus:outline-none focus:ring-2 focus:ring-sky-500 disabled:opacity-50"
       >
         {busy
           ? "Opdaterer..."

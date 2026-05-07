@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { Building2, CheckCircle, Ticket, type LucideIcon } from "lucide-react";
 import { AnimatedSection } from "@/components/ui/AnimatedSection";
 import { StatusBadge } from "@/components/tickets/StatusBadge";
 import { createClient } from "@/lib/supabase";
@@ -17,11 +18,13 @@ function StatCard({
   value,
   hint,
   href,
+  icon: Icon,
 }: {
   title: string;
   value: number | null;
   hint: string;
   href?: string;
+  icon: LucideIcon;
 }) {
   const [display, setDisplay] = useState(0);
   useEffect(() => {
@@ -39,18 +42,21 @@ function StatCard({
   }, [value]);
 
   const inner = (
-    <article className="card-hover rounded-2xl border border-slate-200 bg-white p-6 shadow-sm transition-all duration-200 hover:-translate-y-1 hover:border-blue-200 hover:shadow-md">
-      <p className="text-sm font-medium text-slate-500">{title}</p>
-      <p className="fade-scale visible mt-3 text-3xl font-bold tabular-nums text-slate-900">
+    <article className="rounded-2xl border border-sky-100 bg-white p-5 shadow-sm transition-all duration-200 hover:border-sky-200 hover:shadow-md">
+      <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#F0F7FF]">
+        <Icon className="h-4 w-4 text-sky-600" />
+      </div>
+      <p className="fade-scale visible mt-3 text-3xl font-bold tabular-nums text-[#0D1F2D]">
         {value === null ? "—" : display}
       </p>
-      <p className="mt-2 text-xs text-slate-500">{hint}</p>
+      <p className="mt-1 text-xs text-[#4A8CB5]">{title}</p>
+      <p className="mt-2 text-xs text-[#4A8CB5]">{hint}</p>
     </article>
   );
 
   if (href) {
     return (
-      <Link href={href} className="block outline-none focus-visible:ring-2 focus-visible:ring-blue-500/40">
+      <Link href={href} className="block outline-none focus-visible:ring-2 focus-visible:ring-sky-500/40">
         {inner}
       </Link>
     );
@@ -110,15 +116,16 @@ export default function AdminDashboardPage() {
 
   return (
     <div className="space-y-8">
-      <div>
-        <h1 className="text-2xl font-bold text-slate-900 md:text-3xl">Overblik</h1>
-        <p className="mt-2 max-w-2xl text-sm text-slate-600">
-        Velkommen til admin-dashboardet. Her ser du hurtige nøgletal for kunder og supportsager.
+      <div className="border-b border-sky-100 pb-6">
+        <p className="mb-1 text-xs text-[#4A8CB5]">Admin</p>
+        <h1 className="text-2xl font-bold text-[#0D1F2D]">Overblik</h1>
+        <p className="mt-2 max-w-2xl text-sm text-[#4A8CB5]">
+          Velkommen til admin-dashboardet. Her ser du hurtige nøgletal for kunder og supportsager.
         </p>
       </div>
 
       {loading ? (
-        <p className="mt-10 text-sm text-slate-500">Henter tal...</p>
+        <p className="mt-10 text-sm text-[#4A8CB5]">Henter tal...</p>
       ) : (
         <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
           <AnimatedSection direction="up" delay={0}>
@@ -127,6 +134,7 @@ export default function AdminDashboardPage() {
               value={stats.customers}
               hint="Aktive organisationer"
               href="/admin/customers"
+              icon={Building2}
             />
           </AnimatedSection>
           <AnimatedSection direction="up" delay={100}>
@@ -135,6 +143,7 @@ export default function AdminDashboardPage() {
               value={stats.ticketsActive}
               hint="Status: aktiv"
               href="/admin/tickets"
+              icon={Ticket}
             />
           </AnimatedSection>
           <AnimatedSection direction="up" delay={200}>
@@ -143,52 +152,41 @@ export default function AdminDashboardPage() {
               value={stats.ticketsResolved}
               hint="Status: løst"
               href="/admin/tickets"
+              icon={CheckCircle}
             />
           </AnimatedSection>
         </div>
       )}
 
-      <AnimatedSection direction="up" delay={200} className="card-hover rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+      <AnimatedSection direction="up" delay={200} className="rounded-2xl border border-sky-100 bg-white p-5 shadow-sm">
         <div className="flex items-center justify-between">
-          <h2 className="text-lg font-semibold text-slate-900">Seneste supportsager</h2>
-          <Link href="/admin/tickets" className="text-sm font-semibold text-blue-600 hover:underline">
+          <h2 className="text-base font-semibold text-[#0D1F2D]">Seneste supportsager</h2>
+          <Link href="/admin/tickets" className="text-sm font-semibold text-sky-600 hover:underline">
             Åbn alle
           </Link>
         </div>
         {recentTickets.length === 0 ? (
-          <div className="mt-4 rounded-xl border border-dashed border-slate-300 bg-slate-50 p-6 text-center">
-            <p className="text-2xl text-slate-400">Ingen</p>
-            <p className="mt-2 text-sm font-medium text-slate-700">Ingen sager endnu</p>
-            <p className="mt-1 text-sm text-slate-500">Nye supportsager vil dukke op her.</p>
+          <div className="mt-4 rounded-2xl border border-dashed border-sky-100 bg-[#F0F7FF] p-6 text-center">
+            <p className="text-sm font-medium text-[#0D1F2D]">Ingen sager endnu</p>
+            <p className="mt-1 text-sm text-[#4A8CB5]">Nye supportsager vil dukke op her.</p>
           </div>
         ) : (
-          <div className="mt-4 overflow-hidden rounded-xl border border-slate-200">
-            <table className="min-w-full text-left text-sm">
-              <thead className="bg-slate-50 text-slate-600">
-                <tr>
-                  <th className="px-4 py-3 font-medium">Titel</th>
-                  <th className="px-4 py-3 font-medium">Dato</th>
-                  <th className="px-4 py-3 font-medium">Status</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100 bg-white">
-                {recentTickets.map((t) => (
-                  <tr key={t.id} className="hover:bg-slate-50">
-                    <td className="px-4 py-3">
-                      <Link href={`/admin/tickets/${t.id}`} className="font-medium text-slate-900 hover:text-blue-600">
+          <div className="mt-4">
+            {recentTickets.map((t) => (
+              <div key={t.id} className="border-b border-sky-50 py-3 last:border-0">
+                <div className="flex items-center justify-between gap-3">
+                  <div>
+                    <Link href={`/admin/tickets/${t.id}`} className="text-sm font-medium text-[#0D1F2D] hover:text-sky-600">
                         {t.title}
                       </Link>
-                    </td>
-                    <td className="px-4 py-3 text-slate-600">
+                    <p className="mt-1 text-xs text-[#4A8CB5]">
                       {new Intl.DateTimeFormat("da-DK", { dateStyle: "medium" }).format(new Date(t.created_at))}
-                    </td>
-                    <td className="px-4 py-3">
-                      <StatusBadge status={t.status} />
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+                    </p>
+                  </div>
+                  <StatusBadge status={t.status} />
+                </div>
+              </div>
+            ))}
           </div>
         )}
       </AnimatedSection>
