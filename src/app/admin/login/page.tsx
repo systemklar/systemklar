@@ -2,7 +2,6 @@
 
 import { FormEvent, Suspense, useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { AuthSplitLayout } from "@/components/auth/AuthSplitLayout";
 import { createClient } from "@/lib/supabase";
 
@@ -18,7 +17,6 @@ function toDanishAuthError(message: string): string {
 }
 
 function AdminLoginForm() {
-  const router = useRouter();
   const supabase = createClient();
 
   const [email, setEmail] = useState("");
@@ -80,8 +78,7 @@ function AdminLoginForm() {
       return;
     }
 
-    router.push("/admin/dashboard");
-    router.refresh();
+    window.location.href = "/admin/dashboard";
   };
 
   return (
