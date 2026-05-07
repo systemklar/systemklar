@@ -38,20 +38,27 @@ export default function OmOsPage() {
   return (
     <MarketingShell>
       <main>
-        <section className="bg-[#F0F7FF] py-20">
-          <div className="mx-auto max-w-3xl px-6 text-center">
-            <p className="inline-flex rounded-full border border-sky-200 bg-white px-4 py-1.5 text-xs font-semibold uppercase tracking-wide text-sky-600">
-              Om systemklar
+        <section className="relative overflow-hidden bg-gradient-to-br from-[#0A6EBD] to-[#062840] py-32 pt-40">
+          <div
+            className="absolute inset-0 opacity-10"
+            style={{
+              backgroundImage: "radial-gradient(circle, white 1px, transparent 1px)",
+              backgroundSize: "32px 32px",
+            }}
+            aria-hidden
+          />
+          <div className="relative mx-auto max-w-3xl px-6 text-center">
+            <p className="inline-flex rounded-full border border-white/30 bg-white/20 px-4 py-1.5 text-xs font-semibold uppercase tracking-wide text-white">
+              Om os
             </p>
             <AnimatedSection direction="up">
-              <h1 className="mt-6 text-3xl font-bold tracking-tight text-[#0D1F2D] md:text-4xl">
+              <h1 className="mt-6 text-4xl font-extrabold tracking-tight text-white md:text-5xl">
                 Vi hjælper danske virksomheder med at få styr på IT
               </h1>
             </AnimatedSection>
             <AnimatedSection direction="up" delay={100}>
-              <p className="mx-auto mt-5 max-w-xl text-base leading-relaxed text-[#2C4A5E]">
-                systemklar er bygget af folk der kender frustrationen ved IT der ikke virker – og ønsket om bare
-                at kunne fokusere på sin forretning.
+              <p className="mx-auto mt-4 max-w-xl text-lg text-white/80">
+                systemklar er bygget af folk der kender frustrationen ved IT der ikke virker.
               </p>
             </AnimatedSection>
           </div>

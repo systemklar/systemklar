@@ -124,15 +124,26 @@ export default function PriserPage() {
   return (
     <MarketingShell>
       <main>
-        <section className="bg-white py-20">
-          <div className="mx-auto max-w-4xl px-6 text-center">
+        <section className="relative overflow-hidden bg-gradient-to-br from-[#0A6EBD] to-[#062840] py-32 pt-40">
+          <div
+            className="absolute inset-0 opacity-10"
+            style={{
+              backgroundImage: "radial-gradient(circle, white 1px, transparent 1px)",
+              backgroundSize: "32px 32px",
+            }}
+            aria-hidden
+          />
+          <div className="relative mx-auto max-w-3xl px-6 text-center">
+            <p className="inline-flex rounded-full border border-white/30 bg-white/20 px-4 py-1.5 text-xs font-semibold uppercase tracking-wide text-white">
+              Priser
+            </p>
             <AnimatedSection direction="up">
-              <h1 className="mx-auto max-w-3xl text-4xl font-bold tracking-tight text-[#0D1F2D] md:text-5xl">
+              <h1 className="mt-6 text-4xl font-extrabold tracking-tight text-white md:text-5xl">
                 Enkel pris. Ingen overraskelser.
               </h1>
             </AnimatedSection>
             <AnimatedSection direction="up" delay={100}>
-              <p className="mx-auto mt-5 max-w-2xl text-lg text-[#2C4A5E]">
+              <p className="mx-auto mt-4 max-w-xl text-lg text-white/80">
                 Vælg den plan der passer til jer – og skift når behovet ændrer sig.
               </p>
             </AnimatedSection>

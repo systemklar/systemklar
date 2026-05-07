@@ -237,8 +237,6 @@ export function MarketingHomeContent() {
   const [cvrLoading, setCvrLoading] = useState(false);
   const [cvrError, setCvrError] = useState<string | null>(null);
   const [cvrData, setCvrData] = useState<{ name: string; employees: number; industry: string } | null>(null);
-  const [heroOpacity, setHeroOpacity] = useState(1);
-  const [heroBgOpacity, setHeroBgOpacity] = useState(1);
 
   useEffect(() => {
     const fadeTimer = window.setTimeout(() => setPriceFading(true), 0);
@@ -248,20 +246,6 @@ export function MarketingHomeContent() {
       window.clearTimeout(restoreTimer);
     };
   }, [yearly]);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      const scrollY = window.scrollY;
-      const contentOpacity = Math.max(0, 1 - scrollY / 300);
-      const bgOpacity = Math.max(0, 1 - (scrollY - 200) / 400);
-      setHeroOpacity(contentOpacity);
-      setHeroBgOpacity(bgOpacity);
-    };
-
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    handleScroll();
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
 
   useEffect(() => {
     return () => {
@@ -473,25 +457,16 @@ export function MarketingHomeContent() {
         .dot-drift { animation: drift 8s ease-in-out infinite; }
       `}</style>
 
-      <section className="sticky top-0 z-0 flex min-h-screen items-center justify-center overflow-hidden border-t border-black/5 py-0">
+      <section className="relative flex min-h-screen items-center justify-center overflow-hidden border-t border-black/5 bg-gradient-to-br from-[#0A6EBD] to-[#062840] py-0">
         <div
-          className="absolute inset-0 bg-gradient-to-br from-[#0A6EBD] to-[#062840]"
-          style={{ opacity: heroBgOpacity }}
-          aria-hidden
-        />
-        <div
-          className="dot-drift absolute inset-0"
+          className="dot-drift absolute inset-0 opacity-10"
           style={{
             backgroundImage: "radial-gradient(circle, white 1px, transparent 1px)",
             backgroundSize: "32px 32px",
-            opacity: heroBgOpacity * 0.1,
           }}
           aria-hidden
         />
-        <div
-          className="relative z-10 mx-auto max-w-4xl px-6 text-center"
-          style={{ opacity: heroOpacity, transform: `translateY(${(1 - heroOpacity) * -30}px)` }}
-        >
+        <div className="relative z-10 mx-auto max-w-4xl px-6 text-center">
           <p
             className="fade-in-up inline-flex items-center gap-2 rounded-full border border-white/30 bg-white/20 px-4 py-1.5 text-xs font-semibold uppercase tracking-wide text-white"
             style={{ animationDelay: "40ms" }}

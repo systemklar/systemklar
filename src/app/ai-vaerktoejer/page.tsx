@@ -309,18 +309,26 @@ export default function AiVaerktoejerPage() {
           }
         `}</style>
 
-        <section className="bg-gradient-to-br from-[#062840] to-[#0A3D5C] py-20 text-center">
-          <div className="mx-auto max-w-2xl px-6">
-            <p className="inline-flex rounded-full border border-white/20 bg-white/10 px-4 py-1 text-xs font-semibold uppercase tracking-wide text-white">
+        <section className="relative overflow-hidden bg-gradient-to-br from-[#0A6EBD] to-[#062840] py-32 pt-40">
+          <div
+            className="absolute inset-0 opacity-10"
+            style={{
+              backgroundImage: "radial-gradient(circle, white 1px, transparent 1px)",
+              backgroundSize: "32px 32px",
+            }}
+            aria-hidden
+          />
+          <div className="relative mx-auto max-w-3xl px-6 text-center">
+            <p className="inline-flex rounded-full border border-white/30 bg-white/20 px-4 py-1.5 text-xs font-semibold uppercase tracking-wide text-white">
               AI-værktøjer
             </p>
             <AnimatedSection direction="up">
-              <h1 className="mx-auto mt-6 max-w-xl text-4xl font-bold tracking-tight text-white">
+              <h1 className="mt-6 text-4xl font-extrabold tracking-tight text-white md:text-5xl">
                 Værktøjer der gør arbejdet for dig
               </h1>
             </AnimatedSection>
             <AnimatedSection direction="up" delay={100}>
-              <p className="mx-auto mt-5 max-w-lg text-base text-white/70">
+              <p className="mx-auto mt-4 max-w-xl text-lg text-white/80">
                 Du behøver ikke forstå teknologi for at bruge dem.
               </p>
             </AnimatedSection>

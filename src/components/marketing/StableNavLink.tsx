@@ -10,17 +10,19 @@ export function StableNavLink({
   href,
   label,
   active,
+  className,
 }: {
   href: string;
   label: string;
   active: boolean;
+  className?: string;
 }) {
+  const colorClasses =
+    className ?? (active ? "text-slate-900" : "text-slate-600 hover:text-slate-900");
   return (
     <Link
       href={href}
-      className={`relative inline-grid min-w-max shrink-0 place-items-center whitespace-nowrap text-sm transition-colors after:absolute after:-bottom-1 after:left-0 after:h-0.5 after:w-0 after:bg-sky-600 after:transition-all after:duration-200 hover:after:w-full ${
-        active ? "text-slate-900" : "text-slate-600 hover:text-slate-900"
-      }`}
+      className={`relative inline-grid min-w-max shrink-0 place-items-center whitespace-nowrap text-sm transition-colors after:absolute after:-bottom-1 after:left-0 after:h-0.5 after:w-0 after:bg-sky-600 after:transition-all after:duration-200 hover:after:w-full ${colorClasses}`}
     >
       <span aria-hidden className="invisible col-start-1 row-start-1 px-px font-semibold">
         {label}

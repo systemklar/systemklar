@@ -24,15 +24,23 @@ export default function KontaktPage() {
   return (
     <MarketingShell>
       <main>
-        <section className="bg-[#F0F7FF] py-20">
-          <div className="mx-auto max-w-5xl px-6 text-center">
-            <p className="inline-flex rounded-full bg-sky-50 px-4 py-1.5 text-xs font-semibold uppercase tracking-wide text-sky-600">
+        <section className="relative overflow-hidden bg-gradient-to-br from-[#0A6EBD] to-[#062840] py-32 pt-40">
+          <div
+            className="absolute inset-0 opacity-10"
+            style={{
+              backgroundImage: "radial-gradient(circle, white 1px, transparent 1px)",
+              backgroundSize: "32px 32px",
+            }}
+            aria-hidden
+          />
+          <div className="relative mx-auto max-w-3xl px-6 text-center">
+            <p className="inline-flex rounded-full border border-white/30 bg-white/20 px-4 py-1.5 text-xs font-semibold uppercase tracking-wide text-white">
               Kontakt
             </p>
-            <h1 className="mx-auto mt-6 max-w-4xl text-4xl font-bold tracking-tight text-[#0D1F2D] md:text-5xl">
+            <h1 className="mt-6 text-4xl font-extrabold tracking-tight text-white md:text-5xl">
               Vi sidder klar til at hjælpe
             </h1>
-            <p className="mx-auto mt-5 max-w-2xl text-lg text-[#2C4A5E]">
+            <p className="mx-auto mt-4 max-w-xl text-lg text-white/80">
               Book en demo, stil et spørgsmål, eller hør hvad systemklar kan gøre for jer.
             </p>
           </div>

@@ -7,20 +7,16 @@ import {
   Building2,
   CheckCircle,
   ChevronRight,
-  Clock,
   FileText,
   History,
   KeyRound,
   LayoutDashboard,
   Lock,
-  Mail,
   MessageCircle,
   Paperclip,
   Search,
   Send,
   Server,
-  Share2,
-  Shield,
   Tag,
   UserPlus,
 } from "lucide-react";
@@ -515,13 +511,6 @@ const blocks = [
   },
 ];
 
-const headerHighlights = [
-  { icon: Shield, text: "Dansk support" },
-  { icon: Mail, text: "Svar inden for 1 hverdag" },
-  { icon: Share2, text: "Alt på ét sted" },
-  { icon: Clock, text: "Ingen binding" },
-];
-
 export default function PlatformenPage() {
   return (
     <MarketingShell>
@@ -533,31 +522,28 @@ export default function PlatformenPage() {
           }
         `}</style>
 
-        <section className="bg-[#F0F7FF] py-24">
-          <div className="mx-auto max-w-4xl px-6 text-center">
-            <p className="inline-flex items-center gap-2 rounded-full border border-sky-200 bg-white px-4 py-1.5 text-xs font-semibold uppercase tracking-wide text-sky-600">
-              <span className="h-1.5 w-1.5 rounded-full bg-sky-600" aria-hidden />
+        <section className="relative overflow-hidden bg-gradient-to-br from-[#0A6EBD] to-[#062840] py-32 pt-40">
+          <div
+            className="absolute inset-0 opacity-10"
+            style={{
+              backgroundImage: "radial-gradient(circle, white 1px, transparent 1px)",
+              backgroundSize: "32px 32px",
+            }}
+            aria-hidden
+          />
+          <div className="relative mx-auto max-w-3xl px-6 text-center">
+            <p className="inline-flex rounded-full border border-white/30 bg-white/20 px-4 py-1.5 text-xs font-semibold uppercase tracking-wide text-white">
               Platformen
             </p>
             <AnimatedSection direction="up">
-              <h1 className="mx-auto mt-6 max-w-3xl text-4xl font-bold tracking-tight text-[#0D1F2D] md:text-5xl">
+              <h1 className="mt-6 text-4xl font-extrabold tracking-tight text-white md:text-5xl">
                 Alt hvad din virksomhed har brug for – samlet ét sted
               </h1>
             </AnimatedSection>
             <AnimatedSection direction="up" delay={100}>
-              <p className="mx-auto mt-5 max-w-2xl text-lg text-[#2C4A5E]">
+              <p className="mx-auto mt-4 max-w-xl text-lg text-white/80">
                 Ingen rod. Ingen forvirring. Bare overblik.
               </p>
-            </AnimatedSection>
-            <AnimatedSection direction="up" delay={200}>
-              <div className="mt-10 flex flex-wrap items-center justify-center gap-x-6 gap-y-3">
-                {headerHighlights.map(({ icon: Icon, text }) => (
-                  <span key={text} className="inline-flex items-center gap-1.5 text-sm text-[#4A8CB5]">
-                    <Icon className="h-4 w-4 text-sky-600" />
-                    {text}
-                  </span>
-                ))}
-              </div>
             </AnimatedSection>
           </div>
         </section>
