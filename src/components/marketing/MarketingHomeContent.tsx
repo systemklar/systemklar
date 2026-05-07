@@ -9,7 +9,6 @@ import {
   Calendar,
   CheckCircle,
   Clock,
-  FileText,
   Heart,
   HelpCircle,
   Lock,
@@ -26,12 +25,6 @@ import {
 } from "lucide-react";
 import { AnimatedSection } from "@/components/ui/AnimatedSection";
 
-const pricePreview = [
-  { name: "Starter", price: "499 kr/md", highlight: false },
-  { name: "Plus", price: "1.299 kr/md", highlight: true },
-  { name: "Pro", price: "2.499 kr/md", highlight: false },
-];
-
 const empathyItems = [
   { problem: "Bruger tid på at finde logins", solution: "Alle adgangskoder samlet sikkert ét sted" },
   { problem: "Venter dage på IT-hjælp", solution: "Opret en sag – vi svarer samme dag" },
@@ -39,12 +32,6 @@ const empathyItems = [
 ];
 
 const featurePills = ["Realtids systemoverblik", "Support direkte i portalen", "Månedlig IT-rapport"];
-
-const heroStatCards = [
-  { icon: CheckCircle, label: "Systemer online", value: "100%", color: "text-green-400" },
-  { icon: Clock, label: "Seneste sag løst", value: "2 timer", color: "text-sky-300" },
-  { icon: FileText, label: "Rapport klar", value: "April 2026", color: "text-white" },
-];
 
 const featuredTestimonial = {
   quote:
@@ -66,6 +53,40 @@ const sideTestimonials = [
     name: "Henrik B.",
     company: "Tømrermester, København",
     initials: "HB",
+  },
+];
+
+type HomePlan = {
+  name: string;
+  monthly: string;
+  yearly: string;
+  fits: string;
+  features: string[];
+  highlight?: boolean;
+};
+
+const homePlans: HomePlan[] = [
+  {
+    name: "Starter",
+    monthly: "499 kr/md",
+    yearly: "415 kr/md",
+    fits: "Passer til 1-5 ansatte",
+    features: ["IT-overblik", "Support & sager", "Sikker kodebank"],
+  },
+  {
+    name: "Plus",
+    monthly: "1.299 kr/md",
+    yearly: "1.082 kr/md",
+    fits: "Passer til 6-15 ansatte",
+    features: ["Alt i Starter", "AI-assistent", "Op til 15 brugere"],
+    highlight: true,
+  },
+  {
+    name: "Pro",
+    monthly: "2.499 kr/md",
+    yearly: "2.082 kr/md",
+    fits: "Passer til 16+ ansatte",
+    features: ["Alt i Plus", "Dedikeret kontakt", "SLA-garanti"],
   },
 ];
 
@@ -123,53 +144,53 @@ const setupOptions = [
     id: "ingen",
     icon: HelpCircle,
     title: "Ingen fast løsning",
-    subtitle: "Vi klarer os selv så godt vi kan",
+    subtitle: "Vi klarer os selv",
     multiplier: 1.4,
   },
   {
     id: "konsulent",
     icon: UserCheck,
     title: "Ekstern IT-konsulent",
-    subtitle: "Vi ringer nogen op når noget fejler",
+    subtitle: "Vi ringer ved fejl",
     multiplier: 1.2,
   },
   {
     id: "intern",
     icon: User,
     title: "Intern medarbejder",
-    subtitle: "En kollega tager sig af IT ved siden af sit job",
+    subtitle: "Kollega tager sig af IT",
     multiplier: 1.1,
   },
   {
     id: "blanding",
     icon: Shuffle,
     title: "En blanding",
-    subtitle: "Lidt af hvert afhængig af problemet",
+    subtitle: "Lidt af hvert",
     multiplier: 1.25,
   },
 ] as const;
 
 const frequencyOptions = [
-  { id: "aldrig", icon: CheckCircle, title: "Næsten aldrig", subtitle: "IT bare virker hos os", multiplier: 0.3 },
+  { id: "aldrig", icon: CheckCircle, title: "Næsten aldrig", subtitle: "IT bare virker", multiplier: 0.3 },
   {
     id: "maaned",
     icon: Calendar,
-    title: "Et par gange om måneden",
-    subtitle: "Af og til er der noget",
+    title: "Et par gange om md.",
+    subtitle: "Af og til",
     multiplier: 0.7,
   },
   {
     id: "uge",
     icon: RefreshCw,
     title: "Ugentligt",
-    subtitle: "Vi har jævnligt noget der driller",
+    subtitle: "Jævnligt noget der driller",
     multiplier: 1.0,
   },
   {
     id: "dag",
     icon: AlertTriangle,
     title: "Nærmest dagligt",
-    subtitle: "IT er en kilde til frustration",
+    subtitle: "IT er en frustration",
     multiplier: 1.5,
   },
 ] as const;
@@ -202,7 +223,6 @@ function useCountUp(target: number, duration: number, inView: boolean) {
 export function MarketingHomeContent() {
   const [yearly, setYearly] = useState(false);
   const [priceFading, setPriceFading] = useState(false);
-  const [displayPrice, setDisplayPrice] = useState(pricePreview);
   const [activeTab, setActiveTab] = useState<TabKey>("Overblik");
   const [changing, setChanging] = useState(false);
 
@@ -215,25 +235,11 @@ export function MarketingHomeContent() {
   const [selectedWaste, setSelectedWaste] = useState<Array<(typeof wasteOptions)[number]["id"]>>([]);
 
   useEffect(() => {
-    const prices = yearly
-      ? [
-          { name: "Starter", price: "415 kr/md", highlight: false },
-          { name: "Plus", price: "1.082 kr/md", highlight: true },
-          { name: "Pro", price: "2.082 kr/md", highlight: false },
-        ]
-      : [
-          { name: "Starter", price: "499 kr/md", highlight: false },
-          { name: "Plus", price: "1.299 kr/md", highlight: true },
-          { name: "Pro", price: "2.499 kr/md", highlight: false },
-        ];
     const fadeTimer = window.setTimeout(() => setPriceFading(true), 0);
-    const timer = window.setTimeout(() => {
-      setDisplayPrice(prices);
-      setPriceFading(false);
-    }, 150);
+    const restoreTimer = window.setTimeout(() => setPriceFading(false), 250);
     return () => {
       window.clearTimeout(fadeTimer);
-      window.clearTimeout(timer);
+      window.clearTimeout(restoreTimer);
     };
   }, [yearly]);
 
@@ -351,13 +357,16 @@ export function MarketingHomeContent() {
             ? "Godt – men der er stadig tid at spare på bedre IT-overblik."
             : "";
 
+  const stepCardClass = (active: boolean) =>
+    `flex flex-col items-start gap-1.5 rounded-xl border p-3 text-left text-xs transition-all ${
+      active
+        ? "border-sky-600 bg-sky-600 text-white shadow-sm"
+        : "cursor-pointer border-sky-100 bg-white text-[#0D1F2D] hover:border-sky-400 hover:shadow-sm"
+    }`;
+
   return (
     <main className="flex flex-col">
       <style>{`
-        @keyframes slideInRight {
-          from { opacity: 0; transform: translateX(30px); }
-          to { opacity: 1; transform: translateX(0); }
-        }
         @keyframes fadeUp {
           from { opacity: 0; transform: translateY(12px); }
           to { opacity: 1; transform: translateY(0); }
@@ -369,7 +378,7 @@ export function MarketingHomeContent() {
         .dot-drift { animation: drift 8s ease-in-out infinite; }
       `}</style>
 
-      <section className="relative flex min-h-[90vh] scroll-mt-20 items-center overflow-hidden bg-gradient-to-br from-[#0A6EBD] via-[#1A8FD1] to-[#062840] py-32 md:py-40">
+      <section className="relative overflow-hidden border-t border-black/5 bg-gradient-to-br from-[#0A6EBD] to-[#062840] py-24">
         <div
           className="dot-drift absolute inset-0 opacity-10"
           style={{
@@ -378,274 +387,240 @@ export function MarketingHomeContent() {
           }}
           aria-hidden
         />
-        <div className="relative mx-auto w-full max-w-6xl px-6">
-          <div className="grid grid-cols-1 items-center gap-12 md:grid-cols-2">
-            <div className="text-center md:text-left">
-              <p
-                className="fade-in-up inline-flex items-center gap-2 rounded-full border border-white/30 bg-white/20 px-4 py-1.5 text-xs font-semibold uppercase tracking-wide text-white"
-                style={{ animationDelay: "40ms" }}
-              >
-                <span className="h-1.5 w-1.5 rounded-full bg-white" aria-hidden />
-                Bygget til danske SMV&apos;er – uden IT-afdeling
-              </p>
-              <AnimatedSection direction="up" delay={0}>
-                <h1 className="mt-8 text-5xl font-extrabold tracking-tight text-white md:text-6xl md:leading-[0.98] lg:text-7xl">
-                  Få styr på IT.
-                  <br />
-                  Brug tiden på din forretning.
-                </h1>
-              </AnimatedSection>
-              <AnimatedSection direction="up" delay={100}>
-                <p className="mt-8 max-w-xl text-lg text-white/80 md:text-xl">
-                  systemklar samler support, systemoverblik og IT-dokumentation ét sted – så du aldrig igen skal jagte
-                  adgangskoder eller vente på IT-hjælp.
-                </p>
-              </AnimatedSection>
-              <AnimatedSection direction="up" delay={200}>
-                <div className="mt-10 flex flex-wrap items-center justify-center gap-4 md:justify-start">
-                  <button
-                    onClick={() => document.getElementById("roi-beregner")?.scrollIntoView({ behavior: "smooth" })}
-                    className="rounded-full bg-white px-7 py-3.5 text-base font-semibold text-[#0A6EBD] transition-all hover:bg-white/90"
-                  >
-                    Se hvad IT-rod koster jer
-                  </button>
-                  <a
-                    href="/kontakt"
-                    className="rounded-full border border-white/40 px-7 py-3.5 text-base font-semibold text-white transition-all hover:bg-white/10"
-                  >
-                    Book en gratis snak
-                  </a>
-                </div>
-              </AnimatedSection>
-              <div className="mt-7 flex flex-wrap items-center justify-center gap-5 text-sm text-white/60 md:justify-start">
-                {["Ingen binding", "Opsig når som helst", "Svar inden for 1 hverdag", "Dansk support"].map((t) => (
-                  <span key={t} className="flex items-center gap-1.5">
-                    <svg className="h-3.5 w-3.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                      <path
-                        fillRule="evenodd"
-                        d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                        clipRule="evenodd"
-                      />
-                    </svg>
-                    {t}
-                  </span>
-                ))}
-              </div>
-            </div>
-
-            <div className="hidden flex-col gap-3 md:flex md:items-end">
-              {heroStatCards.map((card, i) => {
-                const Icon = card.icon;
-                return (
-                  <div
-                    key={card.label}
-                    className="w-full max-w-xs rounded-2xl border border-white/20 bg-white/10 px-4 py-3 text-white shadow-lg backdrop-blur-md"
-                    style={{ animation: `slideInRight 0.6s ease-out ${i * 0.15}s both` }}
-                  >
-                    <p className={`mb-0.5 flex items-center gap-1.5 text-xs font-medium ${card.color}`}>
-                      <Icon className="h-3.5 w-3.5" aria-hidden />
-                      {card.label}
-                    </p>
-                    <p className="text-lg font-bold">{card.value}</p>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section className="bg-white py-20">
-        <div className="mx-auto max-w-3xl px-6 text-center">
-          <h2 className="mb-5 text-3xl font-bold leading-tight text-[#0D1F2D] md:text-4xl">
-            Du startede ikke din virksomhed
-            <br />
-            for at rode med IT
-          </h2>
-          <p className="mb-10 text-lg leading-relaxed text-[#2C4A5E]">
-            Men adgangskoder forsvinder, systemer driller, og IT-hjælp tager dage. systemklar tager det fra dig – så du
-            kan fokusere på det du er god til.
+        <div className="relative mx-auto max-w-2xl px-6 text-center">
+          <p
+            className="fade-in-up inline-flex items-center gap-2 rounded-full border border-white/30 bg-white/20 px-4 py-1.5 text-xs font-semibold uppercase tracking-wide text-white"
+            style={{ animationDelay: "40ms" }}
+          >
+            <span className="h-1.5 w-1.5 rounded-full bg-white" aria-hidden />
+            Bygget til danske SMV&apos;er – uden IT-afdeling
           </p>
-          <div className="grid grid-cols-1 gap-6 text-left md:grid-cols-3">
-            {empathyItems.map((item) => (
-              <div
-                key={item.problem}
-                className="cursor-default rounded-2xl border border-sky-100 bg-[#F0F7FF] p-5 transition-all duration-300 hover:scale-105 hover:shadow-md"
+          <AnimatedSection direction="up" delay={0}>
+            <h1 className="mb-3 mt-6 text-5xl font-extrabold tracking-tight text-white">
+              Få styr på IT.
+              <br />
+              Brug tiden på din forretning.
+            </h1>
+          </AnimatedSection>
+          <AnimatedSection direction="up" delay={100}>
+            <p className="mx-auto mb-6 max-w-lg text-base text-white/80">
+              systemklar samler support, systemoverblik og IT-dokumentation ét sted – så du aldrig igen skal jagte
+              adgangskoder eller vente på IT-hjælp.
+            </p>
+          </AnimatedSection>
+          <AnimatedSection direction="up" delay={200}>
+            <div className="inline-flex flex-wrap items-center justify-center gap-3">
+              <button
+                onClick={() => document.getElementById("roi-beregner")?.scrollIntoView({ behavior: "smooth" })}
+                className="rounded-full bg-white px-7 py-2.5 text-sm font-semibold text-[#0A6EBD] transition-all hover:bg-white/90"
               >
-                <p className="mb-2 text-sm font-medium text-red-500 line-through">{item.problem}</p>
-                <p className="flex items-start gap-2 text-sm font-semibold text-[#0D1F2D]">
-                  <svg className="mt-0.5 h-4 w-4 flex-shrink-0 text-sky-600" fill="currentColor" viewBox="0 0 20 20">
-                    <path
-                      fillRule="evenodd"
-                      d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
-                  {item.solution}
-                </p>
-              </div>
+                Se hvad IT-rod koster jer
+              </button>
+              <a
+                href="/kontakt"
+                className="rounded-full border border-white/40 px-7 py-2.5 text-sm font-semibold text-white transition-all hover:bg-white/10"
+              >
+                Book en gratis snak
+              </a>
+            </div>
+          </AnimatedSection>
+          <div className="mt-6 flex flex-wrap items-center justify-center gap-4 text-xs text-white/60">
+            {["Ingen binding", "Opsig når som helst", "Svar inden for 1 hverdag", "Dansk support"].map((t) => (
+              <span key={t} className="flex items-center gap-1.5">
+                <svg className="h-3 w-3 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20" aria-hidden>
+                  <path
+                    fillRule="evenodd"
+                    d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+                {t}
+              </span>
             ))}
           </div>
-          <div className="mt-12 flex justify-center">
-            <div className="flex animate-bounce flex-col items-center gap-2 text-xs text-[#4A8CB5]">
-              <span>Se hvad du får</span>
-              <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-              </svg>
-            </div>
-          </div>
         </div>
       </section>
 
-      <section className="bg-[#F0F7FF] py-24 md:py-32">
-        <div className="mx-auto max-w-5xl px-6">
-          <h2 className="text-center text-3xl font-bold tracking-tight text-[#0D1F2D] md:text-4xl">
+      <section className="border-t border-black/5 bg-white py-14">
+        <div className="mx-auto max-w-xl px-6 text-center">
+          <h2 className="mb-3 text-2xl font-bold leading-tight text-[#0D1F2D]">
+            Du startede ikke din virksomhed for at rode med IT
+          </h2>
+          <p className="mb-6 text-base leading-relaxed text-[#2C4A5E]">
+            Adgangskoder forsvinder, systemer driller, og IT-hjælp tager dage. systemklar tager det fra dig.
+          </p>
+        </div>
+        <div className="mx-auto grid max-w-3xl grid-cols-1 gap-4 px-6 text-left md:grid-cols-3">
+          {empathyItems.map((item) => (
+            <div
+              key={item.problem}
+              className="cursor-default rounded-2xl border border-sky-100 bg-[#F0F7FF] p-4 transition-all duration-300 hover:scale-105 hover:shadow-md"
+            >
+              <p className="mb-2 text-xs font-medium text-red-500 line-through">{item.problem}</p>
+              <p className="flex items-start gap-1.5 text-xs font-semibold text-[#0D1F2D]">
+                <svg
+                  className="mt-0.5 h-3.5 w-3.5 flex-shrink-0 text-sky-600"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                  aria-hidden
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+                {item.solution}
+              </p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section className="border-t border-black/5 bg-[#F0F7FF] py-16">
+        <div className="mx-auto max-w-xl px-6 text-center">
+          <h2 className="mb-3 text-2xl font-bold tracking-tight text-[#0D1F2D]">
             Alt på ét sted – præcis som det er
           </h2>
-          <p className="mx-auto mt-4 max-w-2xl text-center text-base text-[#2C4A5E]">
-            Se hvordan platformen ser ud i praksis, med et overblik du kan forstå med det samme.
+          <p className="mb-6 text-base text-[#2C4A5E]">
+            Se hvordan platformen ser ud i praksis – med et overblik du kan forstå med det samme.
           </p>
-          <div className="mt-16">
-            <AnimatedSection direction="up">
-              <div className="relative">
-                <div className="pointer-events-none absolute -inset-4 rounded-3xl bg-sky-300/20 blur-2xl" aria-hidden />
-                <div className="relative overflow-hidden rounded-2xl border border-sky-100 bg-white shadow-xl">
-                  <div className="flex items-center gap-2 border-b border-sky-100 bg-[#F0F7FF] px-4 py-3">
-                    <div className="flex gap-1.5">
-                      <div className="h-3 w-3 rounded-full bg-red-400" />
-                      <div className="h-3 w-3 rounded-full bg-amber-400" />
-                      <div className="h-3 w-3 rounded-full bg-green-400" />
-                    </div>
-                    <div className="flex-1 rounded-full bg-white px-3 py-1 text-xs text-[#4A8CB5]">
-                      systemklar.dk/portal
-                    </div>
-                  </div>
-                  <div className="p-4">
-                    <div className="mb-4 flex gap-1 rounded-lg bg-[#F0F7FF] p-1">
-                      {(["Overblik", "Support", "IT-rapport"] as TabKey[]).map((tab) => (
-                        <button
-                          key={tab}
-                          onClick={() => handleTabChange(tab)}
-                          className={`flex-1 rounded-md py-1.5 text-xs font-medium transition-all duration-200 ${
-                            activeTab === tab ? "bg-white text-sky-700 shadow-sm" : "text-[#4A8CB5] hover:text-sky-700"
-                          }`}
-                        >
-                          {tab}
-                        </button>
-                      ))}
-                    </div>
-                    <div className={`transition-opacity duration-300 ${changing ? "opacity-0" : "opacity-100"}`}>
-                      {activeTab === "Overblik" ? (
-                        <div className="flex" style={{ height: "280px" }}>
-                          <div className="flex w-40 flex-col gap-1 border-r border-sky-50 bg-[#F5FAFD] p-3">
-                            <div className="mb-2 text-xs font-bold text-[#0A6EBD]">systemklar</div>
-                            <div className="rounded-lg bg-sky-50 px-2 py-1.5 text-xs font-medium text-sky-700">
-                              Overblik
-                            </div>
-                            <div className="px-2 py-1.5 text-xs text-slate-500">Support &amp; sager</div>
-                            <div className="px-2 py-1.5 text-xs text-slate-500">Kodebank</div>
-                            <div className="px-2 py-1.5 text-xs text-slate-500">IT-rapport</div>
-                          </div>
-                          <div className="flex-1 bg-white p-4">
-                            <div className="mb-1 text-sm font-bold text-[#0D1F2D]">Goddag, Møllers VVS</div>
-                            <div className="mb-3 text-xs text-[#4A8CB5]">Her er dagens overblik.</div>
-                            <div className="mb-3 grid grid-cols-3 gap-2">
-                              <div className="rounded-lg bg-[#F0F7FF] p-2 text-center">
-                                <div className="text-sm font-bold text-[#0A6EBD]">3</div>
-                                <div className="text-[10px] text-[#4A8CB5]">Systemer OK</div>
-                              </div>
-                              <div className="rounded-lg bg-[#F0F7FF] p-2 text-center">
-                                <div className="text-sm font-bold text-[#0A6EBD]">1</div>
-                                <div className="text-[10px] text-[#4A8CB5]">Åben sag</div>
-                              </div>
-                              <div className="rounded-lg bg-[#F0F7FF] p-2 text-center">
-                                <div className="text-sm font-bold text-[#0A6EBD]">apr</div>
-                                <div className="text-[10px] text-[#4A8CB5]">Seneste rapport</div>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      ) : null}
-                      {activeTab === "Support" ? (
-                        <div style={{ height: "280px" }}>
-                          <div className="mb-3 text-sm font-bold text-[#0D1F2D]">Support &amp; sager</div>
-                          <div className="flex flex-col gap-2">
-                            <div className="max-w-xs self-end rounded-2xl rounded-tr-sm bg-sky-600 px-3 py-2 text-xs text-white">
-                              Vores printer printer ikke – det haster lidt
-                            </div>
-                            <div className="max-w-xs self-start rounded-2xl rounded-tl-sm bg-[#F0F7FF] px-3 py-2 text-xs text-[#2C4A5E]">
-                              Forstået! Vi kigger på det med det samme.
-                            </div>
-                          </div>
-                        </div>
-                      ) : null}
-                      {activeTab === "IT-rapport" ? (
-                        <div style={{ height: "280px" }}>
-                          <div className="mb-1 text-sm font-bold text-[#0D1F2D]">IT-rapport – april 2026</div>
-                          <div className="mb-3 text-xs text-[#4A8CB5]">Møllers VVS</div>
-                          <div className="mb-3 grid grid-cols-3 gap-2">
-                            <div className="rounded-lg bg-green-50 p-2 text-center">
-                              <div className="text-sm font-bold text-green-700">100%</div>
-                              <div className="text-[10px] text-green-600">Oppetid</div>
-                            </div>
-                            <div className="rounded-lg bg-[#F0F7FF] p-2 text-center">
-                              <div className="text-sm font-bold text-[#0A6EBD]">3</div>
-                              <div className="text-[10px] text-[#4A8CB5]">Løste sager</div>
-                            </div>
-                            <div className="rounded-lg bg-[#F0F7FF] p-2 text-center">
-                              <div className="text-sm font-bold text-[#0A6EBD]">0</div>
-                              <div className="text-[10px] text-[#4A8CB5]">Åbne sager</div>
-                            </div>
-                          </div>
-                        </div>
-                      ) : null}
-                    </div>
-                  </div>
+        </div>
+        <div className="mx-auto max-w-2xl px-6">
+          <AnimatedSection direction="up">
+            <div className="overflow-hidden rounded-2xl border border-sky-100 bg-white shadow-md">
+              <div className="flex items-center gap-2 border-b border-sky-100 bg-[#F0F7FF] px-3 py-2">
+                <div className="flex gap-1">
+                  <div className="h-2.5 w-2.5 rounded-full bg-red-400" />
+                  <div className="h-2.5 w-2.5 rounded-full bg-amber-400" />
+                  <div className="h-2.5 w-2.5 rounded-full bg-green-400" />
+                </div>
+                <div className="flex-1 rounded-full bg-white px-3 py-0.5 text-[10px] text-[#4A8CB5]">
+                  systemklar.dk/portal
                 </div>
               </div>
-            </AnimatedSection>
-            <div className="mt-8 flex flex-wrap justify-center gap-3">
-              {featurePills.map((feature, i) => (
-                <span
-                  key={feature}
-                  className="rounded-full border border-sky-200 bg-white px-4 py-1.5 text-sm font-medium text-sky-700 shadow-sm"
-                  style={{ animation: `fadeUp 0.5s ease-out ${0.1 + i * 0.1}s both` }}
-                >
-                  {feature}
-                </span>
-              ))}
+              <div className="p-3">
+                <div className="mb-3 flex gap-1 rounded-lg bg-[#F0F7FF] p-1">
+                  {(["Overblik", "Support", "IT-rapport"] as TabKey[]).map((tab) => (
+                    <button
+                      key={tab}
+                      onClick={() => handleTabChange(tab)}
+                      className={`flex-1 rounded-md px-2 py-1 text-xs font-medium transition-all duration-200 ${
+                        activeTab === tab ? "bg-white text-sky-700 shadow-sm" : "text-[#4A8CB5] hover:text-sky-700"
+                      }`}
+                    >
+                      {tab}
+                    </button>
+                  ))}
+                </div>
+                <div className={`transition-opacity duration-300 ${changing ? "opacity-0" : "opacity-100"}`}>
+                  {activeTab === "Overblik" ? (
+                    <div className="flex" style={{ height: "220px" }}>
+                      <div className="flex w-32 flex-col gap-1 border-r border-sky-50 bg-[#F5FAFD] p-2.5">
+                        <div className="mb-1 text-[10px] font-bold text-[#0A6EBD]">systemklar</div>
+                        <div className="rounded-md bg-sky-50 px-2 py-1 text-[10px] font-medium text-sky-700">
+                          Overblik
+                        </div>
+                        <div className="px-2 py-1 text-[10px] text-slate-500">Support</div>
+                        <div className="px-2 py-1 text-[10px] text-slate-500">Kodebank</div>
+                        <div className="px-2 py-1 text-[10px] text-slate-500">IT-rapport</div>
+                      </div>
+                      <div className="flex-1 bg-white p-3">
+                        <div className="mb-0.5 text-xs font-bold text-[#0D1F2D]">Goddag, Møllers VVS</div>
+                        <div className="mb-2 text-[10px] text-[#4A8CB5]">Her er dagens overblik.</div>
+                        <div className="grid grid-cols-3 gap-1.5">
+                          <div className="rounded-md bg-[#F0F7FF] p-1.5 text-center">
+                            <div className="text-xs font-bold text-[#0A6EBD]">3</div>
+                            <div className="text-[9px] text-[#4A8CB5]">Systemer OK</div>
+                          </div>
+                          <div className="rounded-md bg-[#F0F7FF] p-1.5 text-center">
+                            <div className="text-xs font-bold text-[#0A6EBD]">1</div>
+                            <div className="text-[9px] text-[#4A8CB5]">Åben sag</div>
+                          </div>
+                          <div className="rounded-md bg-[#F0F7FF] p-1.5 text-center">
+                            <div className="text-xs font-bold text-[#0A6EBD]">apr</div>
+                            <div className="text-[9px] text-[#4A8CB5]">Rapport</div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ) : null}
+                  {activeTab === "Support" ? (
+                    <div style={{ height: "220px" }} className="p-1">
+                      <div className="mb-2 text-xs font-bold text-[#0D1F2D]">Support &amp; sager</div>
+                      <div className="flex flex-col gap-1.5">
+                        <div className="max-w-[80%] self-end rounded-2xl rounded-tr-sm bg-sky-600 px-2.5 py-1.5 text-[10px] text-white">
+                          Vores printer printer ikke – det haster lidt
+                        </div>
+                        <div className="max-w-[80%] self-start rounded-2xl rounded-tl-sm bg-[#F0F7FF] px-2.5 py-1.5 text-[10px] text-[#2C4A5E]">
+                          Forstået! Vi kigger på det med det samme.
+                        </div>
+                      </div>
+                    </div>
+                  ) : null}
+                  {activeTab === "IT-rapport" ? (
+                    <div style={{ height: "220px" }} className="p-1">
+                      <div className="text-xs font-bold text-[#0D1F2D]">IT-rapport – april 2026</div>
+                      <div className="mb-2 text-[10px] text-[#4A8CB5]">Møllers VVS</div>
+                      <div className="grid grid-cols-3 gap-1.5">
+                        <div className="rounded-md bg-green-50 p-1.5 text-center">
+                          <div className="text-xs font-bold text-green-700">100%</div>
+                          <div className="text-[9px] text-green-600">Oppetid</div>
+                        </div>
+                        <div className="rounded-md bg-[#F0F7FF] p-1.5 text-center">
+                          <div className="text-xs font-bold text-[#0A6EBD]">3</div>
+                          <div className="text-[9px] text-[#4A8CB5]">Løste sager</div>
+                        </div>
+                        <div className="rounded-md bg-[#F0F7FF] p-1.5 text-center">
+                          <div className="text-xs font-bold text-[#0A6EBD]">0</div>
+                          <div className="text-[9px] text-[#4A8CB5]">Åbne sager</div>
+                        </div>
+                      </div>
+                    </div>
+                  ) : null}
+                </div>
+              </div>
             </div>
+          </AnimatedSection>
+          <div className="mt-6 flex flex-wrap justify-center gap-2">
+            {featurePills.map((feature, i) => (
+              <span
+                key={feature}
+                className="rounded-full border border-sky-200 bg-white px-3 py-1 text-xs font-medium text-sky-700 shadow-sm"
+                style={{ animation: `fadeUp 0.5s ease-out ${0.1 + i * 0.1}s both` }}
+              >
+                {feature}
+              </span>
+            ))}
           </div>
         </div>
       </section>
 
-      <section id="roi-beregner" className="bg-white py-24">
+      <section id="roi-beregner" className="border-t border-black/5 bg-white py-16">
+        <div className="mx-auto max-w-xl px-6 text-center">
+          <p className="mb-2 text-xs font-semibold uppercase tracking-widest text-sky-600">Prøv det selv</p>
+          <h2 className="mb-3 text-2xl font-bold text-[#0D1F2D]">Hvad koster IT-rod din virksomhed?</h2>
+          <p className="mb-6 text-base text-[#2C4A5E]">
+            Besvar 5 spørgsmål og få et præcist svar på hvad I taber – og hvad I kan spare.
+          </p>
+        </div>
         <div className="mx-auto max-w-3xl px-6">
-          <div className="mb-8 text-center">
-            <p className="mb-2 text-xs font-semibold uppercase tracking-widest text-sky-600">Prøv det selv</p>
-            <h2 className="text-3xl font-bold text-[#0D1F2D]">Hvad koster IT-rod din virksomhed?</h2>
-            <p className="mx-auto mt-3 max-w-lg text-[#2C4A5E]">
-              Besvar 5 spørgsmål og få et præcist svar på hvad I taber – og hvad I kan spare.
-            </p>
-          </div>
-          <div className="mx-auto max-w-3xl rounded-3xl bg-gradient-to-br from-[#0A6EBD] to-[#062840] p-1">
-            <div className="rounded-[22px] bg-[#F0F7FF] p-10">
-              <div className="flex items-center justify-center gap-3">
+          <div className="rounded-2xl bg-gradient-to-br from-sky-400 to-[#062840] p-[1px]">
+            <div className="rounded-[15px] bg-white p-6">
+              <div className="mb-4 flex justify-center gap-1.5">
                 {[1, 2, 3, 4, 5].map((stepNumber) => (
-                  <div key={stepNumber} className="flex items-center gap-3">
-                    <div
-                      className={`flex h-9 w-9 items-center justify-center rounded-full text-sm font-semibold ${
-                        indicatorStep === stepNumber ? "bg-sky-600 text-white" : "bg-sky-200 text-sky-700"
-                      }`}
-                    >
-                      {stepNumber}
-                    </div>
-                    {stepNumber < 5 ? <div className="h-[2px] w-8 bg-sky-200" aria-hidden /> : null}
+                  <div
+                    key={stepNumber}
+                    className={`flex h-6 w-6 items-center justify-center rounded-full text-xs font-semibold ${
+                      indicatorStep === stepNumber ? "bg-sky-600 text-white" : "bg-sky-100 text-sky-400"
+                    }`}
+                  >
+                    {stepNumber}
                   </div>
                 ))}
               </div>
 
-              <div className="relative mt-10 min-h-[660px]">
+              <div className="relative min-h-[420px]">
                 <div
                   className={`transition-all duration-[400ms] ${
                     calculatorStep === 1
@@ -653,20 +628,16 @@ export function MarketingHomeContent() {
                       : "pointer-events-none absolute inset-0 translate-y-4 opacity-0"
                   }`}
                 >
-                  <h3 className="text-center text-2xl font-semibold text-[#0D1F2D]">Hvor mange ansatte har I?</h3>
-                  <div className="mt-6 grid grid-cols-2 gap-3">
+                  <h3 className="mb-3 text-base font-semibold text-[#0D1F2D]">Hvor mange ansatte har I?</h3>
+                  <div className="grid grid-cols-2 gap-2">
                     {employeeOptions.map((option) => (
                       <button
                         key={option.id}
                         onClick={() => handleEmployeeSelect(option.id)}
-                        className={`rounded-2xl p-5 text-center transition-all ${
-                          selectedEmployees === option.id
-                            ? "border border-sky-600 bg-sky-600 text-white shadow-md"
-                            : "cursor-pointer border border-sky-100 bg-white hover:border-sky-400 hover:shadow-sm"
-                        }`}
+                        className={stepCardClass(selectedEmployees === option.id)}
                       >
-                        <Users className="mx-auto h-5 w-5" />
-                        <p className="mt-2 text-base font-semibold">{option.label}</p>
+                        <Users className="h-4 w-4" />
+                        <p className="text-xs font-medium">{option.label}</p>
                       </button>
                     ))}
                   </div>
@@ -679,22 +650,18 @@ export function MarketingHomeContent() {
                       : "pointer-events-none absolute inset-0 translate-y-4 opacity-0"
                   }`}
                 >
-                  <h3 className="text-center text-2xl font-semibold text-[#0D1F2D]">Hvad laver din virksomhed?</h3>
-                  <div className="mt-6 grid grid-cols-2 gap-3">
+                  <h3 className="mb-3 text-base font-semibold text-[#0D1F2D]">Hvad laver din virksomhed?</h3>
+                  <div className="grid grid-cols-2 gap-2">
                     {industryOptions.map((option) => {
                       const Icon = option.icon;
                       return (
                         <button
                           key={option.id}
                           onClick={() => handleIndustrySelect(option.id)}
-                          className={`rounded-2xl p-5 text-center transition-all ${
-                            selectedIndustry === option.id
-                              ? "border border-sky-600 bg-sky-600 text-white shadow-md"
-                              : "cursor-pointer border border-sky-100 bg-white hover:border-sky-400 hover:shadow-sm"
-                          }`}
+                          className={stepCardClass(selectedIndustry === option.id)}
                         >
-                          <Icon className="mx-auto h-5 w-5" />
-                          <p className="mt-2 text-base font-semibold">{option.title}</p>
+                          <Icon className="h-4 w-4" />
+                          <p className="text-xs font-medium">{option.title}</p>
                         </button>
                       );
                     })}
@@ -708,30 +675,20 @@ export function MarketingHomeContent() {
                       : "pointer-events-none absolute inset-0 translate-y-4 opacity-0"
                   }`}
                 >
-                  <h3 className="text-center text-2xl font-semibold text-[#0D1F2D]">Hvordan håndterer I IT i dag?</h3>
-                  <p className="mt-2 text-center text-sm text-[#2C4A5E]">
-                    Vær ærlig – det giver det mest præcise svar
-                  </p>
-                  <div className="mt-6 grid grid-cols-2 gap-3">
+                  <h3 className="mb-3 text-base font-semibold text-[#0D1F2D]">Hvordan håndterer I IT i dag?</h3>
+                  <div className="grid grid-cols-2 gap-2">
                     {setupOptions.map((option) => {
                       const Icon = option.icon;
+                      const active = selectedSetup === option.id;
                       return (
                         <button
                           key={option.id}
                           onClick={() => handleSetupSelect(option.id)}
-                          className={`rounded-2xl p-5 text-left transition-all ${
-                            selectedSetup === option.id
-                              ? "border border-sky-600 bg-sky-600 text-white shadow-md"
-                              : "cursor-pointer border border-sky-100 bg-white hover:border-sky-400 hover:shadow-sm"
-                          }`}
+                          className={stepCardClass(active)}
                         >
-                          <Icon className="h-5 w-5" />
-                          <p className="mt-2 text-base font-semibold">{option.title}</p>
-                          <p
-                            className={`mt-1 text-sm ${
-                              selectedSetup === option.id ? "text-white/90" : "text-[#2C4A5E]"
-                            }`}
-                          >
+                          <Icon className="h-4 w-4" />
+                          <p className="text-xs font-medium">{option.title}</p>
+                          <p className={`text-[10px] ${active ? "text-white/80" : "text-[#4A8CB5]"}`}>
                             {option.subtitle}
                           </p>
                         </button>
@@ -747,29 +704,20 @@ export function MarketingHomeContent() {
                       : "pointer-events-none absolute inset-0 translate-y-4 opacity-0"
                   }`}
                 >
-                  <h3 className="text-center text-2xl font-semibold text-[#0D1F2D]">
-                    Hvor tit oplever I IT-problemer eller forstyrrelser?
-                  </h3>
-                  <div className="mt-6 grid grid-cols-2 gap-3">
+                  <h3 className="mb-3 text-base font-semibold text-[#0D1F2D]">Hvor tit oplever I IT-problemer?</h3>
+                  <div className="grid grid-cols-2 gap-2">
                     {frequencyOptions.map((option) => {
                       const Icon = option.icon;
+                      const active = selectedFrequency === option.id;
                       return (
                         <button
                           key={option.id}
                           onClick={() => handleFrequencySelect(option.id)}
-                          className={`rounded-2xl p-5 text-left transition-all ${
-                            selectedFrequency === option.id
-                              ? "border border-sky-600 bg-sky-600 text-white shadow-md"
-                              : "cursor-pointer border border-sky-100 bg-white hover:border-sky-400 hover:shadow-sm"
-                          }`}
+                          className={stepCardClass(active)}
                         >
-                          <Icon className="h-5 w-5" />
-                          <p className="mt-2 text-base font-semibold">{option.title}</p>
-                          <p
-                            className={`mt-1 text-sm ${
-                              selectedFrequency === option.id ? "text-white/90" : "text-[#2C4A5E]"
-                            }`}
-                          >
+                          <Icon className="h-4 w-4" />
+                          <p className="text-xs font-medium">{option.title}</p>
+                          <p className={`text-[10px] ${active ? "text-white/80" : "text-[#4A8CB5]"}`}>
                             {option.subtitle}
                           </p>
                         </button>
@@ -785,9 +733,9 @@ export function MarketingHomeContent() {
                       : "pointer-events-none absolute inset-0 translate-y-4 opacity-0"
                   }`}
                 >
-                  <h3 className="text-center text-2xl font-semibold text-[#0D1F2D]">Hvad bruger I unødigt tid på?</h3>
-                  <p className="mt-2 text-center text-sm text-[#2C4A5E]">Vælg alle der passer</p>
-                  <div className="mt-6 grid grid-cols-2 gap-3">
+                  <h3 className="mb-1 text-base font-semibold text-[#0D1F2D]">Hvad bruger I unødigt tid på?</h3>
+                  <p className="mb-3 text-[10px] uppercase tracking-wide text-[#4A8CB5]">Vælg alle der passer</p>
+                  <div className="grid grid-cols-2 gap-2">
                     {wasteOptions.map((option) => {
                       const Icon = option.icon;
                       const selected = selectedWaste.includes(option.id);
@@ -795,26 +743,22 @@ export function MarketingHomeContent() {
                         <button
                           key={option.id}
                           onClick={() => toggleWaste(option.id)}
-                          className={`rounded-2xl p-5 text-left transition-all ${
-                            selected
-                              ? "border border-sky-600 bg-sky-600 text-white shadow-md"
-                              : "cursor-pointer border border-sky-100 bg-white hover:border-sky-400 hover:shadow-sm"
-                          }`}
+                          className={stepCardClass(selected)}
                         >
-                          <Icon className="h-5 w-5" />
-                          <p className="mt-2 text-base font-semibold">{option.title}</p>
-                          <p className={`mt-1 text-sm ${selected ? "text-white/90" : "text-[#2C4A5E]"}`}>
+                          <Icon className="h-4 w-4" />
+                          <p className="text-xs font-medium">{option.title}</p>
+                          <p className={`text-[10px] ${selected ? "text-white/80" : "text-[#4A8CB5]"}`}>
                             {option.subtitle}
                           </p>
                         </button>
                       );
                     })}
                   </div>
-                  <div className="mt-6 flex justify-center">
+                  <div className="mt-4 flex justify-center">
                     <button
                       onClick={() => setCalculatorStep(6)}
                       disabled={selectedWaste.length === 0}
-                      className="inline-flex rounded-full bg-sky-600 px-12 py-3 font-semibold text-white disabled:cursor-not-allowed disabled:opacity-50"
+                      className="inline-flex rounded-full bg-sky-600 px-6 py-2 text-sm font-semibold text-white disabled:cursor-not-allowed disabled:opacity-50"
                     >
                       Beregn resultat
                     </button>
@@ -829,108 +773,95 @@ export function MarketingHomeContent() {
                   }`}
                 >
                   <AnimatedSection direction="up">
-                    <div className="rounded-3xl border border-sky-100 bg-white p-8 shadow-lg">
-                      <div className="flex items-center justify-center gap-3">
-                        <span className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-green-100">
-                          <CheckCircle className="h-6 w-6 text-green-600" />
-                        </span>
-                        <p className="text-lg font-semibold text-[#0D1F2D]">Her er jeres IT-regning</p>
+                    <div className="flex items-center justify-center gap-2">
+                      <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-green-100">
+                        <CheckCircle className="h-4 w-4 text-green-600" />
+                      </span>
+                      <p className="text-sm font-semibold text-[#0D1F2D]">Her er jeres IT-regning</p>
+                    </div>
+                    <div className="mt-4 grid gap-2 md:grid-cols-3">
+                      <div className="rounded-xl border border-sky-100 bg-[#F8FCFF] p-3 text-center">
+                        <p className="text-2xl font-bold text-[#0D1F2D]">{formatNumber(resultHours)}</p>
+                        <p className="mt-0.5 text-[10px] uppercase tracking-wide text-[#4A8CB5]">Timer / md.</p>
                       </div>
-
-                      <div className="mt-6 grid gap-4 md:grid-cols-3">
-                        <div className="rounded-2xl border border-sky-100 bg-[#F8FCFF] p-4 text-center">
-                          <p className="text-3xl font-bold text-[#0D1F2D]">{formatNumber(resultHours)} timer</p>
-                          <p className="mt-1 text-xs uppercase tracking-wide text-[#4A8CB5]">Spildt tid per måned</p>
-                        </div>
-                        <div className="rounded-2xl border border-sky-100 bg-[#F8FCFF] p-4 text-center">
-                          <p className="text-3xl font-bold text-red-500">{formatNumber(resultLost)} kr</p>
-                          <p className="mt-1 text-xs uppercase tracking-wide text-[#4A8CB5]">
-                            Tabt arbejdstid pr. måned
-                          </p>
-                        </div>
-                        <div className="rounded-2xl border border-sky-100 bg-[#F8FCFF] p-4 text-center">
-                          <p className="text-3xl font-bold text-sky-600">{formatNumber(resultSavings)} kr</p>
-                          <p className="mt-1 text-xs uppercase tracking-wide text-[#4A8CB5]">
-                            systemklar sparer jer pr. måned
-                          </p>
-                        </div>
+                      <div className="rounded-xl border border-sky-100 bg-[#F8FCFF] p-3 text-center">
+                        <p className="text-2xl font-bold text-red-500">{formatNumber(resultLost)} kr</p>
+                        <p className="mt-0.5 text-[10px] uppercase tracking-wide text-[#4A8CB5]">Tabt arbejdstid</p>
                       </div>
-
-                      {contextLine ? <p className="mt-4 text-sm text-[#2C4A5E]">{contextLine}</p> : null}
-
-                      <div className="my-6 h-px bg-slate-200" />
-
-                      <div className="rounded-2xl border border-green-100 bg-green-50 p-5">
-                        <p className="text-sm font-semibold text-green-800">
-                          Med {plan.name}-planen til {formatNumber(plan.price)} kr/md får I:
-                        </p>
-                        <ul className="mt-3 space-y-2">
-                          {selectedWaste.includes("passwords") ? (
-                            <li className="flex items-start gap-2 text-sm text-green-800">
-                              <CheckCircle className="mt-0.5 h-4 w-4 shrink-0" />
-                              <span>Sikker kodebank – find alle logins på sekunder</span>
-                            </li>
-                          ) : null}
-                          {selectedWaste.includes("ventetid") ? (
-                            <li className="flex items-start gap-2 text-sm text-green-800">
-                              <CheckCircle className="mt-0.5 h-4 w-4 shrink-0" />
-                              <span>Support direkte i platformen – ingen ventetid</span>
-                            </li>
-                          ) : null}
-                          {selectedWaste.includes("systemer") ? (
-                            <li className="flex items-start gap-2 text-sm text-green-800">
-                              <CheckCircle className="mt-0.5 h-4 w-4 shrink-0" />
-                              <span>Samlet systemoverblik – alt på ét sted</span>
-                            </li>
-                          ) : null}
-                          {selectedWaste.includes("support") ? (
-                            <li className="flex items-start gap-2 text-sm text-green-800">
-                              <CheckCircle className="mt-0.5 h-4 w-4 shrink-0" />
-                              <span>Månedlig IT-rapport – vi forklarer det for dig</span>
-                            </li>
-                          ) : null}
-                          {selectedSetup === "konsulent" ? (
-                            <li className="flex items-start gap-2 text-sm text-green-800">
-                              <CheckCircle className="mt-0.5 h-4 w-4 shrink-0" />
-                              <span>
-                                Reducér jeres IT-konsulent udgifter med ca. {formatNumber(resultConsultant)} kr/md
-                              </span>
-                            </li>
-                          ) : null}
-                          {industryRecommendation ? (
-                            <li className="flex items-start gap-2 text-sm text-green-800">
-                              <CheckCircle className="mt-0.5 h-4 w-4 shrink-0" />
-                              <span>{industryRecommendation}</span>
-                            </li>
-                          ) : null}
-                        </ul>
+                      <div className="rounded-xl border border-sky-100 bg-[#F8FCFF] p-3 text-center">
+                        <p className="text-2xl font-bold text-sky-600">{formatNumber(resultSavings)} kr</p>
+                        <p className="mt-0.5 text-[10px] uppercase tracking-wide text-[#4A8CB5]">systemklar sparer</p>
                       </div>
-
-                      <p className="mt-6 text-center text-2xl font-bold text-green-700">
-                        Netto gevinst: {netGain < 0 ? "-" : "+"}
-                        {formatNumber(resultNet)} kr/md efter abonnement
+                    </div>
+                    {contextLine ? <p className="mt-3 text-xs text-[#2C4A5E]">{contextLine}</p> : null}
+                    <div className="my-4 h-px bg-slate-200" />
+                    <div className="rounded-xl border border-green-100 bg-green-50 p-4 text-xs">
+                      <p className="font-semibold text-green-800">
+                        Med {plan.name}-planen til {formatNumber(plan.price)} kr/md får I:
                       </p>
-                      {urgencyText ? (
-                        <p className="mt-4 text-center text-sm text-[#2C4A5E]">{urgencyText}</p>
-                      ) : null}
-
+                      <ul className="mt-2 space-y-1.5">
+                        {selectedWaste.includes("passwords") ? (
+                          <li className="flex items-start gap-1.5 text-green-800">
+                            <CheckCircle className="mt-0.5 h-3 w-3 shrink-0" />
+                            <span>Sikker kodebank – find alle logins på sekunder</span>
+                          </li>
+                        ) : null}
+                        {selectedWaste.includes("ventetid") ? (
+                          <li className="flex items-start gap-1.5 text-green-800">
+                            <CheckCircle className="mt-0.5 h-3 w-3 shrink-0" />
+                            <span>Support direkte i platformen – ingen ventetid</span>
+                          </li>
+                        ) : null}
+                        {selectedWaste.includes("systemer") ? (
+                          <li className="flex items-start gap-1.5 text-green-800">
+                            <CheckCircle className="mt-0.5 h-3 w-3 shrink-0" />
+                            <span>Samlet systemoverblik – alt på ét sted</span>
+                          </li>
+                        ) : null}
+                        {selectedWaste.includes("support") ? (
+                          <li className="flex items-start gap-1.5 text-green-800">
+                            <CheckCircle className="mt-0.5 h-3 w-3 shrink-0" />
+                            <span>Månedlig IT-rapport – vi forklarer det for dig</span>
+                          </li>
+                        ) : null}
+                        {selectedSetup === "konsulent" ? (
+                          <li className="flex items-start gap-1.5 text-green-800">
+                            <CheckCircle className="mt-0.5 h-3 w-3 shrink-0" />
+                            <span>
+                              Reducér jeres IT-konsulent udgifter med ca. {formatNumber(resultConsultant)} kr/md
+                            </span>
+                          </li>
+                        ) : null}
+                        {industryRecommendation ? (
+                          <li className="flex items-start gap-1.5 text-green-800">
+                            <CheckCircle className="mt-0.5 h-3 w-3 shrink-0" />
+                            <span>{industryRecommendation}</span>
+                          </li>
+                        ) : null}
+                      </ul>
+                    </div>
+                    <p className="mt-4 text-center text-lg font-bold text-green-700">
+                      Netto gevinst: {netGain < 0 ? "-" : "+"}
+                      {formatNumber(resultNet)} kr/md
+                    </p>
+                    {urgencyText ? <p className="mt-2 text-center text-xs text-[#2C4A5E]">{urgencyText}</p> : null}
+                    <div className="mt-4 flex justify-center">
                       <Link
                         href="/kontakt"
-                        className="mt-4 inline-flex w-full justify-center rounded-full bg-sky-600 px-8 py-3 font-semibold text-white"
+                        className="inline-flex rounded-full bg-sky-600 px-6 py-2 text-sm font-semibold text-white"
                       >
                         Book en gratis demo
                       </Link>
-                      <p className="mt-3 text-center text-xs text-[#7AAEC8]">
-                        Beregningen er baseret på gennemsnitlig dansk timeløn (350 kr/t) og dokumenteret IT-tidsspild i
-                        SMV&apos;er.
-                      </p>
-                      <button
-                        onClick={resetCalculator}
-                        className="mt-4 block w-full text-center text-sm text-[#4A8CB5] transition-colors hover:text-sky-600"
-                      >
-                        Start forfra
-                      </button>
                     </div>
+                    <p className="mt-2 text-center text-[10px] text-[#7AAEC8]">
+                      Beregningen er baseret på dansk timeløn (350 kr/t) og dokumenteret IT-tidsspild i SMV&apos;er.
+                    </p>
+                    <button
+                      onClick={resetCalculator}
+                      className="mt-3 block w-full text-center text-xs text-[#4A8CB5] transition-colors hover:text-sky-600"
+                    >
+                      Start forfra
+                    </button>
                   </AnimatedSection>
                 </div>
               </div>
@@ -939,81 +870,78 @@ export function MarketingHomeContent() {
         </div>
       </section>
 
-      <section className="bg-[#F0F7FF] py-24">
-        <div className="mx-auto max-w-5xl px-6">
-          <p className="mb-10 text-center text-xs font-semibold uppercase tracking-widest text-sky-600">
-            Hvad kunderne siger
-          </p>
-          <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
-            <div className="flex flex-col justify-between rounded-3xl bg-[#062840] p-8 text-white md:col-span-2">
-              <div className="mb-6 flex gap-1">
-                {[...Array(5)].map((_, i) => (
-                  <svg key={i} className="h-5 w-5 text-amber-400" fill="currentColor" viewBox="0 0 20 20">
-                    <path d={starPath} />
-                  </svg>
-                ))}
-              </div>
-              <p className="mb-8 flex-1 text-xl leading-relaxed text-white/90">{`"${featuredTestimonial.quote}"`}</p>
-              <div className="flex items-center gap-3 border-t border-white/10 pt-6">
-                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-sky-600 text-sm font-bold text-white">
-                  {featuredTestimonial.initials}
-                </div>
-                <div>
-                  <p className="font-semibold text-white">{featuredTestimonial.name}</p>
-                  <p className="text-sm text-white/50">{featuredTestimonial.company}</p>
-                </div>
-              </div>
-            </div>
-
-            <div className="flex flex-col gap-6">
-              {sideTestimonials.map((t) => (
-                <div
-                  key={t.name}
-                  className="flex flex-1 flex-col justify-between rounded-2xl border border-sky-100 bg-white p-6 shadow-sm"
-                >
-                  <div className="mb-3 flex gap-0.5">
-                    {[...Array(5)].map((_, s) => (
-                      <svg key={s} className="h-3.5 w-3.5 text-amber-400" fill="currentColor" viewBox="0 0 20 20">
-                        <path d={starPath} />
-                      </svg>
-                    ))}
-                  </div>
-                  <p className="mb-4 flex-1 text-sm leading-relaxed text-[#2C4A5E]">{`"${t.quote}"`}</p>
-                  <div className="flex items-center gap-2 border-t border-sky-50 pt-3">
-                    <div className="flex h-7 w-7 items-center justify-center rounded-full bg-sky-100 text-xs font-bold text-sky-700">
-                      {t.initials}
-                    </div>
-                    <div>
-                      <p className="text-xs font-semibold text-[#0D1F2D]">{t.name}</p>
-                      <p className="text-[10px] text-[#4A8CB5]">{t.company}</p>
-                    </div>
-                  </div>
-                </div>
+      <section className="border-t border-black/5 bg-[#062840] py-16">
+        <div className="mx-auto max-w-xl px-6 text-center">
+          <p className="mb-6 text-xs font-semibold uppercase tracking-widest text-sky-300">Hvad kunderne siger</p>
+        </div>
+        <div className="mx-auto grid max-w-5xl grid-cols-1 gap-4 px-6 md:grid-cols-3">
+          <div className="flex flex-col justify-between rounded-2xl border border-white/10 bg-white/5 p-6 text-white md:col-span-2">
+            <div className="mb-4 flex gap-1">
+              {[...Array(5)].map((_, i) => (
+                <svg key={i} className="h-4 w-4 text-amber-400" fill="currentColor" viewBox="0 0 20 20" aria-hidden>
+                  <path d={starPath} />
+                </svg>
               ))}
             </div>
+            <p className="mb-6 flex-1 text-lg leading-relaxed text-white/90">{`"${featuredTestimonial.quote}"`}</p>
+            <div className="flex items-center gap-3 border-t border-white/10 pt-4">
+              <div className="flex h-9 w-9 items-center justify-center rounded-full bg-sky-600 text-xs font-bold text-white">
+                {featuredTestimonial.initials}
+              </div>
+              <div>
+                <p className="text-sm font-semibold text-white">{featuredTestimonial.name}</p>
+                <p className="text-xs text-white/50">{featuredTestimonial.company}</p>
+              </div>
+            </div>
+          </div>
+          <div className="flex flex-col gap-4">
+            {sideTestimonials.map((t) => (
+              <div
+                key={t.name}
+                className="flex flex-1 flex-col justify-between rounded-2xl border border-white/10 bg-white/10 p-4"
+              >
+                <div className="mb-2 flex gap-0.5">
+                  {[...Array(5)].map((_, s) => (
+                    <svg
+                      key={s}
+                      className="h-3 w-3 text-amber-400"
+                      fill="currentColor"
+                      viewBox="0 0 20 20"
+                      aria-hidden
+                    >
+                      <path d={starPath} />
+                    </svg>
+                  ))}
+                </div>
+                <p className="mb-3 flex-1 text-xs leading-relaxed text-white/80">{`"${t.quote}"`}</p>
+                <div className="flex items-center gap-2 border-t border-white/10 pt-2">
+                  <div className="flex h-6 w-6 items-center justify-center rounded-full bg-white/20 text-[10px] font-bold text-white">
+                    {t.initials}
+                  </div>
+                  <div>
+                    <p className="text-xs font-semibold text-white">{t.name}</p>
+                    <p className="text-[10px] text-white/50">{t.company}</p>
+                  </div>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       </section>
 
-      <section className="bg-white py-24 md:py-32">
-        <div className="mx-auto max-w-5xl px-6">
-          <h2 className="text-center text-3xl font-bold tracking-tight text-[#0D1F2D] md:text-4xl">Priser</h2>
-          <p className="mx-auto mt-4 max-w-2xl text-center text-base text-[#2C4A5E]">
+      <section className="border-t border-black/5 bg-[#F0F7FF] py-16">
+        <div className="mx-auto max-w-xl px-6 text-center">
+          <h2 className="mb-3 text-2xl font-bold tracking-tight text-[#0D1F2D]">Priser</h2>
+          <p className="mb-6 text-base text-[#2C4A5E]">
             Vælg den plan der passer til jer i dag, og skift når behovet ændrer sig.
           </p>
-          <p className="mx-auto mb-10 mt-4 max-w-xl text-center text-[#2C4A5E]">
-            Prisen betaler sig typisk ind på den første uge.
-            <button
-              onClick={() => document.getElementById("roi-beregner")?.scrollIntoView({ behavior: "smooth" })}
-              className="ml-1 font-medium text-sky-600 hover:underline"
-            >
-              Se hvad IT-rod koster jer →
-            </button>
-          </p>
-          <div className="mt-10 flex min-h-8 items-center justify-center gap-3">
+        </div>
+        <div className="mx-auto max-w-5xl px-6">
+          <div className="mb-6 flex min-h-8 items-center justify-center gap-3">
             <span className={`text-sm font-medium ${!yearly ? "text-[#0D1F2D]" : "text-[#4A8CB5]"}`}>Månedlig</span>
             <button
               onClick={() => setYearly(!yearly)}
+              aria-label={yearly ? "Skift til månedlig" : "Skift til årlig"}
               className={`relative h-6 w-12 rounded-full transition-colors duration-200 ${
                 yearly ? "bg-sky-600" : "bg-slate-200"
               }`}
@@ -1033,46 +961,65 @@ export function MarketingHomeContent() {
               Spar 2 måneder
             </span>
           </div>
-          <div className="mt-14 grid gap-5 md:grid-cols-3">
-            {displayPrice.map((priceCard, index) => (
+          <div className="grid gap-4 md:grid-cols-3">
+            {homePlans.map((priceCard, index) => (
               <AnimatedSection
                 key={priceCard.name}
                 direction="up"
                 delay={(index * 100) as 0 | 100 | 200 | 300}
               >
-                <div className="relative">
+                <div className="relative h-full">
                   {priceCard.highlight ? (
                     <div
-                      className="pointer-events-none absolute -inset-0.5 animate-pulse rounded-[26px] bg-sky-400/30 blur-sm"
+                      className="pointer-events-none absolute -inset-0.5 animate-pulse rounded-[18px] bg-sky-400/30 blur-sm"
                       aria-hidden
                     />
                   ) : null}
                   <article
-                    className={`relative rounded-3xl border px-8 py-10 text-center ${
+                    className={`relative flex h-full flex-col rounded-2xl bg-white p-6 ${
                       priceCard.highlight
-                        ? "border-2 border-sky-600 bg-white shadow-md"
-                        : "border border-sky-200 bg-white shadow-sm"
+                        ? "border-2 border-sky-600 shadow-md"
+                        : "border border-sky-200 shadow-sm"
                     }`}
                   >
-                    <p className="text-sm font-semibold uppercase tracking-wide text-[#4A8CB5]">{priceCard.name}</p>
+                    <p className="text-xs font-semibold uppercase tracking-wide text-[#4A8CB5]">{priceCard.name}</p>
                     <p
-                      className={`mt-4 text-4xl font-bold text-[#0D1F2D] transition-opacity duration-200 ${
+                      className={`mt-2 text-3xl font-bold text-[#0D1F2D] transition-opacity duration-200 ${
                         priceFading ? "opacity-0" : "opacity-100"
                       }`}
                     >
-                      {priceCard.price}
+                      {yearly ? priceCard.yearly : priceCard.monthly}
                     </p>
-                    {yearly ? <p className="mt-1 text-xs text-[#4A8CB5]">faktureres årligt</p> : null}
+                    {yearly ? <p className="mt-0.5 text-[10px] text-[#4A8CB5]">faktureres årligt</p> : null}
+                    <p className="mt-2 text-[10px] text-[#4A8CB5]">{priceCard.fits}</p>
+                    <ul className="mt-4 flex-1 space-y-1.5 text-xs text-[#2C4A5E]">
+                      {priceCard.features.map((feature) => (
+                        <li key={feature} className="flex items-start gap-1.5">
+                          <CheckCircle className="mt-0.5 h-3 w-3 shrink-0 text-sky-600" />
+                          <span>{feature}</span>
+                        </li>
+                      ))}
+                    </ul>
+                    <Link
+                      href="/priser"
+                      className={`mt-4 inline-flex w-full justify-center rounded-full px-5 py-2 text-sm font-semibold transition-colors ${
+                        priceCard.highlight
+                          ? "bg-sky-600 text-white hover:bg-sky-700"
+                          : "border border-sky-200 text-sky-700 hover:bg-sky-50"
+                      }`}
+                    >
+                      Vælg {priceCard.name}
+                    </Link>
                   </article>
                 </div>
               </AnimatedSection>
             ))}
           </div>
-          <div className="mt-8 text-center">
-            <Link href="/priser" className="text-sm font-semibold text-sky-600 hover:text-sky-700">
+          <div className="mt-6 text-center">
+            <Link href="/priser" className="text-xs font-semibold text-sky-600 hover:text-sky-700">
               Se alle features →
             </Link>
-            <p className="mt-4 text-center text-sm text-[#4A8CB5]">
+            <p className="mt-2 text-[10px] text-[#4A8CB5]">
               Ingen binding · Opsig når som helst · Kom i gang på 10 minutter
             </p>
           </div>
@@ -1081,20 +1028,22 @@ export function MarketingHomeContent() {
 
       <section
         id="cta"
-        className="relative flex min-h-[400px] items-center border-b border-sky-900/70 bg-[#062840] bg-gradient-to-br from-[#062840] to-[#0A3D5C] py-24 md:py-32"
+        className="border-t border-black/5 bg-[#0A6EBD] py-14"
       >
-        <div className="mx-auto max-w-3xl px-6 text-center">
-          <h2 className="text-4xl font-bold tracking-tight text-white md:text-5xl">Klar til at få IT ud af vejen?</h2>
-          <p className="mx-auto mt-5 max-w-xl text-lg text-[#7AAEC8]">
+        <div className="mx-auto max-w-xl px-6 text-center">
+          <h2 className="mb-3 text-2xl font-bold tracking-tight text-white">Klar til at få IT ud af vejen?</h2>
+          <p className="mb-6 text-sm text-white/80">
             Book en gratis snak på 30 minutter. Vi gennemgår platformen og sætter det op til jer – samme dag.
           </p>
-          <Link
-            href="/kontakt"
-            className="mt-10 inline-flex rounded-full bg-sky-500 px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-sky-400"
-          >
-            Book en gratis snak
-          </Link>
-          <p className="mt-4 text-sm text-[#7AAEC8]">30 min · gratis · uforpligtende · ingen binding</p>
+          <div className="flex justify-center">
+            <Link
+              href="/kontakt"
+              className="rounded-full bg-white px-7 py-2.5 text-sm font-semibold text-[#0A6EBD] transition-colors hover:bg-white/90"
+            >
+              Book en gratis snak
+            </Link>
+          </div>
+          <p className="mt-3 text-xs text-white/70">30 min · gratis · uforpligtende · ingen binding</p>
         </div>
       </section>
     </main>
