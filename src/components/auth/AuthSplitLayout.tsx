@@ -33,7 +33,10 @@ export function AuthSplitLayout({
             aria-hidden
           />
           <AnimatedSection direction="left" delay={100} className="relative z-10 mx-auto w-full max-w-md">
-            <h2 className="max-w-md text-4xl font-bold tracking-tight text-white">{sideTitle}</h2>
+            <Link href="/" aria-label="systemklar – forside">
+              <Logo variant="dark" />
+            </Link>
+            <h2 className="mt-10 max-w-md text-4xl font-bold tracking-tight text-white">{sideTitle}</h2>
             <ul className="mt-8 space-y-4 text-sky-100">
               {sideBullets.map((bullet) => (
                 <li key={bullet} className="flex items-start gap-3">

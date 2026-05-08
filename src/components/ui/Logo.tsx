@@ -1,17 +1,23 @@
 import Image from "next/image";
 
-export function Logo({ white = false }: { white?: boolean }) {
+export function Logo({ variant = "light" }: { variant?: "light" | "dark" }) {
   return (
     <div className="flex items-center gap-2">
       <Image
         src="/logo-icon.png"
-        alt=""
+        alt="systemklar"
         width={32}
         height={32}
-        className={white ? "brightness-0 invert" : undefined}
+        className={variant === "dark" ? "brightness-0 invert" : undefined}
       />
       <span
-        className={`font-semibold text-lg ${white ? "text-white" : "text-[#062840]"}`}
+        style={{
+          fontFamily: "Inter",
+          fontWeight: 700,
+          color: variant === "dark" ? "#FFFFFF" : "#0A6EBD",
+          fontSize: "1.125rem",
+          letterSpacing: "-0.01em",
+        }}
       >
         systemklar
       </span>
