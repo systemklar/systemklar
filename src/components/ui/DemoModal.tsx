@@ -1,8 +1,9 @@
 "use client";
 
 import { FormEvent, MouseEvent, useEffect, useState } from "react";
+import Link from "next/link";
 import { CheckCircle, X } from "lucide-react";
-import { SystemklarLogo } from "@/components/branding/SystemklarLogo";
+import { Logo } from "@/components/ui/Logo";
 
 type DemoModalProps = {
   isOpen: boolean;
@@ -26,9 +27,11 @@ export function DemoModal({ isOpen, onClose, subject }: DemoModalProps) {
 
   useEffect(() => {
     if (!isOpen) return;
-    setSubjectValue(subject ?? "");
-    setSuccess(false);
-    setError(null);
+    queueMicrotask(() => {
+      setSubjectValue(subject ?? "");
+      setSuccess(false);
+      setError(null);
+    });
   }, [isOpen, subject]);
 
   if (!isOpen) return null;
@@ -97,7 +100,9 @@ export function DemoModal({ isOpen, onClose, subject }: DemoModalProps) {
           <X className="h-4 w-4" />
         </button>
 
-        <SystemklarLogo href="/" textClassName="text-base font-semibold tracking-tight text-sky-600" />
+        <Link href="/" aria-label="systemklar – forside">
+          <Logo />
+        </Link>
         <h2 id="demo-modal-title" className="mt-6 text-xl font-bold text-[#0D1F2D]">
           Book en gratis snak
         </h2>
