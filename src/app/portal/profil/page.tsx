@@ -109,7 +109,8 @@ export default function PortalProfilePage() {
       setLoading(false);
       return;
     }
-    if (!data) {
+    const profileRow = (Array.isArray(data) ? data[0] : data) as ProfileRow | null | undefined;
+    if (!profileRow) {
       console.error("[portal/profil] profil ikke fundet for user", authUser.id);
       setError("Din profil blev ikke fundet i databasen. Kontakt support på kontakt@systemklar.dk.");
       setProfile(null);
@@ -117,12 +118,11 @@ export default function PortalProfilePage() {
       return;
     }
 
-    const next = data as unknown as ProfileRow;
-    setProfile(next);
-    setFullNameInput(next.full_name ?? "");
-    setNotifNewMessage(next.notif_new_message ?? true);
-    setNotifStatusChange(next.notif_status_change ?? true);
-    setNotifMonthlyReport(next.notif_monthly_report ?? true);
+    setProfile(profileRow);
+    setFullNameInput(profileRow.full_name ?? "");
+    setNotifNewMessage(profileRow.notif_new_message ?? true);
+    setNotifStatusChange(profileRow.notif_status_change ?? true);
+    setNotifMonthlyReport(profileRow.notif_monthly_report ?? true);
     setLoading(false);
   }, [supabase]);
 
