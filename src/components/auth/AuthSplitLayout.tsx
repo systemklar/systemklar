@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 import { CheckCircle } from "lucide-react";
 import { SystemklarLogo } from "@/components/branding/SystemklarLogo";
 import { AnimatedSection } from "@/components/ui/AnimatedSection";
+import { RotatingFeatureList } from "@/components/auth/RotatingFeatureList";
 
 type AuthSplitLayoutProps = {
   title: string;
@@ -16,11 +17,7 @@ export function AuthSplitLayout({
   subtitle,
   children,
   sideTitle = "Få overblik over din virksomheds IT",
-  sideBullets = [
-    "Se status på alle dine systemer",
-    "Opret og følg supportssager",
-    "Modtag månedlige IT-rapporter",
-  ],
+  sideBullets,
 }: AuthSplitLayoutProps) {
   return (
     <main className="min-h-screen bg-white text-[#0D1F2D]">
@@ -38,14 +35,18 @@ export function AuthSplitLayout({
               textClassName="text-sm font-bold tracking-tight text-white"
             />
             <h2 className="mt-10 max-w-md text-4xl font-bold tracking-tight text-white">{sideTitle}</h2>
-            <ul className="mt-8 space-y-4 text-sky-100">
-              {sideBullets.map((bullet) => (
-                <li key={bullet} className="flex items-start gap-3">
-                  <CheckCircle className="mt-0.5 h-5 w-5 shrink-0 text-white" />
-                  <span>{bullet}</span>
-                </li>
-              ))}
-            </ul>
+            {sideBullets ? (
+              <ul className="mt-8 space-y-4 text-sky-100">
+                {sideBullets.map((bullet) => (
+                  <li key={bullet} className="flex items-start gap-3">
+                    <CheckCircle className="mt-0.5 h-5 w-5 shrink-0 text-white" />
+                    <span>{bullet}</span>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <RotatingFeatureList />
+            )}
           </AnimatedSection>
         </aside>
         <section className="flex items-center justify-center bg-[#F5FAFD] px-6 py-12 md:px-10">
