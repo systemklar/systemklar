@@ -12,10 +12,12 @@ const SOURCE = fileURLToPath(
 );
 
 const FAVICON_SIZE = 256;
-const PADDING = 16;
+const PADDING = 12;
 const ICO_SIZE = 64;
-const WHITE_THRESHOLD = 232;
 
+// Remove a near-white background by setting alpha proportional to how white a
+// pixel is and pre-multiplying the RGB channels. This avoids the white halo
+// that a hard threshold leaves on anti-aliased edges.
 async function loadKeyedSk() {
   const { data, info } = await sharp(SOURCE)
     .ensureAlpha()
@@ -26,13 +28,26 @@ async function loadKeyedSk() {
     const r = data[i];
     const g = data[i + 1];
     const b = data[i + 2];
-    if (r >= WHITE_THRESHOLD && g >= WHITE_THRESHOLD && b >= WHITE_THRESHOLD) {
+
+    const whiteness = Math.min(r, g, b);
+    const alpha = 255 - whiteness;
+
+    if (alpha <= 0) {
+      data[i] = 0;
+      data[i + 1] = 0;
+      data[i + 2] = 0;
       data[i + 3] = 0;
+      continue;
     }
+
+    data[i] = Math.min(255, Math.round(((r - whiteness) * 255) / alpha));
+    data[i + 1] = Math.min(255, Math.round(((g - whiteness) * 255) / alpha));
+    data[i + 2] = Math.min(255, Math.round(((b - whiteness) * 255) / alpha));
+    data[i + 3] = alpha;
   }
 
   return sharp(data, { raw: info })
-    .trim({ threshold: 1 })
+    .trim({ threshold: 5 })
     .resize(FAVICON_SIZE - PADDING * 2, FAVICON_SIZE - PADDING * 2, {
       fit: "contain",
       background: { r: 0, g: 0, b: 0, alpha: 0 },
