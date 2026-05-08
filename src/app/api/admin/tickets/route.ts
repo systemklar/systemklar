@@ -33,3 +33,77 @@ export async function GET() {
 
   return NextResponse.json({ tickets: merged });
 }
+
+export async function POST(request: Request) {
+  const auth = await requireAdminSession();
+  if (!auth.ok) return auth.response;
+
+  const admin = createServiceRoleClient();
+  if (!admin) {
+    console.error("[api/admin/tickets] SUPABASE_SERVICE_ROLE_KEY mangler");
+    return NextResponse.json({ error: "Serverkonfiguration." }, { status: 500 });
+  }
+
+  let body: unknown;
+  try {
+    body = await request.json();
+  } catch {
+    return NextResponse.json({ error: "Ugyldig JSON." }, { status: 400 });
+  }
+
+  const bodyRecord = body && typeof body === "object" ? (body as Record<string, unknown>) : {};
+  const organisationId = String(bodyRecord.organisation_id ?? "").trim();
+  const title = String(bodyRecord.title ?? "").trim();
+  const description = String(bodyRecord.description ?? "").trim();
+  const priorityRaw = String(bodyRecord.priority ?? "normal").trim().toLowerCase();
+  const priority = ["lav", "normal", "høj"].includes(priorityRaw) ? priorityRaw : "normal";
+
+  if (!organisationId) {
+    return NextResponse.json({ error: "Vælg en kunde/organisation." }, { status: 400 });
+  }
+  if (!title) {
+    return NextResponse.json({ error: "Titel er påkrævet." }, { status: 400 });
+  }
+  if (!description) {
+    return NextResponse.json({ error: "Beskrivelse er påkrævet." }, { status: 400 });
+  }
+
+  const { data: organisation, error: organisationError } = await admin
+    .from("organisations")
+    .select("id, name")
+    .eq("id", organisationId)
+    .maybeSingle();
+
+  if (organisationError) {
+    console.error("[api/admin/tickets] organisation select", organisationError);
+    return NextResponse.json({ error: organisationError.message }, { status: 400 });
+  }
+  if (!organisation) {
+    return NextResponse.json({ error: "Organisation ikke fundet." }, { status: 404 });
+  }
+
+  const { data: inserted, error: insertError } = await admin
+    .from("tickets")
+    .insert({
+      title,
+      description,
+      priority,
+      status: "active",
+      user_id: auth.user.id,
+      organisation_id: organisationId,
+      created_by: auth.user.id,
+      created_by_name: auth.user.email ?? "Admin",
+    })
+    .select("id,title")
+    .single();
+
+  if (insertError || !inserted) {
+    console.error("[api/admin/tickets] insert", insertError);
+    return NextResponse.json(
+      { error: insertError?.message ?? "Kunne ikke oprette sag." },
+      { status: 400 },
+    );
+  }
+
+  return NextResponse.json({ success: true, ticket: inserted });
+}

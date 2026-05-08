@@ -8,7 +8,7 @@ import { isAdminEmail } from "@/lib/admin-email";
  * Bruges i API-routes der kalder Supabase med service role.
  */
 export async function requireAdminSession(): Promise<
-  | { ok: true }
+  | { ok: true; user: { id: string; email?: string | null } }
   | { ok: false; response: NextResponse }
 > {
   const cookieStore = await cookies();
@@ -45,5 +45,5 @@ export async function requireAdminSession(): Promise<
     };
   }
 
-  return { ok: true };
+  return { ok: true, user: { id: user.id, email: user.email } };
 }
