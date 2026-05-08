@@ -7,7 +7,7 @@ import { EMAIL_SITE, emailOuterHtml } from "@/lib/email-layout";
 import { escapeHtml } from "@/lib/resend-welcome-email";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
-export const FROM = process.env.RESEND_FROM_EMAIL ?? "systemklar <kontakt@systemklar.dk>";
+export const FROM = process.env.RESEND_FROM_EMAIL ?? "systemklar <noreply@systemklar.dk>";
 export const SITE = EMAIL_SITE;
 
 /**
@@ -190,11 +190,41 @@ export async function sendInviteEmail(
   };
   const subject = interpolate(template.subject, vars);
   const bodyInner = interpolate(template.body, vars);
+
+  const text = [
+    `Hej ${contactName},`,
+    "",
+    `Du er blevet inviteret til at få adgang til ${orgName} på systemklar — en IT-platform der samler support, overblik og dokumentation ét sted.`,
+    "",
+    "Klik på linket nedenfor for at oprette din profil. Det tager under 2 minutter:",
+    inviteUrl,
+    "",
+    "Linket udløber om 7 dage.",
+    "Har du spørgsmål? Skriv til os på kontakt@systemklar.dk",
+    "",
+    "—",
+    "systemklar · CVR 46431596 · kontakt@systemklar.dk",
+  ].join("\n");
+
+  let refId = inviteUrl;
+  try {
+    const parsed = new URL(inviteUrl);
+    refId = parsed.searchParams.get("token") ?? inviteUrl;
+  } catch {
+    /* behold inviteUrl som ref */
+  }
+
   return resend.emails.send({
     from: FROM,
     to,
     subject,
     html: emailOuterHtml(bodyInner),
+    text,
+    replyTo: "kontakt@systemklar.dk",
+    headers: {
+      "X-Entity-Ref-ID": refId,
+      "List-Unsubscribe": "<mailto:kontakt@systemklar.dk?subject=unsubscribe>",
+    },
   });
 }
 
