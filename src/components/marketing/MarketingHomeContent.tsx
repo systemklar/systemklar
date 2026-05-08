@@ -91,13 +91,29 @@ const homePlans: HomePlan[] = [
   },
 ];
 
-const BRANCH_HOURLY_RATE: Record<string, number> = {
+const FALLBACK_WAGES: Record<string, number> = {
   haandvaerk: 330,
   handel: 310,
   kontor: 445,
   sundhed: 400,
   transport: 325,
   andet: 360,
+};
+
+const DST_BRANCH_MAP: Record<string, string> = {
+  haandvaerk: "F",
+  handel: "G",
+  kontor: "M",
+  sundhed: "Q",
+  transport: "H",
+  andet: "TOT",
+};
+
+const SAVINGS_PCT: Record<string, number> = {
+  ingen: 0.75,
+  konsulent: 0.6,
+  intern: 0.45,
+  blanding: 0.55,
 };
 
 type CvrResult = {
@@ -238,85 +254,38 @@ type EmployeeId = (typeof employeeOptions)[number]["id"];
 type IndustryId = (typeof industryOptions)[number]["id"];
 type WageSource = "live" | "fallback";
 
-const STATBANK_WORK_FUNCTION_CODES: Record<IndustryId, string> = {
-  haandvaerk: "7",
-  handel: "5",
-  kontor: "4",
-  sundhed: "22",
-  transport: "83",
-  andet: "TOT",
-};
-
-const SETUP_SAVINGS_RATE: Record<(typeof setupOptions)[number]["id"], number> = {
-  ingen: 0.75,
-  konsulent: 0.6,
-  intern: 0.45,
-  blanding: 0.55,
-};
-
-function parseStatbankNumber(value: unknown) {
-  if (typeof value === "number" && Number.isFinite(value)) return value;
-  if (typeof value !== "string") return null;
-  const normalized = value.replace(/\./g, "").replace(",", ".");
-  const parsed = Number(normalized);
-  return Number.isFinite(parsed) ? parsed : null;
+async function fetchBranchWage(brancheId: string): Promise<{ wage: number; year: string | null }> {
+  const code = DST_BRANCH_MAP[brancheId] ?? "TOT";
+  const body = {
+    table: "LONS20",
+    format: "JSON",
+    variables: [
+      { code: "OMR", values: [code] },
+      { code: "SEKTOR", values: ["TOT"] },
+      { code: "TID", values: ["*"] },
+    ],
+  };
+  const res = await fetch("https://api.statbank.dk/v1/data", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+    signal: AbortSignal.timeout(4000),
+  });
+  if (!res.ok) throw new Error("Statbank request failed");
+  const json = (await res.json()) as { data?: Array<{ TID: string; INDHOLD: string }> };
+  const rows = json.data ?? [];
+  if (rows.length === 0) throw new Error("No data returned");
+  const latest = rows[rows.length - 1];
+  const wage = parseFloat(latest.INDHOLD.replace(",", "."));
+  if (!Number.isFinite(wage) || wage < 100) throw new Error("Invalid wage");
+  return { wage: Math.round(wage * 1.35), year: latest.TID };
 }
 
-function readLatestStatbankWageFromCsv(csv: string) {
-  const [header, ...rows] = csv.trim().split(/\r?\n/);
-  const columns = header?.split(";") ?? [];
-  const timeIndex = columns.findIndex((column) => column.toUpperCase() === "TID");
-  const valueIndex = columns.findIndex((column) => column.toUpperCase() === "INDHOLD");
-  if (timeIndex === -1 || valueIndex === -1) return null;
-
-  return rows.reduce<{ time: string; value: number } | null>((latest, row) => {
-    const cells = row.split(";");
-    const value = parseStatbankNumber(cells[valueIndex]);
-    if (value === null) return latest;
-    const time = cells[timeIndex] ?? "";
-    if (!latest || time.localeCompare(latest.time, "da-DK", { numeric: true }) > 0) {
-      return { time, value };
-    }
-    return latest;
-  }, null)?.value ?? null;
-}
-
-async function fetchBranchWage(brancheId: IndustryId): Promise<{ value: number; source: WageSource }> {
-  const fallback = BRANCH_HOURLY_RATE[brancheId];
-
-  try {
-    const response = await fetch("https://api.statbank.dk/v1/data", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      signal: AbortSignal.timeout(5000),
-      body: JSON.stringify({
-        table: "LONS20",
-        format: "CSV",
-        valuePresentation: "Code",
-        variables: [
-          { code: "ARBF", values: [STATBANK_WORK_FUNCTION_CODES[brancheId]] },
-          { code: "SEKTOR", values: ["1000"] },
-          { code: "AFLOEN", values: ["TIFA"] },
-          { code: "LONGRP", values: ["LTOT"] },
-          { code: "LØNMÅL", values: ["STAND"] },
-          { code: "KØN", values: ["MOK"] },
-          { code: "Tid", values: ["*"] },
-        ],
-      }),
-    });
-
-    if (!response.ok) throw new Error("Statbank wage request failed");
-
-    const wageWithoutSocialContributions = readLatestStatbankWageFromCsv(await response.text());
-    if (!wageWithoutSocialContributions) throw new Error("No wage value returned");
-
-    return {
-      value: Math.round(wageWithoutSocialContributions * 1.35),
-      source: "live",
-    };
-  } catch {
-    return { value: fallback, source: "fallback" };
-  }
+function itExposedRatio(emp: number): number {
+  if (emp <= 5) return 1.0;
+  if (emp <= 15) return 0.8;
+  if (emp <= 30) return 0.65;
+  return 0.5;
 }
 
 const starPath =
@@ -366,7 +335,9 @@ export function MarketingHomeContent() {
   const [showDropdown, setShowDropdown] = useState(false);
   const cvrSearchTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [showEstimateInfo, setShowEstimateInfo] = useState(false);
-  const [liveWage, setLiveWage] = useState<{ industry: IndustryId; value: number; source: WageSource } | null>(null);
+  const [liveWage, setLiveWage] = useState<number | null>(null);
+  const [wageSource, setWageSource] = useState<WageSource>("fallback");
+  const [dstYear, setDstYear] = useState<string | null>(null);
 
   useEffect(() => {
     const fadeTimer = window.setTimeout(() => setPriceFading(true), 0);
@@ -383,6 +354,21 @@ export function MarketingHomeContent() {
     };
   }, []);
 
+  useEffect(() => {
+    if (!selectedIndustry) return;
+    setLiveWage(null);
+    fetchBranchWage(selectedIndustry)
+      .then(({ wage, year }) => {
+        setLiveWage(wage);
+        setDstYear(year);
+        setWageSource("live");
+      })
+      .catch(() => {
+        setWageSource("fallback");
+        setDstYear(null);
+      });
+  }, [selectedIndustry]);
+
   const handleTabChange = (tab: TabKey) => {
     if (tab === activeTab) return;
     setChanging(true);
@@ -397,7 +383,6 @@ export function MarketingHomeContent() {
   const selectedSetupOption = setupOptions.find((option) => option.id === selectedSetup) ?? null;
   const selectedFrequencyOption = frequencyOptions.find((option) => option.id === selectedFrequency) ?? null;
   const employeeCount = selectedEmployeeOption?.employees ?? 0;
-  const calculationEmployeeCount = cvrData?.employees && cvrData.employees > 0 ? cvrData.employees : employeeCount;
   const industryMultiplier = selectedIndustryOption?.multiplier ?? 1;
   const setupMultiplier = selectedSetupOption?.multiplier ?? 1;
   const frequencyMultiplier = selectedFrequencyOption?.multiplier ?? 1;
@@ -405,26 +390,13 @@ export function MarketingHomeContent() {
     const category = wasteOptions.find((item) => item.id === categoryId);
     return sum + (category?.hours ?? 0);
   }, 0);
-  const hourlyRate =
-    liveWage && liveWage.industry === selectedIndustry
-      ? liveWage.value
-      : BRANCH_HOURLY_RATE[selectedIndustry ?? "andet"] ?? BRANCH_HOURLY_RATE.andet;
-  const wageSource =
-    liveWage && liveWage.industry === selectedIndustry ? liveWage.source : ("fallback" as WageSource);
-  const exposedRatio =
-    calculationEmployeeCount <= 5
-      ? 1
-      : calculationEmployeeCount <= 15
-        ? 0.8
-        : calculationEmployeeCount <= 30
-          ? 0.65
-          : 0.5;
-  const weeklyWaste = calculationEmployeeCount * exposedRatio * wasteHoursPerPerson * frequencyMultiplier;
+  const hourlyRate = liveWage ?? FALLBACK_WAGES[selectedIndustry ?? "andet"] ?? 360;
+  const exposedRatio = cvrData ? itExposedRatio(cvrData.employees) : itExposedRatio(employeeCount);
+  const weeklyWaste = employeeCount * exposedRatio * wasteHoursPerPerson * frequencyMultiplier;
   const monthlyWasteHours = Math.round(weeklyWaste * 4);
   const monthlyWasteCost = Math.round(weeklyWaste * 4 * hourlyRate * industryMultiplier * setupMultiplier);
-  const savingsRate = selectedSetup ? SETUP_SAVINGS_RATE[selectedSetup] ?? 0.65 : 0.65;
-  const savingsPercentage = Math.round(savingsRate * 100);
-  const systemklarSavings = Math.round(monthlyWasteCost * savingsRate);
+  const savingsPct = SAVINGS_PCT[selectedSetup ?? "ingen"] ?? 0.65;
+  const systemklarSavings = Math.round(monthlyWasteCost * savingsPct);
   const consultantSavings = selectedSetup === "konsulent" ? employeeCount * 150 : 0;
   const plan =
     employeeCount <= 5
@@ -452,7 +424,6 @@ export function MarketingHomeContent() {
 
   const handleIndustrySelect = (id: IndustryId) => {
     setSelectedIndustry(id);
-    void fetchBranchWage(id).then((wage) => setLiveWage({ industry: id, ...wage }));
     if (stepDelayRef.current) window.clearTimeout(stepDelayRef.current);
     stepDelayRef.current = window.setTimeout(() => setCalculatorStep(3), 500);
   };
@@ -482,6 +453,8 @@ export function MarketingHomeContent() {
     setShowDropdown(false);
     setShowEstimateInfo(false);
     setLiveWage(null);
+    setWageSource("fallback");
+    setDstYear(null);
     setCalculatorStep(0);
   };
 
@@ -558,7 +531,6 @@ export function MarketingHomeContent() {
     else if (["86", "87", "88"].some((p) => code.startsWith(p))) mappedIndustry = "sundhed";
     else if (["69", "70", "71", "72", "73", "74", "75"].some((p) => code.startsWith(p))) mappedIndustry = "kontor";
     setSelectedIndustry(mappedIndustry);
-    void fetchBranchWage(mappedIndustry).then((wage) => setLiveWage({ industry: mappedIndustry, ...wage }));
 
     setCvrData({ name: result.name, employees: result.employees, industry: result.industry });
 
@@ -1144,25 +1116,60 @@ export function MarketingHomeContent() {
                     </div>
                     {showEstimateInfo ? (
                       <div className="mb-4 rounded-2xl border border-white/10 bg-white/5 p-4 text-left">
-                        <p className="mb-2 text-xs font-semibold text-white/70">Om denne beregning</p>
-                        <ul className="space-y-1.5 text-[11px] leading-relaxed text-white/50">
+                        <p className="mb-2 text-xs font-semibold text-white/70">Sådan beregner vi</p>
+                        <ul className="space-y-2 text-[11px] leading-relaxed text-white/50">
                           <li className="flex items-start gap-1.5">
                             <span className="mt-0.5 flex-shrink-0 text-sky-400">·</span>
-                            Timeløn baseret på {wageSource === "live" ? "live-data" : "fallback-data"} fra Danmarks
-                            Statistiks lønstatistik for branchen ({formatNumber(hourlyRate)} kr/t inkl. sociale bidrag)
+                            <span>
+                              <span className="text-white/70">Timeløn:</span>{" "}
+                              {wageSource === "live"
+                                ? `${hourlyRate} kr/t hentet live fra Danmarks Statistik (tabel LONS20${dstYear ? `, ${dstYear}` : ""}) inkl. sociale bidrag`
+                                : `${hourlyRate} kr/t fra Danmarks Statistiks lønstatistik (fallback) inkl. sociale bidrag`}
+                            </span>
                           </li>
                           <li className="flex items-start gap-1.5">
                             <span className="mt-0.5 flex-shrink-0 text-sky-400">·</span>
-                            Tidsspild baseret på undersøgelser af IT-tidsspild i danske SMV&apos;er
+                            <span>
+                              <span className="text-white/70">Tidsspild per person:</span>{" "}
+                              {wasteHoursPerPerson.toFixed(1)} t/uge baseret på valgte IT-problemer —
+                              dokumenteret i undersøgelser af danske SMV&apos;er
+                            </span>
                           </li>
                           <li className="flex items-start gap-1.5">
                             <span className="mt-0.5 flex-shrink-0 text-sky-400">·</span>
-                            Virksomhedsdata hentet fra Det Centrale Virksomhedsregister (CVR)
+                            <span>
+                              <span className="text-white/70">Berørte medarbejdere:</span>{" "}
+                              {Math.round(employeeCount * (cvrData ? itExposedRatio(cvrData.employees) : itExposedRatio(employeeCount)))} ud af {employeeCount} —
+                              ikke alle ansatte arbejder primært med IT-afhængige opgaver
+                            </span>
                           </li>
                           <li className="flex items-start gap-1.5">
                             <span className="mt-0.5 flex-shrink-0 text-sky-400">·</span>
-                            Besparelse estimeret til {savingsPercentage}% baseret på jeres nuværende IT-håndtering
+                            <span>
+                              <span className="text-white/70">Problemfrekvens:</span>{" "}
+                              skaleret med faktor {frequencyMultiplier} baseret på hvor tit I oplever IT-problemer
+                            </span>
                           </li>
+                          <li className="flex items-start gap-1.5">
+                            <span className="mt-0.5 flex-shrink-0 text-sky-400">·</span>
+                            <span>
+                              <span className="text-white/70">Besparelsesprocent:</span>{" "}
+                              {Math.round(savingsPct * 100)}% — konservativt estimat baseret på valgt IT-setup
+                              ({selectedSetup === "ingen" ? "ingen fast løsning giver størst potentiale"
+                                : selectedSetup === "konsulent" ? "systemklar erstatter dele af konsulentbehovet"
+                                : selectedSetup === "intern" ? "intern medarbejder frigøres delvist"
+                                : "blandet setup giver moderat potentiale"})
+                            </span>
+                          </li>
+                          {cvrData ? (
+                            <li className="flex items-start gap-1.5">
+                              <span className="mt-0.5 flex-shrink-0 text-sky-400">·</span>
+                              <span>
+                                <span className="text-white/70">Virksomhedsdata:</span>{" "}
+                                hentet fra Det Centrale Virksomhedsregister (CVR) for {cvrData.name}
+                              </span>
+                            </li>
+                          ) : null}
                         </ul>
                         <p className="mt-3 border-t border-white/10 pt-3 text-[10px] text-white/30">
                           Dette er et estimat. Faktiske besparelser afhænger af jeres specifikke situation.
@@ -1257,8 +1264,11 @@ export function MarketingHomeContent() {
                       Book en gratis demo
                     </Link>
                     <p className="mt-3 text-center text-[10px] text-white/25">
-                      Beregningen bruger live løndata fra Danmarks Statistik (tabel LONS20) og er et konservativt
-                      estimat baseret på dokumenteret IT-tidsspild i danske SMV&apos;er.
+                      Beregningen bruger{" "}
+                      {wageSource === "live"
+                        ? `live løndata fra Danmarks Statistik (LONS20${dstYear ? `, ${dstYear}` : ""})`
+                        : "løndata fra Danmarks Statistiks lønstatistik"}{" "}
+                      og er et konservativt estimat baseret på dokumenteret IT-tidsspild i danske SMV&apos;er.
                     </p>
                     <button
                       onClick={resetCalculator}
