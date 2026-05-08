@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, Suspense, useState } from "react";
+import { FormEvent, Suspense, useEffect, useState } from "react";
 import Link from "next/link";
 import { AuthSplitLayout } from "@/components/auth/AuthSplitLayout";
 import { createClient } from "@/lib/supabase";
@@ -21,8 +21,13 @@ function AdminLoginForm() {
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [rememberMe, setRememberMe] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    setRememberMe(window.localStorage.getItem("adminRememberMe") === "true");
+  }, []);
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -78,6 +83,7 @@ function AdminLoginForm() {
       return;
     }
 
+    window.localStorage.setItem("adminRememberMe", rememberMe ? "true" : "false");
     window.location.href = "/admin/dashboard";
   };
 
@@ -121,6 +127,15 @@ function AdminLoginForm() {
               autoComplete="current-password"
             />
           </div>
+
+          <label className="flex items-center gap-2 text-sm text-[#78716C]">
+            <input
+              type="checkbox"
+              checked={rememberMe}
+              onChange={(event) => setRememberMe(event.target.checked)}
+            />
+            Husk mig
+          </label>
 
           {errorMessage ? (
             <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">{errorMessage}</p>

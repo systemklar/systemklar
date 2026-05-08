@@ -4,6 +4,7 @@ import { usePathname } from "next/navigation";
 import { useEffect, useState, type ReactNode } from "react";
 import { Menu } from "lucide-react";
 import { AdminSidebar, type AdminNavKey } from "@/components/admin/AdminSidebar";
+import { createClient } from "@/lib/supabase";
 
 function activeNavFromPath(pathname: string): AdminNavKey {
   if (pathname === "/admin" || pathname.startsWith("/admin/dashboard")) {
@@ -37,16 +38,29 @@ function activeNavFromPath(pathname: string): AdminNavKey {
 export default function AdminLayout({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const isAuthPage =
+    pathname === "/admin/login" ||
+    pathname === "/admin/forgot-password" ||
+    pathname === "/admin/set-password";
 
   useEffect(() => {
     queueMicrotask(() => setSidebarOpen(false));
   }, [pathname]);
 
-  if (
-    pathname === "/admin/login" ||
-    pathname === "/admin/forgot-password" ||
-    pathname === "/admin/set-password"
-  ) {
+  useEffect(() => {
+    if (isAuthPage) return;
+
+    const handleBeforeUnload = () => {
+      if (window.localStorage.getItem("adminRememberMe") === "true") return;
+      const supabase = createClient();
+      void supabase.auth.signOut({ scope: "local" });
+    };
+
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    return () => window.removeEventListener("beforeunload", handleBeforeUnload);
+  }, [isAuthPage]);
+
+  if (isAuthPage) {
     return <>{children}</>;
   }
 
