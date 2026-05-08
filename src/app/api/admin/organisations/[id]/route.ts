@@ -76,25 +76,24 @@ export async function DELETE(_request: Request, context: { params: Promise<{ id:
 
   const organisationId = id;
 
-  // Hent bruger-id'er før organisation slettes (FK/CASCADE kan ellers fjerne profiler).
+  // 1. Hent alle profiles for organisationen (auth-uid kan stå i user_id eller id).
   const { data: profiles, error: profilesError } = await supabaseAdmin
     .from("profiles")
-    .select("user_id, id")
+    .select("id, user_id")
     .eq("organisation_id", organisationId);
 
   if (profilesError) {
+    console.error("[api/admin/organisations/[id]] profiles select", profilesError);
     return NextResponse.json({ error: profilesError.message }, { status: 400 });
   }
 
-  const { error } = await supabaseAdmin.from("organisations").delete().eq("id", organisationId);
-  if (error) {
-    return NextResponse.json({ error: error.message }, { status: 400 });
-  }
-
+  // 2. Slet alle auth-brugere først (FK constraint: skal ske før profiles slettes).
   const authUserIds = new Set<string>();
   for (const profile of profiles ?? []) {
     const fromUserId =
-      typeof profile.user_id === "string" && profile.user_id.trim() ? profile.user_id.trim() : null;
+      typeof profile.user_id === "string" && profile.user_id.trim()
+        ? profile.user_id.trim()
+        : null;
     const fromProfileId =
       typeof profile.id === "string" && profile.id.trim() ? profile.id.trim() : null;
     const uid = fromUserId ?? fromProfileId;
@@ -114,11 +113,43 @@ export async function DELETE(_request: Request, context: { params: Promise<{ id:
         detail,
       });
       warnings.push(`Auth ${authUid}: ${detail}`);
+      // Fortsæt — vi afbryder ikke hele flowet hvis én bruger fejler.
     }
+  }
+
+  // 3. Slet alle invitationer for organisationen.
+  const { error: invitationsError } = await supabaseAdmin
+    .from("invitations")
+    .delete()
+    .eq("organisation_id", organisationId);
+  if (invitationsError) {
+    console.error("[api/admin/organisations/[id]] invitations delete", invitationsError);
+    return NextResponse.json({ error: invitationsError.message }, { status: 400 });
+  }
+
+  // 4. Slet alle profiles for organisationen.
+  const { error: profilesDeleteError } = await supabaseAdmin
+    .from("profiles")
+    .delete()
+    .eq("organisation_id", organisationId);
+  if (profilesDeleteError) {
+    console.error("[api/admin/organisations/[id]] profiles delete", profilesDeleteError);
+    return NextResponse.json({ error: profilesDeleteError.message }, { status: 400 });
+  }
+
+  // 5. Slet selve organisationen.
+  const { error: orgError } = await supabaseAdmin
+    .from("organisations")
+    .delete()
+    .eq("id", organisationId);
+  if (orgError) {
+    console.error("[api/admin/organisations/[id]] organisation delete", orgError);
+    return NextResponse.json({ error: orgError.message }, { status: 400 });
   }
 
   return NextResponse.json({
     success: true,
+    deletedAuthUsers: authUserIds.size,
     ...(warnings.length ? { warning: warnings.join(" | ") } : {}),
   });
 }
