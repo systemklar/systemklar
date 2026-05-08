@@ -1,6 +1,8 @@
-/** Midlertidig hardcode — én admin. */
-export const ADMIN_EMAIL = "kontakt@systemklar.dk";
+const ADMIN_EMAILS = [
+  "kontakt@systemklar.dk",
+  "benjamin@systemklar.dk",
+];
 
 export function isAdminEmail(email: string | null | undefined): boolean {
-  return (email ?? "").trim().toLowerCase() === ADMIN_EMAIL.toLowerCase();
+  return ADMIN_EMAILS.includes((email ?? "").trim().toLowerCase());
 }
