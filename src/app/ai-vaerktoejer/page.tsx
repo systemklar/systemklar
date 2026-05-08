@@ -160,7 +160,7 @@ function ChatMockup() {
             <div
               className={`max-w-[80%] rounded-2xl px-3 py-2 text-xs leading-relaxed ${
                 m.from === "user"
-                  ? "rounded-tr-sm bg-sky-600 text-white"
+                  ? "rounded-tr-sm bg-[#0A6EBD] text-white"
                   : "rounded-tl-sm bg-white/10 text-white/90"
               }`}
             >
@@ -174,7 +174,7 @@ function ChatMockup() {
         style={{ animation: "mockupFadeIn 0.4s ease-out 0.7s both" }}
       >
         <span className="text-xs text-white/30">Skriv et spørgsmål...</span>
-        <div className="flex h-6 w-6 items-center justify-center rounded-full bg-sky-600">
+        <div className="flex h-6 w-6 items-center justify-center rounded-full bg-[#0A6EBD]">
           <svg
             className="h-3 w-3 text-white"
             fill="none"

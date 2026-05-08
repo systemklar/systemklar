@@ -70,10 +70,10 @@ export default function AdminSystemsClient() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold text-slate-900 md:text-3xl">Systemer</h1>
+      <h1 className="text-2xl font-bold text-[#0D1F2D] md:text-3xl">Systemer</h1>
       <p className="mt-2 text-sm text-slate-600">Overblik over alle kunders systemer.</p>
 
-      {loading ? <p className="mt-8 text-sm text-slate-500">Henter systemer...</p> : null}
+      {loading ? <p className="mt-8 text-sm text-[#4A8CB5]">Henter systemer...</p> : null}
       {error ? <p className="mt-8 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">{error}</p> : null}
       {!loading && !error && groups.length === 0 ? <p className="mt-8 text-sm text-slate-600">Ingen systemer endnu.</p> : null}
 
@@ -84,11 +84,11 @@ export default function AdminSystemsClient() {
             return (
               <section
                 key={`${group.company}-${group.email}`}
-                className={`rounded-2xl border bg-white p-5 shadow-sm ${hasDown ? "border-red-300" : "border-slate-200"}`}
+                className={`rounded-2xl border bg-white p-5 shadow-sm ${hasDown ? "border-red-300" : "border-[#D0E8F5]"}`}
               >
                 <div className="flex flex-wrap items-start justify-between gap-3">
                   <div>
-                    <h2 className="text-lg font-semibold text-slate-900">{group.company}</h2>
+                    <h2 className="text-lg font-semibold text-[#0D1F2D]">{group.company}</h2>
                     {group.email ? <p className="text-sm text-slate-600">{group.email}</p> : null}
                   </div>
                   <div className="flex flex-wrap gap-2 text-xs font-semibold">
@@ -97,13 +97,13 @@ export default function AdminSystemsClient() {
                     <span className="rounded-full bg-red-100 px-2.5 py-0.5 text-red-800">Nede: {group.counts.nede}</span>
                   </div>
                 </div>
-                <ul className="mt-4 divide-y divide-slate-200 rounded-xl border border-slate-200">
+                <ul className="mt-4 divide-y divide-slate-200 rounded-xl border border-[#D0E8F5]">
                   {group.systems.map((s) => (
                     <li key={s.id} className="px-4 py-3">
                       <div className="flex flex-wrap items-center justify-between gap-2">
                         <div>
-                          <p className="font-medium text-slate-900">{s.name}</p>
-                          <p className="text-xs text-slate-500">{s.type}</p>
+                          <p className="font-medium text-[#0D1F2D]">{s.name}</p>
+                          <p className="text-xs text-[#4A8CB5]">{s.type}</p>
                         </div>
                         <span
                           className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-semibold ${

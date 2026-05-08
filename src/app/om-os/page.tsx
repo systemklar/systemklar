@@ -68,7 +68,7 @@ export default function OmOsPage() {
           <div className="mx-auto max-w-4xl px-6">
             <div className="grid grid-cols-1 items-center gap-12 md:grid-cols-2">
               <AnimatedSection direction="left">
-                <p className="mb-3 text-xs font-semibold uppercase tracking-widest text-sky-600">Grundlægger</p>
+                <p className="mb-3 text-xs font-semibold uppercase tracking-widest text-[#0A6EBD]">Grundlægger</p>
                 <h2 className="mb-4 text-2xl font-bold text-[#0D1F2D]">Hej, jeg er Benjamin</h2>
                 <div className="space-y-4 leading-relaxed text-[#2C4A5E]">
                   <p>
@@ -86,14 +86,14 @@ export default function OmOsPage() {
                 <div className="mt-6 flex flex-col gap-2">
                   <a
                     href="mailto:benjamin@systemklar.dk"
-                    className="flex items-center gap-2 text-sm text-sky-600 hover:underline"
+                    className="flex items-center gap-2 text-sm text-[#0A6EBD] hover:underline"
                   >
                     <Mail className="h-4 w-4" />
                     benjamin@systemklar.dk
                   </a>
                   <a
                     href="tel:+4522631013"
-                    className="flex items-center gap-2 text-sm text-sky-600 hover:underline"
+                    className="flex items-center gap-2 text-sm text-[#0A6EBD] hover:underline"
                   >
                     <Phone className="h-4 w-4" />
                     +45 22 63 10 13
@@ -104,7 +104,7 @@ export default function OmOsPage() {
               <AnimatedSection direction="right">
                 <div className="flex justify-center">
                   <div className="flex h-64 w-64 flex-col items-center justify-center rounded-3xl border border-sky-100 bg-gradient-to-br from-sky-100 to-[#F0F7FF] shadow-sm">
-                    <div className="mb-3 flex h-20 w-20 items-center justify-center rounded-full bg-sky-600 text-3xl font-bold text-white">
+                    <div className="mb-3 flex h-20 w-20 items-center justify-center rounded-full bg-[#0A6EBD] text-3xl font-bold text-white">
                       BS
                     </div>
                     <p className="text-base font-semibold text-[#0D1F2D]">Benjamin Sørensen</p>
@@ -125,7 +125,7 @@ export default function OmOsPage() {
               { tal: "0", label: "Binding" },
             ].map(({ tal, label }) => (
               <div key={label} className="text-center">
-                <p className="text-3xl font-extrabold text-sky-600 md:text-4xl">{tal}</p>
+                <p className="text-3xl font-extrabold text-[#0A6EBD] md:text-4xl">{tal}</p>
                 <p className="mt-2 text-sm text-[#2C4A5E]">{label}</p>
               </div>
             ))}
@@ -151,7 +151,7 @@ export default function OmOsPage() {
                 >
                   <div className="h-full rounded-2xl border border-sky-100 bg-white p-6 shadow-sm">
                     <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-xl bg-sky-50">
-                      <Icon className="h-5 w-5 text-sky-600" />
+                      <Icon className="h-5 w-5 text-[#0A6EBD]" />
                     </div>
                     <h3 className="text-lg font-semibold text-[#0D1F2D]">{title}</h3>
                     <p className="mt-2 text-sm leading-relaxed text-[#2C4A5E]">{desc}</p>
@@ -181,7 +181,7 @@ export default function OmOsPage() {
                 <div className="flex flex-col justify-center gap-3 sm:flex-row">
                   <a
                     href="mailto:benjamin@systemklar.dk"
-                    className="flex items-center justify-center gap-2 rounded-full bg-sky-600 px-6 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-sky-700"
+                    className="flex items-center justify-center gap-2 rounded-full bg-[#0A6EBD] px-6 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-[#0859A0]"
                   >
                     <Mail className="h-4 w-4" />
                     Send en email

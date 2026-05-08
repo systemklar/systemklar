@@ -32,9 +32,9 @@ function RobotIcon() {
 function TypingDots() {
   return (
     <span className="inline-flex items-center gap-1 align-middle" aria-hidden>
-      <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-slate-500 [animation-delay:-0.2s]" />
-      <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-slate-500 [animation-delay:-0.1s]" />
-      <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-slate-500" />
+      <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-[#F5FAFD]0 [animation-delay:-0.2s]" />
+      <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-[#F5FAFD]0 [animation-delay:-0.1s]" />
+      <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-[#F5FAFD]0" />
     </span>
   );
 }
@@ -165,7 +165,7 @@ export default function PortalAiAssistantPage() {
           </div>
         </header>
 
-        <section className="min-h-0 flex-1 space-y-4 overflow-y-auto bg-slate-50/60 px-5 py-4">
+        <section className="min-h-0 flex-1 space-y-4 overflow-y-auto bg-[#F5FAFD]/60 px-5 py-4">
           {messages.map((message) => (
             <div
               key={message.id}
@@ -175,7 +175,7 @@ export default function PortalAiAssistantPage() {
                 className={`max-w-[85%] rounded-2xl px-4 py-3 text-sm shadow-sm ${
                   message.role === "user"
                     ? "rounded-br-md bg-blue-600 text-white"
-                    : "rounded-bl-md border border-slate-200 bg-white text-slate-900"
+                    : "rounded-bl-md border border-[#D0E8F5] bg-white text-[#0D1F2D]"
                 }`}
               >
                 {message.role === "assistant" ? (
@@ -191,7 +191,7 @@ export default function PortalAiAssistantPage() {
 
           {loading ? (
             <div className="flex justify-start">
-              <div className="rounded-2xl rounded-bl-md border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 shadow-sm">
+              <div className="rounded-2xl rounded-bl-md border border-[#D0E8F5] bg-white px-4 py-3 text-sm text-[#2C4A5E] shadow-sm">
                 <div className="mb-1 flex items-center gap-2 text-xs font-semibold text-slate-600">
                   <RobotIcon />
                   AI-assistent

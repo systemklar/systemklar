@@ -77,11 +77,11 @@ export function AttachmentList({
             kind === "pdf" ? (
               <FileText className="h-4 w-4 text-red-500" aria-hidden />
             ) : kind === "image" ? (
-              <ImageIcon className="h-4 w-4 text-sky-600" aria-hidden />
+              <ImageIcon className="h-4 w-4 text-[#0A6EBD]" aria-hidden />
             ) : kind === "office" ? (
               <FileText className="h-4 w-4 text-emerald-600" aria-hidden />
             ) : (
-              <File className="h-4 w-4 text-slate-400" aria-hidden />
+              <File className="h-4 w-4 text-[#7AAEC8]" aria-hidden />
             );
 
           const busyDl = downloadingId === a.id;

@@ -137,7 +137,7 @@ export default function PortalSupportTicketPage() {
   return (
     <PortalLayout activeNav="support">
       <div className="flex min-h-0 flex-1 flex-col">
-        <Link href="/portal/support" className="text-sm font-semibold text-sky-600 hover:underline">
+        <Link href="/portal/support" className="text-sm font-semibold text-[#0A6EBD] hover:underline">
           ← Tilbage til Support & sager
         </Link>
 

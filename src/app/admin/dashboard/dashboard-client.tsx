@@ -44,7 +44,7 @@ function StatCard({
   const inner = (
     <article className="rounded-2xl border border-sky-100 bg-white p-5 shadow-sm transition-all duration-200 hover:border-sky-200 hover:shadow-md">
       <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#F0F7FF]">
-        <Icon className="h-4 w-4 text-sky-600" />
+        <Icon className="h-4 w-4 text-[#0A6EBD]" />
       </div>
       <p className="fade-scale visible mt-3 text-3xl font-bold tabular-nums text-[#0D1F2D]">
         {value === null ? "—" : display}
@@ -161,7 +161,7 @@ export default function AdminDashboardClient() {
       <AnimatedSection direction="up" delay={200} className="rounded-2xl border border-sky-100 bg-white p-5 shadow-sm">
         <div className="flex items-center justify-between">
           <h2 className="text-base font-semibold text-[#0D1F2D]">Seneste supportsager</h2>
-          <Link href="/admin/tickets" className="text-sm font-semibold text-sky-600 hover:underline">
+          <Link href="/admin/tickets" className="text-sm font-semibold text-[#0A6EBD] hover:underline">
             Åbn alle
           </Link>
         </div>
@@ -176,7 +176,7 @@ export default function AdminDashboardClient() {
               <div key={t.id} className="border-b border-sky-50 py-3 last:border-0">
                 <div className="flex items-center justify-between gap-3">
                   <div>
-                    <Link href={`/admin/tickets/${t.id}`} className="text-sm font-medium text-[#0D1F2D] hover:text-sky-600">
+                    <Link href={`/admin/tickets/${t.id}`} className="text-sm font-medium text-[#0D1F2D] hover:text-[#0A6EBD]">
                         {t.title}
                       </Link>
                     <p className="mt-1 text-xs text-[#4A8CB5]">

@@ -94,14 +94,14 @@ export function DemoModal({ isOpen, onClose, subject }: DemoModalProps) {
         <button
           type="button"
           onClick={onClose}
-          className="absolute right-5 top-5 rounded-full p-2 text-slate-400 transition-colors hover:bg-slate-50 hover:text-slate-700"
+          className="absolute right-5 top-5 rounded-full p-2 text-[#7AAEC8] transition-colors hover:bg-[#F5FAFD] hover:text-[#2C4A5E]"
           aria-label="Luk modal"
         >
           <X className="h-4 w-4" />
         </button>
 
         <Link href="/" aria-label="systemklar – forside">
-          <Logo />
+          <Logo iconClassName="h-8 w-auto" />
         </Link>
         <h2 id="demo-modal-title" className="mt-6 text-xl font-bold text-[#0D1F2D]">
           Book en gratis snak
@@ -163,7 +163,7 @@ export function DemoModal({ isOpen, onClose, subject }: DemoModalProps) {
             <button
               type="submit"
               disabled={loading}
-              className="w-full rounded-full bg-sky-600 py-3 font-semibold text-white transition-colors hover:bg-sky-700 disabled:cursor-not-allowed disabled:opacity-60"
+              className="w-full rounded-full bg-[#0A6EBD] py-3 font-semibold text-white transition-colors hover:bg-[#0859A0] disabled:cursor-not-allowed disabled:opacity-60"
             >
               {loading ? "Sender..." : "Send forespørgsel"}
             </button>

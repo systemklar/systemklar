@@ -34,7 +34,7 @@ export function AuthSplitLayout({
           />
           <AnimatedSection direction="left" delay={100} className="relative z-10 mx-auto w-full max-w-md">
             <Link href="/" aria-label="systemklar – forside">
-              <Logo variant="dark" />
+              <Logo iconClassName="h-9 w-auto brightness-0 invert" />
             </Link>
             <h2 className="mt-10 max-w-md text-4xl font-bold tracking-tight text-white">{sideTitle}</h2>
             <ul className="mt-8 space-y-4 text-sky-100">
@@ -51,7 +51,7 @@ export function AuthSplitLayout({
           <AnimatedSection direction="right" delay={0} className="w-full max-w-md rounded-2xl border border-sky-100 bg-white p-8 shadow-sm">
             <div className="mb-5 flex justify-center">
               <Link href="/" aria-label="systemklar – forside">
-                <Logo />
+                <Logo iconClassName="h-9 w-auto" />
               </Link>
             </div>
             <h1 className="text-3xl font-bold tracking-tight text-[#0D1F2D]">{title}</h1>

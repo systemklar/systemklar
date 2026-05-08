@@ -138,7 +138,7 @@ function TemplateEditor({ row, variableKeys, supabase, onApplied }: EditorProps)
   return (
     <div className="rounded-2xl border border-sky-100 bg-white p-6 shadow-sm">
       <h2 className="text-lg font-semibold text-[#0D1F2D]">{row.name}</h2>
-      <p className="mt-1 text-xs text-slate-500">Id: {row.id}</p>
+      <p className="mt-1 text-xs text-[#4A8CB5]">Id: {row.id}</p>
 
       <div className="mt-6 space-y-4">
         <div>
@@ -217,7 +217,7 @@ function TemplateEditor({ row, variableKeys, supabase, onApplied }: EditorProps)
           type="button"
           disabled={saving}
           onClick={() => void handleSave()}
-          className="rounded-full bg-sky-600 px-6 py-2 text-sm font-semibold text-white transition hover:bg-sky-700 disabled:opacity-50"
+          className="rounded-full bg-[#0A6EBD] px-6 py-2 text-sm font-semibold text-white transition hover:bg-[#0859A0] disabled:opacity-50"
         >
           {saving ? "Gemmer..." : "Gem ændringer"}
         </button>
@@ -298,7 +298,7 @@ export default function AdminEmailsClient() {
       ) : null}
 
       {loading ? (
-        <p className="text-sm text-slate-500">Henter skabeloner...</p>
+        <p className="text-sm text-[#4A8CB5]">Henter skabeloner...</p>
       ) : rows.length === 0 ? (
         <p className="rounded-2xl border border-sky-100 bg-white p-6 text-sm text-slate-600 shadow-sm">
           Ingen skabeloner fundet. Kør SQL-migrationen i Supabase (se <code className="text-xs">supabase/migrations/013_email_templates.sql</code>).

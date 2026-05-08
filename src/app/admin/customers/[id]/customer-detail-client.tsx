@@ -266,7 +266,7 @@ export default function AdminCustomerDetailClient() {
           <button
             type="button"
             onClick={() => setInviteModalOpen(true)}
-            className="rounded-full bg-sky-600 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-sky-700"
+            className="rounded-full bg-[#0A6EBD] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[#0859A0]"
           >
             Inviter bruger
           </button>
@@ -294,7 +294,7 @@ export default function AdminCustomerDetailClient() {
                   >
                     {p.role === "org_admin" ? "Administrator" : "Medlem"}
                   </span>
-                  <p className="mt-2 text-xs text-slate-500">Oprettet {formatDanishDateTime(p.created_at || "")}</p>
+                  <p className="mt-2 text-xs text-[#4A8CB5]">Oprettet {formatDanishDateTime(p.created_at || "")}</p>
                 </div>
               </div>
             </article>
@@ -312,7 +312,7 @@ export default function AdminCustomerDetailClient() {
                   <span className="mt-1 inline-flex rounded-full bg-amber-100 px-2 py-0.5 text-xs text-amber-800">
                     Afventer
                   </span>
-                  <p className="mt-2 text-xs text-slate-500">Inviteret {formatDanishDateTime(inv.created_at || "")}</p>
+                  <p className="mt-2 text-xs text-[#4A8CB5]">Inviteret {formatDanishDateTime(inv.created_at || "")}</p>
                 </div>
               </div>
             </article>
@@ -340,10 +340,10 @@ export default function AdminCustomerDetailClient() {
                 >
                   <div>
                     <p className="font-medium text-[#0D1F2D]">{ticket.title || "Uden titel"}</p>
-                    <p className="text-xs text-slate-500">{ticket.created_by_name || "Ukendt afsender"}</p>
+                    <p className="text-xs text-[#4A8CB5]">{ticket.created_by_name || "Ukendt afsender"}</p>
                   </div>
                   <div className="flex items-center gap-3">
-                    <span className="text-xs text-slate-500">{formatDanishDateTime(ticket.created_at || "")}</span>
+                    <span className="text-xs text-[#4A8CB5]">{formatDanishDateTime(ticket.created_at || "")}</span>
                     <StatusBadge status={ticket.status || "open"} />
                   </div>
                 </Link>
@@ -374,7 +374,7 @@ export default function AdminCustomerDetailClient() {
                       <span className={`inline-flex rounded-full px-2 py-0.5 text-xs ${systemStatusStyles[status]}`}>
                         {systemStatusLabel[status]}
                       </span>
-                      <p className="mt-2 text-xs text-slate-500">
+                      <p className="mt-2 text-xs text-[#4A8CB5]">
                         Sidst tjekket {system.last_checked ? formatDanishDateTime(system.last_checked) : "—"}
                       </p>
                     </div>
@@ -451,7 +451,7 @@ export default function AdminCustomerDetailClient() {
                 <button
                   type="submit"
                   disabled={inviteSaving}
-                  className="rounded-full bg-sky-600 px-5 py-2 text-sm font-semibold text-white hover:bg-sky-700 disabled:opacity-60"
+                  className="rounded-full bg-[#0A6EBD] px-5 py-2 text-sm font-semibold text-white hover:bg-[#0859A0] disabled:opacity-60"
                 >
                   {inviteSaving ? "Sender..." : "Send invitation"}
                 </button>

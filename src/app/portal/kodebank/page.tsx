@@ -230,7 +230,7 @@ export default function PortalKodebankPage() {
           <button
             type="button"
             onClick={openCreate}
-            className="rounded-full bg-sky-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-sky-700"
+            className="rounded-full bg-[#0A6EBD] px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-[#0859A0]"
           >
             Tilføj login
           </button>
@@ -294,7 +294,7 @@ export default function PortalKodebankPage() {
                   className="flex flex-col gap-4 rounded-2xl border border-sky-100 bg-white p-4 shadow-sm transition-all hover:shadow-md md:flex-row md:items-center"
                 >
                   <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-[#F0F7FF]">
-                    <Lock className="h-4 w-4 text-sky-600" />
+                    <Lock className="h-4 w-4 text-[#0A6EBD]" />
                   </div>
 
                   <div className="min-w-0 flex-1">
@@ -311,7 +311,7 @@ export default function PortalKodebankPage() {
                           href={entry.url}
                           target="_blank"
                           rel="noreferrer"
-                          className="text-sky-600 hover:underline"
+                          className="text-[#0A6EBD] hover:underline"
                         >
                           {entry.url}
                         </a>
@@ -331,7 +331,7 @@ export default function PortalKodebankPage() {
                         <button
                           type="button"
                           onClick={() => togglePassword(entry.id)}
-                          className="inline-flex items-center gap-1 text-xs font-semibold text-sky-600 hover:underline"
+                          className="inline-flex items-center gap-1 text-xs font-semibold text-[#0A6EBD] hover:underline"
                         >
                           <EyeIcon off={isVisible} />
                           {isVisible ? "Skjul" : "Vis"}
@@ -340,7 +340,7 @@ export default function PortalKodebankPage() {
                           type="button"
                           onClick={() => void copyPassword(entry)}
                           disabled={!entry.password}
-                          className="text-xs font-semibold text-sky-600 hover:underline disabled:cursor-not-allowed disabled:opacity-50"
+                          className="text-xs font-semibold text-[#0A6EBD] hover:underline disabled:cursor-not-allowed disabled:opacity-50"
                         >
                           {copyStatus === "copied"
                             ? "Kopieret"
@@ -472,7 +472,7 @@ export default function PortalKodebankPage() {
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="rounded-full bg-sky-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-sky-700 disabled:opacity-50"
+                  className="rounded-full bg-[#0A6EBD] px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-[#0859A0] disabled:opacity-50"
                 >
                   {submitting ? "Gemmer..." : editingId ? "Gem ændringer" : "Opret login"}
                 </button>

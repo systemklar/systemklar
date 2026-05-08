@@ -8,7 +8,20 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-inter);
+  --font-sans: "Inter", var(--font-inter), system-ui, sans-serif;
+
+  --color-brand: #0a6ebd;
+  --color-brand-hover: #0859a0;
+  --color-brand-light: #1a8fd1;
+  --color-brand-navy: #062840;
+  --color-brand-pale: #f0f7ff;
+  --color-brand-cool: #f5fafd;
+  --color-brand-border: #d0e8f5;
+
+  --color-ink: #0d1f2d;
+  --color-ink-med: #2c4a5e;
+  --color-ink-soft: #4a8cb5;
+  --color-ink-muted: #7aaec8;
 }
 
 body {

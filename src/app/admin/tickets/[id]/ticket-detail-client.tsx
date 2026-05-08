@@ -76,20 +76,20 @@ export default function AdminTicketDetailClient() {
       </Link>
 
       <div className="mx-auto mt-6 max-w-3xl">
-        <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+        <div className="rounded-2xl border border-[#D0E8F5] bg-white p-6 shadow-sm">
           <div className="flex flex-wrap items-start justify-between gap-4">
             <div>
-              <h1 className="text-2xl font-bold text-slate-900">{ticket.title}</h1>
+              <h1 className="text-2xl font-bold text-[#0D1F2D]">{ticket.title}</h1>
               <p className="mt-2 text-sm text-slate-600">
                 <span className="font-medium text-slate-800">{companyFromTicketRow(ticket)}</span>
                 {emailDisplay ? (
                   <>
-                    <span className="text-slate-400"> · </span>
-                    <span className="text-slate-700">{emailDisplay}</span>
+                    <span className="text-[#7AAEC8]"> · </span>
+                    <span className="text-[#2C4A5E]">{emailDisplay}</span>
                   </>
                 ) : null}
               </p>
-              <p className="mt-2 text-sm text-slate-500">Oprettet {formatDanishDateTime(ticket.created_at)}</p>
+              <p className="mt-2 text-sm text-[#4A8CB5]">Oprettet {formatDanishDateTime(ticket.created_at)}</p>
             </div>
             <TicketStatusToggle
               ticketId={ticket.id}
@@ -100,9 +100,9 @@ export default function AdminTicketDetailClient() {
             />
           </div>
           {ticket.description ? (
-            <p className="mt-4 whitespace-pre-wrap text-slate-700">{ticket.description}</p>
+            <p className="mt-4 whitespace-pre-wrap text-[#2C4A5E]">{ticket.description}</p>
           ) : (
-            <p className="mt-4 text-sm text-slate-500">Ingen beskrivelse.</p>
+            <p className="mt-4 text-sm text-[#4A8CB5]">Ingen beskrivelse.</p>
           )}
         </div>
 
