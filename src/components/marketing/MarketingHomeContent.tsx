@@ -5,7 +5,6 @@ import Link from "next/link";
 import {
   AlertTriangle,
   Briefcase,
-  Building,
   Building2,
   Calendar,
   CheckCircle,
@@ -18,7 +17,6 @@ import {
   RefreshCw,
   ShoppingBag,
   Shuffle,
-  TrendingUp,
   Truck,
   User,
   UserCheck,
@@ -94,12 +92,12 @@ const homePlans: HomePlan[] = [
 ];
 
 const BRANCH_HOURLY_RATE: Record<string, number> = {
-  haandvaerk: 315,
-  handel: 295,
-  kontor: 425,
-  sundhed: 385,
-  transport: 310,
-  andet: 350,
+  haandvaerk: 330,
+  handel: 310,
+  kontor: 445,
+  sundhed: 400,
+  transport: 325,
+  andet: 360,
 };
 
 type CvrResult = {
@@ -132,13 +130,6 @@ function mapCvrResult(d: CvrApiItem): CvrResult {
     industrycode: Number(d.industrycode ?? 0),
   };
 }
-
-const itSpendOptions = [
-  { value: 0, icon: Building2, title: "Under 500 kr", subtitle: "Næsten ingen IT-udgifter" },
-  { value: 1250, icon: TrendingUp, title: "500–2.000 kr", subtitle: "Lidt ekstern hjælp" },
-  { value: 4000, icon: Briefcase, title: "2.000–6.000 kr", subtitle: "Fast IT-konsulent" },
-  { value: 6000, icon: Building, title: "Over 6.000 kr", subtitle: "Større IT-setup" },
-] as const;
 
 const employeeOptions = [
   { id: "1-5", label: "1-5 ansatte", employees: 3 },
@@ -179,12 +170,12 @@ const wasteOptions = [
 ] as const;
 
 const industryOptions = [
-  { id: "haandvaerk", icon: Wrench, title: "Håndværk & byg", multiplier: 1.35 },
-  { id: "handel", icon: ShoppingBag, title: "Handel & butik", multiplier: 1.25 },
-  { id: "kontor", icon: Briefcase, title: "Kontor & rådgivning", multiplier: 1.1 },
-  { id: "sundhed", icon: Heart, title: "Sundhed & pleje", multiplier: 1.3 },
-  { id: "transport", icon: Truck, title: "Transport & logistik", multiplier: 1.25 },
-  { id: "andet", icon: Building2, title: "Andet", multiplier: 1.15 },
+  { id: "haandvaerk", icon: Wrench, title: "Håndværk & byg", multiplier: 1.0 },
+  { id: "handel", icon: ShoppingBag, title: "Handel & butik", multiplier: 1.0 },
+  { id: "kontor", icon: Briefcase, title: "Kontor & rådgivning", multiplier: 1.0 },
+  { id: "sundhed", icon: Heart, title: "Sundhed & pleje", multiplier: 1.0 },
+  { id: "transport", icon: Truck, title: "Transport & logistik", multiplier: 1.0 },
+  { id: "andet", icon: Building2, title: "Andet", multiplier: 1.0 },
 ] as const;
 
 const setupOptions = [
@@ -193,55 +184,140 @@ const setupOptions = [
     icon: HelpCircle,
     title: "Ingen fast løsning",
     subtitle: "Vi klarer os selv",
-    multiplier: 1.4,
+    multiplier: 1.0,
   },
   {
     id: "konsulent",
     icon: UserCheck,
     title: "Ekstern IT-konsulent",
     subtitle: "Vi ringer ved fejl",
-    multiplier: 1.2,
+    multiplier: 1.0,
   },
   {
     id: "intern",
     icon: User,
     title: "Intern medarbejder",
     subtitle: "Kollega tager sig af IT",
-    multiplier: 1.1,
+    multiplier: 1.0,
   },
   {
     id: "blanding",
     icon: Shuffle,
     title: "En blanding",
     subtitle: "Lidt af hvert",
-    multiplier: 1.25,
+    multiplier: 1.0,
   },
 ] as const;
 
 const frequencyOptions = [
-  { id: "aldrig", icon: CheckCircle, title: "Næsten aldrig", subtitle: "IT bare virker", multiplier: 0.3 },
+  { id: "aldrig", icon: CheckCircle, title: "Næsten aldrig", subtitle: "IT bare virker", multiplier: 0.2 },
   {
     id: "maaned",
     icon: Calendar,
     title: "Et par gange om md.",
     subtitle: "Af og til",
-    multiplier: 0.7,
+    multiplier: 0.5,
   },
   {
     id: "uge",
     icon: RefreshCw,
     title: "Ugentligt",
     subtitle: "Jævnligt noget der driller",
-    multiplier: 1.0,
+    multiplier: 0.9,
   },
   {
     id: "dag",
     icon: AlertTriangle,
     title: "Nærmest dagligt",
     subtitle: "IT er en frustration",
-    multiplier: 1.5,
+    multiplier: 1.2,
   },
 ] as const;
+
+type EmployeeId = (typeof employeeOptions)[number]["id"];
+type IndustryId = (typeof industryOptions)[number]["id"];
+type WageSource = "live" | "fallback";
+
+const STATBANK_WORK_FUNCTION_CODES: Record<IndustryId, string> = {
+  haandvaerk: "7",
+  handel: "5",
+  kontor: "4",
+  sundhed: "22",
+  transport: "83",
+  andet: "TOT",
+};
+
+const SETUP_SAVINGS_RATE: Record<(typeof setupOptions)[number]["id"], number> = {
+  ingen: 0.75,
+  konsulent: 0.6,
+  intern: 0.45,
+  blanding: 0.55,
+};
+
+function parseStatbankNumber(value: unknown) {
+  if (typeof value === "number" && Number.isFinite(value)) return value;
+  if (typeof value !== "string") return null;
+  const normalized = value.replace(/\./g, "").replace(",", ".");
+  const parsed = Number(normalized);
+  return Number.isFinite(parsed) ? parsed : null;
+}
+
+function readLatestStatbankWageFromCsv(csv: string) {
+  const [header, ...rows] = csv.trim().split(/\r?\n/);
+  const columns = header?.split(";") ?? [];
+  const timeIndex = columns.findIndex((column) => column.toUpperCase() === "TID");
+  const valueIndex = columns.findIndex((column) => column.toUpperCase() === "INDHOLD");
+  if (timeIndex === -1 || valueIndex === -1) return null;
+
+  return rows.reduce<{ time: string; value: number } | null>((latest, row) => {
+    const cells = row.split(";");
+    const value = parseStatbankNumber(cells[valueIndex]);
+    if (value === null) return latest;
+    const time = cells[timeIndex] ?? "";
+    if (!latest || time.localeCompare(latest.time, "da-DK", { numeric: true }) > 0) {
+      return { time, value };
+    }
+    return latest;
+  }, null)?.value ?? null;
+}
+
+async function fetchBranchWage(brancheId: IndustryId): Promise<{ value: number; source: WageSource }> {
+  const fallback = BRANCH_HOURLY_RATE[brancheId];
+
+  try {
+    const response = await fetch("https://api.statbank.dk/v1/data", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      signal: AbortSignal.timeout(5000),
+      body: JSON.stringify({
+        table: "LONS20",
+        format: "CSV",
+        valuePresentation: "Code",
+        variables: [
+          { code: "ARBF", values: [STATBANK_WORK_FUNCTION_CODES[brancheId]] },
+          { code: "SEKTOR", values: ["1000"] },
+          { code: "AFLOEN", values: ["TIFA"] },
+          { code: "LONGRP", values: ["LTOT"] },
+          { code: "LØNMÅL", values: ["STAND"] },
+          { code: "KØN", values: ["MOK"] },
+          { code: "Tid", values: ["*"] },
+        ],
+      }),
+    });
+
+    if (!response.ok) throw new Error("Statbank wage request failed");
+
+    const wageWithoutSocialContributions = readLatestStatbankWageFromCsv(await response.text());
+    if (!wageWithoutSocialContributions) throw new Error("No wage value returned");
+
+    return {
+      value: Math.round(wageWithoutSocialContributions * 1.35),
+      source: "live",
+    };
+  } catch {
+    return { value: fallback, source: "fallback" };
+  }
+}
 
 const starPath =
   "M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z";
@@ -289,8 +365,8 @@ export function MarketingHomeContent() {
   const [cvrResults, setCvrResults] = useState<CvrResult[]>([]);
   const [showDropdown, setShowDropdown] = useState(false);
   const cvrSearchTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const [currentItSpend, setCurrentItSpend] = useState<number | null>(null);
   const [showEstimateInfo, setShowEstimateInfo] = useState(false);
+  const [liveWage, setLiveWage] = useState<{ industry: IndustryId; value: number; source: WageSource } | null>(null);
 
   useEffect(() => {
     const fadeTimer = window.setTimeout(() => setPriceFading(true), 0);
@@ -321,6 +397,7 @@ export function MarketingHomeContent() {
   const selectedSetupOption = setupOptions.find((option) => option.id === selectedSetup) ?? null;
   const selectedFrequencyOption = frequencyOptions.find((option) => option.id === selectedFrequency) ?? null;
   const employeeCount = selectedEmployeeOption?.employees ?? 0;
+  const calculationEmployeeCount = cvrData?.employees && cvrData.employees > 0 ? cvrData.employees : employeeCount;
   const industryMultiplier = selectedIndustryOption?.multiplier ?? 1;
   const setupMultiplier = selectedSetupOption?.multiplier ?? 1;
   const frequencyMultiplier = selectedFrequencyOption?.multiplier ?? 1;
@@ -328,13 +405,26 @@ export function MarketingHomeContent() {
     const category = wasteOptions.find((item) => item.id === categoryId);
     return sum + (category?.hours ?? 0);
   }, 0);
-  const hourlyRate = BRANCH_HOURLY_RATE[selectedIndustry ?? "andet"] ?? 350;
-  const weeklyWaste = employeeCount * wasteHoursPerPerson * frequencyMultiplier;
+  const hourlyRate =
+    liveWage && liveWage.industry === selectedIndustry
+      ? liveWage.value
+      : BRANCH_HOURLY_RATE[selectedIndustry ?? "andet"] ?? BRANCH_HOURLY_RATE.andet;
+  const wageSource =
+    liveWage && liveWage.industry === selectedIndustry ? liveWage.source : ("fallback" as WageSource);
+  const exposedRatio =
+    calculationEmployeeCount <= 5
+      ? 1
+      : calculationEmployeeCount <= 15
+        ? 0.8
+        : calculationEmployeeCount <= 30
+          ? 0.65
+          : 0.5;
+  const weeklyWaste = calculationEmployeeCount * exposedRatio * wasteHoursPerPerson * frequencyMultiplier;
   const monthlyWasteHours = Math.round(weeklyWaste * 4);
   const monthlyWasteCost = Math.round(weeklyWaste * 4 * hourlyRate * industryMultiplier * setupMultiplier);
-  const currentItCost = currentItSpend ?? 0;
-  const totalMonthlyBurden = monthlyWasteCost + currentItCost;
-  const systemklarSavings = Math.round(totalMonthlyBurden * 0.7);
+  const savingsRate = selectedSetup ? SETUP_SAVINGS_RATE[selectedSetup] ?? 0.65 : 0.65;
+  const savingsPercentage = Math.round(savingsRate * 100);
+  const systemklarSavings = Math.round(monthlyWasteCost * savingsRate);
   const consultantSavings = selectedSetup === "konsulent" ? employeeCount * 150 : 0;
   const plan =
     employeeCount <= 5
@@ -343,12 +433,11 @@ export function MarketingHomeContent() {
         ? { name: "Plus", price: 1299 }
         : { name: "Pro", price: 2499 };
   const netGain = systemklarSavings - plan.price;
-  const resultHours = useCountUp(monthlyWasteHours, 1000, calculatorStep === 7);
-  const resultLost = useCountUp(monthlyWasteCost, 1000, calculatorStep === 7);
-  const resultSavings = useCountUp(systemklarSavings, 1000, calculatorStep === 7);
-  const resultNet = useCountUp(Math.abs(netGain), 1000, calculatorStep === 7);
-  const resultConsultant = useCountUp(consultantSavings, 1000, calculatorStep === 7);
-  const resultItCost = useCountUp(currentItCost, 1000, calculatorStep === 7);
+  const resultHours = useCountUp(monthlyWasteHours, 1000, calculatorStep === 6);
+  const resultLost = useCountUp(monthlyWasteCost, 1000, calculatorStep === 6);
+  const resultSavings = useCountUp(systemklarSavings, 1000, calculatorStep === 6);
+  const resultNet = useCountUp(Math.abs(netGain), 1000, calculatorStep === 6);
+  const resultConsultant = useCountUp(consultantSavings, 1000, calculatorStep === 6);
   const formatNumber = (value: number) => new Intl.NumberFormat("da-DK").format(value);
 
   const toggleWaste = (id: (typeof wasteOptions)[number]["id"]) => {
@@ -361,28 +450,23 @@ export function MarketingHomeContent() {
     stepDelayRef.current = window.setTimeout(() => setCalculatorStep(2), 500);
   };
 
-  const handleIndustrySelect = (id: (typeof industryOptions)[number]["id"]) => {
+  const handleIndustrySelect = (id: IndustryId) => {
     setSelectedIndustry(id);
+    void fetchBranchWage(id).then((wage) => setLiveWage({ industry: id, ...wage }));
     if (stepDelayRef.current) window.clearTimeout(stepDelayRef.current);
     stepDelayRef.current = window.setTimeout(() => setCalculatorStep(3), 500);
-  };
-
-  const handleItSpendSelect = (value: number) => {
-    setCurrentItSpend(value);
-    if (stepDelayRef.current) window.clearTimeout(stepDelayRef.current);
-    stepDelayRef.current = window.setTimeout(() => setCalculatorStep(4), 500);
   };
 
   const handleSetupSelect = (id: (typeof setupOptions)[number]["id"]) => {
     setSelectedSetup(id);
     if (stepDelayRef.current) window.clearTimeout(stepDelayRef.current);
-    stepDelayRef.current = window.setTimeout(() => setCalculatorStep(5), 500);
+    stepDelayRef.current = window.setTimeout(() => setCalculatorStep(4), 500);
   };
 
   const handleFrequencySelect = (id: (typeof frequencyOptions)[number]["id"]) => {
     setSelectedFrequency(id);
     if (stepDelayRef.current) window.clearTimeout(stepDelayRef.current);
-    stepDelayRef.current = window.setTimeout(() => setCalculatorStep(6), 500);
+    stepDelayRef.current = window.setTimeout(() => setCalculatorStep(5), 500);
   };
 
   const resetCalculator = () => {
@@ -396,13 +480,10 @@ export function MarketingHomeContent() {
     setCvrData(null);
     setCvrResults([]);
     setShowDropdown(false);
-    setCurrentItSpend(null);
     setShowEstimateInfo(false);
+    setLiveWage(null);
     setCalculatorStep(0);
   };
-
-  type EmployeeId = (typeof employeeOptions)[number]["id"];
-  type IndustryId = (typeof industryOptions)[number]["id"];
 
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
@@ -477,6 +558,7 @@ export function MarketingHomeContent() {
     else if (["86", "87", "88"].some((p) => code.startsWith(p))) mappedIndustry = "sundhed";
     else if (["69", "70", "71", "72", "73", "74", "75"].some((p) => code.startsWith(p))) mappedIndustry = "kontor";
     setSelectedIndustry(mappedIndustry);
+    void fetchBranchWage(mappedIndustry).then((wage) => setLiveWage({ industry: mappedIndustry, ...wage }));
 
     setCvrData({ name: result.name, employees: result.employees, industry: result.industry });
 
@@ -739,14 +821,14 @@ export function MarketingHomeContent() {
             din virksomhed?
           </h2>
           <p className="mx-auto max-w-lg text-base text-[#4A8CB5]">
-            Besvar 7 spørgsmål og få et præcist svar på hvad IT-rod koster jer.
+            Besvar 6 spørgsmål og få et præcist svar på hvad IT-rod koster jer.
           </p>
         </div>
         <div className="mx-auto max-w-2xl px-4 md:px-6">
           <div className="rounded-3xl bg-gradient-to-br from-sky-500/20 to-[#0A3D5C]/40 p-[1px]">
             <div className="rounded-[23px] bg-[#0A2535] p-5 md:p-8">
               <div className="mb-8 flex items-center justify-center gap-2">
-                {[0, 1, 2, 3, 4, 5, 6].map((i) => (
+                {[0, 1, 2, 3, 4, 5].map((i) => (
                   <div
                     key={i}
                     className={`rounded-full transition-all duration-300 ${
@@ -940,41 +1022,6 @@ export function MarketingHomeContent() {
                       : "pointer-events-none absolute inset-0 translate-y-4 opacity-0"
                   }`}
                 >
-                  <h3 className="mb-1 text-lg font-semibold text-white">
-                    Hvad betaler I ca. for IT-hjælp og systemer om måneden?
-                  </h3>
-                  <p className="mb-5 text-sm text-white/50">Inkludér konsulenter, software og support</p>
-                  <div className="grid grid-cols-2 gap-3">
-                    {itSpendOptions.map((option) => {
-                      const Icon = option.icon;
-                      const active = currentItSpend === option.value;
-                      return (
-                        <button
-                          key={option.value}
-                          type="button"
-                          onClick={() => handleItSpendSelect(option.value)}
-                          className={stepCardClass(active)}
-                        >
-                          <div className="mb-3 flex h-8 w-8 items-center justify-center rounded-xl bg-white/10">
-                            <Icon className={`h-4 w-4 ${active ? "text-sky-300" : "text-white/70"}`} />
-                          </div>
-                          <p className={`text-sm font-semibold ${active ? "text-sky-200" : "text-white"}`}>
-                            {option.title}
-                          </p>
-                          <p className="mt-0.5 text-xs text-white/40">{option.subtitle}</p>
-                        </button>
-                      );
-                    })}
-                  </div>
-                </div>
-
-                <div
-                  className={`transition-all duration-[400ms] ${
-                    calculatorStep === 4
-                      ? "translate-y-0 opacity-100"
-                      : "pointer-events-none absolute inset-0 translate-y-4 opacity-0"
-                  }`}
-                >
                   <h3 className="mb-5 text-lg font-semibold text-white">Hvordan håndterer I IT i dag?</h3>
                   <div className="grid grid-cols-2 gap-3">
                     {setupOptions.map((option) => {
@@ -1003,7 +1050,7 @@ export function MarketingHomeContent() {
 
                 <div
                   className={`transition-all duration-[400ms] ${
-                    calculatorStep === 5
+                    calculatorStep === 4
                       ? "translate-y-0 opacity-100"
                       : "pointer-events-none absolute inset-0 translate-y-4 opacity-0"
                   }`}
@@ -1036,7 +1083,7 @@ export function MarketingHomeContent() {
 
                 <div
                   className={`transition-all duration-[400ms] ${
-                    calculatorStep === 6
+                    calculatorStep === 5
                       ? "translate-y-0 opacity-100"
                       : "pointer-events-none absolute inset-0 translate-y-4 opacity-0"
                   }`}
@@ -1067,7 +1114,7 @@ export function MarketingHomeContent() {
                     })}
                   </div>
                   <button
-                    onClick={() => setCalculatorStep(7)}
+                    onClick={() => setCalculatorStep(6)}
                     disabled={selectedWaste.length === 0}
                     className="mt-4 w-full rounded-2xl bg-sky-500 py-4 font-semibold text-white transition-all hover:bg-sky-400 disabled:cursor-not-allowed disabled:opacity-30"
                   >
@@ -1077,7 +1124,7 @@ export function MarketingHomeContent() {
 
                 <div
                   className={`transition-all duration-[400ms] ${
-                    calculatorStep === 7
+                    calculatorStep === 6
                       ? "translate-y-0 opacity-100"
                       : "pointer-events-none absolute inset-0 translate-y-4 opacity-0"
                   }`}
@@ -1101,8 +1148,8 @@ export function MarketingHomeContent() {
                         <ul className="space-y-1.5 text-[11px] leading-relaxed text-white/50">
                           <li className="flex items-start gap-1.5">
                             <span className="mt-0.5 flex-shrink-0 text-sky-400">·</span>
-                            Timeløn baseret på Danmarks Statistiks lønstatistik for branchen (
-                            {BRANCH_HOURLY_RATE[selectedIndustry ?? "andet"]} kr/t)
+                            Timeløn baseret på {wageSource === "live" ? "live-data" : "fallback-data"} fra Danmarks
+                            Statistiks lønstatistik for branchen ({formatNumber(hourlyRate)} kr/t inkl. sociale bidrag)
                           </li>
                           <li className="flex items-start gap-1.5">
                             <span className="mt-0.5 flex-shrink-0 text-sky-400">·</span>
@@ -1114,7 +1161,7 @@ export function MarketingHomeContent() {
                           </li>
                           <li className="flex items-start gap-1.5">
                             <span className="mt-0.5 flex-shrink-0 text-sky-400">·</span>
-                            Besparelse estimeret til 70% – konservativt baseret på kundeerfaringer
+                            Besparelse estimeret til {savingsPercentage}% baseret på jeres nuværende IT-håndtering
                           </li>
                         </ul>
                         <p className="mt-3 border-t border-white/10 pt-3 text-[10px] text-white/30">
@@ -1141,11 +1188,6 @@ export function MarketingHomeContent() {
                         <p className="text-2xl font-bold text-green-400">{formatNumber(resultSavings)} kr</p>
                         <p className="mt-1 text-[10px] uppercase tracking-wider text-white/40">
                           systemklar sparer
-                        </p>
-                      </div>
-                      <div className="col-span-3 mt-2 rounded-2xl border border-white/10 bg-white/5 p-3 text-center">
-                        <p className="text-xs text-white/40">
-                          Nuværende IT-udgifter medregnet: {formatNumber(resultItCost)} kr/md
                         </p>
                       </div>
                     </div>
@@ -1215,8 +1257,8 @@ export function MarketingHomeContent() {
                       Book en gratis demo
                     </Link>
                     <p className="mt-3 text-center text-[10px] text-white/25">
-                      Beregningen er baseret på Danmarks Statistiks branchelønnen ({hourlyRate} kr/t) og
-                      dokumenteret IT-tidsspild i SMV&apos;er.
+                      Beregningen bruger live løndata fra Danmarks Statistik (tabel LONS20) og er et konservativt
+                      estimat baseret på dokumenteret IT-tidsspild i danske SMV&apos;er.
                     </p>
                     <button
                       onClick={resetCalculator}
