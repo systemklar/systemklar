@@ -1,7 +1,16 @@
 "use client";
 
-import { FormEvent, useCallback, useEffect, useMemo, useState } from "react";
-import { PortalLayout, usePortalSession } from "@/components/portal/PortalLayout";
+import {
+  ChangeEvent,
+  FormEvent,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
+import { Camera, Loader2 } from "lucide-react";
+import { PortalLayout } from "@/components/portal/PortalLayout";
 import { createClient } from "@/lib/supabase";
 
 type ProfileRow = {
@@ -52,12 +61,17 @@ function Toggle({
 
 export default function PortalProfilePage() {
   const supabase = useMemo(() => createClient(), []);
-  const session = usePortalSession();
-  const userId = session?.userId ?? null;
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const [profile, setProfile] = useState<ProfileRow | null>(null);
+  const [authUserId, setAuthUserId] = useState<string | null>(null);
+  const [authEmail, setAuthEmail] = useState<string | null>(null);
+
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+  const [avatarBroken, setAvatarBroken] = useState(false);
+  const [uploadingAvatar, setUploadingAvatar] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [editingName, setEditingName] = useState(false);
   const [fullNameInput, setFullNameInput] = useState("");
@@ -73,6 +87,15 @@ export default function PortalProfilePage() {
   const [notifMonthlyReport, setNotifMonthlyReport] = useState(true);
   const [savingNotifications, setSavingNotifications] = useState(false);
 
+  const refreshAvatarUrl = useCallback(
+    (uid: string) => {
+      const { data } = supabase.storage.from("avatars").getPublicUrl(uid);
+      setAvatarUrl(`${data.publicUrl}?t=${Date.now()}`);
+      setAvatarBroken(false);
+    },
+    [supabase]
+  );
+
   const loadProfile = useCallback(async () => {
     setLoading(true);
     setError(null);
@@ -85,14 +108,16 @@ export default function PortalProfilePage() {
       setLoading(false);
       return;
     }
-    const authUser = authData.user;
-    if (!authUser) {
+    if (!authData.user) {
       console.error("[portal/profil] ingen authenticated user fundet");
       setError("Du er ikke logget ind. Log venligst ind igen.");
       setProfile(null);
       setLoading(false);
       return;
     }
+    const authUser = authData.user;
+    setAuthUserId(authUser.id);
+    setAuthEmail(authUser.email ?? null);
 
     const { data, error: profileError } = await supabase
       .from("profiles")
@@ -112,7 +137,9 @@ export default function PortalProfilePage() {
     const profileRow = (Array.isArray(data) ? data[0] : data) as ProfileRow | null | undefined;
     if (!profileRow) {
       console.error("[portal/profil] profil ikke fundet for user", authUser.id);
-      setError("Din profil blev ikke fundet i databasen. Kontakt support på kontakt@systemklar.dk.");
+      setError(
+        "Din profil blev ikke fundet i databasen. Kontakt support på kontakt@systemklar.dk."
+      );
       setProfile(null);
       setLoading(false);
       return;
@@ -123,13 +150,45 @@ export default function PortalProfilePage() {
     setNotifNewMessage(profileRow.notif_new_message ?? true);
     setNotifStatusChange(profileRow.notif_status_change ?? true);
     setNotifMonthlyReport(profileRow.notif_monthly_report ?? true);
+    refreshAvatarUrl(authUser.id);
     setLoading(false);
-  }, [supabase]);
+  }, [supabase, refreshAvatarUrl]);
 
   useEffect(() => {
-    if (!userId) return;
     void loadProfile();
-  }, [userId, loadProfile]);
+  }, [loadProfile]);
+
+  const onAvatarPick = () => {
+    if (uploadingAvatar) return;
+    fileInputRef.current?.click();
+  };
+
+  const onAvatarFileChange = async (event: ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file || !authUserId) return;
+    setUploadingAvatar(true);
+    setError(null);
+    setSuccess(null);
+
+    const { error: upErr } = await supabase.storage
+      .from("avatars")
+      .upload(authUserId, file, {
+        upsert: true,
+        contentType: file.type || "image/png",
+      });
+    setUploadingAvatar(false);
+
+    if (upErr) {
+      console.error("[portal/profil] avatar upload fejlede", upErr);
+      setError(`Kunne ikke uploade billede: ${upErr.message}`);
+      event.target.value = "";
+      return;
+    }
+
+    refreshAvatarUrl(authUserId);
+    setSuccess("Profilbillede er opdateret.");
+    event.target.value = "";
+  };
 
   const saveName = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -147,14 +206,12 @@ export default function PortalProfilePage() {
 
     const { error: updateError } = await supabase
       .from("profiles")
-      .update({
-        full_name: trimmed,
-        avatar_initials: initials,
-      })
+      .update({ full_name: trimmed, avatar_initials: initials })
       .eq("id", profile.id);
 
     setSavingName(false);
     if (updateError) {
+      console.error("[portal/profil] name update fejlede", updateError);
       setError(updateError.message);
       return;
     }
@@ -186,6 +243,7 @@ export default function PortalProfilePage() {
     });
     setSavingPassword(false);
     if (updateError) {
+      console.error("[portal/profil] password update fejlede", updateError);
       setError(updateError.message);
       return;
     }
@@ -210,6 +268,7 @@ export default function PortalProfilePage() {
       .eq("id", profile.id);
     setSavingNotifications(false);
     if (updateError) {
+      console.error("[portal/profil] notifications update fejlede", updateError);
       setError(updateError.message);
       return;
     }
@@ -241,24 +300,70 @@ export default function PortalProfilePage() {
       <div className="space-y-6">
         <h1 className="text-2xl font-bold text-[#0D1F2D]">Profil</h1>
 
-        {error ? <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">{error}</p> : null}
-        {success ? <p className="rounded-lg bg-green-50 px-3 py-2 text-sm text-green-700">{success}</p> : null}
+        {error ? (
+          <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">{error}</p>
+        ) : null}
+        {success ? (
+          <p className="rounded-lg bg-green-50 px-3 py-2 text-sm text-green-700">{success}</p>
+        ) : null}
 
         {loading || !profile ? (
-          <p className="text-sm text-[#4A8CB5]">Indlæser profil...</p>
+          <p className="text-sm text-[#4A8CB5]">Indlæser profil…</p>
         ) : (
           <>
-            <section className="mb-4 rounded-2xl border border-sky-100 bg-white p-6 shadow-sm">
-              <h2 className="mb-4 border-b border-sky-50 pb-3 text-base font-semibold text-[#0D1F2D]">Min profil</h2>
+            <section className="rounded-2xl border border-sky-100 bg-white p-6 shadow-sm">
+              <h2 className="mb-4 border-b border-sky-50 pb-3 text-base font-semibold text-[#0D1F2D]">
+                Min profil
+              </h2>
               <div className="mt-5 flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
                 <div className="flex items-start gap-4">
-                  <div className="flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-sky-400 to-sky-600 text-2xl font-bold text-white">
-                    {avatarText}
-                  </div>
+                  <button
+                    type="button"
+                    onClick={onAvatarPick}
+                    disabled={uploadingAvatar}
+                    aria-label="Skift profilbillede"
+                    className="group relative h-20 w-20 flex-shrink-0 overflow-hidden rounded-full bg-gradient-to-br from-sky-400 to-sky-600 text-2xl font-bold text-white transition focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 disabled:cursor-not-allowed"
+                  >
+                    {avatarUrl && !avatarBroken ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img
+                        src={avatarUrl}
+                        alt=""
+                        className="h-full w-full object-cover"
+                        onError={() => setAvatarBroken(true)}
+                      />
+                    ) : (
+                      <span className="flex h-full w-full items-center justify-center">
+                        {avatarText}
+                      </span>
+                    )}
+                    <span
+                      className={`absolute inset-0 flex items-center justify-center bg-black/40 transition ${
+                        uploadingAvatar ? "opacity-100" : "opacity-0 group-hover:opacity-100"
+                      }`}
+                    >
+                      {uploadingAvatar ? (
+                        <Loader2 className="h-5 w-5 animate-spin text-white" />
+                      ) : (
+                        <Camera className="h-5 w-5 text-white" />
+                      )}
+                    </span>
+                  </button>
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={(e) => void onAvatarFileChange(e)}
+                  />
                   <div>
-                    <p className="text-2xl font-bold text-[#0D1F2D]">{profile.full_name || "Ukendt navn"}</p>
-                    <p className="text-sm text-[#4A8CB5]">{profile.email || session?.email || "—"}</p>
-                    <div className="mt-2 flex items-center gap-2">
+                    <p className="text-2xl font-bold text-[#0D1F2D]">
+                      {profile.full_name || "Ukendt navn"}
+                    </p>
+                    <p className="text-sm text-[#4A8CB5]">
+                      {profile.email || authEmail || "—"}
+                    </p>
+                    <div className="mt-2 flex flex-wrap items-center gap-2">
                       <span
                         className={`rounded-full px-2 py-0.5 text-xs ${
                           profile.role === "org_admin"
@@ -288,9 +393,15 @@ export default function PortalProfilePage() {
               </div>
 
               {editingName ? (
-                <form className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-end" onSubmit={(e) => void saveName(e)}>
+                <form
+                  className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-end"
+                  onSubmit={(e) => void saveName(e)}
+                >
                   <div className="w-full sm:max-w-md">
-                    <label htmlFor="full_name" className="mb-1 block text-sm font-medium text-[#0D1F2D]">
+                    <label
+                      htmlFor="full_name"
+                      className="mb-1 block text-sm font-medium text-[#0D1F2D]"
+                    >
                       Fuldt navn
                     </label>
                     <input
@@ -315,18 +426,26 @@ export default function PortalProfilePage() {
                       disabled={savingName}
                       className="rounded-full bg-sky-600 px-5 py-2 text-sm font-semibold text-white hover:bg-sky-700 disabled:opacity-60"
                     >
-                      {savingName ? "Gemmer..." : "Gem"}
+                      {savingName ? "Gemmer…" : "Gem"}
                     </button>
                   </div>
                 </form>
               ) : null}
             </section>
 
-            <section className="mb-4 rounded-2xl border border-sky-100 bg-white p-6 shadow-sm">
-              <h2 className="mb-4 border-b border-sky-50 pb-3 text-base font-semibold text-[#0D1F2D]">Skift adgangskode</h2>
-              <form className="mt-4 grid grid-cols-1 gap-4 md:max-w-xl" onSubmit={(e) => void savePassword(e)}>
+            <section className="rounded-2xl border border-sky-100 bg-white p-6 shadow-sm">
+              <h2 className="mb-4 border-b border-sky-50 pb-3 text-base font-semibold text-[#0D1F2D]">
+                Skift adgangskode
+              </h2>
+              <form
+                className="mt-4 grid grid-cols-1 gap-4 md:max-w-xl"
+                onSubmit={(e) => void savePassword(e)}
+              >
                 <div>
-                  <label htmlFor="current_password" className="mb-1 block text-sm font-medium text-[#0D1F2D]">
+                  <label
+                    htmlFor="current_password"
+                    className="mb-1 block text-sm font-medium text-[#0D1F2D]"
+                  >
                     Nuværende adgangskode
                   </label>
                   <input
@@ -338,7 +457,10 @@ export default function PortalProfilePage() {
                   />
                 </div>
                 <div>
-                  <label htmlFor="new_password" className="mb-1 block text-sm font-medium text-[#0D1F2D]">
+                  <label
+                    htmlFor="new_password"
+                    className="mb-1 block text-sm font-medium text-[#0D1F2D]"
+                  >
                     Ny adgangskode
                   </label>
                   <input
@@ -351,8 +473,11 @@ export default function PortalProfilePage() {
                   />
                 </div>
                 <div>
-                  <label htmlFor="confirm_new_password" className="mb-1 block text-sm font-medium text-[#0D1F2D]">
-                    Bekraeft ny adgangskode
+                  <label
+                    htmlFor="confirm_new_password"
+                    className="mb-1 block text-sm font-medium text-[#0D1F2D]"
+                  >
+                    Bekræft ny adgangskode
                   </label>
                   <input
                     id="confirm_new_password"
@@ -369,25 +494,27 @@ export default function PortalProfilePage() {
                     disabled={savingPassword}
                     className="rounded-full bg-sky-600 px-5 py-2 text-sm font-semibold text-white hover:bg-sky-700 disabled:opacity-60"
                   >
-                    {savingPassword ? "Gemmer..." : "Gem"}
+                    {savingPassword ? "Gemmer…" : "Gem"}
                   </button>
                 </div>
               </form>
             </section>
 
-            <section className="mb-4 rounded-2xl border border-sky-100 bg-white p-6 shadow-sm">
-              <h2 className="mb-4 border-b border-sky-50 pb-3 text-base font-semibold text-[#0D1F2D]">Notifikationer</h2>
+            <section className="rounded-2xl border border-sky-100 bg-white p-6 shadow-sm">
+              <h2 className="mb-4 border-b border-sky-50 pb-3 text-base font-semibold text-[#0D1F2D]">
+                Notifikationer
+              </h2>
               <div className="mt-4 space-y-4">
                 <div className="flex items-center justify-between gap-4">
-                  <p className="text-sm text-[#2C4A5E]">Email ved ny besked i supportssag</p>
+                  <p className="text-sm text-[#2C4A5E]">Email ved ny besked i supportsag</p>
                   <Toggle value={notifNewMessage} onChange={setNotifNewMessage} />
                 </div>
                 <div className="flex items-center justify-between gap-4">
-                  <p className="text-sm text-[#2C4A5E]">Email nar sag skifter status</p>
+                  <p className="text-sm text-[#2C4A5E]">Email når sag skifter status</p>
                   <Toggle value={notifStatusChange} onChange={setNotifStatusChange} />
                 </div>
                 <div className="flex items-center justify-between gap-4">
-                  <p className="text-sm text-[#2C4A5E]">Manedlig IT-rapport notifikation</p>
+                  <p className="text-sm text-[#2C4A5E]">Månedlig IT-rapport notifikation</p>
                   <Toggle value={notifMonthlyReport} onChange={setNotifMonthlyReport} />
                 </div>
                 <div>
@@ -397,7 +524,7 @@ export default function PortalProfilePage() {
                     onClick={() => void saveNotifications()}
                     className="rounded-full bg-sky-600 px-5 py-2 text-sm font-semibold text-white hover:bg-sky-700 disabled:opacity-60"
                   >
-                    {savingNotifications ? "Gemmer..." : "Gem notifikationer"}
+                    {savingNotifications ? "Gemmer…" : "Gem notifikationer"}
                   </button>
                 </div>
               </div>
