@@ -94,15 +94,37 @@ function InviteContent() {
       password,
     });
 
+    let authUserId = signUpData.user?.id ?? null;
     if (signUpError) {
-      console.error("[invite] signUp fejlede", signUpError);
-      setError(signUpError.message);
-      setSubmitting(false);
-      return;
+      const isExistingUser = signUpError.message.toLowerCase().includes("already registered");
+      if (!isExistingUser) {
+        console.error("[invite] signUp fejlede", signUpError);
+        setError("Kunne ikke oprette brugeren. Prøv igen eller kontakt support.");
+        setSubmitting(false);
+        return;
+      }
+
+      const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
+        email: invitation.email,
+        password,
+      });
+
+      if (signInError || !signInData.user) {
+        console.error("[invite] signInWithPassword fejlede for eksisterende bruger", {
+          signUpError,
+          signInError,
+        });
+        setError(
+          "Emailen findes allerede, men adgangskoden matcher ikke. Log ind med den korrekte adgangskode eller nulstil adgangskoden."
+        );
+        setSubmitting(false);
+        return;
+      }
+
+      authUserId = signInData.user.id;
     }
 
-    let authUserId = signUpData.user?.id ?? null;
-    if (!signUpData.session) {
+    if (!authUserId || (!signUpError && !signUpData.session)) {
       const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
         email: invitation.email,
         password,
