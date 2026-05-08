@@ -13,8 +13,9 @@ export const metadata: Metadata = {
   title: "Systemklar — Dansk IT-platform",
   description: "IT-support, overblik og AI-værktøjer samlet på én platform til danske virksomheder.",
   icons: {
-    icon: "/logo-icon.png",
-    apple: "/logo-icon.png",
+    icon: [{ url: "/icon.png", sizes: "32x32", type: "image/png" }],
+    apple: [{ url: "/icon.png" }],
+    shortcut: "/icon.png",
   },
 };
 
