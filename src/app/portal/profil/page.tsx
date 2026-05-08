@@ -119,11 +119,12 @@ export default function PortalProfilePage() {
     setAuthUserId(authUser.id);
     setAuthEmail(authUser.email ?? null);
 
-    const { data, error: profileError } = await supabase
+    const profileColumns =
+      "id,full_name,email,avatar_initials,role,notif_new_message,notif_status_change,notif_monthly_report,organisations(name)";
+
+    const { data: byIdData, error: profileError } = await supabase
       .from("profiles")
-      .select(
-        "id,full_name,email,avatar_initials,role,notif_new_message,notif_status_change,notif_monthly_report,organisations(name)"
-      )
+      .select(profileColumns)
       .eq("id", authUser.id)
       .maybeSingle();
 
@@ -134,7 +135,23 @@ export default function PortalProfilePage() {
       setLoading(false);
       return;
     }
-    const profileRow = (Array.isArray(data) ? data[0] : data) as ProfileRow | null | undefined;
+
+    let profileRow = (Array.isArray(byIdData) ? byIdData[0] : byIdData) as ProfileRow | null | undefined;
+
+    if (!profileRow) {
+      const { data: byUserIdData, error: byUserIdError } = await supabase
+        .from("profiles")
+        .select(profileColumns)
+        .eq("user_id", authUser.id)
+        .maybeSingle();
+      if (byUserIdError && byUserIdError.code !== "42703") {
+        console.error("[portal/profil] user_id-fallback fejlede", byUserIdError);
+      } else if (byUserIdData) {
+        console.warn("[portal/profil] fandt profil via user_id-fallback for", authUser.id);
+        profileRow = (Array.isArray(byUserIdData) ? byUserIdData[0] : byUserIdData) as ProfileRow;
+      }
+    }
+
     if (!profileRow) {
       console.error("[portal/profil] profil ikke fundet for user", authUser.id);
       setError(

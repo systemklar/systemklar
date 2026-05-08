@@ -104,9 +104,11 @@ export default function PortalTeamPage() {
     const authUser = authData.user;
     setAuthUserId(authUser.id);
 
+    const myProfileColumns = "id,organisation_id,role";
+
     const { data: meData, error: meError } = await supabase
       .from("profiles")
-      .select("id,organisation_id,role")
+      .select(myProfileColumns)
       .eq("id", authUser.id)
       .maybeSingle();
 
@@ -116,7 +118,22 @@ export default function PortalTeamPage() {
       setLoading(false);
       return;
     }
-    const myProfile = (Array.isArray(meData) ? meData[0] : meData) as MyProfile | null | undefined;
+    let myProfile = (Array.isArray(meData) ? meData[0] : meData) as MyProfile | null | undefined;
+
+    if (!myProfile) {
+      const { data: byUserIdData, error: byUserIdError } = await supabase
+        .from("profiles")
+        .select(myProfileColumns)
+        .eq("user_id", authUser.id)
+        .maybeSingle();
+      if (byUserIdError && byUserIdError.code !== "42703") {
+        console.error("[portal/team] user_id-fallback fejlede", byUserIdError);
+      } else if (byUserIdData) {
+        console.warn("[portal/team] fandt egen profil via user_id-fallback for", authUser.id);
+        myProfile = (Array.isArray(byUserIdData) ? byUserIdData[0] : byUserIdData) as MyProfile;
+      }
+    }
+
     if (!myProfile) {
       console.error("[portal/team] egen profil ikke fundet for", authUser.id);
       setError(

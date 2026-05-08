@@ -94,9 +94,31 @@ function InviteContent() {
       password,
     });
 
-    const userId = signUpData.user?.id;
-    if (signUpError || !userId) {
-      setError(signUpError?.message ?? "Kunne ikke oprette bruger.");
+    if (signUpError) {
+      console.error("[invite] signUp fejlede", signUpError);
+      setError(signUpError.message);
+      setSubmitting(false);
+      return;
+    }
+
+    let authUserId = signUpData.user?.id ?? null;
+    if (!signUpData.session) {
+      const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
+        email: invitation.email,
+        password,
+      });
+      if (signInError || !signInData.user) {
+        console.error("[invite] signInWithPassword fejlede efter signUp", signInError);
+        setError(signInError?.message ?? "Kunne ikke logge ind efter oprettelse.");
+        setSubmitting(false);
+        return;
+      }
+      authUserId = signInData.user.id;
+    }
+
+    if (!authUserId) {
+      console.error("[invite] manglende auth user id efter signUp/signIn");
+      setError("Kunne ikke fastslå brugerens auth-id efter oprettelse.");
       setSubmitting(false);
       return;
     }
@@ -113,17 +135,23 @@ function InviteContent() {
       ? invitation.organisations[0]?.name ?? ""
       : invitation.organisations?.name ?? "";
 
-    const { error: profileError } = await supabase.from("profiles").insert({
-      id: userId,
-      organisation_id: invitation.organisation_id,
-      role: invitation.role,
-      full_name: fullName.trim(),
-      avatar_initials: initials,
-      company_name: orgName,
-      email: invitation.email,
-    });
+    const { error: profileError } = await supabase
+      .from("profiles")
+      .upsert(
+        {
+          id: authUserId,
+          organisation_id: invitation.organisation_id,
+          role: invitation.role,
+          full_name: fullName.trim(),
+          avatar_initials: initials,
+          company_name: orgName,
+          email: invitation.email,
+        },
+        { onConflict: "id" }
+      );
 
     if (profileError) {
+      console.error("[invite] profile upsert fejlede", profileError);
       setError(profileError.message);
       setSubmitting(false);
       return;
