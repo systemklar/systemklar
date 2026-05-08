@@ -115,7 +115,7 @@ const navItems: { label: string; href: string; key: PortalNavKey; icon?: ReactNo
     key: "guides",
     icon: <BookOpen className="h-4 w-4 flex-shrink-0" aria-hidden />,
   },
-  { label: "Team", href: "/portal/team", key: "team", icon: <Users className="h-4 w-4 flex-shrink-0" />, adminOnly: true },
+  { label: "Team", href: "/portal/team", key: "team", icon: <Users className="h-4 w-4 flex-shrink-0" /> },
   { label: "Profil", href: "/portal/profil", key: "profile", icon: <User className="h-4 w-4 flex-shrink-0" /> },
 ];
 

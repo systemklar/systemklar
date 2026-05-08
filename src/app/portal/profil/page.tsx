@@ -74,61 +74,44 @@ export default function PortalProfilePage() {
   const [savingNotifications, setSavingNotifications] = useState(false);
 
   const loadProfile = useCallback(async () => {
-    if (!userId) {
+    setLoading(true);
+    setError(null);
+
+    const { data: authData, error: authError } = await supabase.auth.getUser();
+    if (authError) {
+      console.error("[portal/profil] auth.getUser fejlede", authError);
+      setError("Kunne ikke hente brugersession. Prøv at logge ud og ind igen.");
       setProfile(null);
       setLoading(false);
       return;
     }
-    setLoading(true);
+    const authUser = authData.user;
+    if (!authUser) {
+      console.error("[portal/profil] ingen authenticated user fundet");
+      setError("Du er ikke logget ind. Log venligst ind igen.");
+      setProfile(null);
+      setLoading(false);
+      return;
+    }
+
     const { data, error: profileError } = await supabase
       .from("profiles")
       .select(
         "id,full_name,email,avatar_initials,role,notif_new_message,notif_status_change,notif_monthly_report,organisations(name)"
       )
-      .eq("id", userId)
+      .eq("id", authUser.id)
       .maybeSingle();
 
-    if (profileError || !data) {
-      if (profileError) {
-        setError(profileError.message);
-      }
-      if (!data) {
-        const {
-          data: { user },
-        } = await supabase.auth.getUser();
-        if (user) {
-          const baseName =
-            (typeof user.user_metadata?.full_name === "string" && user.user_metadata.full_name.trim()) ||
-            user.email ||
-            "U";
-          const { data: newProfile } = await supabase
-            .from("profiles")
-            .upsert({
-              id: user.id,
-              email: user.email,
-              full_name: baseName,
-              avatar_initials: baseName
-                .split(" ")
-                .map((n: string) => n[0] ?? "")
-                .join("")
-                .toUpperCase()
-                .slice(0, 2),
-              role: "org_admin",
-            })
-            .select("*, organisations(name)")
-            .maybeSingle();
-          if (newProfile) {
-            const created = newProfile as unknown as ProfileRow;
-            setProfile(created);
-            setFullNameInput(created.full_name ?? "");
-            setNotifNewMessage(created.notif_new_message ?? true);
-            setNotifStatusChange(created.notif_status_change ?? true);
-            setNotifMonthlyReport(created.notif_monthly_report ?? true);
-            setLoading(false);
-            return;
-          }
-        }
-      }
+    if (profileError) {
+      console.error("[portal/profil] profiles.select fejlede", profileError);
+      setError(`Kunne ikke hente profil: ${profileError.message}`);
+      setProfile(null);
+      setLoading(false);
+      return;
+    }
+    if (!data) {
+      console.error("[portal/profil] profil ikke fundet for user", authUser.id);
+      setError("Din profil blev ikke fundet i databasen. Kontakt support på kontakt@systemklar.dk.");
       setProfile(null);
       setLoading(false);
       return;
@@ -141,13 +124,12 @@ export default function PortalProfilePage() {
     setNotifStatusChange(next.notif_status_change ?? true);
     setNotifMonthlyReport(next.notif_monthly_report ?? true);
     setLoading(false);
-  }, [userId, supabase]);
+  }, [supabase]);
 
   useEffect(() => {
-    queueMicrotask(() => {
-      void loadProfile();
-    });
-  }, [loadProfile]);
+    if (!userId) return;
+    void loadProfile();
+  }, [userId, loadProfile]);
 
   const saveName = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -244,8 +226,11 @@ export default function PortalProfilePage() {
   if (!profile && !loading) {
     return (
       <PortalLayout activeNav="profile">
-        <div className="p-8 text-center text-[#4A8CB5]">
-          Kunne ikke indlaese profil. Proev at logge ud og ind igen.
+        <div className="mx-auto max-w-xl p-8 text-center">
+          <h1 className="mb-3 text-xl font-bold text-[#0D1F2D]">Kunne ikke hente profil</h1>
+          <p className="rounded-lg bg-red-50 px-4 py-3 text-sm text-red-700">
+            {error ?? "Der opstod en ukendt fejl. Prøv at logge ud og ind igen."}
+          </p>
         </div>
       </PortalLayout>
     );
