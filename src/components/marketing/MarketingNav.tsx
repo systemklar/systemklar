@@ -58,8 +58,7 @@ export function MarketingNav() {
             <SystemklarLogo
               href="/"
               textClassName="text-sm font-bold tracking-tight text-white transition-colors"
-              primaryFill="#ffffff"
-              secondaryFill={transparent ? "rgba(255,255,255,0.7)" : "#4FA8E0"}
+              iconClassName="brightness-0 invert"
             />
 
             <nav className="hidden min-w-0 flex-1 items-center justify-center gap-8 md:flex" aria-label="Hovednavigation">

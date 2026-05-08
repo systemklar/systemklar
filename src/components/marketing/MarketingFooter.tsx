@@ -11,7 +11,7 @@ export function MarketingFooter() {
           <SystemklarLogo
             href="/"
             textClassName="text-base font-bold text-white tracking-tight"
-            iconClassName="opacity-95"
+            iconClassName="opacity-95 brightness-0 invert"
           />
           <p className="mt-4 leading-relaxed text-sky-200">
             IT-platform til danske SMV&apos;er – uden en IT-afdeling.
