@@ -29,7 +29,7 @@ export function emailOuterHtml(content: string): string {
             <table cellpadding="0" cellspacing="0" border="0" style="margin:0 auto;">
               <tr>
                 <td>
-                  <img src="${EMAIL_SITE}/logo.png" width="25" height="25" alt="" style="display:block;width:25px;height:25px;border:0;outline:none;text-decoration:none;object-fit:contain;"/>
+                  <img src="${EMAIL_SITE}/logo.png" width="32" height="32" alt="systemklar" style="display:block;width:32px;height:32px;border:0;outline:none;text-decoration:none;object-fit:contain;"/>
                 </td>
                 <td style="width:10px;">&nbsp;</td>
                 <td style="color:#ffffff;font-size:20px;font-weight:700;font-family:Inter,Arial,sans-serif;vertical-align:middle;letter-spacing:-0.3px;">systemklar</td>

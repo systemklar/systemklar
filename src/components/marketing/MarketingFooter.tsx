@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { SystemklarLogo } from "@/components/branding/SystemklarLogo";
 import { MARKETING_CONTACT_EMAIL, MARKETING_CONTACT_PHONE_DISPLAY, MARKETING_CONTACT_PHONE_TEL } from "@/lib/marketing-contact";
 
 export function MarketingFooter() {
@@ -8,11 +7,10 @@ export function MarketingFooter() {
     <footer className="border-t-2 border-sky-800/80 bg-[#041f33] text-sm text-sky-100">
       <div className="mx-auto grid max-w-5xl gap-12 px-6 py-24 md:grid-cols-2 lg:grid-cols-4">
         <div className="md:col-span-2 lg:col-span-1">
-          <SystemklarLogo
-            href="/"
-            textClassName="text-base font-semibold text-white tracking-tight"
-            iconClassName="opacity-95 brightness-0 invert"
-          />
+          <Link href="/" className="inline-flex items-center" aria-label="systemklar – forside">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/logo.png" alt="systemklar" className="h-8 w-auto brightness-0 invert" />
+          </Link>
           <p className="mt-4 leading-relaxed text-sky-200">
             IT-platform til danske SMV&apos;er – uden en IT-afdeling.
           </p>

@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
+import Link from "next/link";
 import { CheckCircle } from "lucide-react";
-import { SystemklarLogo } from "@/components/branding/SystemklarLogo";
 import { AnimatedSection } from "@/components/ui/AnimatedSection";
 
 type AuthSplitLayoutProps = {
@@ -32,11 +32,10 @@ export function AuthSplitLayout({
             aria-hidden
           />
           <AnimatedSection direction="left" delay={100} className="relative z-10 mx-auto w-full max-w-md">
-            <SystemklarLogo
-              href="/"
-              textClassName="text-sm font-semibold tracking-tight text-white"
-              iconClassName="brightness-0 invert"
-            />
+            <Link href="/" className="inline-flex items-center" aria-label="systemklar – forside">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/logo.png" alt="systemklar" className="h-8 w-auto brightness-0 invert" />
+            </Link>
             <h2 className="mt-10 max-w-md text-4xl font-bold tracking-tight text-white">{sideTitle}</h2>
             <ul className="mt-8 space-y-4 text-sky-100">
               {sideBullets.map((bullet) => (
@@ -51,7 +50,10 @@ export function AuthSplitLayout({
         <section className="flex items-center justify-center bg-[#F5FAFD] px-6 py-12 md:px-10">
           <AnimatedSection direction="right" delay={0} className="w-full max-w-md rounded-2xl border border-sky-100 bg-white p-8 shadow-sm">
             <div className="mb-5 flex justify-center">
-              <SystemklarLogo href="/" textClassName="text-xs font-semibold tracking-tight text-sky-600" />
+              <Link href="/" className="inline-flex items-center" aria-label="systemklar – forside">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src="/logo.png" alt="systemklar" className="h-8 w-auto" />
+              </Link>
             </div>
             <h1 className="text-3xl font-bold tracking-tight text-[#0D1F2D]">{title}</h1>
             <p className="mt-3 text-sm text-[#4A8CB5]">{subtitle}</p>

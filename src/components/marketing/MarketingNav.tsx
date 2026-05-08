@@ -4,7 +4,6 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Menu, X } from "lucide-react";
-import { SystemklarLogo } from "@/components/branding/SystemklarLogo";
 import { DemoModal } from "@/components/ui/DemoModal";
 import { StableNavLink } from "./StableNavLink";
 
@@ -55,11 +54,10 @@ export function MarketingNav() {
       >
         <div className="relative mx-auto h-16 w-full max-w-[1200px] px-6">
           <div className="flex h-full items-center justify-between gap-4">
-            <SystemklarLogo
-              href="/"
-              textClassName="text-sm font-semibold tracking-tight text-white transition-colors"
-              iconClassName="brightness-0 invert"
-            />
+            <Link href="/" className="inline-flex items-center" aria-label="systemklar – forside">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/logo.png" alt="systemklar" className="h-8 w-auto brightness-0 invert" />
+            </Link>
 
             <nav className="hidden min-w-0 flex-1 items-center justify-center gap-8 md:flex" aria-label="Hovednavigation">
               {NAV.map((item) => (
