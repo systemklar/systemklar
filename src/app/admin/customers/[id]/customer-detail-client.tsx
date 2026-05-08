@@ -403,7 +403,7 @@ export default function AdminCustomerDetailClient() {
 
       {inviteModalOpen ? (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 p-4"
+          className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-slate-900/40 p-4 sm:items-center"
           onClick={(e) => e.target === e.currentTarget && setInviteModalOpen(false)}
         >
           <div className="w-full max-w-md rounded-2xl border border-sky-100 bg-white p-6 shadow-xl">

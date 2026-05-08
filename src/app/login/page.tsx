@@ -83,7 +83,7 @@ function LoginForm() {
               value={email}
               onChange={(event) => setEmail(event.target.value)}
               required
-              className="w-full rounded-xl border border-sky-200 px-4 py-3 outline-none transition focus:ring-2 focus:ring-sky-500"
+              className="w-full rounded-xl border border-sky-200 px-4 py-3 text-base outline-none transition focus:ring-2 focus:ring-sky-500 md:text-sm"
               placeholder="dig@firma.dk"
               autoComplete="email"
             />
@@ -99,7 +99,7 @@ function LoginForm() {
               value={password}
               onChange={(event) => setPassword(event.target.value)}
               required
-              className="w-full rounded-xl border border-sky-200 px-4 py-3 outline-none transition focus:ring-2 focus:ring-sky-500"
+              className="w-full rounded-xl border border-sky-200 px-4 py-3 text-base outline-none transition focus:ring-2 focus:ring-sky-500 md:text-sm"
               placeholder="••••••••"
               autoComplete="current-password"
             />

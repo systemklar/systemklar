@@ -6,7 +6,7 @@ export function MarketingFooter() {
   const year = new Date().getFullYear();
   return (
     <footer className="border-t-2 border-sky-800/80 bg-[#041f33] text-sm text-sky-100">
-      <div className="mx-auto grid max-w-5xl gap-12 px-6 py-24 md:grid-cols-2 lg:grid-cols-4">
+      <div className="mx-auto grid max-w-5xl gap-10 px-6 py-16 md:grid-cols-2 md:gap-12 md:py-24 lg:grid-cols-4">
         <div className="md:col-span-2 lg:col-span-1">
           <SystemklarLogo
             href="/"

@@ -231,7 +231,7 @@ function InviteContent() {
               required
               value={fullName}
               onChange={(e) => setFullName(e.target.value)}
-              className="w-full rounded-lg border border-[#E7E5E4] px-3 py-2 outline-none transition focus:border-blue-600 focus:ring-2 focus:ring-blue-600/15"
+              className="w-full rounded-lg border border-[#E7E5E4] px-3 py-3 text-base outline-none transition focus:border-blue-600 focus:ring-2 focus:ring-blue-600/15 md:py-2 md:text-sm"
             />
           </div>
           <div>
@@ -245,7 +245,7 @@ function InviteContent() {
               required
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full rounded-lg border border-[#E7E5E4] px-3 py-2 outline-none transition focus:border-blue-600 focus:ring-2 focus:ring-blue-600/15"
+              className="w-full rounded-lg border border-[#E7E5E4] px-3 py-3 text-base outline-none transition focus:border-blue-600 focus:ring-2 focus:ring-blue-600/15 md:py-2 md:text-sm"
             />
           </div>
           <div>
@@ -259,11 +259,11 @@ function InviteContent() {
               required
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
-              className="w-full rounded-lg border border-[#E7E5E4] px-3 py-2 outline-none transition focus:border-blue-600 focus:ring-2 focus:ring-blue-600/15"
+              className="w-full rounded-lg border border-[#E7E5E4] px-3 py-3 text-base outline-none transition focus:border-blue-600 focus:ring-2 focus:ring-blue-600/15 md:py-2 md:text-sm"
             />
           </div>
 
-          <button type="submit" disabled={submitting} className="btn-primary w-full px-5 py-2.5 disabled:opacity-60">
+          <button type="submit" disabled={submitting} className="btn-primary w-full min-h-[44px] px-5 py-3 disabled:opacity-60">
             {submitting ? "Opretter..." : "Opret profil"}
           </button>
         </form>

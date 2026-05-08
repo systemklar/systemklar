@@ -303,21 +303,55 @@ export function PortalLayout({ children, activeNav }: PortalLayoutProps) {
             </div>
           </aside>
 
-          <section className="flex min-w-0 flex-1 flex-col overflow-y-auto bg-[#F5FAFD]">
-            <div className="sticky top-0 z-10 flex flex-shrink-0 items-center justify-between border-b border-sky-100 bg-white px-4 py-3 md:hidden">
+          <section className="flex min-w-0 flex-1 flex-col bg-[#F5FAFD]">
+            <div className="flex-1 overflow-y-auto">
+              <div className="sticky top-0 z-10 flex flex-shrink-0 items-center justify-between border-b border-sky-100 bg-white px-4 py-3 md:hidden">
+                <Link href="/portal" className="block">
+                  <SystemklarLogo
+                    variant="light"
+                    textClassName="text-sm font-bold tracking-tight text-sky-700"
+                  />
+                </Link>
+                <span className="w-9" aria-hidden />
+              </div>
+
+              <div className="app-rhythm min-w-0 flex-1 p-4 pb-24 md:p-8 md:pb-8">{children}</div>
+            </div>
+
+            <nav
+              className="fixed inset-x-0 bottom-0 z-20 grid grid-cols-5 border-t border-sky-100 bg-white shadow-[0_-2px_8px_rgba(0,0,0,0.04)] md:hidden"
+              aria-label="Hovednavigation mobil"
+            >
+              {[
+                { key: "dashboard" as PortalNavKey, href: "/portal", label: "Overblik", icon: <HomeIcon /> },
+                { key: "support" as PortalNavKey, href: "/portal/support", label: "Support", icon: <TicketIcon /> },
+                { key: "vault" as PortalNavKey, href: "/portal/kodebank", label: "Kodebank", icon: <LockIcon /> },
+                { key: "profile" as PortalNavKey, href: "/portal/profil", label: "Profil", icon: <User className="h-4 w-4 flex-shrink-0" /> },
+              ].map((item) => {
+                const isActive = item.key === activeNav;
+                return (
+                  <Link
+                    key={item.key}
+                    href={item.href}
+                    className={`flex min-h-[56px] flex-col items-center justify-center gap-1 px-2 py-2 text-[11px] font-medium transition-colors ${
+                      isActive ? "text-sky-700" : "text-[#4A8CB5] hover:text-sky-700"
+                    }`}
+                  >
+                    {item.icon}
+                    <span>{item.label}</span>
+                  </Link>
+                );
+              })}
               <button
                 type="button"
                 onClick={() => setSidebarOpen(true)}
-                className="p-2 text-[#2C4A5E]"
-                aria-label="Åbn menu"
+                aria-label="Åbn fuld menu"
+                className="flex min-h-[56px] flex-col items-center justify-center gap-1 px-2 py-2 text-[11px] font-medium text-[#4A8CB5] transition-colors hover:text-sky-700"
               >
-                <Menu className="h-5 w-5" />
+                <Menu className="h-4 w-4 flex-shrink-0" aria-hidden />
+                <span>Mere</span>
               </button>
-              <span className="text-sm font-bold text-sky-600">systemklar</span>
-              <span className="w-9" aria-hidden />
-            </div>
-
-            <div className="app-rhythm min-w-0 flex-1 p-4 md:p-8">{children}</div>
+            </nav>
           </section>
         </div>
       </main>

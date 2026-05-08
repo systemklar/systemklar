@@ -72,7 +72,7 @@ export function DemoModal({ isOpen, onClose, subject }: DemoModalProps) {
 
   return (
     <div
-      className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm"
+      className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-black/50 px-4 py-6 backdrop-blur-sm sm:items-center sm:py-12"
       onClick={handleOverlayClick}
       role="dialog"
       aria-modal="true"
@@ -80,12 +80,12 @@ export function DemoModal({ isOpen, onClose, subject }: DemoModalProps) {
     >
       <style>{`
         @keyframes demoModalIn {
-          from { opacity: 0; transform: translate(-50%, -50%) scale(0.95); }
-          to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+          from { opacity: 0; transform: scale(0.95); }
+          to { opacity: 1; transform: scale(1); }
         }
       `}</style>
       <div
-        className="fixed left-1/2 top-1/2 z-50 w-full max-w-md rounded-3xl bg-white p-8 shadow-2xl"
+        className="relative w-full max-w-md rounded-3xl bg-white p-6 shadow-2xl sm:p-8"
         style={{ animation: "demoModalIn 160ms ease-out both" }}
       >
         <button
