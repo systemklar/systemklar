@@ -56,7 +56,7 @@ export function MarketingNav() {
         <div className="relative mx-auto h-16 w-full max-w-[1200px] px-6">
           <div className="flex h-full items-center justify-between gap-4">
             <Link href="/" aria-label="systemklar – forside">
-              <Logo iconClassName="h-8 w-auto brightness-0 invert" />
+              <Logo iconClassName="h-8 w-auto" />
             </Link>
 
             <nav className="hidden min-w-0 flex-1 items-center justify-center gap-8 md:flex" aria-label="Hovednavigation">

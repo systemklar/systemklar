@@ -101,7 +101,7 @@ export function DemoModal({ isOpen, onClose, subject }: DemoModalProps) {
         </button>
 
         <Link href="/" aria-label="systemklar – forside">
-          <Logo iconClassName="h-8 w-auto" />
+          <Logo iconClassName="h-7 w-auto" />
         </Link>
         <h2 id="demo-modal-title" className="mt-6 text-xl font-bold text-[#0D1F2D]">
           Book en gratis snak
