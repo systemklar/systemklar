@@ -10,7 +10,7 @@ import { StableNavLink } from "./StableNavLink";
 
 const NAV = [
   { href: "/platformen", label: "Platformen" },
-  { href: "/ai-vaerktoejer", label: "AI-værktøjer" },
+  { href: "/ai-vaerktoejer", label: "Funktioner" },
   { href: "/priser", label: "Priser" },
   { href: "/kontakt", label: "Kontakt" },
   { href: "/om-os", label: "Om os" },

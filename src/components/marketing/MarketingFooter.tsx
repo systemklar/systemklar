@@ -27,7 +27,7 @@ export function MarketingFooter() {
             </li>
             <li>
               <Link href="/ai-vaerktoejer" className="transition-colors hover:text-white">
-                AI-værktøjer
+                Funktioner
               </Link>
             </li>
             <li>
