@@ -56,7 +56,7 @@ export function MarketingNav() {
           <div className="flex h-full items-center justify-between gap-4">
             <Link href="/" className="inline-flex items-center" aria-label="systemklar – forside">
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/logo.png" alt="systemklar" className="h-8 w-auto brightness-0 invert" />
+              <img src="/logo.png" alt="systemklar" className="h-8 w-auto" />
             </Link>
 
             <nav className="hidden min-w-0 flex-1 items-center justify-center gap-8 md:flex" aria-label="Hovednavigation">

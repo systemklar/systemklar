@@ -34,7 +34,7 @@ export function AuthSplitLayout({
           <AnimatedSection direction="left" delay={100} className="relative z-10 mx-auto w-full max-w-md">
             <Link href="/" className="inline-flex items-center" aria-label="systemklar – forside">
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/logo.png" alt="systemklar" className="h-8 w-auto brightness-0 invert" />
+              <img src="/logo.png" alt="systemklar" className="h-8 w-auto" />
             </Link>
             <h2 className="mt-10 max-w-md text-4xl font-bold tracking-tight text-white">{sideTitle}</h2>
             <ul className="mt-8 space-y-4 text-sky-100">
