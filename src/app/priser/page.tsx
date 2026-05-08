@@ -160,7 +160,7 @@ export default function PriserPage() {
                 onClick={() => setYearly(!yearly)}
                 aria-label={yearly ? "Skift til månedlig" : "Skift til årlig"}
                 className={`relative h-6 w-12 rounded-full transition-colors duration-200 ${
-                  yearly ? "bg-[#0A6EBD]" : "bg-slate-200"
+                  yearly ? "bg-sky-600" : "bg-slate-200"
                 }`}
               >
                 <div
@@ -196,12 +196,12 @@ export default function PriserPage() {
                     <article
                       className={`relative flex h-full flex-col rounded-2xl bg-white p-8 ${
                         plan.highlight
-                          ? "border-2 border-[#0A6EBD] shadow-xl"
+                          ? "border-2 border-sky-600 shadow-xl"
                           : "border border-sky-200 shadow-sm"
                       }`}
                     >
                       {plan.highlight ? (
-                        <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-[#0A6EBD] px-3 py-1 text-xs font-semibold text-white shadow-sm">
+                        <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-sky-600 px-3 py-1 text-xs font-semibold text-white shadow-sm">
                           Mest populær
                         </span>
                       ) : null}
@@ -218,7 +218,7 @@ export default function PriserPage() {
                       <ul className="mt-6 space-y-3 text-sm text-[#2C4A5E]">
                         {plan.features.map((feature) => (
                           <li key={feature} className="flex items-start gap-2">
-                            <CheckCircle className="mt-0.5 h-4 w-4 shrink-0 text-[#0A6EBD]" />
+                            <CheckCircle className="mt-0.5 h-4 w-4 shrink-0 text-sky-600" />
                             <span>{feature}</span>
                           </li>
                         ))}
@@ -228,7 +228,7 @@ export default function PriserPage() {
                         onClick={() => setModalSubject(`${plan.name} – ${plan.monthly}`)}
                         className={`mt-8 inline-flex min-h-[44px] w-full justify-center rounded-full px-5 py-3 font-semibold transition-colors ${
                           plan.buttonStyle === "primary"
-                            ? "bg-[#0A6EBD] text-white hover:bg-[#0859A0]"
+                            ? "bg-sky-600 text-white hover:bg-sky-700"
                             : "border border-sky-200 text-sky-700 hover:bg-sky-50"
                         }`}
                       >
@@ -241,7 +241,7 @@ export default function PriserPage() {
             </div>
             <p className="mt-8 text-center text-sm text-[#4A8CB5]">
               Ikke sikker på hvilken plan?{" "}
-              <Link href="/#roi-beregner" className="font-medium text-[#0A6EBD] hover:underline">
+              <Link href="/#roi-beregner" className="font-medium text-sky-600 hover:underline">
                 Beregn hvad IT-rod koster jer →
               </Link>
             </p>
@@ -267,7 +267,7 @@ export default function PriserPage() {
                 >
                   <div className="h-full rounded-2xl border border-sky-100 bg-[#F0F7FF] p-6">
                     <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-sky-50">
-                      <Icon className="h-6 w-6 text-[#0A6EBD]" />
+                      <Icon className="h-6 w-6 text-sky-600" />
                     </div>
                     <h3 className="text-lg font-semibold text-[#0D1F2D]">{title}</h3>
                     <p className="mt-2 text-sm leading-relaxed text-[#2C4A5E]">{desc}</p>
@@ -302,7 +302,7 @@ export default function PriserPage() {
                       >
                         <span className="font-semibold text-[#0D1F2D]">{item.q}</span>
                         <ChevronDown
-                          className={`h-5 w-5 shrink-0 text-[#0A6EBD] transition-transform duration-300 ${
+                          className={`h-5 w-5 shrink-0 text-sky-600 transition-transform duration-300 ${
                             isOpen ? "rotate-180" : "rotate-0"
                           }`}
                           aria-hidden
@@ -335,7 +335,7 @@ export default function PriserPage() {
               <button
                 type="button"
                 onClick={() => setModalSubject("Demo")}
-                className="mt-8 min-h-[44px] rounded-full bg-[#0A6EBD] px-7 py-3 font-semibold text-white transition-colors hover:bg-[#0859A0]"
+                className="mt-8 min-h-[44px] rounded-full bg-sky-600 px-7 py-3 font-semibold text-white transition-colors hover:bg-sky-700"
               >
                 Book en gratis snak
               </button>

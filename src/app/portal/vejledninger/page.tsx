@@ -117,7 +117,7 @@ export default function PortalVejledningerPage() {
         </div>
 
         {loading ? (
-          <p className="text-sm text-[#4A8CB5]">Indlæser...</p>
+          <p className="text-sm text-slate-500">Indlæser...</p>
         ) : (
           <>
             <div className="flex flex-wrap gap-2">
@@ -146,7 +146,7 @@ export default function PortalVejledningerPage() {
                         : "text-[#2C4A5E] hover:bg-sky-50"
                     }`}
                   >
-                    <Icon className="h-4 w-4 text-[#0A6EBD]" aria-hidden />
+                    <Icon className="h-4 w-4 text-sky-600" aria-hidden />
                     {c.name}
                   </button>
                 );
@@ -176,7 +176,7 @@ export default function PortalVejledningerPage() {
                         className="rounded-2xl border border-sky-100 bg-white p-6 text-left shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md disabled:cursor-not-allowed disabled:opacity-80"
                       >
                         <div className="flex justify-center">
-                          <span className="inline-flex h-12 w-12 items-center justify-center rounded-full bg-sky-100 text-[#0A6EBD]">
+                          <span className="inline-flex h-12 w-12 items-center justify-center rounded-full bg-sky-100 text-sky-600">
                             <Play className="h-6 w-6" aria-hidden />
                           </span>
                         </div>
@@ -229,7 +229,7 @@ export default function PortalVejledningerPage() {
                             open ? "mt-3 max-h-96 opacity-100" : "max-h-0 opacity-0"
                           }`}
                         >
-                          <p className="whitespace-pre-wrap text-sm leading-relaxed text-[#2C4A5E]">{g.content}</p>
+                          <p className="whitespace-pre-wrap text-sm leading-relaxed text-slate-700">{g.content}</p>
                         </div>
                       </div>
                     );
@@ -248,7 +248,7 @@ export default function PortalVejledningerPage() {
                       </span>
                       <h2 className="mt-4 text-lg font-semibold text-[#0D1F2D]">{g.title}</h2>
                       <p className="mt-3 line-clamp-4 text-sm text-slate-600">{prev}</p>
-                      <p className="mt-4 text-xs font-medium text-[#0A6EBD]">Læs mere</p>
+                      <p className="mt-4 text-xs font-medium text-sky-600">Læs mere</p>
                     </button>
                   );
                 })
@@ -273,12 +273,12 @@ export default function PortalVejledningerPage() {
               <button
                 type="button"
                 onClick={() => setArticleModal(null)}
-                className="shrink-0 rounded-full px-3 py-1 text-sm text-[#4A8CB5] hover:bg-slate-100"
+                className="shrink-0 rounded-full px-3 py-1 text-sm text-slate-500 hover:bg-slate-100"
               >
                 Luk
               </button>
             </div>
-            <p className="mt-4 whitespace-pre-wrap text-sm leading-relaxed text-[#2C4A5E]">
+            <p className="mt-4 whitespace-pre-wrap text-sm leading-relaxed text-slate-700">
               {articleModal.content}
             </p>
           </div>

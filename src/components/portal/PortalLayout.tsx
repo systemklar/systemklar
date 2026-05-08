@@ -11,7 +11,7 @@ import {
   useState,
   type ReactNode,
 } from "react";
-import { Logo } from "@/components/ui/Logo";
+import { SystemklarLogo } from "@/components/branding/SystemklarLogo";
 import { fetchCurrentProfile } from "@/lib/current-profile";
 import { createClient } from "@/lib/supabase";
 
@@ -243,8 +243,8 @@ export function PortalLayout({ children, activeNav }: PortalLayoutProps) {
             }`}
           >
             <div className="flex flex-shrink-0 items-center justify-between border-b border-sky-50 p-4">
-              <Link href="/portal" className="block" aria-label="systemklar – kundeportal">
-                <Logo iconClassName="h-8 w-auto" />
+              <Link href="/portal" className="block">
+                <SystemklarLogo textClassName="text-sm font-bold tracking-tight text-sky-600" />
                 <p className="mt-0.5 text-xs font-medium text-[#4A8CB5]">Kundeportal</p>
               </Link>
               <button
@@ -310,7 +310,7 @@ export function PortalLayout({ children, activeNav }: PortalLayoutProps) {
               >
                 <Menu className="h-5 w-5" />
               </button>
-              <span className="text-sm font-semibold text-[#0A6EBD]">systemklar</span>
+              <span className="text-sm font-bold text-sky-600">systemklar</span>
               <span className="w-9" aria-hidden />
             </div>
 

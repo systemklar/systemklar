@@ -375,7 +375,7 @@ export default function AdminReportsClient() {
     <div>
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-[#0D1F2D] md:text-3xl">IT-rapporter</h1>
+          <h1 className="text-2xl font-bold text-slate-900 md:text-3xl">IT-rapporter</h1>
           <p className="mt-2 text-sm text-slate-600">Alle kunders rapporter.</p>
         </div>
         <button
@@ -398,22 +398,22 @@ export default function AdminReportsClient() {
       )}
 
       {loading ? (
-        <p className="mt-10 text-sm text-[#4A8CB5]">Henter rapporter...</p>
+        <p className="mt-10 text-sm text-slate-500">Henter rapporter...</p>
       ) : reports.length === 0 ? (
         <p className="mt-10 text-sm text-slate-600">Ingen rapporter endnu.</p>
       ) : (
-        <ul className="mt-8 divide-y divide-slate-200 overflow-hidden rounded-2xl border border-[#D0E8F5] bg-white shadow-sm">
+        <ul className="mt-8 divide-y divide-slate-200 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
           {reports.map((r) => {
             const cust = profileByUserId.get(r.user_id);
             const companyLabel = r.company_name?.trim() || cust?.company_name?.trim() || "—";
             return (
               <li
                 key={r.id}
-                className="flex flex-col gap-4 px-5 py-4 transition hover:bg-[#F5FAFD]/80 md:flex-row md:items-start md:justify-between"
+                className="flex flex-col gap-4 px-5 py-4 transition hover:bg-slate-50/80 md:flex-row md:items-start md:justify-between"
               >
                 <div className="min-w-0 flex-1">
-                  <p className="text-xs font-semibold uppercase tracking-wide text-[#4A8CB5]">Kunde</p>
-                  <p className="mt-0.5 text-base font-semibold text-[#0D1F2D]">{companyLabel}</p>
+                  <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Kunde</p>
+                  <p className="mt-0.5 text-base font-semibold text-slate-900">{companyLabel}</p>
                   {cust?.email ? (
                     <p className="mt-0.5 text-sm text-slate-600">{cust.email}</p>
                   ) : null}
@@ -423,14 +423,14 @@ export default function AdminReportsClient() {
                   >
                     {r.title}
                   </Link>
-                  <p className="mt-1 text-sm text-[#2C4A5E]">{r.period}</p>
-                  <p className="mt-1 text-xs text-[#4A8CB5]">{formatDanishDateTime(r.created_at)}</p>
+                  <p className="mt-1 text-sm text-slate-700">{r.period}</p>
+                  <p className="mt-1 text-xs text-slate-500">{formatDanishDateTime(r.created_at)}</p>
                 </div>
                 <div className="flex shrink-0 flex-wrap gap-2 md:flex-col md:items-stretch">
                   <button
                     type="button"
                     onClick={() => openEditModal(r)}
-                    className="rounded-full border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-800 hover:bg-[#F5FAFD]"
+                    className="rounded-full border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-800 hover:bg-slate-50"
                   >
                     Rediger
                   </button>
@@ -460,16 +460,16 @@ export default function AdminReportsClient() {
           }}
         >
           <div
-            className="max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-2xl border border-[#D0E8F5] bg-white p-6 shadow-xl"
+            className="max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-2xl border border-slate-200 bg-white p-6 shadow-xl"
             onClick={(e) => e.stopPropagation()}
           >
-            <h2 id="report-modal-title" className="text-lg font-semibold text-[#0D1F2D]">
+            <h2 id="report-modal-title" className="text-lg font-semibold text-slate-900">
               {editingReport ? "Rediger rapport" : "Opret rapport"}
             </h2>
 
             <form className="mt-5 space-y-4" onSubmit={(ev) => void handleSubmit(ev)}>
               <div>
-                <label htmlFor="rep-customer" className="mb-1 block text-sm font-medium text-[#2C4A5E]">
+                <label htmlFor="rep-customer" className="mb-1 block text-sm font-medium text-slate-700">
                   Kunde
                 </label>
                 <select
@@ -489,7 +489,7 @@ export default function AdminReportsClient() {
                 </select>
               </div>
               {!editingReport && customerUserId ? (
-                <div className="rounded-lg border border-[#D0E8F5] bg-[#F5FAFD] p-3 text-sm text-[#2C4A5E]">
+                <div className="rounded-lg border border-slate-200 bg-slate-50 p-3 text-sm text-slate-700">
                   {ticketsLoading ? (
                     <p>Henter kundens sager...</p>
                   ) : ticketsError ? (
@@ -514,7 +514,7 @@ export default function AdminReportsClient() {
                 </div>
               ) : null}
               <div>
-                <label htmlFor="rep-title" className="mb-1 block text-sm font-medium text-[#2C4A5E]">
+                <label htmlFor="rep-title" className="mb-1 block text-sm font-medium text-slate-700">
                   Titel
                 </label>
                 <input
@@ -528,7 +528,7 @@ export default function AdminReportsClient() {
                 />
               </div>
               <div>
-                <label htmlFor="rep-period" className="mb-1 block text-sm font-medium text-[#2C4A5E]">
+                <label htmlFor="rep-period" className="mb-1 block text-sm font-medium text-slate-700">
                   Periode
                 </label>
                 <input
@@ -542,7 +542,7 @@ export default function AdminReportsClient() {
                 />
               </div>
               <div>
-                <label htmlFor="rep-status-summary" className="mb-1 block text-sm font-medium text-[#2C4A5E]">
+                <label htmlFor="rep-status-summary" className="mb-1 block text-sm font-medium text-slate-700">
                   Statusoversigt
                 </label>
                 <textarea
@@ -554,7 +554,7 @@ export default function AdminReportsClient() {
                 />
               </div>
               <div>
-                <label htmlFor="rep-inc" className="mb-1 block text-sm font-medium text-[#2C4A5E]">
+                <label htmlFor="rep-inc" className="mb-1 block text-sm font-medium text-slate-700">
                   Hændelser
                 </label>
                 <textarea
@@ -566,7 +566,7 @@ export default function AdminReportsClient() {
                 />
               </div>
               <div>
-                <label htmlFor="rep-res" className="mb-1 block text-sm font-medium text-[#2C4A5E]">
+                <label htmlFor="rep-res" className="mb-1 block text-sm font-medium text-slate-700">
                   Løste sager
                 </label>
                 <textarea
@@ -578,7 +578,7 @@ export default function AdminReportsClient() {
                 />
               </div>
               <div>
-                <label htmlFor="rep-rec" className="mb-1 block text-sm font-medium text-[#2C4A5E]">
+                <label htmlFor="rep-rec" className="mb-1 block text-sm font-medium text-slate-700">
                   Anbefalinger
                 </label>
                 <textarea
@@ -598,7 +598,7 @@ export default function AdminReportsClient() {
                 <button
                   type="button"
                   onClick={closeModal}
-                  className="rounded-full px-4 py-2 text-sm font-medium text-[#2C4A5E] hover:bg-slate-100"
+                  className="rounded-full px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100"
                 >
                   Annuller
                 </button>

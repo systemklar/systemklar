@@ -724,9 +724,9 @@ export function MarketingHomeContent() {
                         <div className="rounded-md bg-sky-50 px-2 py-1 text-[10px] font-medium text-sky-700">
                           Overblik
                         </div>
-                        <div className="px-2 py-1 text-[10px] text-[#4A8CB5]">Support</div>
-                        <div className="px-2 py-1 text-[10px] text-[#4A8CB5]">Kodebank</div>
-                        <div className="px-2 py-1 text-[10px] text-[#4A8CB5]">IT-rapport</div>
+                        <div className="px-2 py-1 text-[10px] text-slate-500">Support</div>
+                        <div className="px-2 py-1 text-[10px] text-slate-500">Kodebank</div>
+                        <div className="px-2 py-1 text-[10px] text-slate-500">IT-rapport</div>
                       </div>
                       <div className="flex-1 bg-white p-3">
                         <div className="mb-0.5 text-xs font-bold text-[#0D1F2D]">Goddag, Møllers VVS</div>
@@ -752,7 +752,7 @@ export function MarketingHomeContent() {
                     <div style={{ height: "220px" }} className="p-1">
                       <div className="mb-2 text-xs font-bold text-[#0D1F2D]">Support &amp; sager</div>
                       <div className="flex flex-col gap-1.5">
-                        <div className="max-w-[80%] self-end rounded-2xl rounded-tr-sm bg-[#0A6EBD] px-2.5 py-1.5 text-[10px] text-white">
+                        <div className="max-w-[80%] self-end rounded-2xl rounded-tr-sm bg-sky-600 px-2.5 py-1.5 text-[10px] text-white">
                           Vores printer printer ikke – det haster lidt
                         </div>
                         <div className="max-w-[80%] self-start rounded-2xl rounded-tl-sm bg-[#F0F7FF] px-2.5 py-1.5 text-[10px] text-[#2C4A5E]">
@@ -799,7 +799,7 @@ export function MarketingHomeContent() {
           <div className="mt-8 text-center">
             <Link
               href="/platformen"
-              className="inline-flex items-center gap-2 text-sm font-medium text-[#0A6EBD] transition-colors hover:text-sky-700"
+              className="inline-flex items-center gap-2 text-sm font-medium text-sky-600 transition-colors hover:text-sky-700"
             >
               Se alt hvad platformen kan
               <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
@@ -835,7 +835,7 @@ export function MarketingHomeContent() {
                       i === calculatorStep
                         ? "h-2 w-6 bg-sky-400"
                         : i < calculatorStep
-                          ? "h-2 w-2 bg-[#0A6EBD]"
+                          ? "h-2 w-2 bg-sky-600"
                           : "h-2 w-2 bg-white/20"
                     }`}
                   />
@@ -1290,7 +1290,7 @@ export function MarketingHomeContent() {
             </div>
             <p className="mb-6 flex-1 text-lg leading-relaxed text-white/90">{`"${featuredTestimonial.quote}"`}</p>
             <div className="flex items-center gap-3 border-t border-white/10 pt-4">
-              <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[#0A6EBD] text-xs font-bold text-white">
+              <div className="flex h-9 w-9 items-center justify-center rounded-full bg-sky-600 text-xs font-bold text-white">
                 {featuredTestimonial.initials}
               </div>
               <div>
@@ -1348,7 +1348,7 @@ export function MarketingHomeContent() {
               onClick={() => setYearly(!yearly)}
               aria-label={yearly ? "Skift til månedlig" : "Skift til årlig"}
               className={`relative h-6 w-12 rounded-full transition-colors duration-200 ${
-                yearly ? "bg-[#0A6EBD]" : "bg-slate-200"
+                yearly ? "bg-sky-600" : "bg-slate-200"
               }`}
             >
               <div
@@ -1383,7 +1383,7 @@ export function MarketingHomeContent() {
                   <article
                     className={`relative flex h-full flex-col rounded-2xl bg-white p-8 ${
                       priceCard.highlight
-                        ? "border-2 border-[#0A6EBD] shadow-md"
+                        ? "border-2 border-sky-600 shadow-md"
                         : "border border-sky-200 shadow-sm"
                     }`}
                   >
@@ -1400,7 +1400,7 @@ export function MarketingHomeContent() {
                     <ul className="mt-4 flex-1 space-y-3 text-base text-[#2C4A5E]">
                       {priceCard.features.map((feature) => (
                         <li key={feature} className="flex items-start gap-2">
-                          <CheckCircle className="mt-1 h-4 w-4 shrink-0 text-[#0A6EBD]" />
+                          <CheckCircle className="mt-1 h-4 w-4 shrink-0 text-sky-600" />
                           <span>{feature}</span>
                         </li>
                       ))}
@@ -1409,7 +1409,7 @@ export function MarketingHomeContent() {
                       href="/priser"
                       className={`mt-4 inline-flex w-full justify-center rounded-full px-5 py-2 text-sm font-semibold transition-colors ${
                         priceCard.highlight
-                          ? "bg-[#0A6EBD] text-white hover:bg-[#0859A0]"
+                          ? "bg-sky-600 text-white hover:bg-sky-700"
                           : "border border-sky-200 text-sky-700 hover:bg-sky-50"
                       }`}
                     >
@@ -1421,7 +1421,7 @@ export function MarketingHomeContent() {
             ))}
           </div>
           <div className="mt-6 text-center">
-            <Link href="/priser" className="text-xs font-semibold text-[#0A6EBD] hover:text-sky-700">
+            <Link href="/priser" className="text-xs font-semibold text-sky-600 hover:text-sky-700">
               Se alle features →
             </Link>
             <p className="mt-2 text-[10px] text-[#4A8CB5]">

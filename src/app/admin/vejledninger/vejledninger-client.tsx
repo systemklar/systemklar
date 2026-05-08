@@ -241,7 +241,7 @@ export default function AdminVejledningerClient() {
           type="button"
           onClick={() => openNewGuide()}
           disabled={categories.length === 0}
-          className="rounded-full bg-[#0A6EBD] px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-[#0859A0] disabled:cursor-not-allowed disabled:opacity-50"
+          className="rounded-full bg-sky-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-sky-700 disabled:cursor-not-allowed disabled:opacity-50"
           title={categories.length === 0 ? "Opret først en kategori" : undefined}
         >
           Ny vejledning
@@ -253,7 +253,7 @@ export default function AdminVejledningerClient() {
       ) : null}
 
       {loading ? (
-        <p className="text-sm text-[#4A8CB5]">Indlæser...</p>
+        <p className="text-sm text-slate-500">Indlæser...</p>
       ) : (
         <div className="flex flex-col gap-6 lg:flex-row">
           <div className="w-full shrink-0 lg:w-1/3">
@@ -283,7 +283,7 @@ export default function AdminVejledningerClient() {
                         : "border-transparent hover:bg-sky-50/60"
                     }`}
                   >
-                    <Icon className="h-4 w-4 shrink-0 text-[#0A6EBD]" aria-hidden />
+                    <Icon className="h-4 w-4 shrink-0 text-sky-600" aria-hidden />
                     <span className="font-semibold text-[#0D1F2D]">{c.name}</span>
                   </button>
                 );
@@ -319,7 +319,7 @@ export default function AdminVejledningerClient() {
                           className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${
                             g.published
                               ? "bg-emerald-50 text-emerald-800 ring-1 ring-emerald-100"
-                              : "bg-slate-100 text-[#2C4A5E] ring-1 ring-slate-200"
+                              : "bg-slate-100 text-slate-700 ring-1 ring-slate-200"
                           }`}
                         >
                           {g.published ? "Publiceret" : "Kladde"}
@@ -342,7 +342,7 @@ export default function AdminVejledningerClient() {
                       <button
                         type="button"
                         onClick={() => openEditGuide(g)}
-                        className="rounded-full bg-[#0A6EBD] px-3 py-1.5 text-xs font-semibold text-white hover:bg-[#0859A0]"
+                        className="rounded-full bg-sky-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-sky-700"
                       >
                         Rediger
                       </button>
@@ -435,7 +435,7 @@ export default function AdminVejledningerClient() {
                   type="checkbox"
                   checked={gPublished}
                   onChange={(e) => setGPublished(e.target.checked)}
-                  className="rounded border-sky-300 text-[#0A6EBD]"
+                  className="rounded border-sky-300 text-sky-600"
                 />
                 <label htmlFor="g-pub" className="text-sm text-[#0D1F2D]">
                   Publiceret
@@ -458,7 +458,7 @@ export default function AdminVejledningerClient() {
                   type="button"
                   disabled={guideSaving}
                   onClick={() => void saveGuide()}
-                  className="rounded-full bg-[#0A6EBD] px-5 py-2 text-sm font-semibold text-white hover:bg-[#0859A0] disabled:opacity-60"
+                  className="rounded-full bg-sky-600 px-5 py-2 text-sm font-semibold text-white hover:bg-sky-700 disabled:opacity-60"
                 >
                   {guideSaving ? "Gemmer..." : "Gem"}
                 </button>
@@ -519,7 +519,7 @@ export default function AdminVejledningerClient() {
                   type="button"
                   disabled={categorySaving}
                   onClick={() => void saveCategory()}
-                  className="rounded-full bg-[#0A6EBD] px-5 py-2 text-sm font-semibold text-white hover:bg-[#0859A0] disabled:opacity-60"
+                  className="rounded-full bg-sky-600 px-5 py-2 text-sm font-semibold text-white hover:bg-sky-700 disabled:opacity-60"
                 >
                   {categorySaving ? "Gemmer..." : "Gem kategori"}
                 </button>

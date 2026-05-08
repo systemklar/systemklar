@@ -437,7 +437,7 @@ export default function PortalTilbudsgeneratorPage() {
           </div>
 
           {servicesLoading ? (
-            <p className="mt-8 text-sm text-[#4A8CB5]">Henter ydelser...</p>
+            <p className="mt-8 text-sm text-slate-500">Henter ydelser...</p>
           ) : services.length === 0 ? (
             <p className="mt-8 text-sm text-[#78716C]">Ingen ydelser endnu. Tilføj den første med knappen ovenfor.</p>
           ) : (
@@ -633,7 +633,7 @@ export default function PortalTilbudsgeneratorPage() {
             <h3 className="text-sm font-semibold text-[#1C1917]">Mine tilbud</h3>
             <p className="mt-1 text-sm text-[#78716C]">Åbn et tidligere tilbud for at redigere eller sende igen.</p>
             {quotesLoading ? (
-              <p className="mt-4 text-sm text-[#4A8CB5]">Henter tilbud...</p>
+              <p className="mt-4 text-sm text-slate-500">Henter tilbud...</p>
             ) : quotes.length === 0 ? (
               <p className="mt-4 text-sm text-[#78716C]">Du har ingen tilbud endnu.</p>
             ) : (
@@ -646,7 +646,7 @@ export default function PortalTilbudsgeneratorPage() {
                     >
                       <p className="font-medium text-[#1C1917]">{q.title}</p>
                       <p className="mt-1 text-sm text-[#78716C]">{q.recipient_email || "Ingen modtager sat"}</p>
-                      <p className="mt-1 text-xs text-[#4A8CB5]">Oprettet {formatDanishDateTime(q.created_at)}</p>
+                      <p className="mt-1 text-xs text-slate-500">Oprettet {formatDanishDateTime(q.created_at)}</p>
                       <p className="mt-1 text-xs font-semibold text-[#1C1917]">
                         {q.status === "sent" && q.sent_at
                           ? `Sendt ${formatDanishDateTime(q.sent_at)}`

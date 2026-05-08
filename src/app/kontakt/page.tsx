@@ -138,7 +138,7 @@ export default function KontaktPage() {
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="min-h-[44px] w-full rounded-full bg-[#0A6EBD] px-6 py-3 font-semibold text-white transition hover:bg-[#0859A0] disabled:opacity-60"
+                  className="min-h-[44px] w-full rounded-full bg-sky-600 px-6 py-3 font-semibold text-white transition hover:bg-sky-700 disabled:opacity-60"
                 >
                   {submitting ? "Sender..." : "Send besked"}
                 </button>
@@ -149,7 +149,7 @@ export default function KontaktPage() {
               <aside className="rounded-2xl border border-sky-100 bg-white p-6 shadow-sm md:p-8">
                 <div>
                   <div className="flex items-center gap-3">
-                    <CalendarDays className="h-5 w-5 text-[#0A6EBD]" />
+                    <CalendarDays className="h-5 w-5 text-sky-600" />
                     <h3 className="font-semibold text-[#0D1F2D]">Book en gratis demo</h3>
                   </div>
                   <p className="mt-2 text-sm text-[#2C4A5E]">
@@ -158,7 +158,7 @@ export default function KontaktPage() {
                   <button
                     type="button"
                     onClick={() => setShowDemoModal(true)}
-                    className="mt-4 inline-flex rounded-full bg-[#0A6EBD] px-5 py-2.5 text-sm font-semibold text-white hover:bg-[#0859A0]"
+                    className="mt-4 inline-flex rounded-full bg-sky-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-sky-700"
                   >
                     Book demo
                   </button>
@@ -166,32 +166,32 @@ export default function KontaktPage() {
                 <div className="my-6 h-px bg-sky-100" />
                 <div className="mb-4 flex items-start gap-3">
                   <div className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-xl bg-sky-50">
-                    <Phone className="h-4 w-4 text-[#0A6EBD]" />
+                    <Phone className="h-4 w-4 text-sky-600" />
                   </div>
                   <div>
                     <p className="text-sm font-semibold text-[#0D1F2D]">Ring til os</p>
-                    <a href="tel:+4522631013" className="text-sm text-[#0A6EBD] hover:underline">
+                    <a href="tel:+4522631013" className="text-sm text-sky-600 hover:underline">
                       +45 22 63 10 13
                     </a>
                     <p className="mt-0.5 text-xs text-[#4A8CB5]">Man–fre kl. 9–17</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-3 text-sm text-[#2C4A5E]">
-                  <Mail className="h-4 w-4 text-[#0A6EBD]" />
-                  <a href="mailto:kontakt@systemklar.dk" className="text-[#0A6EBD] hover:underline">
+                  <Mail className="h-4 w-4 text-sky-600" />
+                  <a href="mailto:kontakt@systemklar.dk" className="text-sky-600 hover:underline">
                     kontakt@systemklar.dk
                   </a>
                 </div>
                 <div className="my-6 h-px bg-sky-100" />
                 <div className="flex items-start gap-3">
-                  <Clock className="mt-0.5 h-4 w-4 text-[#0A6EBD]" />
+                  <Clock className="mt-0.5 h-4 w-4 text-sky-600" />
                   <p className="text-sm text-[#2C4A5E]">Vi svarer normalt inden for én hverdag.</p>
                 </div>
               </aside>
 
               <div className="rounded-2xl border border-sky-100 bg-[#F0F7FF] p-6">
                 <div className="mb-4 flex items-center gap-4">
-                  <div className="flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-full bg-[#0A6EBD] text-xl font-bold text-white">
+                  <div className="flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-full bg-sky-600 text-xl font-bold text-white">
                     BS
                   </div>
                   <div>
@@ -206,13 +206,13 @@ export default function KontaktPage() {
                 <div className="mt-4 flex flex-col gap-2">
                   <a
                     href="mailto:benjamin@systemklar.dk"
-                    className="flex items-center gap-2 text-sm text-[#0A6EBD] hover:underline"
+                    className="flex items-center gap-2 text-sm text-sky-600 hover:underline"
                   >
                     <Mail className="h-4 w-4" /> benjamin@systemklar.dk
                   </a>
                   <a
                     href="tel:+4522631013"
-                    className="flex items-center gap-2 text-sm text-[#0A6EBD] hover:underline"
+                    className="flex items-center gap-2 text-sm text-sky-600 hover:underline"
                   >
                     <Phone className="h-4 w-4" /> +45 22 63 10 13
                   </a>

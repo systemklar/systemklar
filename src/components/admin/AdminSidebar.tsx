@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { BookOpen, LogOut, Mail, X } from "lucide-react";
 import { useMemo, type ReactNode } from "react";
-import { Logo } from "@/components/ui/Logo";
+import { SystemklarLogo } from "@/components/branding/SystemklarLogo";
 import { createClient } from "@/lib/supabase";
 
 export type AdminNavKey =
@@ -73,8 +73,8 @@ export function AdminSidebar({ activeNav, open = false, onClose }: AdminSidebarP
     >
       <div className="flex min-h-0 flex-1 flex-col">
         <div className="mb-4 flex items-center justify-between border-b border-sky-50 pb-4">
-          <Link href="/admin/dashboard" className="block" aria-label="systemklar admin – overblik">
-            <Logo iconClassName="h-8 w-auto" />
+          <Link href="/admin/dashboard" className="block">
+            <SystemklarLogo textClassName="text-sm font-bold leading-snug text-sky-600" />
             <p className="mt-0.5 text-xs font-medium text-[#4A8CB5]">Admin</p>
           </Link>
           <button

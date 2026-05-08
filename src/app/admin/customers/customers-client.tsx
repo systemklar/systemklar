@@ -210,7 +210,7 @@ export default function AdminCustomersClient() {
         <button
           type="button"
           onClick={() => setModalOpen(true)}
-          className="rounded-full bg-[#0A6EBD] px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-[#0859A0]"
+          className="rounded-full bg-sky-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-sky-700"
         >
           Ny kunde
         </button>
@@ -219,7 +219,7 @@ export default function AdminCustomersClient() {
       {actionError ? <p className="mt-4 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">{actionError}</p> : null}
 
       {loading ? (
-        <p className="mt-10 text-sm text-[#4A8CB5]">Henter kunder...</p>
+        <p className="mt-10 text-sm text-slate-500">Henter kunder...</p>
       ) : orgs.length === 0 ? (
         <p className="mt-10 text-sm text-slate-600">
           Ingen kunder endnu. Opret den første med &quot;Ny kunde&quot;.
@@ -296,17 +296,17 @@ export default function AdminCustomersClient() {
           }}
         >
           <div
-            className="w-full max-w-md rounded-2xl border border-[#D0E8F5] bg-white p-6 shadow-xl"
+            className="w-full max-w-md rounded-2xl border border-slate-200 bg-white p-6 shadow-xl"
             onClick={(e) => e.stopPropagation()}
           >
-            <h2 id="create-customer-title" className="text-lg font-semibold text-[#0D1F2D]">
+            <h2 id="create-customer-title" className="text-lg font-semibold text-slate-900">
               Ny kunde
             </h2>
-            <p className="mt-1 text-sm text-[#4A8CB5]">Opret organisation og send invitation til kontaktpersonen.</p>
+            <p className="mt-1 text-sm text-slate-500">Opret organisation og send invitation til kontaktpersonen.</p>
 
             <form className="mt-6 space-y-4" onSubmit={(ev) => void handleCreate(ev)}>
               <div>
-                <label htmlFor="cust-contact-name" className="mb-1 block text-sm font-medium text-[#2C4A5E]">
+                <label htmlFor="cust-contact-name" className="mb-1 block text-sm font-medium text-slate-700">
                   Kontaktpersonens fulde navn
                 </label>
                 <input
@@ -320,7 +320,7 @@ export default function AdminCustomersClient() {
                 />
               </div>
               <div>
-                <label htmlFor="cust-company" className="mb-1 block text-sm font-medium text-[#2C4A5E]">
+                <label htmlFor="cust-company" className="mb-1 block text-sm font-medium text-slate-700">
                   Virksomhedsnavn
                 </label>
                 <input
@@ -334,7 +334,7 @@ export default function AdminCustomersClient() {
                 />
               </div>
               <div>
-                <label htmlFor="cust-email" className="mb-1 block text-sm font-medium text-[#2C4A5E]">
+                <label htmlFor="cust-email" className="mb-1 block text-sm font-medium text-slate-700">
                   Email
                 </label>
                 <input
@@ -348,7 +348,7 @@ export default function AdminCustomersClient() {
                 />
               </div>
               <div>
-                <label htmlFor="cust-role" className="mb-1 block text-sm font-medium text-[#2C4A5E]">
+                <label htmlFor="cust-role" className="mb-1 block text-sm font-medium text-slate-700">
                   Rolle
                 </label>
                 <select
@@ -366,14 +366,14 @@ export default function AdminCustomersClient() {
                 <button
                   type="button"
                   onClick={closeModal}
-                  className="rounded-full px-4 py-2 text-sm font-medium text-[#2C4A5E] hover:bg-slate-100"
+                  className="rounded-full px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100"
                 >
                   Annuller
                 </button>
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="rounded-full bg-[#0A6EBD] px-5 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-[#0859A0] disabled:opacity-50"
+                  className="rounded-full bg-sky-600 px-5 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-sky-700 disabled:opacity-50"
                 >
                   {submitting ? "Opretter..." : "Opret"}
                 </button>

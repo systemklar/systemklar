@@ -197,7 +197,7 @@ export default function PortalSupportPage() {
                 setErrorMessage(null);
               }
             }}
-            className="rounded-full bg-[#0A6EBD] px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-[#0859A0]"
+            className="rounded-full bg-sky-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-sky-700"
           >
             Opret ny sag
           </button>
@@ -245,7 +245,7 @@ export default function PortalSupportPage() {
                   <button
                     type="submit"
                     disabled={submitting}
-                    className="rounded-full bg-[#0A6EBD] px-5 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-[#0859A0] disabled:opacity-60"
+                    className="rounded-full bg-sky-600 px-5 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-sky-700 disabled:opacity-60"
                   >
                     {submitting ? "Sender..." : "Opret sag"}
                   </button>
@@ -288,7 +288,7 @@ export default function PortalSupportPage() {
                   <button
                     type="button"
                     onClick={() => void finishCreation()}
-                    className="rounded-full bg-[#0A6EBD] px-5 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-[#0859A0]"
+                    className="rounded-full bg-sky-600 px-5 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-sky-700"
                   >
                     Færdig
                   </button>
@@ -316,7 +316,7 @@ export default function PortalSupportPage() {
             <p className="mt-4 text-sm text-[#4A8CB5]">Henter sager...</p>
           ) : tickets.length === 0 ? (
             <div className="mt-4 rounded-2xl border border-sky-100 bg-white p-12 text-center">
-              <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-[#F0F7FF] text-[#0A6EBD]">
+              <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-[#F0F7FF] text-sky-600">
                 <span className="text-sm font-bold">0</span>
               </div>
               <p className="mt-4 text-sm text-[#4A8CB5]">
@@ -325,7 +325,7 @@ export default function PortalSupportPage() {
               <button
                 type="button"
                 onClick={() => setShowForm(true)}
-                className="mt-5 rounded-full bg-[#0A6EBD] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[#0859A0]"
+                className="mt-5 rounded-full bg-sky-600 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-sky-700"
               >
                 Opret ny sag
               </button>

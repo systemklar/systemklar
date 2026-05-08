@@ -46,7 +46,7 @@ export function PricingSection({ sectionId = "priser", ctaHref = "/kontakt", cla
                 </p>
               ) : null}
               <div className="mb-5 flex h-12 w-12 items-center justify-center rounded-xl bg-[#F0F7FF]">
-                <plan.icon className="h-6 w-6 text-[#0A6EBD]" aria-hidden />
+                <plan.icon className="h-6 w-6 text-sky-600" aria-hidden />
               </div>
               <h3 className="text-xl font-semibold text-[#0A0A0A]">{plan.name}</h3>
               <p className={`mt-5 text-3xl font-bold tracking-tight md:text-4xl ${plan.highlighted ? "text-[#2563EB]" : "text-[#0A0A0A]"}`}>

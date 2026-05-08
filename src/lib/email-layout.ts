@@ -29,7 +29,19 @@ export function emailOuterHtml(content: string): string {
             <table cellpadding="0" cellspacing="0" border="0" style="margin:0 auto;">
               <tr>
                 <td>
-                  <img src="${EMAIL_SITE}/logo.png" width="32" height="32" alt="systemklar" style="display:block;width:32px;height:32px;border:0;outline:none;text-decoration:none;object-fit:contain;"/>
+                  <table cellpadding="0" cellspacing="0" border="0">
+                    <tr>
+                      <td style="width:11px;height:11px;background:#ffffff;border-radius:2px;font-size:0;line-height:0;">&nbsp;</td>
+                      <td style="width:3px;">&nbsp;</td>
+                      <td style="width:11px;height:11px;background:#4FA8E0;border-radius:2px;font-size:0;line-height:0;">&nbsp;</td>
+                    </tr>
+                    <tr><td colspan="3" style="height:3px;font-size:0;line-height:0;">&nbsp;</td></tr>
+                    <tr>
+                      <td style="width:11px;height:11px;background:#4FA8E0;border-radius:2px;font-size:0;line-height:0;">&nbsp;</td>
+                      <td style="width:3px;">&nbsp;</td>
+                      <td style="width:11px;height:11px;background:#ffffff;border-radius:2px;font-size:0;line-height:0;">&nbsp;</td>
+                    </tr>
+                  </table>
                 </td>
                 <td style="width:10px;">&nbsp;</td>
                 <td style="color:#ffffff;font-size:20px;font-weight:700;font-family:Inter,Arial,sans-serif;vertical-align:middle;letter-spacing:-0.3px;">systemklar</td>

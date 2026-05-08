@@ -468,7 +468,7 @@ export function TicketMessageThread({
                 <div
                   className={`max-w-[75%] rounded-2xl px-4 py-3 text-sm ${
                     m.sender_role === "customer"
-                      ? "ml-auto rounded-tr-sm bg-[#0A6EBD] text-white"
+                      ? "ml-auto rounded-tr-sm bg-sky-600 text-white"
                       : "rounded-tl-sm bg-[#F0F7FF] text-[#2C4A5E]"
                   }`}
                 >
@@ -493,7 +493,7 @@ export function TicketMessageThread({
                 <span
                   className={`mb-1 block max-w-[14rem] truncate text-xs font-semibold ${
                     typingOnRight
-                      ? "uppercase tracking-wide text-[#4A8CB5]"
+                      ? "uppercase tracking-wide text-slate-500"
                       : "normal-case tracking-normal text-blue-600"
                   }`}
                 >
@@ -502,7 +502,7 @@ export function TicketMessageThread({
                 <div
                   className={`flex items-center gap-2 rounded-2xl px-4 py-3 text-sm ${
                     typingOnRight
-                      ? "rounded-tr-sm bg-[#0A6EBD] text-white"
+                      ? "rounded-tr-sm bg-sky-600 text-white"
                       : "rounded-tl-sm bg-[#F0F7FF] text-[#2C4A5E]"
                   }`}
                 >
@@ -559,7 +559,7 @@ export function TicketMessageThread({
             type="button"
             disabled={sending || !draft.trim()}
             onClick={() => void handleSend()}
-            className="rounded-full bg-[#0A6EBD] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[#0859A0] focus:outline-none focus:ring-2 focus:ring-sky-500 disabled:opacity-50"
+            className="rounded-full bg-sky-600 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-sky-500 disabled:opacity-50"
           >
             {sending ? "Sender..." : "Send"}
           </button>

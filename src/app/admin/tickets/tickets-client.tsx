@@ -92,24 +92,24 @@ export default function AdminTicketsClient() {
   return (
     <div>
       <div>
-        <h1 className="text-2xl font-bold tracking-tight text-[#0D1F2D] md:text-3xl">Support & sager</h1>
+        <h1 className="text-2xl font-bold tracking-tight text-slate-900 md:text-3xl">Support & sager</h1>
         <p className="mt-2 text-sm text-slate-600">Tickets grupperet per kunde.</p>
       </div>
 
       {ticketsLoading ? (
-        <p className="mt-8 text-sm text-[#4A8CB5]">Henter tickets...</p>
+        <p className="mt-8 text-sm text-slate-500">Henter tickets...</p>
       ) : tickets.length === 0 ? (
         <p className="mt-8 text-sm text-slate-600">Ingen tickets.</p>
       ) : (
         <div className="mt-8 grid grid-cols-1 gap-6 lg:grid-cols-[280px_minmax(0,1fr)]">
-          <aside className="rounded-2xl border border-[#D0E8F5] bg-white p-4 shadow-sm">
-            <p className="px-2 text-xs font-semibold uppercase tracking-wide text-[#4A8CB5]">Kunder</p>
+          <aside className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+            <p className="px-2 text-xs font-semibold uppercase tracking-wide text-slate-500">Kunder</p>
             <div className="mt-2 space-y-1">
               <button
                 type="button"
                 onClick={() => setSelectedCompany("all")}
                 className={`flex w-full items-center justify-between rounded-lg px-2 py-2 text-left text-sm ${
-                  selectedCompany === "all" ? "bg-blue-50 text-blue-700" : "hover:bg-[#F5FAFD]"
+                  selectedCompany === "all" ? "bg-blue-50 text-blue-700" : "hover:bg-slate-50"
                 }`}
               >
                 <span>Alle sager</span>
@@ -121,7 +121,7 @@ export default function AdminTicketsClient() {
                   type="button"
                   onClick={() => setSelectedCompany(group.company)}
                   className={`flex w-full items-center justify-between rounded-lg px-2 py-2 text-left text-sm ${
-                    selectedCompany === group.company ? "bg-blue-50 text-blue-700" : "hover:bg-[#F5FAFD]"
+                    selectedCompany === group.company ? "bg-blue-50 text-blue-700" : "hover:bg-slate-50"
                   }`}
                 >
                   <span className="truncate">{group.company}</span>
@@ -132,8 +132,8 @@ export default function AdminTicketsClient() {
           </aside>
 
           <section>
-            <div className="rounded-2xl border border-[#D0E8F5] bg-white p-4 shadow-sm">
-              <label className="block text-xs font-semibold uppercase tracking-wide text-[#4A8CB5]">Søg</label>
+            <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+              <label className="block text-xs font-semibold uppercase tracking-wide text-slate-500">Søg</label>
               <input
                 type="text"
                 value={query}
@@ -148,24 +148,24 @@ export default function AdminTicketsClient() {
             ) : (
               <div className="mt-6 space-y-6">
                 {filteredGroups.map((group) => (
-                  <div key={group.company} className="overflow-hidden rounded-2xl border border-[#D0E8F5] bg-white shadow-sm">
-                    <div className="border-b border-[#D0E8F5] bg-[#F5FAFD] px-5 py-3">
-                      <p className="font-semibold text-[#0D1F2D]">{group.company}</p>
-                      <p className="text-xs text-[#4A8CB5]">{group.tickets.length} sager</p>
+                  <div key={group.company} className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+                    <div className="border-b border-slate-200 bg-slate-50 px-5 py-3">
+                      <p className="font-semibold text-slate-900">{group.company}</p>
+                      <p className="text-xs text-slate-500">{group.tickets.length} sager</p>
                     </div>
                     <ul className="divide-y divide-slate-200">
                       {group.tickets.map((t) => (
                         <li key={t.id}>
                           <Link
                             href={`/admin/tickets/${t.id}`}
-                            className="flex flex-col gap-3 px-5 py-4 transition hover:bg-[#F5FAFD] md:flex-row md:items-center md:justify-between"
+                            className="flex flex-col gap-3 px-5 py-4 transition hover:bg-slate-50 md:flex-row md:items-center md:justify-between"
                           >
                             <div className="min-w-0 flex-1">
                               <div className="flex flex-wrap items-center gap-2">
-                                <p className="font-medium text-[#0D1F2D]">{t.title}</p>
+                                <p className="font-medium text-slate-900">{t.title}</p>
                                 <TicketUnreadCountBadge count={unreadByTicket[t.id] ?? 0} />
                               </div>
-                              <p className="mt-0.5 text-sm text-[#4A8CB5]">{formatDanishDateTime(t.created_at)}</p>
+                              <p className="mt-0.5 text-sm text-slate-500">{formatDanishDateTime(t.created_at)}</p>
                             </div>
                             <StatusBadge status={t.status} />
                           </Link>

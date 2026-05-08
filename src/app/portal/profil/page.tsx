@@ -38,7 +38,7 @@ function Toggle({
       type="button"
       onClick={() => onChange(!value)}
       className={`relative h-6 w-11 rounded-full transition-colors duration-200 ${
-        value ? "bg-[#0A6EBD]" : "bg-slate-200"
+        value ? "bg-sky-600" : "bg-slate-200"
       }`}
     >
       <div
@@ -328,7 +328,7 @@ export default function PortalProfilePage() {
                     <button
                       type="submit"
                       disabled={savingName}
-                      className="rounded-full bg-[#0A6EBD] px-5 py-2 text-sm font-semibold text-white hover:bg-[#0859A0] disabled:opacity-60"
+                      className="rounded-full bg-sky-600 px-5 py-2 text-sm font-semibold text-white hover:bg-sky-700 disabled:opacity-60"
                     >
                       {savingName ? "Gemmer..." : "Gem"}
                     </button>
@@ -382,7 +382,7 @@ export default function PortalProfilePage() {
                   <button
                     type="submit"
                     disabled={savingPassword}
-                    className="rounded-full bg-[#0A6EBD] px-5 py-2 text-sm font-semibold text-white hover:bg-[#0859A0] disabled:opacity-60"
+                    className="rounded-full bg-sky-600 px-5 py-2 text-sm font-semibold text-white hover:bg-sky-700 disabled:opacity-60"
                   >
                     {savingPassword ? "Gemmer..." : "Gem"}
                   </button>
@@ -410,7 +410,7 @@ export default function PortalProfilePage() {
                     type="button"
                     disabled={savingNotifications}
                     onClick={() => void saveNotifications()}
-                    className="rounded-full bg-[#0A6EBD] px-5 py-2 text-sm font-semibold text-white hover:bg-[#0859A0] disabled:opacity-60"
+                    className="rounded-full bg-sky-600 px-5 py-2 text-sm font-semibold text-white hover:bg-sky-700 disabled:opacity-60"
                   >
                     {savingNotifications ? "Gemmer..." : "Gem notifikationer"}
                   </button>

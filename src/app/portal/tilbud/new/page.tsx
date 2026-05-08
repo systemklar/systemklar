@@ -179,7 +179,7 @@ export default function PortalQuoteNewPage() {
           ← Tilbage til AI Tilbudsgenerator
         </Link>
 
-        <h1 className="mt-6 text-2xl font-bold text-[#0D1F2D] md:text-3xl">Nyt tilbud</h1>
+        <h1 className="mt-6 text-2xl font-bold text-slate-900 md:text-3xl">Nyt tilbud</h1>
         <p className="mt-2 text-sm text-slate-600">
           Beskriv din kundes behov, vælg tjenester og lad AI generere et professionelt dansk tilbud.
         </p>
@@ -187,8 +187,8 @@ export default function PortalQuoteNewPage() {
         {loadError ? <p className="mt-4 text-sm text-red-600">{loadError}</p> : null}
 
         <form onSubmit={handleSaveDraft} className="mt-8 space-y-10">
-          <section className="rounded-2xl border border-[#D0E8F5] bg-white p-6 shadow-sm">
-            <h2 className="text-lg font-semibold text-[#0D1F2D]">Modtager</h2>
+          <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+            <h2 className="text-lg font-semibold text-slate-900">Modtager</h2>
             <input
               type="email"
               value={recipientEmail}
@@ -199,8 +199,8 @@ export default function PortalQuoteNewPage() {
             />
           </section>
 
-          <section className="rounded-2xl border border-[#D0E8F5] bg-white p-6 shadow-sm">
-            <h2 className="text-lg font-semibold text-[#0D1F2D]">Vælg tjenester</h2>
+          <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+            <h2 className="text-lg font-semibold text-slate-900">Vælg tjenester</h2>
             {services.length === 0 ? (
               <p className="mt-3 text-sm text-slate-600">
                 Ingen tjenester endnu.{" "}
@@ -213,7 +213,7 @@ export default function PortalQuoteNewPage() {
               <ul className="mt-4 space-y-3">
                 {services.map((s) => (
                   <li key={s.id}>
-                    <label className="flex cursor-pointer gap-3 rounded-lg border border-slate-100 p-3 hover:bg-[#F5FAFD]">
+                    <label className="flex cursor-pointer gap-3 rounded-lg border border-slate-100 p-3 hover:bg-slate-50">
                       <input
                         type="checkbox"
                         checked={selected.has(s.id)}
@@ -221,7 +221,7 @@ export default function PortalQuoteNewPage() {
                         className="mt-1"
                       />
                       <span className="min-w-0 flex-1">
-                        <span className="font-medium text-[#0D1F2D]">{s.name}</span>
+                        <span className="font-medium text-slate-900">{s.name}</span>
                         {s.description ? (
                           <span className="mt-0.5 block text-sm text-slate-600">{s.description}</span>
                         ) : null}
@@ -236,8 +236,8 @@ export default function PortalQuoteNewPage() {
             )}
           </section>
 
-          <section className="rounded-2xl border border-[#D0E8F5] bg-white p-6 shadow-sm">
-            <h2 className="text-lg font-semibold text-[#0D1F2D]">Beskriv din kundes behov</h2>
+          <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+            <h2 className="text-lg font-semibold text-slate-900">Beskriv din kundes behov</h2>
             <textarea
               value={needs}
               onChange={(e) => setNeeds(e.target.value)}
@@ -255,8 +255,8 @@ export default function PortalQuoteNewPage() {
             </button>
           </section>
 
-          <section className="rounded-2xl border border-[#D0E8F5] bg-white p-6 shadow-sm">
-            <h2 className="text-lg font-semibold text-[#0D1F2D]">Titel og tilbudstekst</h2>
+          <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+            <h2 className="text-lg font-semibold text-slate-900">Titel og tilbudstekst</h2>
             <input
               value={title}
               onChange={(e) => setTitle(e.target.value)}
@@ -286,7 +286,7 @@ export default function PortalQuoteNewPage() {
               type="button"
               disabled={saving || sending}
               onClick={() => void handleSend()}
-              className="rounded-full border border-slate-300 bg-white px-5 py-2.5 text-sm font-semibold text-[#0D1F2D] disabled:opacity-50"
+              className="rounded-full border border-slate-300 bg-white px-5 py-2.5 text-sm font-semibold text-slate-900 disabled:opacity-50"
             >
               {sending ? "Sender..." : "Send tilbud"}
             </button>
