@@ -135,26 +135,29 @@ function InviteContent() {
       ? invitation.organisations[0]?.name ?? ""
       : invitation.organisations?.name ?? "";
 
-    const { error: profileError } = await supabase
-      .from("profiles")
-      .upsert(
-        {
-          id: authUserId,
-          organisation_id: invitation.organisation_id,
-          role: invitation.role,
-          full_name: fullName.trim(),
-          avatar_initials: initials,
-          company_name: orgName,
-          email: invitation.email,
-        },
-        { onConflict: "id" }
-      );
+    const { error: profileError } = await supabase.from("profiles").insert({
+      id: authUserId,
+      organisation_id: invitation.organisation_id,
+      role: invitation.role,
+      full_name: fullName.trim(),
+      avatar_initials: initials,
+      company_name: orgName,
+      email: invitation.email,
+    });
 
     if (profileError) {
-      console.error("[invite] profile upsert fejlede", profileError);
-      setError(profileError.message);
-      setSubmitting(false);
-      return;
+      // 23505 = unique_violation — profilen findes allerede (fx fra trigger), så vi fortsætter.
+      if (profileError.code === "23505") {
+        console.warn("[invite] profile findes allerede, fortsætter", {
+          authUserId,
+          detail: profileError.message,
+        });
+      } else {
+        console.error("[invite] profile insert fejlede", profileError);
+        setError(profileError.message);
+        setSubmitting(false);
+        return;
+      }
     }
 
     const { error: acceptError } = await supabase
