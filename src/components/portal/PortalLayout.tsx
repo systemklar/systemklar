@@ -244,7 +244,10 @@ export function PortalLayout({ children, activeNav }: PortalLayoutProps) {
           >
             <div className="flex flex-shrink-0 items-center justify-between border-b border-sky-50 p-4">
               <Link href="/portal" className="block">
-                <SystemklarLogo textClassName="text-sm font-bold tracking-tight text-sky-600" />
+                <SystemklarLogo
+                  variant="light"
+                  textClassName="text-sm font-bold tracking-tight text-sky-700"
+                />
                 <p className="mt-0.5 text-xs font-medium text-[#4A8CB5]">Kundeportal</p>
               </Link>
               <button

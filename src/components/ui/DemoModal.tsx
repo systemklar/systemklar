@@ -97,7 +97,11 @@ export function DemoModal({ isOpen, onClose, subject }: DemoModalProps) {
           <X className="h-4 w-4" />
         </button>
 
-        <SystemklarLogo href="/" textClassName="text-base font-bold tracking-tight text-sky-600" />
+        <SystemklarLogo
+          href="/"
+          variant="light"
+          textClassName="text-base font-bold tracking-tight text-sky-700"
+        />
         <h2 id="demo-modal-title" className="mt-6 text-xl font-bold text-[#0D1F2D]">
           Book en gratis snak
         </h2>
