@@ -10,7 +10,7 @@ export function MarketingFooter() {
         <div className="md:col-span-2 lg:col-span-1">
           <SystemklarLogo
             href="/"
-            textClassName="text-base font-bold text-white tracking-tight"
+            textClassName="text-base font-semibold text-white tracking-tight"
             iconClassName="opacity-95 brightness-0 invert"
           />
           <p className="mt-4 leading-relaxed text-sky-200">

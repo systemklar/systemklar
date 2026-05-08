@@ -57,7 +57,7 @@ export function MarketingNav() {
           <div className="flex h-full items-center justify-between gap-4">
             <SystemklarLogo
               href="/"
-              textClassName="text-sm font-bold tracking-tight text-white transition-colors"
+              textClassName="text-sm font-semibold tracking-tight text-white transition-colors"
               iconClassName="brightness-0 invert"
             />
 

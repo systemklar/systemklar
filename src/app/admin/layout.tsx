@@ -75,7 +75,7 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
           >
             <Menu className="h-5 w-5" />
           </button>
-          <span className="text-sm font-bold text-sky-600">Admin</span>
+          <span className="text-sm font-semibold text-sky-600">Admin</span>
           <span className="w-9" aria-hidden />
         </div>
 
