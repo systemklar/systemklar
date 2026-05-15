@@ -1,4 +1,4 @@
-import { MONITORING_SYSTEM_NAMES } from "@/lib/monitoring/checks";
+import { MONITORING_SYSTEM_NAMES } from "@/lib/monitoring/monitoring-system-names";
 
 export type MonitoringStatusKey = "ok" | "advarsel" | "fejl" | "afventer";
 

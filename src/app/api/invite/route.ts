@@ -4,6 +4,8 @@ import { NextResponse } from "next/server";
 import { sendInviteEmail } from "@/lib/email";
 import { getAppOrigin } from "@/lib/resend-welcome-email";
 
+export const dynamic = 'force-dynamic';
+
 export async function POST(request: Request) {
   const cookieStore = await cookies();
   const supabase = createServerClient(

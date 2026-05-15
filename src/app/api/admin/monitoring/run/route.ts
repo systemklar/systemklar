@@ -3,6 +3,8 @@ import { requireAdminSession } from "@/lib/require-admin-api";
 import { runMonitoringForOrganisation } from "@/lib/monitoring/run-for-organisation";
 import { createServiceRoleClient } from "@/lib/supabase-service-role";
 
+export const dynamic = 'force-dynamic';
+
 export async function POST(request: Request) {
   const auth = await requireAdminSession();
   if (!auth.ok) return auth.response;

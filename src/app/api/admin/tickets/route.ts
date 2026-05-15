@@ -3,6 +3,8 @@ import { mergeTicketRowsWithProfiles, resolveDisplayProfilesForOrganisationIds }
 import { requireAdminSession } from "@/lib/require-admin-api";
 import { createServiceRoleClient } from "@/lib/supabase-service-role";
 
+export const dynamic = 'force-dynamic';
+
 export async function GET() {
   const auth = await requireAdminSession();
   if (!auth.ok) return auth.response;

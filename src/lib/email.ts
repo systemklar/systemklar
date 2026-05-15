@@ -6,7 +6,14 @@ import {
 import { EMAIL_SITE, emailOuterHtml } from "@/lib/email-layout";
 import { escapeHtml } from "@/lib/resend-welcome-email";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+function getResend(): Resend {
+  const key = process.env.RESEND_API_KEY?.trim();
+  if (!key) {
+    throw new Error('Missing API key. Pass it to the constructor `new Resend("re_123")`');
+  }
+  return new Resend(key);
+}
+
 export const FROM = process.env.RESEND_FROM_EMAIL ?? "systemklar <noreply@systemklar.dk>";
 export const SITE = EMAIL_SITE;
 
@@ -70,7 +77,7 @@ export async function sendWelcomeEmail(to: string, name: string, orgName: string
   };
   const subject = interpolate(template.subject, vars);
   const bodyInner = interpolate(template.body, vars);
-  return resend.emails.send({
+  return getResend().emails.send({
     from: FROM,
     to,
     subject,
@@ -94,7 +101,7 @@ export async function sendNewTicketEmailToAdmin(
   };
   const subject = interpolate(template.subject, vars);
   const bodyInner = interpolate(template.body, vars);
-  return resend.emails.send({
+  return getResend().emails.send({
     from: FROM,
     to: "kontakt@systemklar.dk",
     subject,
@@ -119,7 +126,7 @@ export async function sendTicketReplyEmail(
   };
   const subject = interpolate(template.subject, vars);
   const bodyInner = interpolate(template.body, vars);
-  return resend.emails.send({
+  return getResend().emails.send({
     from: FROM,
     to,
     subject,
@@ -142,7 +149,7 @@ export async function sendTicketClosedEmail(
   };
   const subject = interpolate(template.subject, vars);
   const bodyInner = interpolate(template.body, vars);
-  return resend.emails.send({
+  return getResend().emails.send({
     from: FROM,
     to,
     subject,
@@ -167,7 +174,7 @@ export async function sendMonthlyReportEmail(
   };
   const subject = interpolate(template.subject, vars);
   const bodyInner = interpolate(template.body, vars);
-  return resend.emails.send({
+  return getResend().emails.send({
     from: FROM,
     to,
     subject,
@@ -214,7 +221,7 @@ export async function sendInviteEmail(
     /* behold inviteUrl som ref */
   }
 
-  return resend.emails.send({
+  return getResend().emails.send({
     from: FROM,
     to,
     subject,
@@ -245,7 +252,7 @@ export async function sendBookDemoEmail(
   };
   const subject = interpolate(template.subject, vars);
   const bodyInner = interpolate(template.body, vars);
-  return resend.emails.send({
+  return getResend().emails.send({
     from: FROM,
     to: "kontakt@systemklar.dk",
     subject,
@@ -273,7 +280,7 @@ export async function sendContactEmail(
   };
   const subject = interpolate(template.subject, vars);
   const bodyInner = interpolate(template.body, vars);
-  return resend.emails.send({
+  return getResend().emails.send({
     from: FROM,
     to: toRecipient,
     subject,

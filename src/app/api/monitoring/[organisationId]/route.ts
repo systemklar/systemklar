@@ -3,6 +3,8 @@ import { buildDailyPctOkFromRows } from "@/lib/monitoring/history-daily";
 import { createServiceRoleClient } from "@/lib/supabase-service-role";
 import { requireOrganisationOrAdminAccess } from "@/lib/require-monitoring-api";
 
+export const dynamic = 'force-dynamic';
+
 export type MonitoringResultDto = {
   system_name: string;
   status: string;

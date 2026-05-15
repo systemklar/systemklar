@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import { requireAdminSession } from "@/lib/require-admin-api";
 import { createServiceRoleClient } from "@/lib/supabase-service-role";
 
+export const dynamic = 'force-dynamic';
+
 const ORGANISATIONS_SELECT =
   "*, profiles(id, full_name, email, role, avatar_initials, created_at), invitations(id, email, contact_name, accepted_at, created_at)";
 

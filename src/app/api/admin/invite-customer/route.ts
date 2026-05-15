@@ -5,6 +5,8 @@ import { sendInviteEmail } from "@/lib/email";
 import { getAppOrigin } from "@/lib/resend-welcome-email";
 import { createServiceRoleClient } from "@/lib/supabase-service-role";
 
+export const dynamic = 'force-dynamic';
+
 function createUserClient(accessToken: string) {
   return createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,

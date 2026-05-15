@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { sendContactEmail } from "@/lib/email";
 
+export const dynamic = 'force-dynamic';
+
 type ContactBody = {
   name: string;
   company?: string;

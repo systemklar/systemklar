@@ -8,6 +8,8 @@ import {
   type VaultEntryRow,
 } from "@/lib/vault-crypto";
 
+export const dynamic = 'force-dynamic';
+
 async function getAuthedClient() {
   const cookieStore = await cookies();
   const client = createServerClient(
