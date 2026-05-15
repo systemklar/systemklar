@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { FormEvent, useCallback, useEffect, useMemo, useState } from "react";
-import { Loader2, Pencil, FileText } from "lucide-react";
+import { Loader2, Pencil } from "lucide-react";
 import { AdminOnboardingSystemsTabs } from "@/components/admin/AdminOnboardingSystemsTabs";
 import { StatusBadge, formatDanishDateTime } from "@/components/tickets/StatusBadge";
 import { isLikelyOrganisationDomain, normalizeOrganisationDomainInput } from "@/lib/organisation-domain";
@@ -102,7 +102,6 @@ export default function AdminCustomerDetailClient() {
   const [domainSaving, setDomainSaving] = useState(false);
   const [domainFieldError, setDomainFieldError] = useState<string | null>(null);
   const [monitoringRunBusy, setMonitoringRunBusy] = useState(false);
-  const [reportGenBusy, setReportGenBusy] = useState(false);
   const [monitoringRefreshNonce, setMonitoringRefreshNonce] = useState(0);
   const [toast, setToast] = useState<{ type: "success" | "error"; message: string } | null>(null);
 
@@ -353,41 +352,6 @@ export default function AdminCustomerDetailClient() {
     }
   };
 
-  const runItReportGenerate = async () => {
-    if (!org) return;
-    setReportGenBusy(true);
-    setToast(null);
-    try {
-      const res = await fetch("/api/admin/reports/generate", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-        body: JSON.stringify({ organisationId: org.id }),
-      });
-      const payload = (await res.json().catch(() => ({}))) as {
-        error?: string;
-        id?: string;
-        redirect?: string;
-      };
-      if (!res.ok) {
-        setToast({ type: "error", message: payload.error ?? "Kunne ikke generere rapport." });
-        return;
-      }
-      const dest =
-        typeof payload.redirect === "string"
-          ? payload.redirect
-          : payload.id
-            ? `/admin/it-rapporter/${payload.id}`
-            : null;
-      if (dest) router.push(dest);
-      else setToast({ type: "error", message: "Manglede redirect fra serveren." });
-    } catch {
-      setToast({ type: "error", message: "Netværksfejl. Prøv igen." });
-    } finally {
-      setReportGenBusy(false);
-    }
-  };
-
   if (loading) return <p className="text-sm text-slate-600">Indlæser virksomhed...</p>;
 
   if (!org) {
@@ -504,26 +468,6 @@ export default function AdminCustomerDetailClient() {
                   "Kør monitoring nu"
                 )}
               </button>
-              <button
-                type="button"
-                disabled={reportGenBusy}
-                onClick={() => void runItReportGenerate()}
-                className="inline-flex shrink-0 items-center justify-center gap-2 rounded-full border border-sky-200 bg-sky-50 px-5 py-2.5 text-sm font-semibold text-sky-800 shadow-sm transition hover:border-sky-300 hover:bg-sky-100 disabled:pointer-events-none disabled:opacity-50"
-              >
-                {reportGenBusy ? (
-                  <>
-                    <Loader2 className="h-4 w-4 shrink-0 animate-spin" aria-hidden />
-                    Genererer...
-                  </>
-                ) : (
-                  <>
-                    <FileText className="h-4 w-4 shrink-0" aria-hidden />
-                    Generér IT-rapport
-                  </>
-                )}
-              </button>
-            </div>
-            <div className="flex justify-end">
               <button
                 type="button"
                 onClick={() => setInviteModalOpen(true)}

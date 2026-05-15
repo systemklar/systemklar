@@ -1,8 +1,9 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { Loader2 } from "lucide-react";
+import { Loader2, Plus } from "lucide-react";
 import { createClient } from "@/lib/supabase";
 import { IT_REPORTS_TABLE_COLUMNS } from "@/lib/it-reports";
 import { logSupabaseError } from "@/lib/supabase-error";
@@ -18,6 +19,11 @@ type ItReportListRow = {
   status: string;
   created_at: string;
   organisations: OrgEmbed;
+};
+
+type OrganisationOption = {
+  id: string;
+  name: string;
 };
 
 function orgNameFromEmbed(embed: OrgEmbed): string {
@@ -41,11 +47,19 @@ function periodDa(start: string, end: string): string {
 }
 
 export default function AdminItRapporterClient() {
+  const router = useRouter();
   const supabase = useMemo(() => createClient(), []);
   const [rows, setRows] = useState<ItReportListRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [sendBusyId, setSendBusyId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+
+  const [newModalOpen, setNewModalOpen] = useState(false);
+  const [orgOptions, setOrgOptions] = useState<OrganisationOption[]>([]);
+  const [orgsLoading, setOrgsLoading] = useState(false);
+  const [selectedOrgId, setSelectedOrgId] = useState("");
+  const [genBusy, setGenBusy] = useState(false);
+  const [genError, setGenError] = useState<string | null>(null);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -68,6 +82,95 @@ export default function AdminItRapporterClient() {
     void load();
   }, [load]);
 
+  const loadOrganisationOptions = useCallback(async () => {
+    setOrgsLoading(true);
+    setGenError(null);
+    try {
+      const res = await fetch("/api/admin/organisations", {
+        credentials: "include",
+        redirect: "manual",
+      });
+      const contentType = res.headers.get("content-type") ?? "";
+      if (!contentType.includes("application/json")) {
+        setOrgOptions([]);
+        setGenError("Uventet svar fra serveren.");
+        return;
+      }
+      const payload = (await res.json()) as { error?: string; organisations?: unknown };
+      if (!res.ok) {
+        setOrgOptions([]);
+        setGenError(payload.error ?? "Kunne ikke hente organisationer.");
+        return;
+      }
+      const raw = (payload.organisations ?? []) as { id?: string; name?: string }[];
+      const opts: OrganisationOption[] = raw
+        .filter((o): o is OrganisationOption => typeof o.id === "string" && typeof o.name === "string")
+        .map((o) => ({ id: o.id, name: o.name.trim() || "Uden navn" }))
+        .sort((a, b) => a.name.localeCompare(b.name, "da"));
+      setOrgOptions(opts);
+    } catch {
+      setOrgOptions([]);
+      setGenError("Netværksfejl. Prøv igen.");
+    } finally {
+      setOrgsLoading(false);
+    }
+  }, []);
+
+  const openNewModal = () => {
+    setSelectedOrgId("");
+    setGenError(null);
+    setNewModalOpen(true);
+    void loadOrganisationOptions();
+  };
+
+  const closeNewModal = () => {
+    setNewModalOpen(false);
+    setGenError(null);
+    setGenBusy(false);
+  };
+
+  const handleGenerateNew = async () => {
+    if (!selectedOrgId) {
+      setGenError("Vælg en organisation.");
+      return;
+    }
+    setGenBusy(true);
+    setGenError(null);
+    try {
+      const res = await fetch("/api/admin/reports/generate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ organisationId: selectedOrgId }),
+      });
+      const payload = (await res.json().catch(() => ({}))) as {
+        error?: string;
+        id?: string;
+        redirect?: string;
+      };
+      if (!res.ok) {
+        setGenError(payload.error ?? "Kunne ikke generere rapport.");
+        return;
+      }
+      const dest =
+        typeof payload.redirect === "string"
+          ? payload.redirect
+          : payload.id
+            ? `/admin/it-rapporter/${payload.id}`
+            : null;
+      if (!dest) {
+        setGenError("Manglede redirect fra serveren.");
+        return;
+      }
+      closeNewModal();
+      router.push(dest);
+    } catch {
+      setGenError("Netværksfejl. Prøv igen.");
+    } finally {
+      setGenBusy(false);
+    }
+  };
+
   const sendReport = async (id: string) => {
     if (!window.confirm("Send rapport til alle brugere på organisationen via e-mail og marker som sendt?")) return;
     setSendBusyId(id);
@@ -89,8 +192,20 @@ export default function AdminItRapporterClient() {
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-8">
-      <h1 className="text-2xl font-bold text-slate-900">Organisationers IT-rapporter</h1>
-      <p className="mt-2 text-sm text-slate-600">Rapporter genereret pr. kunde med AI og sendt til portalen.</p>
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+        <div>
+          <h1 className="text-2xl font-bold text-slate-900">Organisationers IT-rapporter</h1>
+          <p className="mt-2 text-sm text-slate-600">Rapporter genereret pr. kunde med AI og sendt til portalen.</p>
+        </div>
+        <button
+          type="button"
+          onClick={openNewModal}
+          className="inline-flex shrink-0 items-center justify-center gap-2 self-start rounded-full bg-sky-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-sky-700 sm:self-center"
+        >
+          <Plus className="h-4 w-4" aria-hidden />
+          Ny rapport
+        </button>
+      </div>
 
       {error ? <p className="mt-4 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">{error}</p> : null}
 
@@ -152,6 +267,76 @@ export default function AdminItRapporterClient() {
           </table>
         </div>
       )}
+
+      {newModalOpen ? (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 p-4"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="new-it-report-title"
+          onClick={(ev) => {
+            if (ev.target === ev.currentTarget && !genBusy) closeNewModal();
+          }}
+        >
+          <div
+            className="w-full max-w-md rounded-2xl border border-slate-200 bg-white p-6 shadow-xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h2 id="new-it-report-title" className="text-lg font-semibold text-slate-900">
+              Ny IT-rapport
+            </h2>
+            <p className="mt-1 text-sm text-slate-600">Vælg organisation og generér en kladde med data fra de seneste 30 dage.</p>
+
+            <div className="mt-5">
+              <label htmlFor="new-report-org" className="mb-1 block text-sm font-medium text-slate-700">
+                Organisation
+              </label>
+              <select
+                id="new-report-org"
+                value={selectedOrgId}
+                onChange={(e) => setSelectedOrgId(e.target.value)}
+                disabled={orgsLoading || genBusy}
+                className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-sky-500 disabled:cursor-not-allowed disabled:bg-slate-100"
+              >
+                <option value="">{orgsLoading ? "Henter organisationer…" : "Vælg organisation…"}</option>
+                {orgOptions.map((o) => (
+                  <option key={o.id} value={o.id}>
+                    {o.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {genError ? <p className="mt-3 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">{genError}</p> : null}
+
+            <div className="mt-6 flex justify-end gap-3">
+              <button
+                type="button"
+                disabled={genBusy}
+                onClick={closeNewModal}
+                className="rounded-full px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100 disabled:opacity-50"
+              >
+                Annuller
+              </button>
+              <button
+                type="button"
+                disabled={genBusy || orgsLoading || !selectedOrgId}
+                onClick={() => void handleGenerateNew()}
+                className="inline-flex items-center justify-center gap-2 rounded-full bg-sky-600 px-5 py-2 text-sm font-semibold text-white hover:bg-sky-700 disabled:opacity-50"
+              >
+                {genBusy ? (
+                  <>
+                    <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
+                    Genererer…
+                  </>
+                ) : (
+                  "Generér"
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : null}
     </div>
   );
 }
