@@ -33,12 +33,14 @@ export function PortalSystemsDashboard({
   const supabase = useMemo(() => createClient(), []);
   const [loading, setLoading] = useState(() => !preview);
   const [resolvedFullName, setResolvedFullName] = useState<string | null>(null);
+  const [resolvedOrganisationId, setResolvedOrganisationId] = useState<string | null>(null);
   const [onboardingNames, setOnboardingNames] = useState<string[]>([]);
   const [monitoringByName, setMonitoringByName] = useState<Map<string, MonitoringResultRow>>(() => new Map());
 
+  /** I portal: altid fra `fetchCurrentProfile` (ikke session-kontekst). I admin-preview: fra props. */
   const orgIdForMonitoring = preview
     ? (organisationIdProp?.trim() || null)
-    : (portalSession?.organisationId?.trim() || null);
+    : (resolvedOrganisationId?.trim() || null);
 
   const namesLive = preview ? normalizeOnboardingSystemsFromDb(namesProp) : onboardingNames;
 
@@ -49,7 +51,10 @@ export function PortalSystemsDashboard({
     if (!userId) {
       let cancelled = false;
       void Promise.resolve().then(() => {
-        if (!cancelled) setLoading(true);
+        if (!cancelled) {
+          setLoading(true);
+          setResolvedOrganisationId(null);
+        }
       });
       return () => {
         cancelled = true;
@@ -59,9 +64,17 @@ export function PortalSystemsDashboard({
     let cancelled = false;
     void (async () => {
       setLoading(true);
+      setResolvedOrganisationId(null);
       const profile = await fetchCurrentProfile(supabase, userId);
       if (cancelled) return;
+      if (profile) {
+        console.log("[PortalSystemsDashboard] profile.onboarding_systems", profile.onboarding_systems);
+        console.log("[PortalSystemsDashboard] profile.organisation_id", profile.organisation_id);
+      } else {
+        console.log("[PortalSystemsDashboard] profile fetch returned null");
+      }
       setOnboardingNames(normalizeOnboardingSystemsFromDb(profile?.onboarding_systems));
+      setResolvedOrganisationId(profile?.organisation_id?.trim() || null);
       setResolvedFullName(
         profile?.full_name?.trim() || portalSession?.fullName?.trim() || null,
       );
