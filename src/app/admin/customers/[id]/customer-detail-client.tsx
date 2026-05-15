@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
-import { FormEvent, useCallback, useEffect, useState } from "react";
+import { FormEvent, useCallback, useEffect, useMemo, useState } from "react";
 import { StatusBadge, formatDanishDateTime } from "@/components/tickets/StatusBadge";
 
 type OrgProfile = {
@@ -12,6 +12,8 @@ type OrgProfile = {
   role: string | null;
   avatar_initials: string | null;
   created_at: string | null;
+  /** Valgte systemnavne fra kunde-onboarding (`profiles.onboarding_systems`). */
+  onboarding_systems?: string[] | null;
 };
 
 type OrgInvitation = {
@@ -167,6 +169,20 @@ export default function AdminCustomerDetailClient() {
     });
   }, [load]);
 
+  const onboardingSystemNames = useMemo(() => {
+    const list = org?.profiles ?? [];
+    const names = new Set<string>();
+    for (const p of list) {
+      const arr = p.onboarding_systems;
+      if (!Array.isArray(arr)) continue;
+      for (const n of arr) {
+        const t = typeof n === "string" ? n.trim() : "";
+        if (t) names.add(t);
+      }
+    }
+    return [...names].sort((a, b) => a.localeCompare(b, "da"));
+  }, [org?.profiles]);
+
   const sendInvite = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (!org) return;
@@ -223,7 +239,7 @@ export default function AdminCustomerDetailClient() {
     router.push("/admin/customers");
   };
 
-  if (loading) return <p className="text-sm text-slate-600">Indlaeser virksomhed...</p>;
+  if (loading) return <p className="text-sm text-slate-600">Indlæser virksomhed...</p>;
 
   if (!org) {
     return (
@@ -355,35 +371,55 @@ export default function AdminCustomerDetailClient() {
 
       <section>
         <h2 className="mb-3 text-lg font-semibold text-[#0D1F2D]">Systemer</h2>
-        {systems.length === 0 ? (
-          <p className="rounded-2xl border border-sky-100 bg-white p-5 text-sm text-slate-600 shadow-sm">
-            Ingen systemer endnu
-          </p>
-        ) : (
-          <ul className="space-y-3">
-            {systems.map((system) => {
-              const status = system.status === "advarsel" || system.status === "nede" ? system.status : "ok";
-              return (
-                <li key={system.id} className="rounded-2xl border border-sky-100 bg-white p-5 shadow-sm">
-                  <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                    <div>
-                      <p className="font-semibold text-[#0D1F2D]">{system.name || "Ukendt system"}</p>
-                      <p className="text-sm text-[#4A8CB5]">{system.type || "—"}</p>
+        <div className="space-y-4">
+          {onboardingSystemNames.length > 0 ? (
+            <div className="rounded-2xl border border-sky-100 bg-white p-5 shadow-sm">
+              <div className="flex flex-wrap gap-2">
+                {onboardingSystemNames.map((name) => (
+                  <span
+                    key={name}
+                    className="inline-flex rounded-full border border-sky-200 bg-sky-50 px-3 py-1 text-xs font-medium text-[#0D1F2D]"
+                  >
+                    {name}
+                  </span>
+                ))}
+              </div>
+              <p className="mt-3 text-xs text-slate-500">Valgt under onboarding</p>
+            </div>
+          ) : null}
+
+          {systems.length === 0 && onboardingSystemNames.length === 0 ? (
+            <p className="rounded-2xl border border-sky-100 bg-white p-5 text-sm text-slate-600 shadow-sm">
+              Ingen systemer endnu
+            </p>
+          ) : null}
+
+          {systems.length > 0 ? (
+            <ul className="space-y-3">
+              {systems.map((system) => {
+                const status = system.status === "advarsel" || system.status === "nede" ? system.status : "ok";
+                return (
+                  <li key={system.id} className="rounded-2xl border border-sky-100 bg-white p-5 shadow-sm">
+                    <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                      <div>
+                        <p className="font-semibold text-[#0D1F2D]">{system.name || "Ukendt system"}</p>
+                        <p className="text-sm text-[#4A8CB5]">{system.type || "—"}</p>
+                      </div>
+                      <div className="text-right">
+                        <span className={`inline-flex rounded-full px-2 py-0.5 text-xs ${systemStatusStyles[status]}`}>
+                          {systemStatusLabel[status]}
+                        </span>
+                        <p className="mt-2 text-xs text-slate-500">
+                          Sidst tjekket {system.last_checked ? formatDanishDateTime(system.last_checked) : "—"}
+                        </p>
+                      </div>
                     </div>
-                    <div className="text-right">
-                      <span className={`inline-flex rounded-full px-2 py-0.5 text-xs ${systemStatusStyles[status]}`}>
-                        {systemStatusLabel[status]}
-                      </span>
-                      <p className="mt-2 text-xs text-slate-500">
-                        Sidst tjekket {system.last_checked ? formatDanishDateTime(system.last_checked) : "—"}
-                      </p>
-                    </div>
-                  </div>
-                </li>
-              );
-            })}
-          </ul>
-        )}
+                  </li>
+                );
+              })}
+            </ul>
+          ) : null}
+        </div>
       </section>
 
       <section className="rounded-2xl border border-red-200 bg-white p-6 shadow-sm">
