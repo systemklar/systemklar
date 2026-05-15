@@ -2,7 +2,7 @@
 
 import { Loader2, Paperclip } from "lucide-react";
 import { useMemo, useRef, useState } from "react";
-import type { TicketAttachment } from "@/lib/ticket-attachments";
+import { sanitizeFileName, type TicketAttachment } from "@/lib/ticket-attachments";
 import { createClient } from "@/lib/supabase";
 
 const MAX_BYTES = 10 * 1024 * 1024;
@@ -80,7 +80,7 @@ export function FileUpload({
     setBusy(true);
     setError(null);
 
-    const path = `${organisationId}/${ticketId}/${Date.now()}_${file.name}`;
+    const path = `${organisationId}/${ticketId}/${Date.now()}_${sanitizeFileName(file.name)}`;
 
     try {
       const { data: up, error: upErr } = await supabase.storage.from("attachments").upload(path, file, {

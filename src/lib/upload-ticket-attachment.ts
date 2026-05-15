@@ -1,5 +1,9 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
-import { normalizeTicketAttachmentRow, type TicketAttachment } from "@/lib/ticket-attachments";
+import {
+  normalizeTicketAttachmentRow,
+  sanitizeFileName,
+  type TicketAttachment,
+} from "@/lib/ticket-attachments";
 
 export const TICKET_ATTACHMENTS_BUCKET = "ticket-attachments";
 
@@ -15,7 +19,7 @@ export async function uploadTicketAttachment(
     uploadedBy: string;
   },
 ): Promise<{ attachment: TicketAttachment | null; error: string | null }> {
-  const path = `${params.organisationId}/${params.ticketId}/${Date.now()}_${params.file.name}`;
+  const path = `${params.organisationId}/${params.ticketId}/${Date.now()}_${sanitizeFileName(params.file.name)}`;
 
   const { data: uploaded, error: uploadError } = await client.storage
     .from(TICKET_ATTACHMENTS_BUCKET)

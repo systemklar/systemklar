@@ -1,3 +1,12 @@
+export const sanitizeFileName = (name: string) => {
+  return name
+    .replace(/\s+/g, "_")
+    .replace(/[æÆ]/g, "ae")
+    .replace(/[øØ]/g, "oe")
+    .replace(/[åÅ]/g, "aa")
+    .replace(/[^a-zA-Z0-9._\-]/g, "");
+};
+
 /** Række fra public.attachments (ticket-vedhæftninger). */
 export type TicketAttachment = {
   id: string;
