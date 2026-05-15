@@ -1,5 +1,32 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 
+/** Normaliserer `profiles.onboarding_systems` fra PostgREST (text[], m.m.). */
+export function normalizeOnboardingSystemsFromDb(raw: unknown): string[] {
+  if (raw == null) return [];
+  if (Array.isArray(raw)) {
+    const out: string[] = [];
+    for (const x of raw) {
+      if (typeof x !== "string") continue;
+      const t = x.trim();
+      if (t) out.push(t);
+    }
+    return out;
+  }
+  if (typeof raw === "string") {
+    const t = raw.trim();
+    if (!t) return [];
+    if (t.startsWith("[") || t.startsWith("{")) {
+      try {
+        return normalizeOnboardingSystemsFromDb(JSON.parse(t) as unknown);
+      } catch {
+        return [t];
+      }
+    }
+    return [t];
+  }
+  return [];
+}
+
 export type CurrentProfile = {
   id: string;
   organisation_id: string;
@@ -52,5 +79,10 @@ export async function fetchCurrentProfile(
     }
   }
 
-  return row ?? null;
+  if (!row) return null;
+
+  return {
+    ...row,
+    onboarding_systems: normalizeOnboardingSystemsFromDb(row.onboarding_systems),
+  };
 }
