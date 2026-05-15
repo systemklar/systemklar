@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
-import { AlertTriangle, CheckCircle2, XCircle } from "lucide-react";
+import { Cell, Pie, PieChart, ResponsiveContainer } from "recharts";
 import { usePortalSession } from "@/components/portal/PortalLayout";
 import { fetchCurrentProfile, normalizeOnboardingSystemsFromDb } from "@/lib/current-profile";
 import { buildOnboardingDashboardGroups, type OnboardingDashboardGroup } from "@/lib/onboarding-systems";
@@ -14,15 +14,12 @@ import {
 } from "@/components/monitoring/MonitoringStatusBlock";
 
 type PortalSystemsDashboardProps = {
-  /** Admin-forhåndsvisning: brug props i stedet for at hente profil. */
   preview?: boolean;
   fullName?: string | null;
   onboardingSystemNames?: string[];
-  /** Ved admin-forhåndsvisning: org-id så monitoring kan hentes fra API. */
   organisationId?: string | null;
 };
 
-/** Tekniske onboarding-navne → kundevenlige danske navne. */
 const FRIENDLY_SYSTEM_LABEL_DA: Record<string, string> = {
   "Hjemmeside / oppetid": "Hjemmeside",
   "SSL-certifikat": "Sikkerhedscertifikat",
@@ -31,6 +28,11 @@ const FRIENDLY_SYSTEM_LABEL_DA: Record<string, string> = {
   "Google PageSpeed": "Hjemmeside hastighed",
   "Have I Been Pwned (datalæk)": "Datalæk-tjek",
 };
+
+const CHART_OK = "#22c55e";
+const CHART_ADVARSEL = "#f59e0b";
+const CHART_FEJL = "#ef4444";
+const CHART_AFVENTER = "#94a3b8";
 
 function friendlySystemLabel(technicalName: string): string {
   const t = technicalName.trim();
@@ -81,21 +83,17 @@ function rowStatusText(status: "ok" | "advarsel" | "fejl" | "afventer"): string 
   }
 }
 
-function dotClass(status: "ok" | "advarsel" | "fejl" | "afventer"): string {
+function dotStyle(status: "ok" | "advarsel" | "fejl" | "afventer"): { backgroundColor: string } {
   switch (status) {
     case "ok":
-      return "bg-emerald-500";
+      return { backgroundColor: CHART_OK };
     case "advarsel":
-      return "bg-amber-400";
+      return { backgroundColor: CHART_ADVARSEL };
     case "fejl":
-      return "bg-red-500";
+      return { backgroundColor: CHART_FEJL };
     default:
-      return "bg-slate-300";
+      return { backgroundColor: CHART_AFVENTER };
   }
-}
-
-function tingOrTing(n: number): string {
-  return n === 1 ? "1 ting" : `${n} ting`;
 }
 
 export function PortalSystemsDashboard({
@@ -109,6 +107,7 @@ export function PortalSystemsDashboard({
   const [resolvedOrganisationId, setResolvedOrganisationId] = useState<string | null>(null);
   const [onboardingNames, setOnboardingNames] = useState<string[]>([]);
   const [monitoringByName, setMonitoringByName] = useState<Map<string, MonitoringResultRow>>(() => new Map());
+  const [activeTab, setActiveTab] = useState<string>("");
 
   const orgIdForMonitoring = preview
     ? (organisationIdProp?.trim() || null)
@@ -139,12 +138,6 @@ export function PortalSystemsDashboard({
       setResolvedOrganisationId(null);
       const profile = await fetchCurrentProfile(supabase, userId);
       if (cancelled) return;
-      if (profile) {
-        console.log("[PortalSystemsDashboard] profile.onboarding_systems", profile.onboarding_systems);
-        console.log("[PortalSystemsDashboard] profile.organisation_id", profile.organisation_id);
-      } else {
-        console.log("[PortalSystemsDashboard] profile fetch returned null");
-      }
       setOnboardingNames(normalizeOnboardingSystemsFromDb(profile?.onboarding_systems));
       setResolvedOrganisationId(profile?.organisation_id?.trim() || null);
       setLoading(false);
@@ -194,118 +187,211 @@ export function PortalSystemsDashboard({
 
   const flatRows = useMemo(() => flattenSystems(groups), [groups]);
 
-  const summary = useMemo(() => {
-    let fejl = 0;
+  const counts = useMemo(() => {
+    let ok = 0;
     let advarsel = 0;
+    let fejl = 0;
+    let afventer = 0;
     for (const row of flatRows) {
       const st = normalizeStatus(monitoringByName.get(row.technicalName)?.status);
-      if (st === "fejl") fejl += 1;
+      if (st === "ok") ok += 1;
       else if (st === "advarsel") advarsel += 1;
+      else if (st === "fejl") fejl += 1;
+      else afventer += 1;
     }
-    return { fejl, advarsel };
+    return { ok, advarsel, fejl, afventer, needsAttention: advarsel + fejl };
   }, [flatRows, monitoringByName]);
+
+  const pieSlices = useMemo(
+    () =>
+      [
+        { name: "OK", value: counts.ok, fill: CHART_OK },
+        { name: "Advarsel", value: counts.advarsel, fill: CHART_ADVARSEL },
+        { name: "Fejl", value: counts.fejl, fill: CHART_FEJL },
+        { name: "Afventer opsætning", value: counts.afventer, fill: CHART_AFVENTER },
+      ].filter((s) => s.value > 0),
+    [counts],
+  );
+
+  const activeGroupKey = useMemo(() => {
+    if (groups.some((g) => g.shortLabel === activeTab)) return activeTab;
+    return groups[0]?.shortLabel ?? "";
+  }, [groups, activeTab]);
+
+  const activeGroup = useMemo(
+    () => groups.find((g) => g.shortLabel === activeGroupKey) ?? groups[0] ?? null,
+    [groups, activeGroupKey],
+  );
 
   const hasSystems = flatRows.length > 0;
 
   if (loading) {
-    return <p className="text-sm text-[#4A8CB5]">Indlæser overblik...</p>;
+    return <p className="text-sm text-slate-500">Indlæser overblik...</p>;
   }
 
   return (
-    <div className="space-y-8 pb-6">
+    <div className="space-y-8 pb-8">
       {preview ? (
-        <p className="text-center text-xs text-[#7AAEC8]">Forhåndsvisning af kundens portal-overblik</p>
-      ) : null}
-
-      {!preview ? (
-        <div className="flex justify-end">
-          <Link
-            href="/portal/support"
-            className="inline-flex shrink-0 items-center justify-center rounded-full bg-sky-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-sky-700"
-          >
-            Opret IT-sag
-          </Link>
-        </div>
+        <p className="text-center text-xs text-slate-500">Forhåndsvisning af kundens portal-overblik</p>
       ) : null}
 
       {!hasSystems ? (
-        <p className="rounded-xl border border-sky-100 bg-white px-5 py-10 text-center text-sm leading-relaxed text-[#2C4A5E] shadow-sm">
+        <div className="rounded-lg border border-slate-200 bg-white px-6 py-12 text-center text-sm text-slate-600">
           Dine systemer er ved at blive sat op. Vi vender tilbage inden for 24 timer.
-        </p>
+        </div>
       ) : (
         <>
-          <section
-            className={`rounded-2xl border px-6 py-10 text-center shadow-sm ${
-              summary.fejl > 0
-                ? "border-red-100 bg-red-50/60"
-                : summary.advarsel > 0
-                  ? "border-amber-100 bg-amber-50/50"
-                  : "border-emerald-100 bg-emerald-50/50"
-            }`}
-            aria-live="polite"
-          >
-            {summary.fejl > 0 ? (
-              <>
-                <XCircle className="mx-auto h-16 w-16 text-red-600 sm:h-20 sm:w-20" strokeWidth={1.5} aria-hidden />
-                <p className="mt-5 text-2xl font-semibold leading-snug text-red-900 sm:text-3xl">
-                  {tingOrTing(summary.fejl)} virker ikke
+          <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
+            <div className="grid flex-1 grid-cols-1 gap-3 sm:grid-cols-3">
+              <div className="rounded-lg border border-slate-200 border-t-4 border-t-emerald-500 bg-white px-4 pb-4 pt-3">
+                <p className="text-xs font-medium uppercase tracking-wide text-slate-500">Systemer OK</p>
+                <p className="mt-1 text-[28px] font-bold leading-none tracking-tight text-slate-900">
+                  {counts.ok}
                 </p>
-              </>
-            ) : summary.advarsel > 0 ? (
-              <>
-                <AlertTriangle
-                  className="mx-auto h-16 w-16 text-amber-600 sm:h-20 sm:w-20"
-                  strokeWidth={1.5}
-                  aria-hidden
-                />
-                <p className="mt-5 text-2xl font-semibold leading-snug text-amber-950 sm:text-3xl">
-                  {tingOrTing(summary.advarsel)} kræver opmærksomhed
+              </div>
+              <div className="rounded-lg border border-slate-200 border-t-4 border-t-amber-500 bg-white px-4 pb-4 pt-3">
+                <p className="text-xs font-medium uppercase tracking-wide text-slate-500">
+                  Kræver opmærksomhed
                 </p>
-              </>
-            ) : (
-              <>
-                <CheckCircle2
-                  className="mx-auto h-16 w-16 text-emerald-600 sm:h-20 sm:w-20"
-                  strokeWidth={1.5}
-                  aria-hidden
-                />
-                <p className="mt-5 text-2xl font-semibold leading-snug text-emerald-950 sm:text-3xl">
-                  Alt fungerer som det skal
+                <p className="mt-1 text-[28px] font-bold leading-none tracking-tight text-slate-900">
+                  {counts.needsAttention}
                 </p>
-              </>
-            )}
-          </section>
-
-          <ul className="divide-y divide-slate-100 overflow-hidden rounded-xl border border-slate-100 bg-white shadow-sm">
-            {flatRows.map((row) => {
-              const monitoringRow = monitoringByName.get(row.technicalName) ?? null;
-              const status = normalizeStatus(monitoringRow?.status);
-              const checked = monitoringRow?.checked_at
-                ? formatCheckedAgoDa(monitoringRow.checked_at)
-                : "";
-
-              return (
-                <li
-                  key={row.key}
-                  className="flex items-center gap-3 px-4 py-4 sm:px-5"
+              </div>
+              <div className="rounded-lg border border-slate-200 border-t-4 border-t-slate-300 bg-white px-4 pb-4 pt-3">
+                <p className="text-xs font-medium uppercase tracking-wide text-slate-500">
+                  Afventer opsætning
+                </p>
+                <p className="mt-1 text-[28px] font-bold leading-none tracking-tight text-slate-900">
+                  {counts.afventer}
+                </p>
+              </div>
+            </div>
+            {!preview ? (
+              <div className="shrink-0 lg:pt-0">
+                <Link
+                  href="/portal/support"
+                  className="inline-flex w-full items-center justify-center rounded-lg border border-sky-600 bg-sky-600 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-sky-700 lg:w-auto"
                 >
-                  <span
-                    className={`h-2.5 w-2.5 shrink-0 rounded-full ${dotClass(status)}`}
-                    aria-hidden
-                  />
-                  <div className="min-w-0 flex-1">
-                    <p className="text-base font-medium text-[#0D1F2D]">{row.friendlyName}</p>
-                    <p className="mt-0.5 text-sm text-slate-600">{rowStatusText(status)}</p>
-                  </div>
-                  {checked ? (
-                    <p className="max-w-[40%] shrink-0 text-right text-[10px] leading-tight text-slate-400 sm:max-w-none">
-                      {checked}
-                    </p>
-                  ) : null}
+                  Opret IT-sag
+                </Link>
+              </div>
+            ) : null}
+          </div>
+
+          <div className="rounded-lg border border-slate-200 bg-white px-6 py-6">
+            <h2 className="mb-4 text-xs font-semibold uppercase tracking-wide text-slate-500">Statusfordeling</h2>
+            <div className="flex flex-wrap items-center gap-8 lg:gap-12">
+              <div className="h-[180px] w-[180px] shrink-0">
+                {pieSlices.length > 0 ? (
+                  <ResponsiveContainer width="100%" height="100%">
+                    <PieChart>
+                      <Pie
+                        data={pieSlices}
+                        dataKey="value"
+                        nameKey="name"
+                        cx="50%"
+                        cy="50%"
+                        innerRadius={54}
+                        outerRadius={78}
+                        paddingAngle={1}
+                        stroke="none"
+                      >
+                        {pieSlices.map((entry, index) => (
+                          <Cell key={`slice-${entry.name}-${index}`} fill={entry.fill} />
+                        ))}
+                      </Pie>
+                    </PieChart>
+                  </ResponsiveContainer>
+                ) : (
+                  <div className="flex h-full items-center justify-center text-xs text-slate-400">Ingen data</div>
+                )}
+              </div>
+              <ul className="flex min-w-[10rem] flex-col gap-2.5 text-sm text-slate-600">
+                <li className="flex items-center gap-2">
+                  <span className="h-2.5 w-2.5 shrink-0 rounded-full" style={{ backgroundColor: CHART_OK }} />
+                  OK
                 </li>
-              );
-            })}
-          </ul>
+                <li className="flex items-center gap-2">
+                  <span
+                    className="h-2.5 w-2.5 shrink-0 rounded-full"
+                    style={{ backgroundColor: CHART_ADVARSEL }}
+                  />
+                  Advarsel
+                </li>
+                <li className="flex items-center gap-2">
+                  <span className="h-2.5 w-2.5 shrink-0 rounded-full" style={{ backgroundColor: CHART_FEJL }} />
+                  Fejl
+                </li>
+                <li className="flex items-center gap-2">
+                  <span
+                    className="h-2.5 w-2.5 shrink-0 rounded-full"
+                    style={{ backgroundColor: CHART_AFVENTER }}
+                  />
+                  Afventer
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <div className="rounded-lg border border-slate-200 bg-white">
+            <nav
+              className="flex flex-wrap gap-x-6 gap-y-1 border-b border-slate-200 px-4 pt-1 sm:px-6"
+              aria-label="Systemkategorier"
+            >
+              {groups.map((g) => {
+                const isActive = g.shortLabel === activeGroupKey;
+                return (
+                  <button
+                    key={g.shortLabel}
+                    type="button"
+                    onClick={() => setActiveTab(g.shortLabel)}
+                    className={`-mb-px border-b-2 pb-3 pt-2 text-sm font-medium transition-colors ${
+                      isActive
+                        ? "border-sky-600 text-slate-900"
+                        : "border-transparent text-slate-500 hover:border-slate-300 hover:text-slate-800"
+                    }`}
+                  >
+                    {g.shortLabel}
+                  </button>
+                );
+              })}
+            </nav>
+
+            <div className="divide-y divide-slate-100">
+              {activeGroup?.items.map((entry, idx) => {
+                const technical = entry.kind === "known" ? entry.system.name : entry.name;
+                const key =
+                  entry.kind === "known" ? entry.system.id : `u-${activeGroup.shortLabel}-${technical}-${idx}`;
+                const monitoringRow = monitoringByName.get(technical) ?? null;
+                const status = normalizeStatus(monitoringRow?.status);
+                const checked = monitoringRow?.checked_at
+                  ? formatCheckedAgoDa(monitoringRow.checked_at)
+                  : "";
+                const friendly = friendlySystemLabel(technical);
+
+                return (
+                  <button
+                    key={key}
+                    type="button"
+                    className="flex w-full items-center gap-3 px-4 py-3.5 text-left transition-colors hover:bg-slate-50 sm:px-6"
+                  >
+                    <span
+                      className="h-2.5 w-2.5 shrink-0 rounded-full"
+                      style={dotStyle(status)}
+                      aria-hidden
+                    />
+                    <div className="min-w-0 flex-1">
+                      <p className="text-sm font-medium text-slate-900">{friendly}</p>
+                      <p className="text-xs text-slate-500">{rowStatusText(status)}</p>
+                    </div>
+                    {checked ? (
+                      <span className="shrink-0 text-right text-[10px] leading-tight text-slate-400">{checked}</span>
+                    ) : null}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
         </>
       )}
     </div>
