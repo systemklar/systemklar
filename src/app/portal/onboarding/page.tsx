@@ -1,21 +1,24 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Check, Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { PortalLayout, usePortalSession } from "@/components/portal/PortalLayout";
+import { SystemklarLogo } from "@/components/branding/SystemklarLogo";
 import { fetchCurrentProfile } from "@/lib/current-profile";
-import { onboardingFirstName } from "@/lib/onboarding";
-import {
-  ONBOARDING_SYSTEM_GROUPS,
-  systemNameById,
-} from "@/lib/onboarding-systems";
+import { needsOnboarding, onboardingFirstName } from "@/lib/onboarding";
+import { ONBOARDING_SYSTEM_GROUPS, systemNameById } from "@/lib/onboarding-systems";
 import { createClient } from "@/lib/supabase";
 
 function OnboardingProgress({ step }: { step: 1 | 2 | 3 }) {
   return (
     <div className="mb-8">
-      <div className="flex gap-2" role="progressbar" aria-valuenow={step} aria-valuemin={1} aria-valuemax={3}>
+      <div
+        className="flex gap-2"
+        role="progressbar"
+        aria-valuenow={step}
+        aria-valuemin={1}
+        aria-valuemax={3}
+      >
         {[1, 2, 3].map((n) => (
           <div
             key={n}
@@ -30,16 +33,20 @@ function OnboardingProgress({ step }: { step: 1 | 2 | 3 }) {
   );
 }
 
-function OnboardingContent() {
+type OnboardingContentProps = {
+  profileId: string;
+  fullName: string | null;
+};
+
+function OnboardingContent({ profileId, fullName }: OnboardingContentProps) {
   const router = useRouter();
   const supabase = useMemo(() => createClient(), []);
-  const session = usePortalSession();
   const [step, setStep] = useState<1 | 2 | 3>(1);
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const firstName = onboardingFirstName(session?.fullName);
+  const firstName = onboardingFirstName(fullName);
 
   const toggleSystem = (id: string) => {
     setSelected((prev) => {
@@ -51,18 +58,8 @@ function OnboardingContent() {
   };
 
   const completeOnboarding = async () => {
-    const userId = session?.userId;
-    if (!userId) return;
-
     setSaving(true);
     setError(null);
-
-    const profile = await fetchCurrentProfile(supabase, userId);
-    if (!profile?.id) {
-      setError("Kunne ikke finde din profil.");
-      setSaving(false);
-      return;
-    }
 
     const systemNames = Array.from(selected).map((id) => systemNameById(id));
     const { error: updateError } = await supabase
@@ -71,7 +68,7 @@ function OnboardingContent() {
         onboarding_systems: systemNames,
         onboarding_completed: true,
       })
-      .eq("id", profile.id);
+      .eq("id", profileId);
 
     setSaving(false);
 
@@ -86,7 +83,7 @@ function OnboardingContent() {
   };
 
   return (
-    <div className="mx-auto w-full max-w-[640px]">
+    <div className="w-full max-w-[640px]">
       <OnboardingProgress step={step} />
 
       {step === 1 ? (
@@ -199,9 +196,89 @@ function OnboardingContent() {
 }
 
 export default function PortalOnboardingPage() {
+  const router = useRouter();
+  const supabase = useMemo(() => createClient(), []);
+  const [bootstrapping, setBootstrapping] = useState(true);
+  const [profileId, setProfileId] = useState<string | null>(null);
+  const [fullName, setFullName] = useState<string | null>(null);
+  const [bootstrapError, setBootstrapError] = useState<string | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    const run = async () => {
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+      if (cancelled) return;
+
+      if (!session?.user) {
+        router.replace("/login");
+        return;
+      }
+
+      const profile = await fetchCurrentProfile(supabase, session.user.id);
+      if (cancelled) return;
+
+      if (!needsOnboarding(profile?.onboarding_completed)) {
+        router.replace("/portal");
+        return;
+      }
+
+      if (!profile?.id) {
+        setBootstrapError(
+          "Din profil blev ikke fundet. Kontakt support på kontakt@systemklar.dk.",
+        );
+        setBootstrapping(false);
+        return;
+      }
+
+      setProfileId(profile.id);
+      setFullName(profile.full_name);
+      setBootstrapping(false);
+    };
+
+    void run();
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((event) => {
+      if (event === "SIGNED_OUT") {
+        router.replace("/login");
+      }
+    });
+
+    return () => {
+      cancelled = true;
+      subscription.unsubscribe();
+    };
+  }, [router, supabase]);
+
+  if (bootstrapping) {
+    return (
+      <main className="flex min-h-dvh flex-col items-center justify-center px-4">
+        <p className="text-sm text-[#4A8CB5]">Indlæser...</p>
+      </main>
+    );
+  }
+
+  if (bootstrapError || !profileId) {
+    return (
+      <main className="flex min-h-dvh flex-col items-center justify-center px-4">
+        <p className="max-w-md text-center text-sm text-red-700">{bootstrapError ?? "Noget gik galt."}</p>
+      </main>
+    );
+  }
+
   return (
-    <PortalLayout activeNav="dashboard">
-      <OnboardingContent />
-    </PortalLayout>
+    <main className="flex min-h-dvh flex-col px-4 pb-12 pt-8 md:px-8 md:pt-10">
+      <header className="mx-auto flex w-full max-w-[640px] justify-center pb-8 md:justify-start">
+        <SystemklarLogo variant="light" textClassName="text-base font-bold tracking-tight text-sky-700" />
+      </header>
+
+      <div className="mx-auto flex w-full flex-1 flex-col items-center">
+        <OnboardingContent profileId={profileId} fullName={fullName} />
+      </div>
+    </main>
   );
 }
