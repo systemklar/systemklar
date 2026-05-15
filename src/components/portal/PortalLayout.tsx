@@ -12,6 +12,7 @@ import {
   type ReactNode,
 } from "react";
 import { SystemklarLogo } from "@/components/branding/SystemklarLogo";
+import { NavigationProgress, PageTransition } from "@/components/PageTransition";
 import { fetchCurrentProfile } from "@/lib/current-profile";
 import { needsOnboarding } from "@/lib/onboarding";
 import { createClient } from "@/lib/supabase";
@@ -240,6 +241,7 @@ export function PortalLayout({ children, activeNav }: PortalLayoutProps) {
   return (
     <PortalSessionContext.Provider value={{ email: userEmail, userId, organisationId, role, fullName }}>
       <main className="surface-cards min-h-screen bg-[#F5FAFD] text-[#0D1F2D]">
+        <NavigationProgress />
         <div className="flex h-screen w-full overflow-hidden">
           {sidebarOpen ? (
             <button
@@ -328,7 +330,9 @@ export function PortalLayout({ children, activeNav }: PortalLayoutProps) {
                 <span className="w-9" aria-hidden />
               </div>
 
-              <div className="app-rhythm min-w-0 flex-1 p-4 pb-24 md:p-8 md:pb-8">{children}</div>
+              <div className="app-rhythm min-w-0 flex-1 p-4 pb-24 md:p-8 md:pb-8">
+                <PageTransition>{children}</PageTransition>
+              </div>
             </div>
 
             <nav

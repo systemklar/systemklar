@@ -4,6 +4,7 @@ import { usePathname } from "next/navigation";
 import { useEffect, useState, type ReactNode } from "react";
 import { Menu } from "lucide-react";
 import { AdminSidebar, type AdminNavKey } from "@/components/admin/AdminSidebar";
+import { NavigationProgress, PageTransition } from "@/components/PageTransition";
 import { createClient } from "@/lib/supabase";
 
 function activeNavFromPath(pathname: string): AdminNavKey {
@@ -68,6 +69,7 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
 
   return (
     <div className="surface-cards flex h-screen overflow-hidden bg-[#F5FAFD] text-[#0D1F2D]">
+      <NavigationProgress />
       {sidebarOpen ? (
         <button
           type="button"
@@ -93,7 +95,9 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
           <span className="w-9" aria-hidden />
         </div>
 
-        <div className="app-rhythm mx-auto w-full max-w-6xl p-4 md:p-8">{children}</div>
+        <div className="app-rhythm mx-auto w-full max-w-6xl p-4 md:p-8">
+          <PageTransition>{children}</PageTransition>
+        </div>
       </div>
     </div>
   );

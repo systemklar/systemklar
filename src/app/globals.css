@@ -37,6 +37,22 @@ html {
   }
 }
 
+/* App shell: calm enter on client navigations */
+@keyframes page-transition-enter {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.page-transition-shell {
+  animation: page-transition-enter 200ms ease-out forwards;
+}
+
 /* Marketing: scroll reveal (Intersection Observer toggler .visible) */
 .animate-on-scroll {
   opacity: 0;
