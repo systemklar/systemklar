@@ -27,7 +27,6 @@ function InviteContent() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
   const token = searchParams.get("token") ?? "";
@@ -264,24 +263,15 @@ function InviteContent() {
             <label htmlFor="confirm_password" className="mb-1 block text-sm font-medium">
               Bekræft adgangskode
             </label>
-            <div className="relative">
-              <input
-                id="confirm_password"
-                type={showConfirmPassword ? "text" : "password"}
-                minLength={8}
-                required
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                className="w-full rounded-lg border border-[#E7E5E4] px-3 py-3 text-base outline-none transition focus:border-blue-600 focus:ring-2 focus:ring-blue-600/15 md:py-2 md:text-sm"
-              />
-              <button
-                type="button"
-                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
-              >
-                {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-              </button>
-            </div>
+            <input
+              id="confirm_password"
+              type="password"
+              minLength={8}
+              required
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              className="w-full rounded-lg border border-[#E7E5E4] px-3 py-3 text-base outline-none transition focus:border-blue-600 focus:ring-2 focus:ring-blue-600/15 md:py-2 md:text-sm"
+            />
           </div>
 
           <button type="submit" disabled={submitting} className="btn-primary w-full min-h-[44px] px-5 py-3 disabled:opacity-60">
