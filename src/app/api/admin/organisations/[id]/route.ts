@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { isLikelyOrganisationDomain, normalizeOrganisationDomainInput } from "@/lib/organisation-domain";
 import { requireAdminSession } from "@/lib/require-admin-api";
 import { createServiceRoleClient } from "@/lib/supabase-service-role";
 
@@ -50,6 +51,87 @@ export async function GET(_request: Request, context: { params: Promise<{ id: st
       .in("user_id", userIds);
     if (sysError) {
       console.error("[api/admin/organisations/[id]] GET systems", sysError);
+    } else {
+      systems = sysData ?? [];
+    }
+  }
+
+  return NextResponse.json({
+    organisation: { ...(data as Record<string, unknown>), systems },
+  });
+}
+
+export async function PATCH(request: Request, context: { params: Promise<{ id: string }> }) {
+  const { id } = await context.params;
+  if (!UUID_RE.test(id)) {
+    return NextResponse.json({ error: "Ugyldigt id." }, { status: 400 });
+  }
+
+  const auth = await requireAdminSession();
+  if (!auth.ok) return auth.response;
+
+  let body: unknown;
+  try {
+    body = await request.json();
+  } catch {
+    return NextResponse.json({ error: "Ugyldig JSON." }, { status: 400 });
+  }
+
+  if (!body || typeof body !== "object" || !("domain" in body)) {
+    return NextResponse.json({ error: "Mangler feltet domain." }, { status: 400 });
+  }
+
+  const raw = (body as { domain: unknown }).domain;
+  if (raw !== null && typeof raw !== "string") {
+    return NextResponse.json({ error: "domain skal være tekst eller null." }, { status: 400 });
+  }
+
+  const normalized = typeof raw === "string" ? normalizeOrganisationDomainInput(raw) : "";
+  if (typeof raw === "string" && raw.trim() !== "" && normalized === "") {
+    return NextResponse.json({ error: "Kunne ikke tolke domænet. Indtast fx benjasmod.dk uden https://." }, { status: 400 });
+  }
+  if (!isLikelyOrganisationDomain(normalized)) {
+    return NextResponse.json(
+      { error: "Domænet ser ikke gyldigt ud. Brug et værtsnavn med punktum, fx benjasmod.dk." },
+      { status: 400 }
+    );
+  }
+
+  const domainToStore = normalized === "" ? null : normalized;
+
+  const supabaseAdmin = createServiceRoleClient();
+  if (!supabaseAdmin) {
+    return NextResponse.json({ error: "Serverkonfiguration." }, { status: 500 });
+  }
+
+  const { data, error } = await supabaseAdmin
+    .from("organisations")
+    .update({ domain: domainToStore })
+    .eq("id", id)
+    .select(ORGANISATION_DETAIL_SELECT)
+    .maybeSingle();
+
+  if (error) {
+    console.error("[api/admin/organisations/[id]] PATCH update", error);
+    return NextResponse.json({ error: error.message }, { status: 400 });
+  }
+
+  if (!data) {
+    return NextResponse.json({ error: "Ikke fundet" }, { status: 404 });
+  }
+
+  const profiles = Array.isArray((data as { profiles?: unknown }).profiles)
+    ? ((data as { profiles: { user_id?: string | null }[] }).profiles ?? [])
+    : [];
+  const userIds = [...new Set(profiles.map((p) => p.user_id).filter((u): u is string => Boolean(u)))];
+  let systems: unknown[] = [];
+  if (userIds.length > 0) {
+    const { data: sysData, error: sysError } = await supabaseAdmin
+      .from("systems")
+      .select("*")
+      .in("user_id", userIds);
+    if (sysError) {
+      console.error("[api/admin/organisations/[id]] PATCH systems", sysError);
     } else {
       systems = sysData ?? [];
     }

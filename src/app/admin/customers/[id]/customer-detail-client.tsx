@@ -3,7 +3,9 @@
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { FormEvent, useCallback, useEffect, useMemo, useState } from "react";
+import { Pencil } from "lucide-react";
 import { StatusBadge, formatDanishDateTime } from "@/components/tickets/StatusBadge";
+import { isLikelyOrganisationDomain, normalizeOrganisationDomainInput } from "@/lib/organisation-domain";
 
 type OrgProfile = {
   id: string;
@@ -45,6 +47,8 @@ type OrganisationDetail = {
   id: string;
   name: string;
   created_at: string;
+  /** Website hostname uden protokol (fx benjasmod.dk). */
+  domain: string | null;
   profiles: OrgProfile[] | null;
   invitations: OrgInvitation[] | null;
   tickets: OrgTicket[] | null;
@@ -92,6 +96,10 @@ export default function AdminCustomerDetailClient() {
   const [inviteRole, setInviteRole] = useState<"org_admin" | "member">("member");
   const [inviteSaving, setInviteSaving] = useState(false);
   const [deleteBusy, setDeleteBusy] = useState(false);
+  const [domainEditing, setDomainEditing] = useState(false);
+  const [domainDraft, setDomainDraft] = useState("");
+  const [domainSaving, setDomainSaving] = useState(false);
+  const [domainFieldError, setDomainFieldError] = useState<string | null>(null);
 
   const load = useCallback(async () => {
     if (!id) {
@@ -169,6 +177,12 @@ export default function AdminCustomerDetailClient() {
     });
   }, [load]);
 
+  useEffect(() => {
+    setDomainEditing(false);
+    setDomainDraft("");
+    setDomainFieldError(null);
+  }, [id]);
+
   const onboardingSystemNames = useMemo(() => {
     const list = org?.profiles ?? [];
     const names = new Set<string>();
@@ -216,6 +230,56 @@ export default function AdminCustomerDetailClient() {
     setInviteRole("member");
     setInviteModalOpen(false);
     void load();
+  };
+
+  const beginDomainEdit = () => {
+    if (!org) return;
+    setDomainFieldError(null);
+    setDomainDraft(org.domain ?? "");
+    setDomainEditing(true);
+  };
+
+  const cancelDomainEdit = () => {
+    setDomainEditing(false);
+    setDomainFieldError(null);
+    setDomainDraft("");
+  };
+
+  const saveDomain = async () => {
+    if (!org) return;
+    const normalized = normalizeOrganisationDomainInput(domainDraft);
+    if (domainDraft.trim() !== "" && normalized === "") {
+      setDomainFieldError("Kunne ikke tolke input. Fjern https:// og stier — brug fx benjasmod.dk.");
+      return;
+    }
+    if (!isLikelyOrganisationDomain(normalized)) {
+      setDomainFieldError("Indtast et gyldigt domæne med punktum, fx benjasmod.dk.");
+      return;
+    }
+
+    setDomainSaving(true);
+    setDomainFieldError(null);
+    setError(null);
+    const res = await fetch(`/api/admin/organisations/${encodeURIComponent(org.id)}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      credentials: "same-origin",
+      body: JSON.stringify({ domain: normalized === "" ? null : normalized }),
+    });
+    const payload = (await res.json().catch(() => ({}))) as {
+      error?: string;
+      organisation?: OrganisationDetail;
+    };
+    setDomainSaving(false);
+    if (!res.ok) {
+      setDomainFieldError(payload.error ?? "Kunne ikke gemme domæne.");
+      return;
+    }
+    if (payload.organisation) {
+      setOrg(payload.organisation);
+    }
+    setDomainEditing(false);
+    setDomainDraft("");
   };
 
   const deleteOrganisation = async () => {
@@ -269,6 +333,59 @@ export default function AdminCustomerDetailClient() {
               ← Kunder
             </Link>
             <h1 className="mt-3 text-3xl font-bold text-[#0D1F2D]">{org.name}</h1>
+
+            <div className="mt-3">
+              <p className="text-xs font-semibold uppercase tracking-wide text-[#7AAEC8]">Domæne</p>
+              {domainEditing ? (
+                <div className="mt-1.5 flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center">
+                  <input
+                    type="text"
+                    value={domainDraft}
+                    onChange={(e) => setDomainDraft(e.target.value)}
+                    placeholder="benjasmod.dk"
+                    autoFocus
+                    disabled={domainSaving}
+                    className="min-w-[12rem] max-w-md flex-1 rounded-lg border border-sky-100 px-3 py-2 text-sm text-[#0D1F2D] outline-none focus:border-sky-500 disabled:opacity-60"
+                  />
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      disabled={domainSaving}
+                      onClick={() => void saveDomain()}
+                      className="rounded-full bg-sky-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-sky-700 disabled:opacity-50"
+                    >
+                      {domainSaving ? "Gemmer..." : "Gem"}
+                    </button>
+                    <button
+                      type="button"
+                      disabled={domainSaving}
+                      onClick={cancelDomainEdit}
+                      className="rounded-full px-4 py-2 text-sm text-slate-600 hover:bg-slate-100 disabled:opacity-50"
+                    >
+                      Annuller
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <div className="mt-1.5 flex flex-wrap items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={beginDomainEdit}
+                    aria-label={org.domain ? `Rediger domæne (${org.domain})` : "Tilføj domæne"}
+                    className="group inline-flex max-w-full items-center gap-2 rounded-lg py-0.5 text-left text-sm text-[#0D1F2D] hover:bg-sky-50/80"
+                  >
+                    <span className={org.domain ? "font-medium" : "italic text-slate-500"}>
+                      {org.domain ?? "Ikke angivet — klik for at tilføje"}
+                    </span>
+                    <span className="inline-flex shrink-0 rounded-md p-1 text-[#4A8CB5] group-hover:text-sky-700" aria-hidden>
+                      <Pencil className="h-4 w-4" />
+                    </span>
+                  </button>
+                </div>
+              )}
+              {domainFieldError ? <p className="mt-1 text-xs text-red-600">{domainFieldError}</p> : null}
+            </div>
+
             <div className="mt-3">
               <span
                 className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-semibold ${
