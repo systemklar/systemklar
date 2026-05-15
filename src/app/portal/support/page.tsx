@@ -1,14 +1,18 @@
 "use client";
 
 import Link from "next/link";
-import { FormEvent, useCallback, useEffect, useMemo, useState } from "react";
+import { Loader2, Paperclip, X } from "lucide-react";
+import { FormEvent, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { PortalLayout, usePortalSession } from "@/components/portal/PortalLayout";
 import { TicketUnreadCountBadge } from "@/components/tickets/TicketUnreadCountBadge";
 import { AttachmentList } from "@/components/ui/AttachmentList";
-import { FileUpload } from "@/components/ui/FileUpload";
 import { formatDanishDateTime, StatusBadge } from "@/components/tickets/StatusBadge";
 import { fetchCurrentProfile } from "@/lib/current-profile";
-import type { TicketAttachment } from "@/lib/ticket-attachments";
+import { formatFileSize, type TicketAttachment } from "@/lib/ticket-attachments";
+import {
+  TICKET_ATTACHMENTS_BUCKET,
+  uploadTicketAttachment,
+} from "@/lib/upload-ticket-attachment";
 import {
   normalizeTicketWithProfile,
   TICKET_SELECT_BASE,
@@ -19,6 +23,10 @@ import { createClient } from "@/lib/supabase";
 
 export type { TicketWithProfileRow as TicketRow } from "@/lib/tickets-with-profile";
 
+const MAX_PENDING_FILES = 5;
+const MAX_FILE_BYTES = 10 * 1024 * 1024;
+const FILE_ACCEPT = "image/*,.pdf,.doc,.docx,.xlsx,.txt";
+
 function closeCreationState(setters: {
   setShowForm: (v: boolean) => void;
   setPostTicketId: (v: string | null) => void;
@@ -26,12 +34,21 @@ function closeCreationState(setters: {
   setTitle: (v: string) => void;
   setDescription: (v: string) => void;
   setErrorMessage: (v: string | null) => void;
+  setPendingFiles: (v: File[]) => void;
 }) {
-  const { setShowForm, setPostTicketId, setPendingAttachments, setTitle, setDescription, setErrorMessage } =
-    setters;
+  const {
+    setShowForm,
+    setPostTicketId,
+    setPendingAttachments,
+    setTitle,
+    setDescription,
+    setErrorMessage,
+    setPendingFiles,
+  } = setters;
   setShowForm(false);
   setPostTicketId(null);
   setPendingAttachments([]);
+  setPendingFiles([]);
   setTitle("");
   setDescription("");
   setErrorMessage(null);
@@ -76,6 +93,9 @@ export default function PortalSupportPage() {
   const [submitting, setSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [companyName, setCompanyName] = useState<string | null>(null);
+  const [pendingFiles, setPendingFiles] = useState<File[]>([]);
+  const [uploadingFiles, setUploadingFiles] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const fetchTickets = useCallback(async () => {
     const {
@@ -134,7 +154,37 @@ export default function PortalSupportPage() {
       setTitle,
       setDescription,
       setErrorMessage,
+      setPendingFiles,
     });
+  };
+
+  const handlePendingFilesChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const picked = Array.from(event.target.files ?? []);
+    event.target.value = "";
+    if (picked.length === 0) return;
+
+    setErrorMessage(null);
+    const next = [...pendingFiles];
+    let limitError: string | null = null;
+
+    for (const file of picked) {
+      if (next.length >= MAX_PENDING_FILES) {
+        limitError = "Du kan højst vedhæfte 5 filer.";
+        break;
+      }
+      if (file.size > MAX_FILE_BYTES) {
+        limitError = "Hver fil må højst være 10 MB.";
+        continue;
+      }
+      next.push(file);
+    }
+
+    setPendingFiles(next);
+    if (limitError) setErrorMessage(limitError);
+  };
+
+  const removePendingFile = (index: number) => {
+    setPendingFiles((prev) => prev.filter((_, i) => i !== index));
   };
 
   const handleCreateTicket = async (event: FormEvent<HTMLFormElement>) => {
@@ -187,8 +237,32 @@ export default function PortalSupportPage() {
       return;
     }
 
+    const uploaded: TicketAttachment[] = [];
+    if (pendingFiles.length > 0) {
+      setUploadingFiles(true);
+      for (const file of pendingFiles) {
+        const { attachment, error: uploadErr } = await uploadTicketAttachment(supabase, {
+          file,
+          organisationId,
+          ticketId: tid,
+          uploadedBy: user.id,
+        });
+        if (uploadErr || !attachment) {
+          setErrorMessage(uploadErr ?? "Kunne ikke uploade en eller flere filer.");
+          setUploadingFiles(false);
+          setSubmitting(false);
+          setPostTicketId(tid);
+          await fetchTickets();
+          return;
+        }
+        uploaded.push(attachment);
+      }
+      setUploadingFiles(false);
+      setPendingFiles([]);
+    }
+
     setPostTicketId(tid);
-    setPendingAttachments([]);
+    setPendingAttachments(uploaded);
     await fetchTickets();
     setSubmitting(false);
   };
@@ -215,6 +289,7 @@ export default function PortalSupportPage() {
                 setShowForm(true);
                 setPostTicketId(null);
                 setPendingAttachments([]);
+                setPendingFiles([]);
                 setTitle("");
                 setDescription("");
                 setErrorMessage(null);
@@ -261,16 +336,74 @@ export default function PortalSupportPage() {
                     placeholder="Uddyb problemet, fejlmeddelelser, hvornår det skete, osv."
                   />
                 </div>
+                <div>
+                  <p className="mb-2 text-sm font-medium text-[#0D1F2D]">Vedhæft filer (valgfrit)</p>
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    multiple
+                    accept={FILE_ACCEPT}
+                    className="hidden"
+                    onChange={handlePendingFilesChange}
+                    disabled={submitting || uploadingFiles}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => fileInputRef.current?.click()}
+                    disabled={submitting || uploadingFiles || pendingFiles.length >= MAX_PENDING_FILES}
+                    className="inline-flex items-center gap-1.5 rounded-full border border-sky-200 px-4 py-2 text-sm font-medium text-sky-700 transition hover:bg-sky-50 disabled:opacity-50"
+                  >
+                    <Paperclip className="h-4 w-4" aria-hidden />
+                    Vedhæft filer
+                  </button>
+                  {pendingFiles.length > 0 ? (
+                    <ul className="mt-3 space-y-2">
+                      {pendingFiles.map((file, index) => (
+                        <li
+                          key={`${file.name}-${file.size}-${index}`}
+                          className="flex items-center gap-2 rounded-lg border border-sky-100 bg-sky-50/50 px-3 py-2"
+                        >
+                          <span className="min-w-0 flex-1 truncate text-sm text-[#0D1F2D]" title={file.name}>
+                            {file.name}
+                          </span>
+                          <span className="shrink-0 text-xs text-[#4A8CB5]">{formatFileSize(file.size)}</span>
+                          <button
+                            type="button"
+                            onClick={() => removePendingFile(index)}
+                            disabled={submitting || uploadingFiles}
+                            className="shrink-0 rounded-full p-1 text-gray-400 transition hover:bg-white hover:text-gray-600 disabled:opacity-50"
+                            aria-label={`Fjern ${file.name}`}
+                          >
+                            <X className="h-4 w-4" aria-hidden />
+                          </button>
+                        </li>
+                      ))}
+                    </ul>
+                  ) : null}
+                </div>
+                {uploadingFiles ? (
+                  <p className="flex items-center gap-2 text-sm text-[#4A8CB5]">
+                    <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
+                    Uploader filer…
+                  </p>
+                ) : null}
                 {errorMessage ? (
                   <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">{errorMessage}</p>
                 ) : null}
                 <div className="flex flex-wrap gap-3">
                   <button
                     type="submit"
-                    disabled={submitting}
+                    disabled={submitting || uploadingFiles}
                     className="rounded-full bg-sky-600 px-5 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-sky-700 disabled:opacity-60"
                   >
-                    {submitting ? "Sender..." : "Opret sag"}
+                    {submitting || uploadingFiles ? (
+                      <span className="inline-flex items-center gap-2">
+                        <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
+                        {uploadingFiles ? "Uploader filer…" : "Sender..."}
+                      </span>
+                    ) : (
+                      "Opret sag"
+                    )}
                   </button>
                   <button
                     type="button"
@@ -284,29 +417,22 @@ export default function PortalSupportPage() {
             ) : (
               <div className="mt-4 space-y-4">
                 <p className="text-sm text-[#4A8CB5]">
-                  Din sag er oprettet. Du kan vedhænte filer (valgfrit) – tryk &quot;Færdig&quot; når du er færdig.
+                  Din sag er oprettet
+                  {pendingAttachments.length > 0
+                    ? ` med ${pendingAttachments.length} vedhæftning${pendingAttachments.length === 1 ? "" : "er"}.`
+                    : "."}{" "}
+                  Tryk &quot;Færdig&quot; for at lukke.
                 </p>
-                <div className="mt-3">
-                  <p className="mb-2 text-xs text-[#4A8CB5]">Vedhæft filer (valgfrit)</p>
-                  {organisationId ? (
-                    <FileUpload
-                      ticketId={postTicketId}
-                      organisationId={organisationId}
-                      onUploadComplete={(a) =>
-                        setPendingAttachments((prev) => [...prev, a])
-                      }
-                    />
-                  ) : (
-                    <p className="text-sm text-red-600">Organisation ikke fundet.</p>
-                  )}
+                {pendingAttachments.length > 0 ? (
                   <AttachmentList
                     attachments={pendingAttachments}
+                    storageBucket={TICKET_ATTACHMENTS_BUCKET}
                     showDelete
                     onDelete={(id) =>
                       setPendingAttachments((prev) => prev.filter((x) => x.id !== id))
                     }
                   />
-                </div>
+                ) : null}
                 <div className="flex flex-wrap gap-3">
                   <button
                     type="button"

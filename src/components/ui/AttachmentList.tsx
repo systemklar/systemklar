@@ -4,10 +4,12 @@ import { File, FileText, Image as ImageIcon, Loader2 } from "lucide-react";
 import { useMemo, useState } from "react";
 import type { TicketAttachment } from "@/lib/ticket-attachments";
 import { formatFileSize } from "@/lib/ticket-attachments";
+import { TICKET_ATTACHMENTS_BUCKET } from "@/lib/upload-ticket-attachment";
 import { createClient } from "@/lib/supabase";
 
 export type AttachmentListProps = {
   attachments: TicketAttachment[];
+  storageBucket?: string;
   showDelete?: boolean;
   /** Filtrér hvem der må slette; hvis udeladt vises slet for alle ved showDelete. */
   canDelete?: (a: TicketAttachment) => boolean;
@@ -24,11 +26,13 @@ function fileKind(fileName: string, mime: string | null): "pdf" | "image" | "off
 
 export function AttachmentList({
   attachments,
+  storageBucket = "attachments",
   showDelete,
   canDelete,
   onDelete,
 }: AttachmentListProps) {
   const supabase = useMemo(() => createClient(), []);
+  const isPublicBucket = storageBucket === TICKET_ATTACHMENTS_BUCKET;
   const [downloadingId, setDownloadingId] = useState<string | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -38,15 +42,27 @@ export function AttachmentList({
   const download = async (a: TicketAttachment) => {
     setError(null);
     setDownloadingId(a.id);
-    const { data, error: signErr } = await supabase.storage
-      .from("attachments")
-      .createSignedUrl(a.storage_path, 3600);
+    let url: string | null = null;
+    if (isPublicBucket) {
+      const { data } = supabase.storage.from(storageBucket).getPublicUrl(a.storage_path);
+      url = data.publicUrl;
+    } else {
+      const { data, error: signErr } = await supabase.storage
+        .from(storageBucket)
+        .createSignedUrl(a.storage_path, 3600);
+      if (signErr || !data?.signedUrl) {
+        setDownloadingId(null);
+        setError(signErr?.message ?? "Kunne ikke hente download-link.");
+        return;
+      }
+      url = data.signedUrl;
+    }
     setDownloadingId(null);
-    if (signErr || !data?.signedUrl) {
-      setError(signErr?.message ?? "Kunne ikke hente download-link.");
+    if (!url) {
+      setError("Kunne ikke hente download-link.");
       return;
     }
-    window.open(data.signedUrl, "_blank", "noopener,noreferrer");
+    window.open(url, "_blank", "noopener,noreferrer");
   };
 
   const remove = async (a: TicketAttachment) => {
@@ -54,7 +70,7 @@ export function AttachmentList({
     if (canDelete && !canDelete(a)) return;
     setError(null);
     setDeletingId(a.id);
-    const { error: stErr } = await supabase.storage.from("attachments").remove([a.storage_path]);
+    const { error: stErr } = await supabase.storage.from(storageBucket).remove([a.storage_path]);
     if (stErr) {
       console.error("[AttachmentList] storage remove", stErr);
     }
