@@ -7,6 +7,7 @@ import { TicketUnreadCountBadge } from "@/components/tickets/TicketUnreadCountBa
 import { AttachmentList } from "@/components/ui/AttachmentList";
 import { FileUpload } from "@/components/ui/FileUpload";
 import { formatDanishDateTime, StatusBadge } from "@/components/tickets/StatusBadge";
+import { fetchCurrentProfile } from "@/lib/current-profile";
 import type { TicketAttachment } from "@/lib/ticket-attachments";
 import {
   normalizeTicketWithProfile,
@@ -39,6 +40,30 @@ function closeCreationState(setters: {
 export default function PortalSupportPage() {
   const supabase = useMemo(() => createClient(), []);
   const portalSession = usePortalSession();
+  const [orgId, setOrgId] = useState<string | null>(null);
+
+  useEffect(() => {
+    void (async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+      let { data: profile } = await supabase
+        .from("profiles")
+        .select("organisation_id")
+        .eq("id", user.id)
+        .maybeSingle();
+      if (!profile) {
+        const { data: p2 } = await supabase
+          .from("profiles")
+          .select("organisation_id")
+          .eq("user_id", user.id)
+          .maybeSingle();
+        profile = p2;
+      }
+      if (profile?.organisation_id) setOrgId(profile.organisation_id);
+    })();
+  }, [supabase]);
+
+  const organisationId = orgId ?? portalSession?.organisationId ?? null;
 
   const [showForm, setShowForm] = useState(false);
   const [postTicketId, setPostTicketId] = useState<string | null>(null);
@@ -51,48 +76,26 @@ export default function PortalSupportPage() {
   const [submitting, setSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [companyName, setCompanyName] = useState<string | null>(null);
-  const [orgId, setOrgId] = useState<string | null>(null);
-
-  useEffect(() => {
-    void (async () => {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-      if (!user) return;
-
-      let { data: profile } = await supabase
-        .from("profiles")
-        .select("organisation_id, company_name")
-        .eq("id", user.id)
-        .maybeSingle();
-
-      if (!profile) {
-        const { data: p2 } = await supabase
-          .from("profiles")
-          .select("organisation_id, company_name")
-          .eq("user_id", user.id)
-          .maybeSingle();
-        profile = p2;
-      }
-
-      if (profile?.organisation_id) {
-        setOrgId(profile.organisation_id);
-        setCompanyName(profile.company_name ?? null);
-      }
-    })();
-  }, [supabase]);
 
   const fetchTickets = useCallback(async () => {
-    if (!orgId) {
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
+    const user = session?.user;
+    if (!user) return;
+
+    const profile = await fetchCurrentProfile(supabase, user.id);
+    if (!profile?.organisation_id) {
       setTickets([]);
       setUnreadByTicket({});
       return;
     }
+    setCompanyName(profile.company_name ?? null);
 
     const { data, error } = await supabase
       .from("tickets")
       .select(TICKET_SELECT_BASE)
-      .eq("organisation_id", orgId)
+      .eq("organisation_id", profile.organisation_id)
       .order("created_at", { ascending: false });
 
     if (error) {
@@ -106,23 +109,22 @@ export default function PortalSupportPage() {
     const rows = (data ?? [])
       .map((r) => normalizeTicketWithProfile(r as unknown as Record<string, unknown>))
       .filter((x): x is TicketWithProfileRow => x !== null)
-      .filter((x) => x.organisation_id === orgId);
+      .filter((x) => x.organisation_id === profile.organisation_id);
     setTickets(rows);
     setErrorMessage(null);
 
     const ids = rows.map((t) => t.id);
     const unread = await fetchUnreadMessageCountsByTicket(supabase, ids);
     setUnreadByTicket(unread);
-  }, [supabase, orgId]);
+  }, [supabase]);
 
   useEffect(() => {
-    if (!orgId) return;
     void (async () => {
       setListLoading(true);
       await fetchTickets();
       setListLoading(false);
     })();
-  }, [fetchTickets, orgId]);
+  }, [fetchTickets]);
 
   const resetCreation = () => {
     closeCreationState({
@@ -150,7 +152,7 @@ export default function PortalSupportPage() {
       setSubmitting(false);
       return;
     }
-    if (!orgId) {
+    if (!organisationId) {
       setErrorMessage("Organisation ikke fundet.");
       setSubmitting(false);
       return;
@@ -286,10 +288,10 @@ export default function PortalSupportPage() {
                 </p>
                 <div className="mt-3">
                   <p className="mb-2 text-xs text-[#4A8CB5]">Vedhæft filer (valgfrit)</p>
-                  {orgId ? (
+                  {organisationId ? (
                     <FileUpload
                       ticketId={postTicketId}
-                      organisationId={orgId}
+                      organisationId={organisationId}
                       onUploadComplete={(a) =>
                         setPendingAttachments((prev) => [...prev, a])
                       }
