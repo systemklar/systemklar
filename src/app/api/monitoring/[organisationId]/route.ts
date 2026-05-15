@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { buildDailyPctOkFromRows } from "@/lib/monitoring/history-daily";
+import { buildDailyPctOkFromRows, expandDailyPctOkToLast30Days } from "@/lib/monitoring/history-daily";
 import { createServiceRoleClient } from "@/lib/supabase-service-role";
 import { requireOrganisationOrAdminAccess } from "@/lib/require-monitoring-api";
 
@@ -66,12 +66,14 @@ export async function GET(request: Request, context: { params: Promise<{ organis
     }
 
     const sinceMs = Date.now() - 30 * 24 * 60 * 60 * 1000;
-    const dailyPctOk = buildDailyPctOkFromRows(
+    const rawDaily = buildDailyPctOkFromRows(
       rows.map((r) => ({ system_name: r.system_name, status: r.status, checked_at: r.checked_at })),
       sinceMs,
     );
+    const dailyPctOk =
+      rawDaily.length >= 2 ? expandDailyPctOkToLast30Days(rawDaily, sinceMs) : rawDaily;
 
-    return NextResponse.json({ historyBySystem, dailyPctOk });
+    return NextResponse.json({ historyBySystem, dailyPctOk, dailyHistoryDayCount: rawDaily.length });
   }
 
   const { data, error } = await admin

@@ -45,3 +45,37 @@ export function buildDailyPctOkFromRows(
   out.sort((a, b) => a.date.localeCompare(b.date));
   return out;
 }
+
+/**
+ * Udfylder manglende kalenderdage i 30-dagesvinduet med senest kendte % OK,
+ * så linjegrafen får et sammenhængende forløb (kun meningsfuldt når der allerede er mindst én dag med målinger).
+ */
+export function expandDailyPctOkToLast30Days(
+  points: DailyPctOkPoint[],
+  sinceMs: number,
+): DailyPctOkPoint[] {
+  if (points.length === 0) return [];
+
+  const sorted = [...points].sort((a, b) => a.date.localeCompare(b.date));
+  const byDate = new Map(sorted.map((p) => [p.date, p]));
+
+  const start = new Date(sinceMs);
+  start.setUTCHours(0, 0, 0, 0);
+
+  const out: DailyPctOkPoint[] = [];
+  let last: DailyPctOkPoint | null = null;
+
+  for (let i = 0; i < 30; i++) {
+    const day = new Date(start.getTime() + i * 86400000);
+    const dateKey = day.toISOString().slice(0, 10);
+    const hit = byDate.get(dateKey);
+    if (hit) {
+      last = hit;
+      out.push({ date: dateKey, pctOk: hit.pctOk, sampleSize: hit.sampleSize });
+    } else if (last) {
+      out.push({ date: dateKey, pctOk: last.pctOk, sampleSize: last.sampleSize });
+    }
+  }
+
+  return out;
+}

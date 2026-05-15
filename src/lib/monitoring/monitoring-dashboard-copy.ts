@@ -2,6 +2,28 @@ import { MONITORING_SYSTEM_NAMES } from "@/lib/monitoring/monitoring-system-name
 
 export type MonitoringStatusKey = "ok" | "advarsel" | "fejl" | "afventer";
 
+/** Supabase/Postgres kan returnere `details` som JSON-objekt eller som JSON-streng. */
+export function parseMonitoringDetails(raw: unknown): Record<string, unknown> {
+  if (raw == null) return {};
+  if (typeof raw === "string") {
+    const t = raw.trim();
+    if (!t) return {};
+    try {
+      const parsed = JSON.parse(t) as unknown;
+      if (parsed !== null && typeof parsed === "object" && !Array.isArray(parsed)) {
+        return parsed as Record<string, unknown>;
+      }
+    } catch {
+      return {};
+    }
+    return {};
+  }
+  if (typeof raw === "object" && !Array.isArray(raw)) {
+    return raw as Record<string, unknown>;
+  }
+  return {};
+}
+
 export function normalizeMonitoringStatus(raw: string | undefined): MonitoringStatusKey {
   const s = (raw ?? "afventer").toLowerCase();
   if (s === "ok" || s === "advarsel" || s === "fejl" || s === "afventer") return s;
@@ -12,8 +34,9 @@ export function normalizeMonitoringStatus(raw: string | undefined): MonitoringSt
 export function monitoringCustomerExplanation(
   technicalSystemName: string,
   status: MonitoringStatusKey,
-  details: Record<string, unknown>,
+  details: unknown,
 ): string {
+  const d = parseMonitoringDetails(details);
   const t = technicalSystemName.trim();
 
   if (t === MONITORING_SYSTEM_NAMES.website) {
@@ -63,6 +86,16 @@ export function monitoringCustomerExplanation(
   if (t === MONITORING_SYSTEM_NAMES.pagespeed) {
     if (status === "ok") return "Din hjemmeside scorer godt på hastighed på mobil.";
     if (status === "fejl") {
+      const scRaw = d.status_code;
+      const sc =
+        typeof scRaw === "number"
+          ? scRaw
+          : typeof scRaw === "string"
+            ? Number.parseInt(scRaw, 10)
+            : NaN;
+      if (sc === 429) {
+        return "Google PageSpeed-tjenesten er midlertidigt utilgængelig. Vi prøver igen næste time.";
+      }
       return "Din hjemmeside loader langsomt. Det kan påvirke dine besøgendes oplevelse.";
     }
     if (status === "advarsel") {
@@ -72,7 +105,7 @@ export function monitoringCustomerExplanation(
   }
 
   if (t === MONITORING_SYSTEM_NAMES.hibp) {
-    if (details.skipped) {
+    if (d.skipped) {
       return "Datalæk-tjek er ikke aktiveret (mangler API-nøgle). Kontakt os hvis du ønsker det slået til.";
     }
     return "Vi tjekker løbende om din virksomheds email-domæne er dukket op i kendte datalæk.";
@@ -91,89 +124,73 @@ export function monitoringCustomerExplanation(
   return "Vi afventer opsætning eller et fuldt tjek af dette punkt.";
 }
 
-/** Viser detaljer fra API som korte linjer (ikke rå JSON). */
-export function formatMonitoringDetailsLines(details: Record<string, unknown>): string[] {
-  if (!details || typeof details !== "object") return [];
-
+/** Viser udvalgte felter fra `details` som korte danske linjer (ingen rå JSON, ingen interne felter). */
+export function formatMonitoringDetailsLines(details: unknown): string[] {
+  const d = parseMonitoringDetails(details);
   const lines: string[] = [];
-  const skip = new Set([
-    "not_implemented",
-    "skipped",
-    "system_name",
-    "error",
-    "message",
-    "reason",
-  ]);
 
-  const n = (v: unknown): string | null => {
-    if (v === null || v === undefined) return null;
-    if (typeof v === "number" && Number.isFinite(v)) return String(v);
-    if (typeof v === "string" && v.trim()) return v.trim();
-    if (typeof v === "boolean") return v ? "Ja" : "Nej";
-    return null;
-  };
+  const statusCode = d.status_code;
+  if (statusCode !== null && statusCode !== undefined && statusCode !== "") {
+    const code =
+      typeof statusCode === "number" && Number.isFinite(statusCode)
+        ? Math.trunc(statusCode)
+        : typeof statusCode === "string" && statusCode.trim()
+          ? Number.parseInt(statusCode.trim(), 10)
+          : NaN;
+    if (Number.isFinite(code)) lines.push(`HTTP-status: ${code}`);
+  }
 
-  const code = n(details.status_code);
-  const rt = n(details.response_time_ms);
-  if (code) lines.push(`HTTP-status: ${code}`);
-  if (rt) lines.push(`Svartid: ${rt} ms`);
+  const rt = d.response_time_ms;
+  if (typeof rt === "number" && Number.isFinite(rt)) {
+    lines.push(`Svartid: ${Math.round(rt)} ms`);
+  } else if (typeof rt === "string" && rt.trim() && Number.isFinite(Number(rt))) {
+    lines.push(`Svartid: ${Math.round(Number(rt))} ms`);
+  }
 
-  const exp = typeof details.expires_at === "string" ? details.expires_at : null;
-  const days = n(details.days_remaining);
-  if (exp) {
-    try {
-      const d = new Date(exp);
-      if (!Number.isNaN(d.getTime())) {
-        lines.push(`Udløber: ${d.toLocaleDateString("da-DK", { day: "numeric", month: "long", year: "numeric" })}`);
-      }
-    } catch {
-      lines.push(`Udløber: ${exp}`);
+  const daysRaw = d.days_remaining;
+  if (daysRaw !== null && daysRaw !== undefined && daysRaw !== "") {
+    const days =
+      typeof daysRaw === "number" && Number.isFinite(daysRaw)
+        ? daysRaw
+        : typeof daysRaw === "string" && daysRaw.trim()
+          ? Number(daysRaw)
+          : NaN;
+    if (Number.isFinite(days)) {
+      const rounded = Math.abs(days - Math.round(days)) < 1e-6 ? Math.round(days) : Math.round(days * 10) / 10;
+      lines.push(`Udløber om: ${rounded} dage`);
     }
   }
-  if (days) lines.push(`Dage til udløb: ${days}`);
 
-  const spf = details.spf_found;
-  const dmarc = details.dmarc_found;
-  if (typeof spf === "boolean") lines.push(`SPF: ${spf ? "fundet" : "mangler"}`);
-  if (typeof dmarc === "boolean") lines.push(`DMARC: ${dmarc ? "fundet" : "mangler"}`);
-
-  const score = n(details.score);
-  if (score) lines.push(`Performance-score (mobil): ${score}/100`);
-  for (const key of ["lcp", "cls", "fid"] as const) {
-    const v = n(details[key]);
-    if (v) lines.push(`${key.toUpperCase()}: ${v}`);
-  }
-
-  const bc = n(details.breach_count);
-  const lb = typeof details.latest_breach === "string" ? details.latest_breach : null;
-  if (bc) lines.push(`Kendte datalæk (domæne): ${bc}`);
-  if (lb) {
-    try {
-      const d = new Date(lb);
+  const exp = d.expires_at;
+  if (typeof exp === "string" && exp.trim()) {
+    const dt = new Date(exp);
+    if (!Number.isNaN(dt.getTime())) {
       lines.push(
-        `Seneste hændelse: ${
-          Number.isNaN(d.getTime()) ? lb : d.toLocaleDateString("da-DK", { day: "numeric", month: "long", year: "numeric" })
-        }`,
+        `Udløbsdato: ${dt.toLocaleDateString("da-DK", { day: "numeric", month: "short", year: "numeric" })}`,
       );
-    } catch {
-      lines.push(`Seneste hændelse: ${lb}`);
     }
   }
 
-  if (details.error && lines.length === 0) {
-    const err = n(details.error);
-    if (err) lines.push(`Fejl: ${err}`);
+  if (typeof d.spf_found === "boolean") {
+    lines.push(d.spf_found ? "SPF: Fundet ✓" : "SPF: Mangler");
+  }
+  if (typeof d.dmarc_found === "boolean") {
+    lines.push(d.dmarc_found ? "DMARC: Fundet ✓" : "DMARC: Mangler");
   }
 
-  for (const [k, v] of Object.entries(details)) {
-    if (skip.has(k)) continue;
-    if (["status_code", "response_time_ms", "expires_at", "days_remaining", "spf_found", "dmarc_found", "score", "lcp", "cls", "fid", "breach_count", "latest_breach"].includes(k)) {
-      continue;
-    }
-    if (v === null || v === undefined || v === "") continue;
-    if (typeof v === "object") continue;
-    const s = n(v);
-    if (s) lines.push(`${k}: ${s}`);
+  const scoreRaw = d.score;
+  if (scoreRaw !== null && scoreRaw !== undefined && scoreRaw !== "") {
+    const score =
+      typeof scoreRaw === "number" && Number.isFinite(scoreRaw)
+        ? Math.round(scoreRaw)
+        : typeof scoreRaw === "string" && scoreRaw.trim()
+          ? Math.round(Number(scoreRaw))
+          : NaN;
+    if (Number.isFinite(score)) lines.push(`PageSpeed score: ${score}/100`);
+  }
+
+  if (typeof d.breach_count === "number" && Number.isFinite(d.breach_count) && d.breach_count >= 0) {
+    lines.push(`Kendte datalæk: ${Math.trunc(d.breach_count)}`);
   }
 
   return lines;

@@ -133,6 +133,9 @@ export function PortalSystemsDashboard({
   const [onboardingNames, setOnboardingNames] = useState<string[]>([]);
   const [monitoringByName, setMonitoringByName] = useState<Map<string, MonitoringResultRow>>(() => new Map());
   const [historyDaily, setHistoryDaily] = useState<DailyPctOkPoint[]>([]);
+  /** Antal kalenderdage med faktiske målinger (fra API), ikke udfyldte dage i serien. */
+  const [historyDistinctDayCount, setHistoryDistinctDayCount] = useState<number | null>(null);
+  const [historyLoading, setHistoryLoading] = useState(false);
   const [activeTab, setActiveTab] = useState<string>("");
   const [detail, setDetail] = useState<DetailSelection | null>(null);
 
@@ -211,13 +214,19 @@ export function PortalSystemsDashboard({
     if (!orgIdForMonitoring) {
       let cancelled = false;
       void Promise.resolve().then(() => {
-        if (!cancelled) setHistoryDaily([]);
+        if (!cancelled) {
+          setHistoryDaily([]);
+          setHistoryDistinctDayCount(null);
+          setHistoryLoading(false);
+        }
       });
       return () => {
         cancelled = true;
       };
     }
     let cancelled = false;
+    setHistoryLoading(true);
+    setHistoryDistinctDayCount(null);
     void (async () => {
       try {
         const res = await fetch(
@@ -225,14 +234,29 @@ export function PortalSystemsDashboard({
           { credentials: "include" },
         );
         if (!res.ok) {
-          if (!cancelled) setHistoryDaily([]);
+          if (!cancelled) {
+            setHistoryDaily([]);
+            setHistoryDistinctDayCount(0);
+          }
           return;
         }
-        const json = (await res.json()) as { dailyPctOk?: DailyPctOkPoint[] };
+        const json = (await res.json()) as {
+          dailyPctOk?: DailyPctOkPoint[];
+          dailyHistoryDayCount?: number;
+        };
         if (cancelled) return;
-        setHistoryDaily(Array.isArray(json.dailyPctOk) ? json.dailyPctOk : []);
+        const series = Array.isArray(json.dailyPctOk) ? json.dailyPctOk : [];
+        setHistoryDaily(series);
+        setHistoryDistinctDayCount(
+          typeof json.dailyHistoryDayCount === "number" ? json.dailyHistoryDayCount : series.length,
+        );
       } catch {
-        if (!cancelled) setHistoryDaily([]);
+        if (!cancelled) {
+          setHistoryDaily([]);
+          setHistoryDistinctDayCount(0);
+        }
+      } finally {
+        if (!cancelled) setHistoryLoading(false);
       }
     })();
     return () => {
@@ -299,6 +323,17 @@ export function PortalSystemsDashboard({
   const closeDetail = useCallback(() => setDetail(null), []);
 
   const hasSystems = flatRows.length > 0;
+
+  const showHistorySection = !preview && hasSystems && Boolean(orgIdForMonitoring);
+  const showHistoryChart =
+    !historyLoading &&
+    historyDistinctDayCount !== null &&
+    historyDistinctDayCount >= 2 &&
+    lineChartData.length >= 2;
+  const showHistoryFallback =
+    !historyLoading &&
+    historyDistinctDayCount !== null &&
+    historyDistinctDayCount < 2;
 
   if (loading) {
     return <p className="text-sm text-slate-500">Indlæser overblik...</p>;
@@ -408,38 +443,53 @@ export function PortalSystemsDashboard({
             </div>
           </div>
 
-          {lineChartData.length > 1 ? (
+          {showHistorySection ? (
             <div className="rounded-lg border border-slate-200 bg-white px-6 py-6">
               <h2 className="mb-4 text-xs font-semibold uppercase tracking-wide text-slate-500">
                 Systemstatus de seneste 30 dage
               </h2>
-              <div className="h-56 w-full max-w-3xl">
-                <ResponsiveContainer width="100%" height="100%">
-                  <LineChart data={lineChartData} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" vertical={false} />
-                    <XAxis dataKey="label" tick={{ fontSize: 11, fill: "#64748b" }} axisLine={{ stroke: "#e2e8f0" }} />
-                    <YAxis
-                      domain={[0, 100]}
-                      tickFormatter={(v) => `${v}%`}
-                      width={44}
-                      tick={{ fontSize: 11, fill: "#64748b" }}
-                      axisLine={{ stroke: "#e2e8f0" }}
-                    />
-                    <Tooltip
-                      formatter={(value) => [`${typeof value === "number" ? value : Number(value) || 0}%`, "Andel OK"]}
-                      contentStyle={{ border: "1px solid #e2e8f0", borderRadius: "6px" }}
-                    />
-                    <Line
-                      type="monotone"
-                      dataKey="pctOk"
-                      stroke={LINE_STATUS}
-                      strokeWidth={2}
-                      dot={false}
-                      activeDot={{ r: 4, fill: LINE_STATUS }}
-                    />
-                  </LineChart>
-                </ResponsiveContainer>
-              </div>
+              {historyLoading ? (
+                <p className="text-sm text-slate-500">Indlæser historik…</p>
+              ) : showHistoryChart ? (
+                <div className="h-56 w-full max-w-3xl">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <LineChart data={lineChartData} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" vertical={false} />
+                      <XAxis
+                        dataKey="label"
+                        tick={{ fontSize: 11, fill: "#64748b" }}
+                        axisLine={{ stroke: "#e2e8f0" }}
+                      />
+                      <YAxis
+                        domain={[0, 100]}
+                        tickFormatter={(v) => `${v}%`}
+                        width={44}
+                        tick={{ fontSize: 11, fill: "#64748b" }}
+                        axisLine={{ stroke: "#e2e8f0" }}
+                      />
+                      <Tooltip
+                        formatter={(value) => [
+                          `${typeof value === "number" ? value : Number(value) || 0}%`,
+                          "Andel OK",
+                        ]}
+                        contentStyle={{ border: "1px solid #e2e8f0", borderRadius: "6px" }}
+                      />
+                      <Line
+                        type="monotone"
+                        dataKey="pctOk"
+                        stroke={LINE_STATUS}
+                        strokeWidth={2}
+                        dot={false}
+                        activeDot={{ r: 4, fill: LINE_STATUS }}
+                      />
+                    </LineChart>
+                  </ResponsiveContainer>
+                </div>
+              ) : showHistoryFallback ? (
+                <p className="text-sm leading-relaxed text-slate-600">
+                  Ikke nok data endnu — grafen vises efter første overvågningsuge
+                </p>
+              ) : null}
             </div>
           ) : null}
 
@@ -538,14 +588,8 @@ export function PortalSystemsDashboard({
             <div className="flex-1 overflow-y-auto px-5 py-4">
               {(() => {
                 const st = normalizeMonitoringStatus(detail.row.status);
-                const expl = monitoringCustomerExplanation(
-                  detail.technical,
-                  st,
-                  (detail.row.details ?? {}) as Record<string, unknown>,
-                );
-                const detailLines = formatMonitoringDetailsLines(
-                  (detail.row.details ?? {}) as Record<string, unknown>,
-                );
+                const expl = monitoringCustomerExplanation(detail.technical, st, detail.row.details);
+                const detailLines = formatMonitoringDetailsLines(detail.row.details);
                 const checkedLabel =
                   detail.row.checked_at && !Number.isNaN(new Date(detail.row.checked_at).getTime())
                     ? formatCheckedAgoDa(detail.row.checked_at)
@@ -571,8 +615,8 @@ export function PortalSystemsDashboard({
                       <div>
                         <p className="text-xs font-medium uppercase tracking-wide text-slate-500">Tekniske detaljer</p>
                         <ul className="mt-2 space-y-1 text-sm text-slate-600">
-                          {detailLines.map((line) => (
-                            <li key={line}>{line}</li>
+                          {detailLines.map((line, idx) => (
+                            <li key={`detail-${idx}`}>{line}</li>
                           ))}
                         </ul>
                       </div>
