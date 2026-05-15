@@ -168,8 +168,37 @@ export function PortalSystemsDashboard({
       setResolvedOrganisationId(null);
       const profile = await fetchCurrentProfile(supabase, userId);
       if (cancelled) return;
-      setOnboardingNames(normalizeOnboardingSystemsFromDb(profile?.onboarding_systems));
-      setResolvedOrganisationId(profile?.organisation_id?.trim() || null);
+
+      const orgId = profile?.organisation_id?.trim() || null;
+      const orderedNames: string[] = [];
+      const seen = new Set<string>();
+      const pushFrom = (raw: unknown) => {
+        for (const n of normalizeOnboardingSystemsFromDb(raw)) {
+          if (seen.has(n)) continue;
+          seen.add(n);
+          orderedNames.push(n);
+        }
+      };
+
+      if (orgId) {
+        const { data: peers, error: peersErr } = await supabase
+          .from("profiles")
+          .select("onboarding_systems")
+          .eq("organisation_id", orgId)
+          .order("created_at", { ascending: true });
+        if (cancelled) return;
+        if (peersErr) {
+          console.error("[PortalSystemsDashboard] profiles org union", peersErr);
+          pushFrom(profile?.onboarding_systems);
+        } else {
+          for (const row of peers ?? []) pushFrom((row as { onboarding_systems?: unknown }).onboarding_systems);
+        }
+      } else {
+        pushFrom(profile?.onboarding_systems);
+      }
+
+      setOnboardingNames(orderedNames);
+      setResolvedOrganisationId(orgId);
       setLoading(false);
     })();
 

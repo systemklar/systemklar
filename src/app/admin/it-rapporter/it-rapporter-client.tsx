@@ -61,6 +61,9 @@ export default function AdminItRapporterClient() {
   const [genBusy, setGenBusy] = useState(false);
   const [genError, setGenError] = useState<string | null>(null);
 
+  const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
+  const [deleteBusyId, setDeleteBusyId] = useState<string | null>(null);
+
   const load = useCallback(async () => {
     setLoading(true);
     setError(null);
@@ -81,6 +84,50 @@ export default function AdminItRapporterClient() {
   useEffect(() => {
     void load();
   }, [load]);
+
+  const groupedReports = useMemo(() => {
+    const sorted = [...rows].sort(
+      (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
+    );
+    const map = new Map<string, ItReportListRow[]>();
+    for (const r of sorted) {
+      const key = r.organisation_id || orgNameFromEmbed(r.organisations);
+      const list = map.get(key) ?? [];
+      list.push(r);
+      map.set(key, list);
+    }
+    return [...map.entries()]
+      .map(([key, reports]) => ({
+        key,
+        name: orgNameFromEmbed(reports[0]?.organisations ?? null),
+        reports,
+      }))
+      .sort((a, b) => a.name.localeCompare(b.name, "da"));
+  }, [rows]);
+
+  const multiOrg = groupedReports.length > 1;
+
+  const confirmDeleteReport = async (id: string) => {
+    setDeleteBusyId(id);
+    setError(null);
+    try {
+      const res = await fetch(`/api/admin/it-rapporter/${encodeURIComponent(id)}`, {
+        method: "DELETE",
+        credentials: "include",
+      });
+      const json = (await res.json().catch(() => ({}))) as { error?: string };
+      if (!res.ok) {
+        setError(json.error ?? "Kunne ikke slette.");
+        return;
+      }
+      setDeleteConfirmId(null);
+      await load();
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Netværksfejl.");
+    } finally {
+      setDeleteBusyId(null);
+    }
+  };
 
   const loadOrganisationOptions = useCallback(async () => {
     setOrgsLoading(true);
@@ -221,49 +268,158 @@ export default function AdminItRapporterClient() {
           <table className="min-w-full text-left text-sm">
             <thead className="border-b border-slate-200 bg-slate-50 text-xs font-semibold uppercase tracking-wide text-slate-600">
               <tr>
-                <th className="px-4 py-3">Organisation</th>
+                {multiOrg ? null : <th className="px-4 py-3">Organisation</th>}
                 <th className="px-4 py-3">Periode</th>
                 <th className="px-4 py-3">Status</th>
                 <th className="px-4 py-3">Oprettet</th>
                 <th className="px-4 py-3 text-right">Handlinger</th>
               </tr>
             </thead>
-            <tbody>
-              {rows.map((r) => (
-                <tr key={r.id} className="border-b border-slate-100 last:border-0">
-                  <td className="px-4 py-3 font-medium text-slate-900">{orgNameFromEmbed(r.organisations)}</td>
-                  <td className="px-4 py-3 text-slate-600">{periodDa(r.period_start, r.period_end)}</td>
-                  <td className="px-4 py-3">
-                    <span className="inline-flex rounded-full bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-700">
-                      {statusLabel(r.status)}
-                    </span>
-                  </td>
-                  <td className="px-4 py-3 text-slate-500">
-                    {new Date(r.created_at).toLocaleString("da-DK", { dateStyle: "short", timeStyle: "short" })}
-                  </td>
-                  <td className="px-4 py-3 text-right">
-                    <div className="flex flex-wrap justify-end gap-2">
-                      <Link
-                        href={`/admin/it-rapporter/${r.id}`}
-                        className="rounded-md border border-slate-200 px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50"
-                      >
-                        Rediger
-                      </Link>
-                      {r.status !== "sent" ? (
-                        <button
-                          type="button"
-                          disabled={sendBusyId === r.id}
-                          onClick={() => void sendReport(r.id)}
-                          className="rounded-md bg-sky-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-sky-700 disabled:opacity-50"
-                        >
-                          {sendBusyId === r.id ? "Sender…" : "Send"}
-                        </button>
-                      ) : null}
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
+            {multiOrg
+              ? groupedReports.map((g) => (
+                  <tbody key={g.key}>
+                    <tr className="border-b border-slate-200 bg-slate-100">
+                      <td colSpan={4} className="px-4 py-2.5 text-sm font-bold text-slate-900">
+                        {g.name}
+                      </td>
+                    </tr>
+                    {g.reports.map((r) => (
+                      <tr key={r.id} className="border-b border-slate-100 last:border-0">
+                        <td className="px-4 py-3 text-slate-600">{periodDa(r.period_start, r.period_end)}</td>
+                        <td className="px-4 py-3">
+                          <span className="inline-flex rounded-full bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-700">
+                            {statusLabel(r.status)}
+                          </span>
+                        </td>
+                        <td className="px-4 py-3 text-slate-500">
+                          {new Date(r.created_at).toLocaleString("da-DK", { dateStyle: "short", timeStyle: "short" })}
+                        </td>
+                        <td className="px-4 py-3 text-right">
+                          <div className="flex flex-wrap items-center justify-end gap-2">
+                            {deleteConfirmId === r.id ? (
+                              <div className="flex flex-wrap items-center justify-end gap-2 text-xs">
+                                <span className="font-medium text-slate-700">Er du sikker?</span>
+                                <button
+                                  type="button"
+                                  disabled={deleteBusyId === r.id}
+                                  onClick={() => void confirmDeleteReport(r.id)}
+                                  className="rounded-md bg-red-600 px-2.5 py-1 font-semibold text-white hover:bg-red-700 disabled:opacity-50"
+                                >
+                                  {deleteBusyId === r.id ? "Sletter…" : "Ja"}
+                                </button>
+                                <button
+                                  type="button"
+                                  disabled={deleteBusyId === r.id}
+                                  onClick={() => setDeleteConfirmId(null)}
+                                  className="rounded-md border border-slate-200 px-2.5 py-1 font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-50"
+                                >
+                                  Annuller
+                                </button>
+                              </div>
+                            ) : (
+                              <>
+                                <Link
+                                  href={`/admin/it-rapporter/${r.id}`}
+                                  className="rounded-md border border-slate-200 px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50"
+                                >
+                                  Rediger
+                                </Link>
+                                {r.status !== "sent" ? (
+                                  <button
+                                    type="button"
+                                    disabled={sendBusyId === r.id}
+                                    onClick={() => void sendReport(r.id)}
+                                    className="rounded-md bg-sky-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-sky-700 disabled:opacity-50"
+                                  >
+                                    {sendBusyId === r.id ? "Sender…" : "Send"}
+                                  </button>
+                                ) : null}
+                                <button
+                                  type="button"
+                                  disabled={deleteBusyId === r.id || sendBusyId === r.id}
+                                  onClick={() => setDeleteConfirmId(r.id)}
+                                  className="rounded-md border border-red-200 bg-red-50 px-3 py-1.5 text-xs font-semibold text-red-800 hover:bg-red-100 disabled:opacity-50"
+                                >
+                                  Slet
+                                </button>
+                              </>
+                            )}
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                ))
+              : (
+                  <tbody>
+                    {groupedReports.flatMap((g) => g.reports).map((r) => (
+                      <tr key={r.id} className="border-b border-slate-100 last:border-0">
+                      <td className="px-4 py-3 font-medium text-slate-900">{orgNameFromEmbed(r.organisations)}</td>
+                      <td className="px-4 py-3 text-slate-600">{periodDa(r.period_start, r.period_end)}</td>
+                      <td className="px-4 py-3">
+                        <span className="inline-flex rounded-full bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-700">
+                          {statusLabel(r.status)}
+                        </span>
+                      </td>
+                      <td className="px-4 py-3 text-slate-500">
+                        {new Date(r.created_at).toLocaleString("da-DK", { dateStyle: "short", timeStyle: "short" })}
+                      </td>
+                      <td className="px-4 py-3 text-right">
+                        <div className="flex flex-wrap items-center justify-end gap-2">
+                          {deleteConfirmId === r.id ? (
+                            <div className="flex flex-wrap items-center justify-end gap-2 text-xs">
+                              <span className="font-medium text-slate-700">Er du sikker?</span>
+                              <button
+                                type="button"
+                                disabled={deleteBusyId === r.id}
+                                onClick={() => void confirmDeleteReport(r.id)}
+                                className="rounded-md bg-red-600 px-2.5 py-1 font-semibold text-white hover:bg-red-700 disabled:opacity-50"
+                              >
+                                {deleteBusyId === r.id ? "Sletter…" : "Ja"}
+                              </button>
+                              <button
+                                type="button"
+                                disabled={deleteBusyId === r.id}
+                                onClick={() => setDeleteConfirmId(null)}
+                                className="rounded-md border border-slate-200 px-2.5 py-1 font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-50"
+                              >
+                                Annuller
+                              </button>
+                            </div>
+                          ) : (
+                            <>
+                              <Link
+                                href={`/admin/it-rapporter/${r.id}`}
+                                className="rounded-md border border-slate-200 px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50"
+                              >
+                                Rediger
+                              </Link>
+                              {r.status !== "sent" ? (
+                                <button
+                                  type="button"
+                                  disabled={sendBusyId === r.id}
+                                  onClick={() => void sendReport(r.id)}
+                                  className="rounded-md bg-sky-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-sky-700 disabled:opacity-50"
+                                >
+                                  {sendBusyId === r.id ? "Sender…" : "Send"}
+                                </button>
+                              ) : null}
+                              <button
+                                type="button"
+                                disabled={deleteBusyId === r.id || sendBusyId === r.id}
+                                onClick={() => setDeleteConfirmId(r.id)}
+                                className="rounded-md border border-red-200 bg-red-50 px-3 py-1.5 text-xs font-semibold text-red-800 hover:bg-red-100 disabled:opacity-50"
+                              >
+                                Slet
+                              </button>
+                            </>
+                          )}
+                        </div>
+                      </td>
+                    </tr>
+                    ))}
+                  </tbody>
+                )}
           </table>
         </div>
       )}
