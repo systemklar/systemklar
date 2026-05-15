@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { FormEvent, useCallback, useEffect, useMemo, useState } from "react";
-import { PortalLayout, usePortalSession } from "@/components/portal/PortalLayout";
+import { PortalLayout } from "@/components/portal/PortalLayout";
 import { TicketUnreadCountBadge } from "@/components/tickets/TicketUnreadCountBadge";
 import { AttachmentList } from "@/components/ui/AttachmentList";
 import { FileUpload } from "@/components/ui/FileUpload";
@@ -39,9 +39,8 @@ function closeCreationState(setters: {
 
 export default function PortalSupportPage() {
   const supabase = useMemo(() => createClient(), []);
-  const portalSession = usePortalSession();
-  const organisationId = portalSession?.organisationId ?? null;
 
+  const [orgId, setOrgId] = useState<string | null>(null);
   const [showForm, setShowForm] = useState(false);
   const [postTicketId, setPostTicketId] = useState<string | null>(null);
   const [pendingAttachments, setPendingAttachments] = useState<TicketAttachment[]>([]);
@@ -53,6 +52,34 @@ export default function PortalSupportPage() {
   const [submitting, setSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [companyName, setCompanyName] = useState<string | null>(null);
+
+  useEffect(() => {
+    void (async () => {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (!user) return;
+
+      let { data: profile } = await supabase
+        .from("profiles")
+        .select("organisation_id")
+        .eq("id", user.id)
+        .maybeSingle();
+
+      if (!profile) {
+        const { data: p2 } = await supabase
+          .from("profiles")
+          .select("organisation_id")
+          .eq("user_id", user.id)
+          .maybeSingle();
+        profile = p2;
+      }
+
+      if (profile?.organisation_id) {
+        setOrgId(profile.organisation_id);
+      }
+    })();
+  }, [supabase]);
 
   const fetchTickets = useCallback(async () => {
     const {
@@ -129,7 +156,7 @@ export default function PortalSupportPage() {
       setSubmitting(false);
       return;
     }
-    if (!organisationId) {
+    if (!orgId) {
       setErrorMessage("Organisation ikke fundet.");
       setSubmitting(false);
       return;
@@ -265,10 +292,10 @@ export default function PortalSupportPage() {
                 </p>
                 <div className="mt-3">
                   <p className="mb-2 text-xs text-[#4A8CB5]">Vedhæft filer (valgfrit)</p>
-                  {organisationId ? (
+                  {orgId ? (
                     <FileUpload
                       ticketId={postTicketId}
-                      organisationId={organisationId}
+                      organisationId={orgId}
                       onUploadComplete={(a) =>
                         setPendingAttachments((prev) => [...prev, a])
                       }
