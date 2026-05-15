@@ -94,6 +94,10 @@ export default function ItReportDetailClient() {
   const previewHtml = useMemo(() => {
     if (!row || !content) return "";
     const periodLabel = periodLabelDa(row.period_start, row.period_end);
+    const assetBaseUrl =
+      typeof window !== "undefined"
+        ? window.location.origin
+        : (process.env.NEXT_PUBLIC_SITE_URL ?? "").replace(/\/$/, "");
     return buildItReportHtmlDocument({
       organisationName: content.organisationName,
       periodLabel,
@@ -101,6 +105,7 @@ export default function ItReportDetailClient() {
       aiRecommendations: recommendations,
       content,
       forPrint: false,
+      assetBaseUrl: assetBaseUrl || undefined,
     });
   }, [row, content, summary, recommendations]);
 

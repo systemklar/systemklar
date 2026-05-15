@@ -8,6 +8,7 @@ import {
   parseItReportContent,
   periodLabelDa,
 } from "@/lib/it-reports";
+import { getAppOrigin } from "@/lib/resend-welcome-email";
 import { createServiceRoleClient } from "@/lib/supabase-service-role";
 
 export const dynamic = "force-dynamic";
@@ -102,6 +103,7 @@ export async function GET(_request: Request, context: { params: Promise<{ id: st
     aiRecommendations: ai_recommendations,
     content,
     forPrint: true,
+    assetBaseUrl: getAppOrigin(),
   });
 
   const filename = `it-rapport-${id.slice(0, 8)}.html`;
