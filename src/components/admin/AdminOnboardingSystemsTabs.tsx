@@ -3,35 +3,70 @@
 import { Monitor } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { buildOnboardingDashboardGroups } from "@/lib/onboarding-systems";
-
-const PENDING_SETUP_CLASS =
-  "inline-flex shrink-0 rounded-full bg-slate-100 px-2.5 py-0.5 text-xs font-medium text-slate-600";
+import {
+  MonitoringStatusInline,
+  monitoringResultsBySystemName,
+  type MonitoringResultRow,
+} from "@/components/monitoring/MonitoringStatusBlock";
 
 type AdminOnboardingSystemsTabsProps = {
   storedNames: string[];
+  organisationId: string;
 };
 
-export function AdminOnboardingSystemsTabs({ storedNames }: AdminOnboardingSystemsTabsProps) {
+export function AdminOnboardingSystemsTabs({ storedNames, organisationId }: AdminOnboardingSystemsTabsProps) {
   const groups = useMemo(() => buildOnboardingDashboardGroups(storedNames), [storedNames]);
   const [activeShortLabel, setActiveShortLabel] = useState(groups[0]?.shortLabel ?? "");
+  const [monitoringByName, setMonitoringByName] = useState<Map<string, MonitoringResultRow>>(() => new Map());
+
+  const activeGroupKey = useMemo(() => {
+    if (groups.some((g) => g.shortLabel === activeShortLabel)) return activeShortLabel;
+    return groups[0]?.shortLabel ?? "";
+  }, [groups, activeShortLabel]);
 
   useEffect(() => {
-    setActiveShortLabel((prev) => {
-      if (groups.some((g) => g.shortLabel === prev)) return prev;
-      return groups[0]?.shortLabel ?? "";
-    });
-  }, [groups]);
+    const oid = organisationId?.trim();
+    if (!oid) {
+      let cancelled = false;
+      void Promise.resolve().then(() => {
+        if (!cancelled) setMonitoringByName(new Map());
+      });
+      return () => {
+        cancelled = true;
+      };
+    }
+    let cancelled = false;
+    (async () => {
+      try {
+        const res = await fetch(`/api/monitoring/${encodeURIComponent(oid)}`, {
+          credentials: "include",
+        });
+        if (!res.ok) {
+          if (!cancelled) setMonitoringByName(new Map());
+          return;
+        }
+        const data = (await res.json()) as { results?: MonitoringResultRow[] };
+        if (cancelled) return;
+        setMonitoringByName(monitoringResultsBySystemName(data.results ?? []));
+      } catch {
+        if (!cancelled) setMonitoringByName(new Map());
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [organisationId]);
 
   if (groups.length === 0) return null;
 
-  const activeGroup = groups.find((g) => g.shortLabel === activeShortLabel) ?? groups[0];
+  const activeGroup = groups.find((g) => g.shortLabel === activeGroupKey) ?? groups[0];
 
   return (
     <div className="rounded-2xl border border-sky-100 bg-white shadow-sm">
       <div className="border-b border-sky-50 px-2 pt-2 sm:px-4">
         <nav className="-mb-px flex flex-wrap gap-1" aria-label="Systemkategorier">
           {groups.map((g) => {
-            const isActive = g.shortLabel === activeGroup.shortLabel;
+            const isActive = g.shortLabel === activeGroupKey;
             return (
               <button
                 key={g.shortLabel}
@@ -65,7 +100,10 @@ export function AdminOnboardingSystemsTabs({ storedNames }: AdminOnboardingSyste
                 <span className="font-medium text-[#0D1F2D]">{name}</span>
               </div>
               <div className="flex shrink-0 items-center gap-3 sm:justify-end">
-                <span className={PENDING_SETUP_CLASS}>Afventer opsætning</span>
+                <MonitoringStatusInline
+                  systemName={name}
+                  row={monitoringByName.get(name) ?? null}
+                />
                 <span className="hidden w-16 text-right text-xs text-slate-300 sm:inline" title="Kommende handlinger">
                   ···
                 </span>

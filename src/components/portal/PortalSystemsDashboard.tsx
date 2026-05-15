@@ -8,47 +8,56 @@ import { fetchCurrentProfile, normalizeOnboardingSystemsFromDb } from "@/lib/cur
 import { onboardingFirstName } from "@/lib/onboarding";
 import { buildOnboardingDashboardGroups } from "@/lib/onboarding-systems";
 import { createClient } from "@/lib/supabase";
-
-const PENDING_SETUP_CLASS =
-  "inline-flex rounded-full bg-slate-100 px-2.5 py-0.5 text-xs font-medium text-slate-600";
+import {
+  MonitoringStatusBlock,
+  monitoringResultsBySystemName,
+  type MonitoringResultRow,
+} from "@/components/monitoring/MonitoringStatusBlock";
 
 type PortalSystemsDashboardProps = {
   /** Admin-forhåndsvisning: brug props i stedet for at hente profil. */
   preview?: boolean;
   fullName?: string | null;
   onboardingSystemNames?: string[];
+  /** Ved admin-forhåndsvisning: org-id så monitoring kan hentes fra API. */
+  organisationId?: string | null;
 };
 
 export function PortalSystemsDashboard({
   preview = false,
   fullName: fullNameProp,
   onboardingSystemNames: namesProp,
+  organisationId: organisationIdProp,
 }: PortalSystemsDashboardProps) {
   const portalSession = usePortalSession();
   const supabase = useMemo(() => createClient(), []);
   const [loading, setLoading] = useState(() => !preview);
-  const [resolvedFullName, setResolvedFullName] = useState<string | null>(fullNameProp ?? null);
-  const [onboardingNames, setOnboardingNames] = useState<string[]>(() =>
-    preview ? normalizeOnboardingSystemsFromDb(namesProp) : [],
-  );
+  const [resolvedFullName, setResolvedFullName] = useState<string | null>(null);
+  const [onboardingNames, setOnboardingNames] = useState<string[]>([]);
+  const [monitoringByName, setMonitoringByName] = useState<Map<string, MonitoringResultRow>>(() => new Map());
+
+  const orgIdForMonitoring = preview
+    ? (organisationIdProp?.trim() || null)
+    : (portalSession?.organisationId?.trim() || null);
+
+  const namesLive = preview ? normalizeOnboardingSystemsFromDb(namesProp) : onboardingNames;
 
   useEffect(() => {
-    if (preview) {
-      setResolvedFullName(fullNameProp ?? null);
-      setOnboardingNames(normalizeOnboardingSystemsFromDb(namesProp));
-      setLoading(false);
-      return;
-    }
+    if (preview) return;
 
     const userId = portalSession?.userId?.trim();
     if (!userId) {
-      // PortalLayout sætter userId når session er klar — undgå tidlig afslutning med tom liste.
-      setLoading(true);
-      return;
+      let cancelled = false;
+      void Promise.resolve().then(() => {
+        if (!cancelled) setLoading(true);
+      });
+      return () => {
+        cancelled = true;
+      };
     }
 
     let cancelled = false;
-    (async () => {
+    void (async () => {
       setLoading(true);
       const profile = await fetchCurrentProfile(supabase, userId);
       if (cancelled) return;
@@ -62,18 +71,50 @@ export function PortalSystemsDashboard({
     return () => {
       cancelled = true;
     };
-  }, [preview, fullNameProp, namesProp, supabase, portalSession?.userId, portalSession?.fullName]);
+  }, [preview, supabase, portalSession?.userId, portalSession?.fullName]);
+
+  useEffect(() => {
+    if (!orgIdForMonitoring) {
+      let cancelled = false;
+      void Promise.resolve().then(() => {
+        if (!cancelled) setMonitoringByName(new Map());
+      });
+      return () => {
+        cancelled = true;
+      };
+    }
+    let cancelled = false;
+    (async () => {
+      try {
+        const res = await fetch(`/api/monitoring/${encodeURIComponent(orgIdForMonitoring)}`, {
+          credentials: "include",
+        });
+        if (!res.ok) {
+          if (!cancelled) setMonitoringByName(new Map());
+          return;
+        }
+        const data = (await res.json()) as { results?: MonitoringResultRow[] };
+        if (cancelled) return;
+        setMonitoringByName(monitoringResultsBySystemName(data.results ?? []));
+      } catch {
+        if (!cancelled) setMonitoringByName(new Map());
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [orgIdForMonitoring]);
 
   const greetingSource =
-    resolvedFullName?.trim() ||
+    (preview ? fullNameProp?.trim() : resolvedFullName?.trim()) ||
     portalSession?.fullName?.trim() ||
     portalSession?.email?.split("@")[0] ||
     null;
   const firstName = onboardingFirstName(greetingSource);
 
   const groups = useMemo(
-    () => buildOnboardingDashboardGroups(onboardingNames),
-    [onboardingNames],
+    () => buildOnboardingDashboardGroups(namesLive),
+    [namesLive],
   );
   const hasSystems = groups.length > 0;
 
@@ -128,6 +169,7 @@ export function PortalSystemsDashboard({
                     const name = entry.kind === "known" ? entry.system.name : entry.name;
                     const key =
                       entry.kind === "known" ? entry.system.id : `u-${group.shortLabel}-${name}-${idx}`;
+                    const monitoringRow = monitoringByName.get(name) ?? null;
                     return (
                       <article
                         key={key}
@@ -137,7 +179,7 @@ export function PortalSystemsDashboard({
                           <Icon className="h-5 w-5 shrink-0" aria-hidden />
                         </div>
                         <p className="mt-5 text-base font-semibold leading-snug text-[#0D1F2D]">{name}</p>
-                        <span className={`mt-auto pt-5 ${PENDING_SETUP_CLASS}`}>Afventer opsætning</span>
+                        <MonitoringStatusBlock systemName={name} row={monitoringRow} />
                       </article>
                     );
                   })}

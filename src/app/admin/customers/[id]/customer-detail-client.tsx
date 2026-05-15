@@ -500,7 +500,7 @@ export default function AdminCustomerDetailClient() {
         <div className="space-y-4">
           {onboardingSystemNames.length > 0 ? (
             <div className="space-y-3">
-              <AdminOnboardingSystemsTabs storedNames={onboardingSystemNames} />
+              <AdminOnboardingSystemsTabs storedNames={onboardingSystemNames} organisationId={org.id} />
               <p className="text-xs text-slate-500">Valgt under onboarding</p>
             </div>
           ) : null}

@@ -107,6 +107,7 @@ export default function AdminCustomerPortalDashboardPreview() {
       <PortalSystemsDashboard
         fullName={previewFullName}
         onboardingSystemNames={onboardingSystemNames}
+        organisationId={org.id}
         preview
       />
     </div>
