@@ -6,6 +6,7 @@ import { useCallback, useEffect, useState } from "react";
 import { companyFromTicketRow, type TicketWithProfileRow } from "@/lib/tickets-with-profile";
 import { formatDanishDateTime } from "@/components/tickets/StatusBadge";
 import { TicketStatusToggle } from "@/components/tickets/TicketStatusToggle";
+import { TicketAttachmentsPanel } from "@/components/tickets/TicketAttachmentsPanel";
 import { TicketMessageThread } from "@/components/tickets/TicketMessageThread";
 import { setTicketLastViewedToNow } from "@/lib/ticket-last-viewed";
 
@@ -75,43 +76,52 @@ export default function AdminTicketDetailClient() {
         ← Tilbage til Support & sager
       </Link>
 
-      <div className="mx-auto mt-6 max-w-3xl">
-        <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-          <div className="flex flex-wrap items-start justify-between gap-4">
-            <div>
-              <h1 className="text-2xl font-bold text-slate-900">{ticket.title}</h1>
-              <p className="mt-2 text-sm text-slate-600">
-                <span className="font-medium text-slate-800">{companyFromTicketRow(ticket)}</span>
-                {emailDisplay ? (
-                  <>
-                    <span className="text-slate-400"> · </span>
-                    <span className="text-slate-700">{emailDisplay}</span>
-                  </>
-                ) : null}
-              </p>
-              <p className="mt-2 text-sm text-slate-500">Oprettet {formatDanishDateTime(ticket.created_at)}</p>
-            </div>
-            <TicketStatusToggle
-              ticketId={ticket.id}
-              status={ticket.status}
-              onUpdated={(next) =>
-                setTicket((t) => (t ? { ...t, status: next } : null))
-              }
-            />
-          </div>
-          {ticket.description ? (
-            <p className="mt-4 whitespace-pre-wrap text-slate-700">{ticket.description}</p>
-          ) : (
-            <p className="mt-4 text-sm text-slate-500">Ingen beskrivelse.</p>
-          )}
+      <div className="mt-6 flex min-h-0 flex-1 flex-col gap-5 lg:grid lg:grid-cols-3">
+        <div className="min-h-[60vh] lg:col-span-2">
+          <TicketMessageThread
+            ticketId={ticket.id}
+            organisationId={ticket.organisation_id}
+            sendAsAdmin={true}
+            customerCompanyLabel={companyFromTicketRow(ticket)}
+            fullHeight
+          />
         </div>
 
-        <TicketMessageThread
-          ticketId={ticket.id}
-          organisationId={ticket.organisation_id}
-          sendAsAdmin={true}
-          customerCompanyLabel={companyFromTicketRow(ticket)}
-        />
+        <aside className="space-y-4">
+          <section className="rounded-2xl border border-sky-100 bg-white p-5 shadow-sm">
+            <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-[#4A8CB5]">Sag-info</p>
+            <h1 className="text-base font-semibold text-[#0D1F2D]">{ticket.title}</h1>
+            <p className="mt-2 text-sm text-[#4A8CB5]">
+              <span className="font-medium text-[#0D1F2D]">{companyFromTicketRow(ticket)}</span>
+              {emailDisplay ? (
+                <>
+                  <span> · </span>
+                  <span>{emailDisplay}</span>
+                </>
+              ) : null}
+            </p>
+            <p className="mt-1 text-xs text-[#4A8CB5]">Oprettet {formatDanishDateTime(ticket.created_at)}</p>
+            <div className="mt-3">
+              <TicketStatusToggle
+                ticketId={ticket.id}
+                status={ticket.status}
+                onUpdated={(next) =>
+                  setTicket((t) => (t ? { ...t, status: next } : null))
+                }
+              />
+            </div>
+            {ticket.description ? (
+              <p className="mt-4 whitespace-pre-wrap border-t border-sky-50 pt-3 text-sm text-[#2C4A5E]">
+                {ticket.description}
+              </p>
+            ) : null}
+          </section>
+
+          <TicketAttachmentsPanel
+            ticketId={ticket.id}
+            organisationId={ticket.organisation_id}
+          />
+        </aside>
       </div>
     </div>
   );

@@ -11,10 +11,9 @@ import {
 import { formatDanishDateTime } from "@/components/tickets/StatusBadge";
 import { TicketStatusToggle } from "@/components/tickets/TicketStatusToggle";
 import { TicketMessageThread } from "@/components/tickets/TicketMessageThread";
-import { AttachmentList } from "@/components/ui/AttachmentList";
+import { TicketAttachmentsPanel } from "@/components/tickets/TicketAttachmentsPanel";
 import { fetchCurrentProfile } from "@/lib/current-profile";
 import { setTicketLastViewedToNow } from "@/lib/ticket-last-viewed";
-import { normalizeTicketAttachmentRow, type TicketAttachment } from "@/lib/ticket-attachments";
 import { createClient } from "@/lib/supabase";
 
 export default function PortalSupportTicketPage() {
@@ -27,14 +26,11 @@ export default function PortalSupportTicketPage() {
   const [loading, setLoading] = useState(true);
   const [deleting, setDeleting] = useState(false);
   const [companyName, setCompanyName] = useState<string | null>(null);
-  const [ticketLevelAttachments, setTicketLevelAttachments] = useState<TicketAttachment[]>([]);
-  const [authUserId, setAuthUserId] = useState<string | null>(null);
 
   const loadTicket = useCallback(async () => {
     await Promise.resolve();
     setLoading(true);
     if (!id) {
-      setTicketLevelAttachments([]);
       setLoading(false);
       return;
     }
@@ -59,7 +55,6 @@ export default function PortalSupportTicketPage() {
 
     if (!row) {
       console.error("[ticket] load failed");
-      setTicketLevelAttachments([]);
       router.replace("/portal/support");
       setLoading(false);
       return;
@@ -67,26 +62,7 @@ export default function PortalSupportTicketPage() {
 
     setTicket(row);
     setLoading(false);
-
-    const { data: attData } = await supabase
-      .from("attachments")
-      .select(
-        "id, ticket_id, message_id, organisation_id, uploaded_by, file_name, file_size, file_type, storage_path, created_at",
-      )
-      .eq("ticket_id", row.id)
-      .is("message_id", null)
-      .order("created_at", { ascending: true });
-    const atts = (attData ?? [])
-      .map((r) => normalizeTicketAttachmentRow(r as Record<string, unknown>))
-      .filter((a): a is TicketAttachment => a !== null);
-    setTicketLevelAttachments(atts);
   }, [id, router, supabase]);
-
-  useEffect(() => {
-    void supabase.auth.getSession().then(({ data: { session } }) => {
-      setAuthUserId(session?.user?.id ?? null);
-    });
-  }, [supabase]);
 
   useEffect(() => {
     queueMicrotask(() => {
@@ -190,19 +166,10 @@ export default function PortalSupportTicketPage() {
           )}
             </section>
 
-          {ticketLevelAttachments.length > 0 ? (
-            <section className="rounded-2xl border border-sky-100 bg-white p-5 shadow-sm">
-              <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-[#4A8CB5]">Vedhæftninger</p>
-              <AttachmentList
-                attachments={ticketLevelAttachments}
-                showDelete
-                canDelete={(a) => (authUserId ? a.uploaded_by === authUserId : false)}
-                onDelete={(removedId) =>
-                  setTicketLevelAttachments((prev) => prev.filter((x) => x.id !== removedId))
-                }
-              />
-            </section>
-          ) : null}
+            <TicketAttachmentsPanel
+              ticketId={ticket.id}
+              organisationId={ticket.organisation_id}
+            />
 
           <button
             type="button"
