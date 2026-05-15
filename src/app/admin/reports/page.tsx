@@ -1,7 +1,8 @@
+import { redirect } from "next/navigation";
 import { requireAdmin } from "@/lib/require-admin";
-import AdminReportsClient from "./reports-client";
 
-export default async function AdminReportsPage() {
+/** Legacy route: per-kunde IT-rapporter ligger nu under /admin/it-rapporter. */
+export default async function AdminReportsLegacyRedirect() {
   await requireAdmin();
-  return <AdminReportsClient />;
+  redirect("/admin/it-rapporter");
 }

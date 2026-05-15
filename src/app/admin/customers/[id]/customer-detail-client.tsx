@@ -481,53 +481,57 @@ export default function AdminCustomerDetailClient() {
               </span>
             </div>
           </div>
-          <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-start sm:justify-end sm:gap-3">
-            <Link
-              href={`/admin/customers/${org.id}/dashboard`}
-              className="inline-flex items-center justify-center rounded-full border border-sky-200 bg-white px-5 py-2.5 text-center text-sm font-semibold text-sky-700 shadow-sm transition hover:border-sky-300 hover:bg-sky-50"
-            >
-              Se kundens dashboard
-            </Link>
-            <button
-              type="button"
-              disabled={monitoringRunBusy}
-              onClick={() => void runMonitoringNow()}
-              className="inline-flex items-center justify-center gap-2 rounded-full border border-slate-200 bg-white px-5 py-2.5 text-sm font-semibold text-slate-700 shadow-sm transition hover:border-slate-300 hover:bg-slate-50 disabled:pointer-events-none disabled:opacity-50"
-            >
-              {monitoringRunBusy ? (
-                <>
-                  <Loader2 className="h-4 w-4 shrink-0 animate-spin" aria-hidden />
-                  Kører...
-                </>
-              ) : (
-                "Kør monitoring nu"
-              )}
-            </button>
-            <button
-              type="button"
-              disabled={reportGenBusy}
-              onClick={() => void runItReportGenerate()}
-              className="inline-flex items-center justify-center gap-2 rounded-full border border-sky-200 bg-sky-50 px-5 py-2.5 text-sm font-semibold text-sky-800 shadow-sm transition hover:border-sky-300 hover:bg-sky-100 disabled:pointer-events-none disabled:opacity-50"
-            >
-              {reportGenBusy ? (
-                <>
-                  <Loader2 className="h-4 w-4 shrink-0 animate-spin" aria-hidden />
-                  Genererer...
-                </>
-              ) : (
-                <>
-                  <FileText className="h-4 w-4 shrink-0" aria-hidden />
-                  Generér IT-rapport
-                </>
-              )}
-            </button>
-            <button
-              type="button"
-              onClick={() => setInviteModalOpen(true)}
-              className="rounded-full bg-sky-600 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-sky-700"
-            >
-              Inviter bruger
-            </button>
+          <div className="flex w-full min-w-0 flex-col items-stretch gap-3 sm:w-auto sm:items-end">
+            <div className="flex flex-wrap items-center justify-end gap-2 sm:gap-3">
+              <Link
+                href={`/admin/customers/${org.id}/dashboard`}
+                className="inline-flex shrink-0 items-center justify-center rounded-full border border-sky-200 bg-white px-5 py-2.5 text-center text-sm font-semibold text-sky-700 shadow-sm transition hover:border-sky-300 hover:bg-sky-50"
+              >
+                Se kundens dashboard
+              </Link>
+              <button
+                type="button"
+                disabled={monitoringRunBusy}
+                onClick={() => void runMonitoringNow()}
+                className="inline-flex shrink-0 items-center justify-center gap-2 rounded-full border border-slate-200 bg-white px-5 py-2.5 text-sm font-semibold text-slate-700 shadow-sm transition hover:border-slate-300 hover:bg-slate-50 disabled:pointer-events-none disabled:opacity-50"
+              >
+                {monitoringRunBusy ? (
+                  <>
+                    <Loader2 className="h-4 w-4 shrink-0 animate-spin" aria-hidden />
+                    Kører...
+                  </>
+                ) : (
+                  "Kør monitoring nu"
+                )}
+              </button>
+              <button
+                type="button"
+                disabled={reportGenBusy}
+                onClick={() => void runItReportGenerate()}
+                className="inline-flex shrink-0 items-center justify-center gap-2 rounded-full border border-sky-200 bg-sky-50 px-5 py-2.5 text-sm font-semibold text-sky-800 shadow-sm transition hover:border-sky-300 hover:bg-sky-100 disabled:pointer-events-none disabled:opacity-50"
+              >
+                {reportGenBusy ? (
+                  <>
+                    <Loader2 className="h-4 w-4 shrink-0 animate-spin" aria-hidden />
+                    Genererer...
+                  </>
+                ) : (
+                  <>
+                    <FileText className="h-4 w-4 shrink-0" aria-hidden />
+                    Generér IT-rapport
+                  </>
+                )}
+              </button>
+            </div>
+            <div className="flex justify-end">
+              <button
+                type="button"
+                onClick={() => setInviteModalOpen(true)}
+                className="inline-flex shrink-0 rounded-full bg-sky-600 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-sky-700"
+              >
+                Inviter bruger
+              </button>
+            </div>
           </div>
         </div>
       </header>
