@@ -3,7 +3,11 @@
 import Link from "next/link";
 import { FormEvent, useCallback, useEffect, useMemo, useState } from "react";
 import { TicketUnreadCountBadge } from "@/components/tickets/TicketUnreadCountBadge";
-import { formatDanishDateTime, StatusBadge } from "@/components/tickets/StatusBadge";
+import {
+  formatDanishDateTime,
+  normalizeTicketStatus,
+  StatusBadge,
+} from "@/components/tickets/StatusBadge";
 import { companyFromTicketRow, type TicketWithProfileRow } from "@/lib/tickets-with-profile";
 import { fetchUnreadMessageCountsByTicket } from "@/lib/ticket-last-viewed";
 import { createClient } from "@/lib/supabase";
@@ -12,6 +16,8 @@ type OrganisationOption = {
   id: string;
   name: string;
 };
+
+type TicketView = "active" | "resolved";
 
 export default function AdminTicketsClient() {
   const supabase = useMemo(() => createClient(), []);
@@ -29,6 +35,7 @@ export default function AdminTicketsClient() {
   const [newTicketDescription, setNewTicketDescription] = useState("");
   const [newTicketPriority, setNewTicketPriority] = useState("normal");
   const [creatingTicket, setCreatingTicket] = useState(false);
+  const [ticketView, setTicketView] = useState<TicketView>("active");
 
   const loadTickets = useCallback(async () => {
     setTicketsLoading(true);
@@ -84,6 +91,23 @@ export default function AdminTicketsClient() {
     });
   }, [loadTickets, loadOrganisations]);
 
+  useEffect(() => {
+    setSelectedCompany("all");
+  }, [ticketView]);
+
+  const viewFilteredTickets = useMemo(() => {
+    const filtered = tickets.filter((t) => {
+      const status = normalizeTicketStatus(t.status);
+      return ticketView === "resolved" ? status === "resolved" : status !== "resolved";
+    });
+    if (ticketView === "resolved") {
+      return [...filtered].sort(
+        (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
+      );
+    }
+    return filtered;
+  }, [tickets, ticketView]);
+
   const resetNewTicketForm = () => {
     setSelectedOrganisationId("");
     setNewTicketTitle("");
@@ -124,7 +148,7 @@ export default function AdminTicketsClient() {
 
   const groupedByCompany = useMemo(() => {
     const map = new Map<string, TicketWithProfileRow[]>();
-    for (const t of tickets) {
+    for (const t of viewFilteredTickets) {
       const company = companyFromTicketRow(t);
       if (!map.has(company)) {
         map.set(company, []);
@@ -135,10 +159,10 @@ export default function AdminTicketsClient() {
       .map(([company, rows]) => ({
         company,
         tickets: rows,
-        activeCount: rows.filter((r) => r.status === "active").length,
+        ticketCount: rows.length,
       }))
       .sort((a, b) => a.company.localeCompare(b.company, "da"));
-  }, [tickets]);
+  }, [viewFilteredTickets]);
 
   const filteredGroups = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -161,10 +185,7 @@ export default function AdminTicketsClient() {
     [filteredGroups],
   );
 
-  const totalActive = useMemo(
-    () => tickets.filter((t) => t.status === "active").length,
-    [tickets],
-  );
+  const countLabel = ticketView === "resolved" ? "løste" : "aktive";
 
   return (
     <div>
@@ -173,17 +194,51 @@ export default function AdminTicketsClient() {
           <h1 className="text-2xl font-bold tracking-tight text-slate-900 md:text-3xl">Support & sager</h1>
           <p className="mt-2 text-sm text-slate-600">Tickets grupperet per kunde.</p>
         </div>
-        <button
-          type="button"
-          onClick={() => {
-            setErrorMessage(null);
-            setSuccessMessage(null);
-            setModalOpen(true);
-          }}
-          className="rounded-full bg-sky-600 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-sky-700"
-        >
-          Ny sag
-        </button>
+        <div className="flex flex-wrap items-center gap-3 sm:justify-end">
+          <div
+            className="inline-flex rounded-full border border-slate-200 bg-slate-100 p-0.5"
+            role="tablist"
+            aria-label="Vis aktive eller løste sager"
+          >
+            <button
+              type="button"
+              role="tab"
+              aria-selected={ticketView === "active"}
+              onClick={() => setTicketView("active")}
+              className={`rounded-full px-4 py-1.5 text-sm font-semibold transition ${
+                ticketView === "active"
+                  ? "bg-white text-sky-700 shadow-sm"
+                  : "text-slate-600 hover:text-slate-900"
+              }`}
+            >
+              Aktive
+            </button>
+            <button
+              type="button"
+              role="tab"
+              aria-selected={ticketView === "resolved"}
+              onClick={() => setTicketView("resolved")}
+              className={`rounded-full px-4 py-1.5 text-sm font-semibold transition ${
+                ticketView === "resolved"
+                  ? "bg-white text-sky-700 shadow-sm"
+                  : "text-slate-600 hover:text-slate-900"
+              }`}
+            >
+              Løste
+            </button>
+          </div>
+          <button
+            type="button"
+            onClick={() => {
+              setErrorMessage(null);
+              setSuccessMessage(null);
+              setModalOpen(true);
+            }}
+            className="rounded-full bg-sky-600 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-sky-700"
+          >
+            Ny sag
+          </button>
+        </div>
       </div>
 
       {successMessage ? (
@@ -197,6 +252,10 @@ export default function AdminTicketsClient() {
         <p className="mt-8 text-sm text-slate-500">Henter tickets...</p>
       ) : tickets.length === 0 ? (
         <p className="mt-8 text-sm text-slate-600">Ingen tickets.</p>
+      ) : viewFilteredTickets.length === 0 ? (
+        <p className="mt-8 text-sm text-slate-600">
+          Ingen {ticketView === "resolved" ? "løste" : "aktive"} sager.
+        </p>
       ) : (
         <div className="mt-8 grid grid-cols-1 gap-6 lg:grid-cols-[280px_minmax(0,1fr)]">
           <aside className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
@@ -210,7 +269,9 @@ export default function AdminTicketsClient() {
                 }`}
               >
                 <span>Alle sager</span>
-                <span className="text-xs font-semibold">{totalActive} aktive</span>
+                <span className="text-xs font-semibold">
+                  {viewFilteredTickets.length} {countLabel}
+                </span>
               </button>
               {groupedByCompany.map((group) => (
                 <button
@@ -222,7 +283,9 @@ export default function AdminTicketsClient() {
                   }`}
                 >
                   <span className="truncate">{group.company}</span>
-                  <span className="ml-2 shrink-0 text-xs font-semibold">{group.activeCount} aktive</span>
+                  <span className="ml-2 shrink-0 text-xs font-semibold">
+                    {group.ticketCount} {countLabel}
+                  </span>
                 </button>
               ))}
             </div>
@@ -241,7 +304,9 @@ export default function AdminTicketsClient() {
             </div>
 
             {totalFiltered === 0 ? (
-              <p className="mt-6 text-sm text-slate-600">Ingen sager matcher filteret.</p>
+              <p className="mt-6 text-sm text-slate-600">
+                Ingen {ticketView === "resolved" ? "løste" : "aktive"} sager matcher filteret.
+              </p>
             ) : (
               <div className="mt-6 space-y-6">
                 {filteredGroups.map((group) => (
