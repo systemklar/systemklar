@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { FormEvent, useCallback, useEffect, useMemo, useState } from "react";
 import { Pencil } from "lucide-react";
+import { AdminOnboardingSystemsTabs } from "@/components/admin/AdminOnboardingSystemsTabs";
 import { StatusBadge, formatDanishDateTime } from "@/components/tickets/StatusBadge";
 import { isLikelyOrganisationDomain, normalizeOrganisationDomainInput } from "@/lib/organisation-domain";
 
@@ -396,13 +397,21 @@ export default function AdminCustomerDetailClient() {
               </span>
             </div>
           </div>
-          <button
-            type="button"
-            onClick={() => setInviteModalOpen(true)}
-            className="rounded-full bg-sky-600 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-sky-700"
-          >
-            Inviter bruger
-          </button>
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-end">
+            <Link
+              href={`/admin/customers/${org.id}/dashboard`}
+              className="inline-flex items-center justify-center rounded-full border border-sky-200 bg-white px-5 py-2.5 text-center text-sm font-semibold text-sky-700 shadow-sm transition hover:border-sky-300 hover:bg-sky-50"
+            >
+              Se kundens dashboard
+            </Link>
+            <button
+              type="button"
+              onClick={() => setInviteModalOpen(true)}
+              className="rounded-full bg-sky-600 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-sky-700"
+            >
+              Inviter bruger
+            </button>
+          </div>
         </div>
       </header>
 
@@ -490,18 +499,9 @@ export default function AdminCustomerDetailClient() {
         <h2 className="mb-3 text-lg font-semibold text-[#0D1F2D]">Systemer</h2>
         <div className="space-y-4">
           {onboardingSystemNames.length > 0 ? (
-            <div className="rounded-2xl border border-sky-100 bg-white p-5 shadow-sm">
-              <div className="flex flex-wrap gap-2">
-                {onboardingSystemNames.map((name) => (
-                  <span
-                    key={name}
-                    className="inline-flex rounded-full border border-sky-200 bg-sky-50 px-3 py-1 text-xs font-medium text-[#0D1F2D]"
-                  >
-                    {name}
-                  </span>
-                ))}
-              </div>
-              <p className="mt-3 text-xs text-slate-500">Valgt under onboarding</p>
+            <div className="space-y-3">
+              <AdminOnboardingSystemsTabs storedNames={onboardingSystemNames} />
+              <p className="text-xs text-slate-500">Valgt under onboarding</p>
             </div>
           ) : null}
 
