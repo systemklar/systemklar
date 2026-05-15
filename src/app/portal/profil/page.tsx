@@ -10,7 +10,6 @@ import {
   useState,
 } from "react";
 import { Camera, Eye, EyeOff, Loader2 } from "lucide-react";
-import { PortalLayout } from "@/components/portal/PortalLayout";
 import { createClient } from "@/lib/supabase";
 
 type ProfileRow = {
@@ -304,19 +303,16 @@ export default function PortalProfilePage() {
 
   if (!profile && !loading) {
     return (
-      <PortalLayout activeNav="profile">
         <div className="mx-auto max-w-xl p-8 text-center">
           <h1 className="mb-3 text-xl font-bold text-[#0D1F2D]">Kunne ikke hente profil</h1>
           <p className="rounded-lg bg-red-50 px-4 py-3 text-sm text-red-700">
             {error ?? "Der opstod en ukendt fejl. Prøv at logge ud og ind igen."}
           </p>
         </div>
-      </PortalLayout>
     );
   }
 
   return (
-    <PortalLayout activeNav="profile">
       <div className="space-y-6">
         <h1 className="text-2xl font-bold text-[#0D1F2D]">Profil</h1>
 
@@ -579,6 +575,5 @@ export default function PortalProfilePage() {
           </>
         )}
       </div>
-    </PortalLayout>
   );
 }

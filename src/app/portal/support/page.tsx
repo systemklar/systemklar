@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { FileText, Loader2, Paperclip, X } from "lucide-react";
 import { FormEvent, useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { PortalLayout, usePortalSession } from "@/components/portal/PortalLayout";
+import { usePortalSession } from "@/components/portal/PortalLayout";
 import { TicketUnreadCountBadge } from "@/components/tickets/TicketUnreadCountBadge";
 import { AttachmentList } from "@/components/ui/AttachmentList";
 import { formatDanishDateTime, StatusBadge } from "@/components/tickets/StatusBadge";
@@ -328,8 +328,7 @@ export default function PortalSupportPage() {
   };
 
   return (
-    <PortalLayout activeNav="support">
-      <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-6">
         <div className="flex flex-wrap items-center justify-between gap-4 border-b border-sky-100 pb-6">
           <div>
             <h1 className="text-2xl font-bold text-[#0D1F2D]">Support & sager</h1>
@@ -551,6 +550,5 @@ export default function PortalSupportPage() {
           )}
         </div>
       </div>
-    </PortalLayout>
   );
 }

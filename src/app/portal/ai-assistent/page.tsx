@@ -1,7 +1,6 @@
 "use client";
 
 import { FormEvent, useEffect, useMemo, useRef, useState } from "react";
-import { PortalLayout } from "@/components/portal/PortalLayout";
 import { createClient } from "@/lib/supabase";
 
 type ChatRole = "user" | "assistant";
@@ -143,7 +142,6 @@ export default function PortalAiAssistantPage() {
   };
 
   return (
-    <PortalLayout activeNav="ai">
       <div className="card-hover mx-auto flex h-[calc(100vh-8rem)] w-full max-w-4xl flex-col rounded-2xl border border-[#E7E5E4] bg-white shadow-sm">
         <header className="shrink-0 border-b border-[#E7E5E4] px-5 py-4">
           <h1 className="text-xl font-bold text-[#1C1917]">AI-assistent</h1>
@@ -226,6 +224,5 @@ export default function PortalAiAssistantPage() {
           </form>
         </footer>
       </div>
-    </PortalLayout>
   );
 }

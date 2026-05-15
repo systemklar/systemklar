@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { type FormEvent, useEffect, useMemo, useState } from "react";
-import { PortalLayout } from "@/components/portal/PortalLayout";
 import { formatDkk, serviceUnitLabel } from "@/lib/service-units";
 import { logSupabaseError } from "@/lib/supabase-error";
 import { createClient } from "@/lib/supabase";
@@ -173,7 +172,6 @@ export default function PortalQuoteNewPage() {
   };
 
   return (
-    <PortalLayout activeNav="tilbudsgenerator">
       <div>
         <Link href="/portal/tilbudsgenerator" className="text-sm font-semibold text-blue-600 hover:underline">
           ← Tilbage til AI Tilbudsgenerator
@@ -293,6 +291,5 @@ export default function PortalQuoteNewPage() {
           </div>
         </form>
       </div>
-    </PortalLayout>
   );
 }

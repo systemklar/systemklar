@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { type FormEvent, useCallback, useEffect, useMemo, useState } from "react";
-import { PortalLayout } from "@/components/portal/PortalLayout";
 import { fetchCurrentProfile } from "@/lib/current-profile";
 import { formatDanishDateTime } from "@/components/tickets/StatusBadge";
 import { formatDkk, serviceUnitLabel } from "@/lib/service-units";
@@ -409,7 +408,6 @@ export default function PortalTilbudsgeneratorPage() {
   };
 
   return (
-    <PortalLayout activeNav="tilbudsgenerator">
       <div className="space-y-10">
         <header>
           <h1 className="text-2xl font-bold tracking-tight text-[#1C1917] md:text-3xl">AI Tilbudsgenerator</h1>
@@ -737,6 +735,5 @@ export default function PortalTilbudsgeneratorPage() {
           </div>
         ) : null}
       </div>
-    </PortalLayout>
   );
 }

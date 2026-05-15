@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { PortalLayout } from "@/components/portal/PortalLayout";
 import {
   fetchTicketWithProfileForUser,
   type TicketWithProfileRow,
@@ -103,16 +102,11 @@ export default function PortalSupportTicketPage() {
   };
 
   if (loading || !ticket) {
-    return (
-      <PortalLayout activeNav="support">
-        <p className="text-sm text-[#4A8CB5]">Indlæser sag...</p>
-      </PortalLayout>
-    );
+    return <p className="text-sm text-[#4A8CB5]">Indlæser sag...</p>;
   }
 
   return (
-    <PortalLayout activeNav="support">
-      <div className="flex min-h-0 flex-1 flex-col">
+    <div className="flex min-h-0 flex-1 flex-col">
         <Link href="/portal/support" className="text-sm font-semibold text-sky-600 hover:underline">
           ← Tilbage til Support & sager
         </Link>
@@ -182,6 +176,5 @@ export default function PortalSupportTicketPage() {
           </aside>
         </div>
       </div>
-    </PortalLayout>
   );
 }

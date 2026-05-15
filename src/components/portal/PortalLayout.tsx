@@ -8,6 +8,7 @@ import {
   useContext,
   useEffect,
   useMemo,
+  useRef,
   useState,
   type ReactNode,
 } from "react";
@@ -121,6 +122,22 @@ const navItems: { label: string; href: string; key: PortalNavKey; icon?: ReactNo
   { label: "Profil", href: "/portal/profil", key: "profile", icon: <User className="h-4 w-4 flex-shrink-0" /> },
 ];
 
+/** Bruges af `app/portal/layout.tsx` til at holde sidenav i sync med URL uden at duplikere logik per side. */
+export function activeNavFromPortalPath(pathname: string | null): PortalNavKey {
+  const p = pathname ?? "";
+  if (p === "/portal" || p === "/portal/") return "dashboard";
+  if (p.startsWith("/portal/support")) return "support";
+  if (p.startsWith("/portal/kodebank")) return "vault";
+  if (p.startsWith("/portal/rapport")) return "rapport";
+  if (p.startsWith("/portal/systemer")) return "systems";
+  if (p.startsWith("/portal/tilbudsgenerator") || p.startsWith("/portal/tilbud")) return "tilbudsgenerator";
+  if (p.startsWith("/portal/ai-assistent")) return "ai";
+  if (p.startsWith("/portal/vejledninger")) return "guides";
+  if (p.startsWith("/portal/team")) return "team";
+  if (p.startsWith("/portal/profil")) return "profile";
+  return "dashboard";
+}
+
 type PortalSession = {
   email: string | null;
   userId: string | null;
@@ -144,6 +161,8 @@ type PortalLayoutProps = {
 export function PortalLayout({ children, activeNav }: PortalLayoutProps) {
   const router = useRouter();
   const pathname = usePathname();
+  const pathnameRef = useRef(pathname);
+  pathnameRef.current = pathname;
   const supabase = useMemo(() => createClient(), []);
   const [isLoading, setIsLoading] = useState(true);
   const [userEmail, setUserEmail] = useState<string | null>(null);
@@ -169,7 +188,8 @@ export function PortalLayout({ children, activeNav }: PortalLayoutProps) {
       const profile = await fetchCurrentProfile(supabase, session.user.id);
       if (cancelled) return;
 
-      const onOnboardingRoute = pathname.startsWith("/portal/onboarding");
+      const path = pathnameRef.current ?? "";
+      const onOnboardingRoute = path.startsWith("/portal/onboarding");
       if (profile && needsOnboarding(profile.onboarding_completed)) {
         if (!onOnboardingRoute) {
           router.replace("/portal/onboarding");
@@ -214,7 +234,7 @@ export function PortalLayout({ children, activeNav }: PortalLayoutProps) {
       cancelled = true;
       subscription.unsubscribe();
     };
-  }, [router, supabase, pathname]);
+  }, [router, supabase]);
 
   const handleLogout = async () => {
     await supabase.auth.signOut();

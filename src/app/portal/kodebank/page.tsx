@@ -2,7 +2,6 @@
 
 import { FormEvent, useEffect, useMemo, useState } from "react";
 import { Lock } from "lucide-react";
-import { PortalLayout } from "@/components/portal/PortalLayout";
 
 type VaultCategory = "microsoft" | "google" | "regnskab" | "webshop" | "hr" | "it" | "andet";
 
@@ -220,7 +219,7 @@ export default function PortalKodebankPage() {
   };
 
   return (
-    <PortalLayout activeNav="vault">
+    <>
       <div className="space-y-6">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
@@ -481,6 +480,6 @@ export default function PortalKodebankPage() {
           </div>
         </div>
       )}
-    </PortalLayout>
+    </>
   );
 }

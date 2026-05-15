@@ -10,7 +10,6 @@ import {
   useState,
 } from "react";
 import { Camera, Loader2, Users } from "lucide-react";
-import { PortalLayout } from "@/components/portal/PortalLayout";
 import { createClient } from "@/lib/supabase";
 
 type TeamProfile = {
@@ -287,7 +286,7 @@ export default function PortalTeamPage() {
   const orgInitials = buildInitials(organisationName) || "??";
 
   return (
-    <PortalLayout activeNav="team">
+    <>
       <div className="space-y-6">
         <section className="rounded-2xl border border-sky-100 bg-white p-6 shadow-sm">
           <div className="flex items-start gap-5">
@@ -555,6 +554,6 @@ export default function PortalTeamPage() {
           </div>
         </div>
       ) : null}
-    </PortalLayout>
+    </>
   );
 }

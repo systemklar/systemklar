@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { type FormEvent, useCallback, useEffect, useMemo, useState } from "react";
-import { PortalLayout } from "@/components/portal/PortalLayout";
 import { formatDanishDateTime } from "@/components/tickets/StatusBadge";
 import { logSupabaseError } from "@/lib/supabase-error";
 import { createClient } from "@/lib/supabase";
@@ -131,26 +130,22 @@ export default function PortalTilbudDetailPage() {
   };
 
   if (loading) {
-    return (
-      <PortalLayout activeNav="tilbudsgenerator">
-        <p className="text-sm text-slate-600">Indlæser tilbud...</p>
-      </PortalLayout>
-    );
+    return <p className="text-sm text-slate-600">Indlæser tilbud...</p>;
   }
 
   if (!quote) {
     return (
-      <PortalLayout activeNav="tilbudsgenerator">
+      <>
         <Link href="/portal/tilbudsgenerator" className="text-sm font-semibold text-blue-600 hover:underline">
           ← Tilbage til AI Tilbudsgenerator
         </Link>
         <p className="mt-6 text-sm text-slate-600">Tilbud ikke fundet.</p>
-      </PortalLayout>
+      </>
     );
   }
 
   return (
-    <PortalLayout activeNav="tilbudsgenerator">
+    <>
       <Link href="/portal/tilbudsgenerator" className="text-sm font-semibold text-blue-600 hover:underline">
         ← Tilbage til AI Tilbudsgenerator
       </Link>
@@ -225,6 +220,6 @@ export default function PortalTilbudDetailPage() {
           </button>
         </div>
       </form>
-    </PortalLayout>
+    </>
   );
 }

@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { PortalLayout } from "@/components/portal/PortalLayout";
 import { ReportDetailView } from "@/components/reports/ReportDetailView";
 import { fetchPortalReportDetail, type ReportDetailRow } from "@/lib/report-detail-fetch";
 import { createClient } from "@/lib/supabase";
@@ -51,32 +50,26 @@ export default function PortalRapportDetailPage() {
   }, [load]);
 
   if (loading) {
-    return (
-      <PortalLayout activeNav="rapport">
-        <p className="text-slate-600">Indlæser rapport...</p>
-      </PortalLayout>
-    );
+    return <p className="text-slate-600">Indlæser rapport...</p>;
   }
 
   if (!payload) {
     return (
-      <PortalLayout activeNav="rapport">
+      <>
         <Link href="/portal/rapport" className="text-sm font-semibold text-emerald-700 hover:underline">
           ← Tilbage til IT-rapport
         </Link>
         <p className="mt-6 text-sm text-slate-600">Rapporten findes ikke.</p>
-      </PortalLayout>
+      </>
     );
   }
 
   return (
-    <PortalLayout activeNav="rapport">
-      <ReportDetailView
+    <ReportDetailView
         report={payload.report}
         companyName={payload.company_name}
         backHref="/portal/rapport"
         backLabel="← Tilbage til IT-rapport"
       />
-    </PortalLayout>
   );
 }

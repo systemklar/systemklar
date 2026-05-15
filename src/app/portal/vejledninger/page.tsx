@@ -2,7 +2,6 @@
 
 import { FileText, HelpCircle, Play } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { PortalLayout } from "@/components/portal/PortalLayout";
 import { getGuideCategoryIcon } from "@/lib/guide-icons";
 import { toVideoEmbedUrl } from "@/lib/video-embed";
 import { createClient } from "@/lib/supabase";
@@ -95,7 +94,7 @@ export default function PortalVejledningerPage() {
   }, [guides, search, filterCategoryId]);
 
   return (
-    <PortalLayout activeNav="guides">
+    <>
       <div className="mx-auto max-w-5xl space-y-8">
         <header>
           <h1 className="text-3xl font-bold text-[#0D1F2D]">Vejledninger &amp; FAQ</h1>
@@ -284,6 +283,6 @@ export default function PortalVejledningerPage() {
           </div>
         </div>
       ) : null}
-    </PortalLayout>
+    </>
   );
 }

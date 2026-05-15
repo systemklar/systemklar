@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { PortalLayout } from "@/components/portal/PortalLayout";
 import { formatDanishDateTime } from "@/components/tickets/StatusBadge";
 import { REPORTS_TABLE_COLUMNS } from "@/lib/reports-queries";
 import { logSupabaseError } from "@/lib/supabase-error";
@@ -63,8 +62,7 @@ export default function PortalRapportPage() {
   }, [load]);
 
   return (
-    <PortalLayout activeNav="rapport">
-      <div className="mx-auto max-w-3xl">
+    <div className="mx-auto max-w-3xl">
         <h1 className="text-2xl font-bold text-[#0D1F2D]">IT-rapport</h1>
         <p className="mt-2 text-sm text-[#4A8CB5]">
           Dine månedlige rapporter over drift, hændelser og anbefalinger.
@@ -99,7 +97,6 @@ export default function PortalRapportPage() {
             ))}
           </ul>
         )}
-      </div>
-    </PortalLayout>
+    </div>
   );
 }

@@ -1,7 +1,6 @@
 "use client";
 
 import { type FormEvent, useCallback, useEffect, useMemo, useState } from "react";
-import { PortalLayout } from "@/components/portal/PortalLayout";
 import { fetchCurrentProfile } from "@/lib/current-profile";
 import { logSupabaseError } from "@/lib/supabase-error";
 import { createClient } from "@/lib/supabase";
@@ -196,7 +195,6 @@ export default function PortalSystemsPage() {
   };
 
   return (
-    <PortalLayout activeNav="systems">
       <div>
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
@@ -306,6 +304,5 @@ export default function PortalSystemsPage() {
           </div>
         ) : null}
       </div>
-    </PortalLayout>
   );
 }
