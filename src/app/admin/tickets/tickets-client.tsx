@@ -36,6 +36,7 @@ export default function AdminTicketsClient() {
   const [newTicketPriority, setNewTicketPriority] = useState("normal");
   const [creatingTicket, setCreatingTicket] = useState(false);
   const [ticketView, setTicketView] = useState<TicketView>("active");
+  const [resolvingIds, setResolvingIds] = useState<Set<string>>(() => new Set());
 
   const loadTickets = useCallback(async () => {
     setTicketsLoading(true);
@@ -144,6 +145,34 @@ export default function AdminTicketsClient() {
     setModalOpen(false);
     setSuccessMessage("Sagen er oprettet.");
     await loadTickets();
+  };
+
+  const markAsResolved = async (ticketId: string) => {
+    const previous = tickets;
+    setErrorMessage(null);
+    setTickets((prev) =>
+      prev.map((t) => (t.id === ticketId ? { ...t, status: "resolved" } : t)),
+    );
+    setResolvingIds((prev) => new Set(prev).add(ticketId));
+
+    const res = await fetch(`/api/tickets/${ticketId}/status`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      credentials: "same-origin",
+      body: JSON.stringify({ status: "resolved" }),
+    });
+
+    setResolvingIds((prev) => {
+      const next = new Set(prev);
+      next.delete(ticketId);
+      return next;
+    });
+
+    if (!res.ok) {
+      setTickets(previous);
+      const payload = (await res.json().catch(() => ({}))) as { error?: string };
+      setErrorMessage(payload.error ?? "Kunne ikke markere sagen som løst.");
+    }
   };
 
   const groupedByCompany = useMemo(() => {
@@ -315,24 +344,44 @@ export default function AdminTicketsClient() {
                       <p className="font-semibold text-slate-900">{group.company}</p>
                       <p className="text-xs text-slate-500">{group.tickets.length} sager</p>
                     </div>
-                    <ul className="divide-y divide-slate-200">
-                      {group.tickets.map((t) => (
-                        <li key={t.id}>
-                          <Link
-                            href={`/admin/tickets/${t.id}`}
-                            className="flex flex-col gap-3 px-5 py-4 transition hover:bg-slate-50 md:flex-row md:items-center md:justify-between"
+                    <ul className="divide-y divide-slate-200">                      {group.tickets.map((t) => {
+                        const isResolving = resolvingIds.has(t.id);
+                        return (
+                          <li
+                            key={t.id}
+                            className="flex flex-col gap-2 px-5 py-4 sm:flex-row sm:items-center sm:justify-between"
                           >
-                            <div className="min-w-0 flex-1">
+                            <Link
+                              href={`/admin/tickets/${t.id}`}
+                              className="min-w-0 flex-1 transition hover:opacity-80"
+                            >
                               <div className="flex flex-wrap items-center gap-2">
                                 <p className="font-medium text-slate-900">{t.title}</p>
                                 <TicketUnreadCountBadge count={unreadByTicket[t.id] ?? 0} />
                               </div>
-                              <p className="mt-0.5 text-sm text-slate-500">{formatDanishDateTime(t.created_at)}</p>
+                              <p className="mt-0.5 text-sm text-slate-500">
+                                {formatDanishDateTime(t.created_at)}
+                              </p>
+                            </Link>
+                            <div className="flex shrink-0 flex-wrap items-center gap-2 sm:justify-end">
+                              <StatusBadge status={t.status} />
+                              {ticketView === "active" ? (
+                                <button
+                                  type="button"
+                                  disabled={isResolving}
+                                  onClick={(event) => {
+                                    event.preventDefault();
+                                    void markAsResolved(t.id);
+                                  }}
+                                  className="rounded-full border border-slate-200 bg-white px-2.5 py-1 text-xs font-medium text-slate-600 transition hover:border-slate-300 hover:bg-slate-50 disabled:opacity-50"
+                                >
+                                  {isResolving ? "Gemmer…" : "Markér som løst"}
+                                </button>
+                              ) : null}
                             </div>
-                            <StatusBadge status={t.status} />
-                          </Link>
-                        </li>
-                      ))}
+                          </li>
+                        );
+                      })}
                     </ul>
                   </div>
                 ))}
