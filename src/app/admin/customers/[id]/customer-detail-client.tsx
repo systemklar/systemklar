@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { FormEvent, useCallback, useEffect, useMemo, useState } from "react";
-import { Pencil } from "lucide-react";
+import { Loader2, Pencil } from "lucide-react";
 import { AdminOnboardingSystemsTabs } from "@/components/admin/AdminOnboardingSystemsTabs";
 import { StatusBadge, formatDanishDateTime } from "@/components/tickets/StatusBadge";
 import { isLikelyOrganisationDomain, normalizeOrganisationDomainInput } from "@/lib/organisation-domain";
@@ -101,6 +101,9 @@ export default function AdminCustomerDetailClient() {
   const [domainDraft, setDomainDraft] = useState("");
   const [domainSaving, setDomainSaving] = useState(false);
   const [domainFieldError, setDomainFieldError] = useState<string | null>(null);
+  const [monitoringRunBusy, setMonitoringRunBusy] = useState(false);
+  const [monitoringRefreshNonce, setMonitoringRefreshNonce] = useState(0);
+  const [toast, setToast] = useState<{ type: "success" | "error"; message: string } | null>(null);
 
   const load = useCallback(async () => {
     if (!id) {
@@ -183,6 +186,12 @@ export default function AdminCustomerDetailClient() {
     setDomainDraft("");
     setDomainFieldError(null);
   }, [id]);
+
+  useEffect(() => {
+    if (!toast) return;
+    const timer = window.setTimeout(() => setToast(null), 5000);
+    return () => clearTimeout(timer);
+  }, [toast]);
 
   const onboardingSystemNames = useMemo(() => {
     const list = org?.profiles ?? [];
@@ -304,6 +313,45 @@ export default function AdminCustomerDetailClient() {
     router.push("/admin/customers");
   };
 
+  const runMonitoringNow = async () => {
+    if (!org) return;
+    setMonitoringRunBusy(true);
+    setToast(null);
+    try {
+      const res = await fetch("/api/admin/monitoring/run", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ organisationId: org.id }),
+      });
+      const payload = (await res.json().catch(() => ({}))) as {
+        error?: string;
+        systemsChecked?: number;
+        message?: string;
+      };
+      if (!res.ok) {
+        setToast({
+          type: "error",
+          message: payload.error ?? "Overvågning kunne ikke køres.",
+        });
+        return;
+      }
+      const n = typeof payload.systemsChecked === "number" ? payload.systemsChecked : 0;
+      setToast({
+        type: "success",
+        message:
+          n === 0
+            ? "Overvågning færdig — ingen systemer blev tjekket."
+            : `Overvågning færdig — ${n} system${n === 1 ? "" : "er"} tjekket.`,
+      });
+      setMonitoringRefreshNonce((k) => k + 1);
+    } catch {
+      setToast({ type: "error", message: "Netværksfejl. Prøv igen." });
+    } finally {
+      setMonitoringRunBusy(false);
+    }
+  };
+
   if (loading) return <p className="text-sm text-slate-600">Indlæser virksomhed...</p>;
 
   if (!org) {
@@ -397,13 +445,28 @@ export default function AdminCustomerDetailClient() {
               </span>
             </div>
           </div>
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-end">
+          <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-start sm:justify-end sm:gap-3">
             <Link
               href={`/admin/customers/${org.id}/dashboard`}
               className="inline-flex items-center justify-center rounded-full border border-sky-200 bg-white px-5 py-2.5 text-center text-sm font-semibold text-sky-700 shadow-sm transition hover:border-sky-300 hover:bg-sky-50"
             >
               Se kundens dashboard
             </Link>
+            <button
+              type="button"
+              disabled={monitoringRunBusy}
+              onClick={() => void runMonitoringNow()}
+              className="inline-flex items-center justify-center gap-2 rounded-full border border-slate-200 bg-white px-5 py-2.5 text-sm font-semibold text-slate-700 shadow-sm transition hover:border-slate-300 hover:bg-slate-50 disabled:pointer-events-none disabled:opacity-50"
+            >
+              {monitoringRunBusy ? (
+                <>
+                  <Loader2 className="h-4 w-4 shrink-0 animate-spin" aria-hidden />
+                  Kører...
+                </>
+              ) : (
+                "Kør monitoring nu"
+              )}
+            </button>
             <button
               type="button"
               onClick={() => setInviteModalOpen(true)}
@@ -500,7 +563,11 @@ export default function AdminCustomerDetailClient() {
         <div className="space-y-4">
           {onboardingSystemNames.length > 0 ? (
             <div className="space-y-3">
-              <AdminOnboardingSystemsTabs storedNames={onboardingSystemNames} organisationId={org.id} />
+              <AdminOnboardingSystemsTabs
+                storedNames={onboardingSystemNames}
+                organisationId={org.id}
+                monitoringRefreshNonce={monitoringRefreshNonce}
+              />
               <p className="text-xs text-slate-500">Valgt under onboarding</p>
             </div>
           ) : null}
@@ -553,6 +620,20 @@ export default function AdminCustomerDetailClient() {
           {deleteBusy ? "Sletter..." : "Slet virksomhed"}
         </button>
       </section>
+
+      {toast ? (
+        <div
+          role="status"
+          aria-live="polite"
+          className={`fixed bottom-6 right-6 z-[60] max-w-sm rounded-xl border px-4 py-3 text-sm font-medium shadow-lg ${
+            toast.type === "success"
+              ? "border-green-200 bg-green-50 text-green-900"
+              : "border-red-200 bg-red-50 text-red-900"
+          }`}
+        >
+          {toast.message}
+        </div>
+      ) : null}
 
       {inviteModalOpen ? (
         <div

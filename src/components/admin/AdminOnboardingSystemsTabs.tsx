@@ -12,9 +12,15 @@ import {
 type AdminOnboardingSystemsTabsProps = {
   storedNames: string[];
   organisationId: string;
+  /** Øg for at hente monitoring igen (efter manuel kørsel). */
+  monitoringRefreshNonce?: number;
 };
 
-export function AdminOnboardingSystemsTabs({ storedNames, organisationId }: AdminOnboardingSystemsTabsProps) {
+export function AdminOnboardingSystemsTabs({
+  storedNames,
+  organisationId,
+  monitoringRefreshNonce = 0,
+}: AdminOnboardingSystemsTabsProps) {
   const groups = useMemo(() => buildOnboardingDashboardGroups(storedNames), [storedNames]);
   const [activeShortLabel, setActiveShortLabel] = useState(groups[0]?.shortLabel ?? "");
   const [monitoringByName, setMonitoringByName] = useState<Map<string, MonitoringResultRow>>(() => new Map());
@@ -55,7 +61,7 @@ export function AdminOnboardingSystemsTabs({ storedNames, organisationId }: Admi
     return () => {
       cancelled = true;
     };
-  }, [organisationId]);
+  }, [organisationId, monitoringRefreshNonce]);
 
   if (groups.length === 0) return null;
 
