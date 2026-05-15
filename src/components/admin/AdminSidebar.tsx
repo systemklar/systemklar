@@ -12,6 +12,7 @@ export type AdminNavKey =
   | "customers"
   | "tickets"
   | "reports"
+  | "itRapporter"
   | "emails"
   | "guides"
   | "systems";
@@ -36,6 +37,12 @@ const navItems: { label: string; href: string; key: AdminNavKey; icon: ReactNode
   { label: "Support & sager", href: "/admin/tickets", key: "tickets", icon: <DotIcon path="M4 7a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v4a2 2 0 1 0 0 4v2a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-2a2 2 0 1 0 0-4V7Z" /> },
   { label: "IT-rapporter", href: "/admin/reports", key: "reports", icon: <DotIcon path="M7 4h7l3 3v13H7zM14 4v3h3M10 12h4M10 15h4" /> },
   {
+    label: "Org. IT-rapporter",
+    href: "/admin/it-rapporter",
+    key: "itRapporter",
+    icon: <DotIcon path="M7 4h7l3 3v13H7zM14 4v3h3M10 12h4M10 15h4" />,
+  },
+  {
     label: "Email-skabeloner",
     href: "/admin/emails",
     key: "emails",
@@ -56,7 +63,7 @@ export function AdminSidebar({ activeNav, open = false, onClose }: AdminSidebarP
   const navGroups = [
     { label: "Overblik", keys: ["overview"] as AdminNavKey[] },
     { label: "Kunder", keys: ["customers", "tickets"] as AdminNavKey[] },
-    { label: "Indhold", keys: ["reports", "guides", "emails"] as AdminNavKey[] },
+    { label: "Indhold", keys: ["reports", "itRapporter", "guides", "emails"] as AdminNavKey[] },
     { label: "System", keys: ["systems"] as AdminNavKey[] },
   ];
 

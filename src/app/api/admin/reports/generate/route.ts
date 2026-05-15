@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { generateItReportForOrganisation } from "@/lib/it-reports-generate";
 import { requireAdminSession } from "@/lib/require-admin-api";
 import { createServiceRoleClient } from "@/lib/supabase-service-role";
 
@@ -69,12 +70,30 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Ugyldig JSON." }, { status: 400 });
   }
 
-  const userId =
-    typeof body === "object" && body !== null && "user_id" in body
-      ? String((body as { user_id?: unknown }).user_id ?? "")
-      : "";
+  const bodyRecord = typeof body === "object" && body !== null ? (body as Record<string, unknown>) : {};
+  const organisationId = String(bodyRecord.organisationId ?? "").trim();
+
+  if (organisationId) {
+    const admin = createServiceRoleClient();
+    if (!admin) {
+      return NextResponse.json({ error: "Serverkonfiguration." }, { status: 500 });
+    }
+    try {
+      const { id } = await generateItReportForOrganisation(admin, organisationId);
+      return NextResponse.json({
+        id,
+        redirect: `/admin/it-rapporter/${id}`,
+      });
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : "Kunne ikke generere rapport.";
+      console.error("[api/admin/reports/generate] organisation", e);
+      return NextResponse.json({ error: msg }, { status: 500 });
+    }
+  }
+
+  const userId = String(bodyRecord.user_id ?? "").trim();
   if (!userId) {
-    return NextResponse.json({ error: "user_id er påkrævet." }, { status: 400 });
+    return NextResponse.json({ error: "organisationId eller user_id er påkrævet." }, { status: 400 });
   }
 
   const admin = createServiceRoleClient();

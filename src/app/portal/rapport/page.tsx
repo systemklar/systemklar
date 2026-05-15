@@ -1,22 +1,28 @@
 "use client";
 
-import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { formatDanishDateTime } from "@/components/tickets/StatusBadge";
-import { REPORTS_TABLE_COLUMNS } from "@/lib/reports-queries";
-import { logSupabaseError } from "@/lib/supabase-error";
+import { FileDown } from "lucide-react";
 import { createClient } from "@/lib/supabase";
+import { logSupabaseError } from "@/lib/supabase-error";
 
-type ReportListRow = {
+type ItReportListRow = {
   id: string;
   title: string;
-  period: string;
-  created_at: string;
+  period_start: string;
+  period_end: string;
+  status: string;
 };
+
+function periodLabel(start: string, end: string): string {
+  const a = new Date(start);
+  const b = new Date(end);
+  if (Number.isNaN(a.getTime()) || Number.isNaN(b.getTime())) return `${start} – ${end}`;
+  return `${a.toLocaleDateString("da-DK", { day: "numeric", month: "long", year: "numeric" })} – ${b.toLocaleDateString("da-DK", { day: "numeric", month: "long", year: "numeric" })}`;
+}
 
 export default function PortalRapportPage() {
   const supabase = useMemo(() => createClient(), []);
-  const [reports, setReports] = useState<ReportListRow[]>([]);
+  const [reports, setReports] = useState<ItReportListRow[]>([]);
   const [loading, setLoading] = useState(true);
 
   const load = useCallback(async () => {
@@ -31,26 +37,38 @@ export default function PortalRapportPage() {
       return;
     }
 
+    const { data: profile, error: pErr } = await supabase
+      .from("profiles")
+      .select("organisation_id")
+      .or(`user_id.eq.${user.id},id.eq.${user.id}`)
+      .maybeSingle();
+
+    if (pErr) {
+      logSupabaseError("[portal/rapport] profile", pErr);
+      setReports([]);
+      setLoading(false);
+      return;
+    }
+
+    const orgId = profile?.organisation_id as string | null | undefined;
+    if (!orgId) {
+      setReports([]);
+      setLoading(false);
+      return;
+    }
+
     const { data, error } = await supabase
-      .from("reports")
-      .select(REPORTS_TABLE_COLUMNS)
-      .eq("user_id", user.id)
+      .from("it_reports")
+      .select("id, title, period_start, period_end, status")
+      .eq("organisation_id", orgId)
+      .eq("status", "sent")
       .order("created_at", { ascending: false });
 
     if (error) {
-      logSupabaseError("[portal/rapport] list", error);
+      logSupabaseError("[portal/rapport] it_reports", error);
       setReports([]);
     } else {
-      const rows = (data ?? []).map((raw) => {
-        const r = raw as Record<string, unknown>;
-        return {
-          id: String(r.id),
-          title: String(r.title),
-          period: String(r.period),
-          created_at: String(r.created_at),
-        } satisfies ReportListRow;
-      });
-      setReports(rows);
+      setReports((data ?? []) as ItReportListRow[]);
     }
     setLoading(false);
   }, [supabase]);
@@ -63,40 +81,42 @@ export default function PortalRapportPage() {
 
   return (
     <div className="mx-auto max-w-3xl">
-        <h1 className="text-2xl font-bold text-[#0D1F2D]">IT-rapport</h1>
-        <p className="mt-2 text-sm text-[#4A8CB5]">
-          Dine månedlige rapporter over drift, hændelser og anbefalinger.
-        </p>
+      <h1 className="text-2xl font-bold text-[#0D1F2D]">IT-rapport</h1>
+      <p className="mt-2 text-sm text-[#4A8CB5]">
+        Dine månedlige IT-statusrapporter — download som HTML og gem som PDF fra browseren.
+      </p>
 
-        {loading ? (
-          <p className="mt-10 text-sm text-[#4A8CB5]">Henter rapporter...</p>
-        ) : reports.length === 0 ? (
-          <p className="mt-10 rounded-2xl border border-sky-100 bg-white px-5 py-8 text-center text-sm text-[#4A8CB5] shadow-sm">
-            <span className="font-medium text-[#0D1F2D]">Ingen rapporter endnu</span>
-            <span className="mt-2 block text-[#4A8CB5]">
-              Din første rapport vil blive klar ved månedens afslutning, eller kontakt support hvis noget ser forkert ud.
-            </span>
-          </p>
-        ) : (
-          <ul className="mt-8 space-y-4">
-            {reports.map((r) => (
-              <li key={r.id}>
-                <Link
-                  href={`/portal/rapport/${r.id}`}
-                  className="block cursor-pointer rounded-2xl border border-sky-100 bg-white p-6 shadow-sm transition-all hover:shadow-md"
-                >
-                  <span className="inline-flex rounded-full bg-[#F0F7FF] px-3 py-1 text-xs font-medium text-sky-700">
-                    {r.period}
-                  </span>
-                  <p className="mt-4 text-base font-semibold text-[#0D1F2D]">{r.title}</p>
-                  <p className="mt-3 text-xs text-[#4A8CB5]">
-                    Oppetid · Løste sager · Åbne sager · {formatDanishDateTime(r.created_at)}
-                  </p>
-                </Link>
-              </li>
-            ))}
-          </ul>
-        )}
+      {loading ? (
+        <p className="mt-10 text-sm text-[#4A8CB5]">Henter rapporter...</p>
+      ) : reports.length === 0 ? (
+        <p className="mt-10 rounded-2xl border border-sky-100 bg-white px-5 py-8 text-center text-sm text-[#4A8CB5] shadow-sm">
+          <span className="font-medium text-[#0D1F2D]">Ingen rapporter endnu.</span>
+          <span className="mt-2 block">
+            Din første rapport genereres af Systemklar hver måned.
+          </span>
+        </p>
+      ) : (
+        <ul className="mt-8 space-y-4">
+          {reports.map((r) => (
+            <li
+              key={r.id}
+              className="flex flex-col gap-3 rounded-2xl border border-sky-100 bg-white p-6 shadow-sm sm:flex-row sm:items-center sm:justify-between"
+            >
+              <div>
+                <p className="text-base font-semibold text-[#0D1F2D]">{r.title}</p>
+                <p className="mt-1 text-sm text-[#4A8CB5]">{periodLabel(r.period_start, r.period_end)}</p>
+              </div>
+              <a
+                href={`/api/portal/reports/${r.id}/pdf`}
+                className="inline-flex shrink-0 items-center justify-center gap-2 rounded-xl bg-sky-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-sky-700"
+              >
+                <FileDown className="h-4 w-4" aria-hidden />
+                Download rapport
+              </a>
+            </li>
+          ))}
+        </ul>
+      )}
     </div>
   );
 }
