@@ -13,6 +13,7 @@ import {
 } from "react";
 import { SystemklarLogo } from "@/components/branding/SystemklarLogo";
 import { fetchCurrentProfile } from "@/lib/current-profile";
+import { needsOnboarding } from "@/lib/onboarding";
 import { createClient } from "@/lib/supabase";
 
 export type PortalNavKey =
@@ -166,6 +167,18 @@ export function PortalLayout({ children, activeNav }: PortalLayoutProps) {
       }
       const profile = await fetchCurrentProfile(supabase, session.user.id);
       if (cancelled) return;
+
+      const onOnboardingRoute = pathname.startsWith("/portal/onboarding");
+      if (profile && needsOnboarding(profile.onboarding_completed)) {
+        if (!onOnboardingRoute) {
+          router.replace("/portal/onboarding");
+          return;
+        }
+      } else if (onOnboardingRoute) {
+        router.replace("/portal");
+        return;
+      }
+
       setUserEmail(session.user.email ?? null);
       setUserId(session.user.id);
       setRole(profile?.role ?? null);
@@ -200,7 +213,7 @@ export function PortalLayout({ children, activeNav }: PortalLayoutProps) {
       cancelled = true;
       subscription.unsubscribe();
     };
-  }, [router, supabase]);
+  }, [router, supabase, pathname]);
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
