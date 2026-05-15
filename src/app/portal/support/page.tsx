@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 import { FileText, Loader2, Paperclip, X } from "lucide-react";
-import { FormEvent, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { FormEvent, Suspense, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { usePortalSession } from "@/components/portal/PortalLayout";
 import { TicketUnreadCountBadge } from "@/components/tickets/TicketUnreadCountBadge";
 import { AttachmentList } from "@/components/ui/AttachmentList";
@@ -109,7 +110,26 @@ function closeCreationState(setters: {
   setErrorMessage(null);
 }
 
-export default function PortalSupportPage() {
+function SupportSubjectFromQuery({
+  onApplySubject,
+}: {
+  onApplySubject: (subject: string) => void;
+}) {
+  const searchParams = useSearchParams();
+  const applied = useRef(false);
+
+  useEffect(() => {
+    if (applied.current) return;
+    const s = searchParams.get("subject")?.trim();
+    if (!s) return;
+    applied.current = true;
+    onApplySubject(s);
+  }, [searchParams, onApplySubject]);
+
+  return null;
+}
+
+function PortalSupportPageInner() {
   const supabase = useMemo(() => createClient(), []);
   const portalSession = usePortalSession();
   const [orgId, setOrgId] = useState<string | null>(null);
@@ -151,6 +171,11 @@ export default function PortalSupportPage() {
   const [pendingFiles, setPendingFiles] = useState<File[]>([]);
   const [uploadingFiles, setUploadingFiles] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const applySubjectFromQuery = useCallback((subject: string) => {
+    setTitle(subject);
+    setShowForm(true);
+  }, []);
 
   const fetchTickets = useCallback(async () => {
     const {
@@ -329,6 +354,9 @@ export default function PortalSupportPage() {
 
   return (
     <div className="flex flex-col gap-6">
+      <Suspense fallback={null}>
+        <SupportSubjectFromQuery onApplySubject={applySubjectFromQuery} />
+      </Suspense>
         <div className="flex flex-wrap items-center justify-between gap-4 border-b border-sky-100 pb-6">
           <div>
             <h1 className="text-2xl font-bold text-[#0D1F2D]">Support & sager</h1>
@@ -550,5 +578,13 @@ export default function PortalSupportPage() {
           )}
         </div>
       </div>
+  );
+}
+
+export default function PortalSupportPage() {
+  return (
+    <Suspense fallback={<div className="p-6 text-sm text-slate-500">Indlæser…</div>}>
+      <PortalSupportPageInner />
+    </Suspense>
   );
 }

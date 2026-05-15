@@ -31,7 +31,7 @@ export async function collectOnboardingSystemNames(
 }
 
 /**
- * Kører alle implementerede checks for valgte onboarding-systemer og upserter rækker i `monitoring_results`.
+ * Kører checks og indsætter nye rækker i `monitoring_results` (historik — ingen upsert).
  */
 export async function runMonitoringForOrganisation(
   admin: SupabaseClient,
@@ -86,13 +86,11 @@ export async function runMonitoringForOrganisation(
     }
   }
 
-  const { error: upsertErr } = await admin.from("monitoring_results").upsert(rows, {
-    onConflict: "organisation_id,system_name",
-  });
+  const { error: insertErr } = await admin.from("monitoring_results").insert(rows);
 
-  if (upsertErr) {
-    console.error("[monitoring] upsert", upsertErr);
-    return { ok: false, message: upsertErr.message, systemsChecked: rows.length };
+  if (insertErr) {
+    console.error("[monitoring] insert", insertErr);
+    return { ok: false, message: insertErr.message, systemsChecked: rows.length };
   }
 
   return { ok: true, systemsChecked: rows.length };
