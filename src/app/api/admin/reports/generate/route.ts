@@ -5,7 +5,7 @@ import { createServiceRoleClient } from "@/lib/supabase-service-role";
 
 export const dynamic = 'force-dynamic';
 
-const MODEL = "claude-sonnet-4-20250514";
+const MODEL = "claude-sonnet-4-5";
 const SYSTEM_PROMPT =
   "Du er en IT-konsulent for Systemklar. Generer en professionel dansk IT-rapport baseret på følgende sager. Inkluder: statusoversigt, løste problemer, aktive problemer og anbefalinger.";
 

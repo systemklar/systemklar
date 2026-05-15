@@ -4,7 +4,7 @@ import {
   type ITReportContentV1,
 } from "@/lib/it-reports";
 
-const MODEL = "claude-sonnet-4-20250514";
+const MODEL = "claude-sonnet-4-5";
 
 type MonRow = { system_name: string; status: string; checked_at: string };
 
