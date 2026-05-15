@@ -16,6 +16,8 @@ const FILE_ACCEPT = "image/*,.pdf,.doc,.docx,.xlsx,.txt";
 type TicketAttachmentsPanelProps = {
   ticketId: string;
   organisationId: string;
+  /** Hent via admin API (service role) — omgår RLS på admin-sider. */
+  useAdminApi?: boolean;
   /** Vis upload-knap (portal + admin). */
   allowUpload?: boolean;
 };
@@ -42,39 +44,65 @@ function fileIcon(fileName: string, mime: string | null) {
 export function TicketAttachmentsPanel({
   ticketId,
   organisationId,
+  useAdminApi = false,
   allowUpload = true,
 }: TicketAttachmentsPanelProps) {
   const supabase = useMemo(() => createClient(), []);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [attachments, setAttachments] = useState<TicketAttachment[]>([]);
+  const [openUrls, setOpenUrls] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const loadAttachments = useCallback(async () => {
     if (!ticketId) {
-      console.warn("[TicketAttachmentsPanel] mangler ticketId");
       setAttachments([]);
+      setOpenUrls({});
       setLoading(false);
       return;
     }
     setLoading(true);
-    console.info("[TicketAttachmentsPanel] henter vedhæftninger", {
-      ticketId,
-      organisationId,
-      bucket: TICKET_ATTACHMENTS_BUCKET,
-    });
+
+    if (useAdminApi) {
+      const res = await fetch(`/api/admin/tickets/${ticketId}/attachments`, {
+        credentials: "same-origin",
+      });
+      const payload = (await res.json().catch(() => ({}))) as {
+        attachments?: TicketAttachment[];
+        openUrls?: Record<string, string>;
+        error?: string;
+      };
+      if (!res.ok) {
+        setError(payload.error ?? "Kunne ikke hente vedhæftninger.");
+        setAttachments([]);
+        setOpenUrls({});
+      } else {
+        setAttachments(payload.attachments ?? []);
+        setOpenUrls(payload.openUrls ?? {});
+        setError(null);
+      }
+      setLoading(false);
+      return;
+    }
+
     const rows = await fetchTicketAttachments(supabase, ticketId);
-    console.info("[TicketAttachmentsPanel] modtaget", { count: rows.length, rows });
     setAttachments(rows);
+    setOpenUrls({});
     setLoading(false);
-  }, [supabase, ticketId, organisationId]);
+  }, [supabase, ticketId, useAdminApi]);
 
   useEffect(() => {
     void loadAttachments();
   }, [loadAttachments]);
 
   const openAttachment = async (attachment: TicketAttachment) => {
+    const adminUrl = openUrls[attachment.id];
+    if (adminUrl) {
+      window.open(adminUrl, "_blank", "noopener,noreferrer");
+      return;
+    }
+
     const { data: publicData } = supabase.storage
       .from(TICKET_ATTACHMENTS_BUCKET)
       .getPublicUrl(attachment.storage_path);
@@ -87,7 +115,6 @@ export function TicketAttachmentsPanel({
       window.open(url, "_blank", "noopener,noreferrer");
       return;
     }
-    console.error("[TicketAttachmentsPanel] kunne ikke åbne fil", signErr);
     setError(signErr?.message ?? "Kunne ikke åbne filen.");
   };
 
@@ -127,6 +154,9 @@ export function TicketAttachmentsPanel({
     }
 
     setAttachments((prev) => [...prev, attachment]);
+    if (useAdminApi) {
+      void loadAttachments();
+    }
   };
 
   if (loading) {

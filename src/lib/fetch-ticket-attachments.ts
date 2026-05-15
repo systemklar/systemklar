@@ -5,12 +5,12 @@ import { TICKET_ATTACHMENTS_BUCKET } from "@/lib/upload-ticket-attachment";
 /** Primær DB-tabel; `ticket_attachments` forsøges som alias hvis den findes. */
 export const TICKET_ATTACHMENTS_TABLE = "attachments";
 
-const ATTACHMENT_SELECT =
+export const TICKET_ATTACHMENTS_SELECT =
   "id, ticket_id, message_id, organisation_id, uploaded_by, file_name, file_size, file_type, storage_path, created_at";
 
 const TABLE_CANDIDATES = ["attachments", "ticket_attachments"] as const;
 
-function normalizeRows(data: unknown[]): TicketAttachment[] {
+export function normalizeAttachmentRows(data: unknown[]): TicketAttachment[] {
   return data
     .map((r) => normalizeTicketAttachmentRow(r as Record<string, unknown>))
     .filter((a): a is TicketAttachment => a !== null);
@@ -28,7 +28,7 @@ export async function fetchTicketAttachments(
   for (const table of TABLE_CANDIDATES) {
     const { data, error } = await client
       .from(table)
-      .select(ATTACHMENT_SELECT)
+      .select(TICKET_ATTACHMENTS_SELECT)
       .eq("ticket_id", ticketId)
       .order("created_at", { ascending: true });
 
@@ -48,7 +48,7 @@ export async function fetchTicketAttachments(
       return [];
     }
 
-    const rows = normalizeRows(data ?? []);
+    const rows = normalizeAttachmentRows(data ?? []);
     console.info("[fetchTicketAttachments] resultat", {
       table,
       ticketId,

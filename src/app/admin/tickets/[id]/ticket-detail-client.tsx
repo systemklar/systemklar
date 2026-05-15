@@ -110,16 +110,23 @@ export default function AdminTicketDetailClient() {
                 }
               />
             </div>
+          </section>
+
+          <section className="rounded-2xl border border-sky-100 bg-white p-5 shadow-sm">
+            <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-[#4A8CB5]">
+              Beskrivelse
+            </p>
             {ticket.description ? (
-              <p className="mt-4 whitespace-pre-wrap border-t border-sky-50 pt-3 text-sm text-[#2C4A5E]">
-                {ticket.description}
-              </p>
-            ) : null}
+              <p className="whitespace-pre-wrap text-sm text-[#2C4A5E]">{ticket.description}</p>
+            ) : (
+              <p className="text-sm text-[#4A8CB5]">Ingen beskrivelse.</p>
+            )}
           </section>
 
           <TicketAttachmentsPanel
             ticketId={ticket.id}
             organisationId={ticket.organisation_id}
+            useAdminApi
           />
         </aside>
       </div>
