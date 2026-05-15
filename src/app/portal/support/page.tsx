@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Loader2, Paperclip, X } from "lucide-react";
+import { FileText, Loader2, Paperclip, X } from "lucide-react";
 import { FormEvent, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { PortalLayout, usePortalSession } from "@/components/portal/PortalLayout";
 import { TicketUnreadCountBadge } from "@/components/tickets/TicketUnreadCountBadge";
@@ -26,6 +26,61 @@ export type { TicketWithProfileRow as TicketRow } from "@/lib/tickets-with-profi
 const MAX_PENDING_FILES = 5;
 const MAX_FILE_BYTES = 10 * 1024 * 1024;
 const FILE_ACCEPT = "image/*,.pdf,.doc,.docx,.xlsx,.txt";
+
+function PendingFilePreviewItem({
+  file,
+  onRemove,
+  disabled,
+}: {
+  file: File;
+  onRemove: () => void;
+  disabled?: boolean;
+}) {
+  const isImage = file.type.startsWith("image/");
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!isImage) {
+      setPreviewUrl(null);
+      return;
+    }
+    const url = URL.createObjectURL(file);
+    setPreviewUrl(url);
+    return () => URL.revokeObjectURL(url);
+  }, [file, isImage]);
+
+  return (
+    <div className="flex items-center gap-3 rounded-lg border border-sky-100 bg-sky-50 p-2">
+      {isImage && previewUrl ? (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
+          src={previewUrl}
+          alt=""
+          className="h-20 w-20 shrink-0 rounded-lg object-cover"
+        />
+      ) : (
+        <div className="flex h-20 w-20 shrink-0 flex-col items-center justify-center rounded-lg border border-sky-100 bg-white px-1">
+          <FileText className="h-8 w-8 text-emerald-600" aria-hidden />
+        </div>
+      )}
+      <div className="min-w-0 flex-1">
+        <p className="truncate text-sm font-medium text-slate-700" title={file.name}>
+          {file.name}
+        </p>
+        <p className="text-xs text-slate-400">{formatFileSize(file.size)}</p>
+      </div>
+      <button
+        type="button"
+        onClick={onRemove}
+        disabled={disabled}
+        className="ml-auto shrink-0 text-slate-400 transition hover:text-red-500 disabled:opacity-50"
+        aria-label={`Fjern ${file.name}`}
+      >
+        <X className="h-4 w-4" aria-hidden />
+      </button>
+    </div>
+  );
+}
 
 function closeCreationState(setters: {
   setShowForm: (v: boolean) => void;
@@ -359,23 +414,12 @@ export default function PortalSupportPage() {
                   {pendingFiles.length > 0 ? (
                     <ul className="mt-3 space-y-2">
                       {pendingFiles.map((file, index) => (
-                        <li
-                          key={`${file.name}-${file.size}-${index}`}
-                          className="flex items-center gap-2 rounded-lg border border-sky-100 bg-sky-50/50 px-3 py-2"
-                        >
-                          <span className="min-w-0 flex-1 truncate text-sm text-[#0D1F2D]" title={file.name}>
-                            {file.name}
-                          </span>
-                          <span className="shrink-0 text-xs text-[#4A8CB5]">{formatFileSize(file.size)}</span>
-                          <button
-                            type="button"
-                            onClick={() => removePendingFile(index)}
+                        <li key={`${file.name}-${file.size}-${index}`}>
+                          <PendingFilePreviewItem
+                            file={file}
+                            onRemove={() => removePendingFile(index)}
                             disabled={submitting || uploadingFiles}
-                            className="shrink-0 rounded-full p-1 text-gray-400 transition hover:bg-white hover:text-gray-600 disabled:opacity-50"
-                            aria-label={`Fjern ${file.name}`}
-                          >
-                            <X className="h-4 w-4" aria-hidden />
-                          </button>
+                          />
                         </li>
                       ))}
                     </ul>

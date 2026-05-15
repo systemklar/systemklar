@@ -52,23 +52,43 @@ export function TicketAttachmentsPanel({
   const [error, setError] = useState<string | null>(null);
 
   const loadAttachments = useCallback(async () => {
+    if (!ticketId) {
+      console.warn("[TicketAttachmentsPanel] mangler ticketId");
+      setAttachments([]);
+      setLoading(false);
+      return;
+    }
     setLoading(true);
+    console.info("[TicketAttachmentsPanel] henter vedhæftninger", {
+      ticketId,
+      organisationId,
+      bucket: TICKET_ATTACHMENTS_BUCKET,
+    });
     const rows = await fetchTicketAttachments(supabase, ticketId);
+    console.info("[TicketAttachmentsPanel] modtaget", { count: rows.length, rows });
     setAttachments(rows);
     setLoading(false);
-  }, [supabase, ticketId]);
+  }, [supabase, ticketId, organisationId]);
 
   useEffect(() => {
     void loadAttachments();
   }, [loadAttachments]);
 
-  const openAttachment = (attachment: TicketAttachment) => {
-    const { data } = supabase.storage
+  const openAttachment = async (attachment: TicketAttachment) => {
+    const { data: publicData } = supabase.storage
       .from(TICKET_ATTACHMENTS_BUCKET)
       .getPublicUrl(attachment.storage_path);
-    if (data.publicUrl) {
-      window.open(data.publicUrl, "_blank", "noopener,noreferrer");
+    const { data: signed, error: signErr } = await supabase.storage
+      .from("attachments")
+      .createSignedUrl(attachment.storage_path, 3600);
+
+    const url = signed?.signedUrl ?? publicData.publicUrl;
+    if (url) {
+      window.open(url, "_blank", "noopener,noreferrer");
+      return;
     }
+    console.error("[TicketAttachmentsPanel] kunne ikke åbne fil", signErr);
+    setError(signErr?.message ?? "Kunne ikke åbne filen.");
   };
 
   const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -120,7 +140,7 @@ export function TicketAttachmentsPanel({
     );
   }
 
-  if (!allowUpload && attachments.length === 0) {
+  if (!ticketId) {
     return null;
   }
 
@@ -147,7 +167,7 @@ export function TicketAttachmentsPanel({
               </span>
               <button
                 type="button"
-                onClick={() => openAttachment(attachment)}
+                onClick={() => void openAttachment(attachment)}
                 className="shrink-0 rounded-full px-3 py-1 text-xs font-semibold text-sky-600 transition hover:bg-sky-50"
               >
                 Åbn
