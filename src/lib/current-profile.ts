@@ -15,11 +15,40 @@ export async function fetchCurrentProfile(
   userId: string,
 ): Promise<CurrentProfile | null> {
   if (!userId) return null;
-  const { data, error } = await client
+
+  const profileColumns =
+    "id, organisation_id, role, full_name, avatar_initials, company_name, email";
+
+  const { data: byIdData, error: byIdError } = await client
     .from("profiles")
-    .select("id, organisation_id, role, full_name, avatar_initials, company_name, email")
+    .select(profileColumns)
     .eq("id", userId)
     .maybeSingle();
-  if (error || !data) return null;
-  return data as CurrentProfile;
+
+  if (byIdError) {
+    console.error("[current-profile] profiles.select by id fejlede", byIdError);
+    return null;
+  }
+
+  let row = (Array.isArray(byIdData) ? byIdData[0] : byIdData) as CurrentProfile | null | undefined;
+
+  if (!row) {
+    const { data: byUserIdData, error: byUserIdError } = await client
+      .from("profiles")
+      .select(profileColumns)
+      .eq("user_id", userId)
+      .maybeSingle();
+
+    if (byUserIdError && byUserIdError.code !== "42703") {
+      console.error("[current-profile] user_id-fallback fejlede", byUserIdError);
+      return null;
+    }
+
+    if (byUserIdData) {
+      console.warn("[current-profile] fandt profil via user_id-fallback for", userId);
+      row = (Array.isArray(byUserIdData) ? byUserIdData[0] : byUserIdData) as CurrentProfile;
+    }
+  }
+
+  return row ?? null;
 }

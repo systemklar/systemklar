@@ -1,6 +1,7 @@
 import { createServerClient, type CookieOptions } from "@supabase/ssr";
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
+import { fetchCurrentProfile } from "@/lib/current-profile";
 import { sendNewTicketEmailToAdmin } from "@/lib/email";
 
 export async function POST(request: Request) {
@@ -50,16 +51,12 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Titel er påkrævet." }, { status: 400 });
   }
 
-  const { data: profile, error: profileError } = await supabase
-    .from("profiles")
-    .select("id, organisation_id, full_name, email, organisations(name)")
-    .eq("id", user.id)
-    .maybeSingle();
-  if (profileError || !profile?.organisation_id) {
+  const profile = await fetchCurrentProfile(supabase, user.id);
+  if (!profile?.organisation_id) {
     return NextResponse.json({ error: "Organisation ikke fundet." }, { status: 400 });
   }
 
-  const createdByName = (profile.full_name as string | null) ?? (profile.email as string | null) ?? "Kunde";
+  const createdByName = profile.full_name ?? profile.email ?? "Kunde";
   const { data: inserted, error: insertError } = await supabase
     .from("tickets")
     .insert({
@@ -77,12 +74,9 @@ export async function POST(request: Request) {
   }
 
   try {
-    const orgNameRaw = Array.isArray(profile.organisations)
-      ? profile.organisations[0]?.name
-      : (profile.organisations as { name?: string } | null)?.name;
     await sendNewTicketEmailToAdmin(
       inserted.title as string,
-      orgNameRaw?.trim() || "Ukendt virksomhed",
+      profile.company_name?.trim() || "Ukendt virksomhed",
       createdByName,
       inserted.id as string
     );
