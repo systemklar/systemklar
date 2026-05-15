@@ -63,6 +63,24 @@ async function loadKeyedSk() {
     .toBuffer();
 }
 
+/** Monochrome glyph for SystemklarLogo CSS filters and email header invert. */
+async function buildLogoGlyph(coloredPng) {
+  const { data, info } = await sharp(coloredPng)
+    .ensureAlpha()
+    .raw()
+    .toBuffer({ resolveWithObject: true });
+
+  for (let i = 0; i < data.length; i += 4) {
+    if (data[i + 3] > 0) {
+      data[i] = 0;
+      data[i + 1] = 0;
+      data[i + 2] = 0;
+    }
+  }
+
+  return sharp(data, { raw: info }).png({ compressionLevel: 9 }).toBuffer();
+}
+
 function buildIco(pngForIco) {
   const dir = Buffer.alloc(6);
   dir.writeUInt16LE(0, 0);
@@ -84,8 +102,11 @@ function buildIco(pngForIco) {
 
 async function main() {
   const png = await loadKeyedSk();
+  const logoGlyph = await buildLogoGlyph(png);
   const icoPng = await sharp(png).resize(ICO_SIZE, ICO_SIZE).png().toBuffer();
   const ico = buildIco(icoPng);
+
+  writeFileSync("public/logo.png", logoGlyph);
 
   for (const target of [
     "public/icon.png",
