@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { isAdminEmail } from "@/lib/admin-email";
 import { sendInviteEmail } from "@/lib/email";
 import { getAppOrigin } from "@/lib/resend-welcome-email";
+import { scheduleAdminMonitoringRun } from "@/lib/admin-trigger-monitoring-run";
 import { isLikelyOrganisationDomain, normalizeOrganisationDomainInput } from "@/lib/organisation-domain";
 import { createServiceRoleClient } from "@/lib/supabase-service-role";
 
@@ -197,11 +198,20 @@ export async function POST(request: Request) {
   });
 
   const inviteUrl = `${getAppOrigin()}/invite?token=${encodeURIComponent(invitation.token as string)}`;
+
+  const triggerMonitoringIfDomain = () => {
+    if (!domainParsed.domain) return;
+    scheduleAdminMonitoringRun(organisation.id as string, {
+      cookieHeader: request.headers.get("cookie"),
+    });
+  };
+
   try {
     await sendInviteEmail(email, contactName || email, organisation.name as string, inviteUrl);
     console.log("[api/admin/invite-customer] invite email sent to", email);
   } catch (error) {
     console.error("[api/admin/invite-customer] sendInviteEmail failed", error);
+    triggerMonitoringIfDomain();
     return NextResponse.json(
       {
         ok: true,
@@ -213,5 +223,6 @@ export async function POST(request: Request) {
     );
   }
 
+  triggerMonitoringIfDomain();
   return NextResponse.json({ ok: true, organisation_id: organisation.id });
 }
