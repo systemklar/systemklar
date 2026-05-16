@@ -240,8 +240,8 @@ button {
     opacity: 1;
   }
   50% {
-    transform: scale(1.04);
-    opacity: 0.92;
+    transform: scale(1.05);
+    opacity: 0.88;
   }
 }
 
@@ -253,7 +253,7 @@ button {
 @keyframes portal-dashboard-row-in {
   from {
     opacity: 0;
-    transform: translateY(8px);
+    transform: translateY(6px);
   }
   to {
     opacity: 1;
@@ -262,8 +262,41 @@ button {
 }
 
 .portal-dashboard-row-in {
-  animation: portal-dashboard-row-in 200ms ease-out forwards;
+  animation: portal-dashboard-row-in 180ms ease-out forwards;
   opacity: 0;
+}
+
+/* Portal dashboard: tab panel crossfade */
+@keyframes portal-tab-panel-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.portal-tab-panel-in {
+  animation: portal-tab-panel-in 200ms ease-out;
+}
+
+/* Portal dashboard: FAB pulse when errors active */
+@keyframes portal-fab-pulse {
+  0%,
+  100% {
+    box-shadow:
+      0 10px 25px -5px rgba(6, 40, 64, 0.35),
+      0 0 0 0 rgba(196, 43, 43, 0.4);
+  }
+  50% {
+    box-shadow:
+      0 12px 28px -5px rgba(6, 40, 64, 0.45),
+      0 0 0 8px rgba(196, 43, 43, 0);
+  }
+}
+
+.portal-fab-pulse {
+  animation: portal-fab-pulse 2.5s ease-in-out infinite;
 }
 
 /* Portal dashboard: fejl status dot glow */

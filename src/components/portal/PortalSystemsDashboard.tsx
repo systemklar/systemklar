@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { AlertTriangle, Check, Plus, X } from "lucide-react";
+import { AlertTriangle, Check, ChevronDown, ChevronUp, Plus, X } from "lucide-react";
 import {
   Area,
   AreaChart,
@@ -56,14 +56,6 @@ function friendlySystemLabel(technicalName: string): string {
   return FRIENDLY_SYSTEM_LABEL_DA[t] ?? t;
 }
 
-function categoryLabelUpper(group: OnboardingDashboardGroup): string {
-  const base = group.shortLabel
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .toUpperCase();
-  return base;
-}
-
 function normalizeStatus(raw: string | undefined): "ok" | "advarsel" | "fejl" | "afventer" {
   return normalizeMonitoringStatus(raw);
 }
@@ -82,17 +74,9 @@ function rowStatusLabel(status: "ok" | "advarsel" | "fejl" | "afventer"): string
 }
 
 function dotClassName(status: "ok" | "advarsel" | "fejl" | "afventer"): string {
-  const base = "h-2.5 w-2.5 shrink-0 rounded-full";
-  switch (status) {
-    case "ok":
-      return base;
-    case "advarsel":
-      return base;
-    case "fejl":
-      return `${base} portal-status-dot-fejl`;
-    default:
-      return base;
-  }
+  const base = "h-2 w-2 shrink-0 rounded-full";
+  if (status === "fejl") return `${base} portal-status-dot-fejl`;
+  return base;
 }
 
 function dotStyle(status: "ok" | "advarsel" | "fejl" | "afventer"): { backgroundColor: string } {
@@ -106,6 +90,12 @@ function dotStyle(status: "ok" | "advarsel" | "fejl" | "afventer"): { background
     default:
       return { backgroundColor: CHART_AFVENTER };
   }
+}
+
+function rowAccentClass(status: "ok" | "advarsel" | "fejl" | "afventer"): string {
+  if (status === "fejl") return "border-l-[3px] border-l-[#C42B2B] bg-red-50/40";
+  if (status === "advarsel") return "border-l-[3px] border-l-[#C47B0A] bg-amber-50/35";
+  return "border-l-[3px] border-l-transparent";
 }
 
 type DetailSelection = {
@@ -163,6 +153,15 @@ function buildSystemRows(
   return rows;
 }
 
+function groupIssueScore(rows: SystemRowModel[]): number {
+  let score = 0;
+  for (const row of rows) {
+    if (row.status === "fejl") score += 2;
+    else if (row.status === "advarsel") score += 1;
+  }
+  return score;
+}
+
 function mostRecentCheckIso(monitoringByName: Map<string, MonitoringResultRow>): string | null {
   let latest: number | null = null;
   for (const row of monitoringByName.values()) {
@@ -178,6 +177,7 @@ function shortCheckedAgo(iso: string | null): string {
   const full = formatCheckedAgoDa(iso);
   return full.replace(/^Tjekket\s*/i, "").trim() || full;
 }
+
 
 export function PortalSystemsDashboard({
   preview = false,
@@ -195,6 +195,8 @@ export function PortalSystemsDashboard({
   const [historyDaily, setHistoryDaily] = useState<DailyPctOkPoint[]>([]);
   const [historyDistinctDayCount, setHistoryDistinctDayCount] = useState<number | null>(null);
   const [historyLoading, setHistoryLoading] = useState(false);
+  const [historyExpanded, setHistoryExpanded] = useState(false);
+  const [activeTab, setActiveTab] = useState<string>("");
   const [detail, setDetail] = useState<DetailSelection | null>(null);
 
   const orgIdForMonitoring = preview
@@ -202,6 +204,16 @@ export function PortalSystemsDashboard({
     : (resolvedOrganisationId?.trim() || null);
 
   const namesLive = preview ? normalizeOnboardingSystemsFromDb(namesProp) : onboardingNames;
+
+  const openDetail = useCallback((row: SystemRowModel) => {
+    setDetail({
+      technical: row.technical,
+      friendly: row.friendly,
+      row: row.rowForDetail,
+    });
+  }, []);
+
+  const closeDetail = useCallback(() => setDetail(null), []);
 
   useEffect(() => {
     if (preview) return;
@@ -360,6 +372,47 @@ export function PortalSystemsDashboard({
     [groups, monitoringByName],
   );
 
+  const rowsByGroup = useMemo(() => {
+    const map = new Map<string, SystemRowModel[]>();
+    for (const row of systemRows) {
+      const list = map.get(row.groupShortLabel) ?? [];
+      list.push(row);
+      map.set(row.groupShortLabel, list);
+    }
+    return map;
+  }, [systemRows]);
+
+  const tabsWithSystems = useMemo(
+    () => groups.filter((g) => (rowsByGroup.get(g.shortLabel) ?? []).length > 0),
+    [groups, rowsByGroup],
+  );
+
+  const defaultTabKey = useMemo(() => {
+    let best = tabsWithSystems[0]?.shortLabel ?? "";
+    let bestScore = -1;
+    for (const g of tabsWithSystems) {
+      const score = groupIssueScore(rowsByGroup.get(g.shortLabel) ?? []);
+      if (score > bestScore) {
+        bestScore = score;
+        best = g.shortLabel;
+      }
+    }
+    return best;
+  }, [tabsWithSystems, rowsByGroup]);
+
+  const activeTabKey = useMemo(() => {
+    if (tabsWithSystems.some((g) => g.shortLabel === activeTab)) return activeTab;
+    return defaultTabKey;
+  }, [activeTab, defaultTabKey, tabsWithSystems]);
+
+  useEffect(() => {
+    if (!activeTab && defaultTabKey) {
+      setActiveTab(defaultTabKey);
+    }
+  }, [activeTab, defaultTabKey]);
+
+  const activeTabRows = rowsByGroup.get(activeTabKey) ?? [];
+
   const counts = useMemo(() => {
     let ok = 0;
     let advarsel = 0;
@@ -374,18 +427,15 @@ export function PortalSystemsDashboard({
     return { ok, advarsel, fejl, afventer, needsAttention: advarsel + fejl };
   }, [systemRows]);
 
-  const attentionNames = useMemo(
-    () =>
-      systemRows
-        .filter((r) => r.status === "advarsel" || r.status === "fejl")
-        .map((r) => r.friendly),
+  const attentionRows = useMemo(
+    () => systemRows.filter((r) => r.status === "advarsel" || r.status === "fejl"),
     [systemRows],
   );
 
   const heroAllOk = counts.needsAttention === 0 && systemRows.length > 0;
   const heroHasFejl = counts.fejl > 0;
-  const latestCheckIso = useMemo(() => mostRecentCheckIso(monitoringByName), [monitoringByName]);
-  const latestCheckSubtext = shortCheckedAgo(latestCheckIso);
+  const latestCheckSubtext = shortCheckedAgo(mostRecentCheckIso(monitoringByName));
+  const hasActiveErrors = counts.needsAttention > 0;
 
   const lineChartData = useMemo(
     () =>
@@ -400,8 +450,6 @@ export function PortalSystemsDashboard({
     [historyDaily],
   );
 
-  const closeDetail = useCallback(() => setDetail(null), []);
-
   const hasSystems = systemRows.length > 0;
   const showHistorySection = !preview && hasSystems && Boolean(orgIdForMonitoring);
   const showHistoryChart =
@@ -412,55 +460,51 @@ export function PortalSystemsDashboard({
   const showHistoryFallback =
     !historyLoading && historyDistinctDayCount !== null && historyDistinctDayCount < 2;
 
-  const rowsByGroup = useMemo(() => {
-    const map = new Map<string, (SystemRowModel & { animIndex: number })[]>();
-    let index = 0;
-    for (const row of systemRows) {
-      const list = map.get(row.groupShortLabel) ?? [];
-      list.push({ ...row, animIndex: index });
-      map.set(row.groupShortLabel, list);
-      index += 1;
-    }
-    return map;
-  }, [systemRows]);
-
   if (loading) {
     return <p className="text-sm text-[#7AAEC8]">Indlæser overblik...</p>;
   }
 
   return (
-    <div className="relative pb-28">
+    <div className="relative mx-auto max-w-3xl pb-24">
       {preview ? (
-        <p className="mb-6 text-center text-xs text-[#7AAEC8]">Forhåndsvisning af kundens portal-overblik</p>
+        <p className="mb-4 text-center text-xs text-[#7AAEC8]">
+          Forhåndsvisning af kundens portal-overblik
+        </p>
       ) : null}
 
       {!hasSystems ? (
-        <div className="rounded-2xl border border-sky-100 bg-white px-6 py-12 text-center text-sm text-[#2C4A5E] shadow-sm">
+        <div className="rounded-2xl border border-sky-100 bg-white px-6 py-10 text-center text-sm text-[#2C4A5E] shadow-sm">
           Dine systemer er ved at blive sat op. Vi vender tilbage inden for 24 timer.
         </div>
       ) : (
-        <div className="space-y-6">
-          {/* Hero status banner */}
+        <div className="flex flex-col gap-4">
+          {/* 1. Hero status */}
           <section
-            className={`rounded-2xl px-6 py-10 text-center shadow-sm sm:px-10 sm:py-12 ${
+            className={`flex min-h-[200px] flex-col items-center justify-center rounded-2xl px-5 py-6 text-center shadow-sm ${
               heroAllOk
-                ? "border border-emerald-100/80 bg-gradient-to-b from-[#EDFAF5] to-[#F5FFFB]"
+                ? "border border-emerald-100/80 bg-[#EDFAF5]"
                 : heroHasFejl
                   ? "border border-red-100/80 bg-gradient-to-b from-[#FEF2F2] to-[#FFFBFB]"
                   : "border border-amber-100/80 bg-gradient-to-b from-[#FFFBEB] to-[#FFFEF7]"
             }`}
           >
-            <div className="mx-auto flex max-w-lg flex-col items-center">
-              {heroAllOk ? (
+            {heroAllOk ? (
+              <>
                 <div
-                  className="portal-hero-icon-pulse mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-white/80 shadow-sm"
+                  className="portal-hero-icon-pulse mb-3 flex h-16 w-16 items-center justify-center rounded-full bg-white/90 shadow-sm"
                   aria-hidden
                 >
-                  <Check className="h-8 w-8 text-[#0A7C5C]" strokeWidth={2.5} />
+                  <Check className="h-9 w-9 text-[#0A7C5C]" strokeWidth={2.5} />
                 </div>
-              ) : (
+                <h1 className="text-3xl font-semibold tracking-tight text-[#0D1F2D]">Alt fungerer</h1>
+                <p className="mt-1.5 text-sm text-[#7AAEC8]">
+                  Senest tjekket {latestCheckSubtext}
+                </p>
+              </>
+            ) : (
+              <>
                 <div
-                  className="mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-white/80 shadow-sm"
+                  className="portal-hero-icon-pulse mb-3 flex h-14 w-14 items-center justify-center rounded-full bg-white/90 shadow-sm"
                   aria-hidden
                 >
                   <AlertTriangle
@@ -468,177 +512,226 @@ export function PortalSystemsDashboard({
                     strokeWidth={2}
                   />
                 </div>
-              )}
-
-              {heroAllOk ? (
-                <>
-                  <h1 className="text-2xl font-semibold tracking-tight text-[#0D1F2D] sm:text-3xl">
-                    Alt fungerer som det skal
-                  </h1>
-                  <p className="mt-2 text-sm text-[#7AAEC8]">
-                    Senest tjekket {latestCheckSubtext}
-                  </p>
-                </>
-              ) : (
-                <>
-                  <h1 className="text-2xl font-semibold tracking-tight text-[#0D1F2D] sm:text-3xl">
-                    {counts.needsAttention === 1
-                      ? "1 ting kræver din opmærksomhed"
-                      : `${counts.needsAttention} ting kræver din opmærksomhed`}
-                  </h1>
-                  <p className="mt-2 text-sm leading-relaxed text-[#2C4A5E]">
-                    {attentionNames.slice(0, 4).join(", ")}
-                    {attentionNames.length > 4
-                      ? ` og ${attentionNames.length - 4} mere`
-                      : ""}
-                  </p>
-                  <p className="mt-1 text-sm text-[#7AAEC8]">
-                    Senest tjekket {latestCheckSubtext}
-                  </p>
-                </>
-              )}
-            </div>
-          </section>
-
-          {/* Metric pills */}
-          <div className="flex flex-wrap items-center justify-center gap-0 rounded-2xl border border-sky-100 bg-white px-4 py-3 shadow-sm sm:px-6">
-            <MetricPill label="OK" count={counts.ok} dotColor={CHART_OK} />
-            <span className="hidden h-4 w-px bg-sky-100 sm:block" aria-hidden />
-            <MetricPill
-              label="Advarsel"
-              count={counts.advarsel + counts.fejl}
-              dotColor={CHART_ADVARSEL}
-            />
-            <span className="hidden h-4 w-px bg-sky-100 sm:block" aria-hidden />
-            <MetricPill label="Afventer" count={counts.afventer} dotColor={CHART_AFVENTER} />
-          </div>
-
-          {/* System list */}
-          <section className="overflow-hidden rounded-2xl border border-sky-100 bg-white shadow-sm">
-            {groups.map((group) => {
-              const groupRows = rowsByGroup.get(group.shortLabel) ?? [];
-              if (groupRows.length === 0) return null;
-
-              return (
-                <div key={group.shortLabel}>
-                  <p className="border-b border-sky-50 bg-[#FAFCFE] px-4 py-2.5 text-[10px] font-semibold tracking-[0.14em] text-[#7AAEC8] sm:px-6">
-                    {categoryLabelUpper(group)}
-                  </p>
-                  <ul className="divide-y divide-sky-50">
-                    {groupRows.map((row) => (
-                        <li key={row.key}>
-                          <button
-                            type="button"
-                            onClick={() =>
-                              setDetail({
-                                technical: row.technical,
-                                friendly: row.friendly,
-                                row: row.rowForDetail,
-                              })
-                            }
-                            className="portal-dashboard-row-in flex w-full items-center gap-4 px-4 py-4 text-left transition-colors hover:bg-sky-50 sm:px-6"
-                            style={{ animationDelay: `${row.animIndex * 50}ms` }}
-                          >
-                            <span
-                              className={dotClassName(row.status)}
-                              style={dotStyle(row.status)}
-                              aria-hidden
-                            />
-                            <span className="min-w-0 flex-1 text-[15px] font-semibold text-[#0D1F2D]">
-                              {row.friendly}
-                            </span>
-                            <span className="flex shrink-0 flex-col items-end gap-0.5 text-right">
-                              <span className="text-sm font-medium text-[#2C4A5E]">
-                                {rowStatusLabel(row.status)}
-                              </span>
-                              {row.status === "afventer" ? (
-                                <Link
-                                  href="/portal/systemer"
-                                  onClick={(e) => e.stopPropagation()}
-                                  className="text-xs text-[#7AAEC8] transition-colors hover:text-[#0A6EBD]"
-                                >
-                                  Opsæt →
-                                </Link>
-                              ) : row.checked ? (
-                                <span className="text-[11px] leading-tight text-[#7AAEC8]">
-                                  {row.checked}
-                                </span>
-                              ) : null}
-                            </span>
-                          </button>
-                        </li>
+                <h1 className="text-2xl font-semibold tracking-tight text-[#0D1F2D] sm:text-3xl">
+                  {counts.needsAttention === 1
+                    ? "1 system kræver opmærksomhed"
+                    : `${counts.needsAttention} systemer kræver opmærksomhed`}
+                </h1>
+                <p className="mt-1 text-xs text-[#7AAEC8]">Senest tjekket {latestCheckSubtext}</p>
+                {attentionRows.length > 0 ? (
+                  <div className="mt-3 flex max-w-lg flex-wrap justify-center gap-2">
+                    {attentionRows.map((row) => (
+                      <button
+                        key={row.key}
+                        type="button"
+                        onClick={() => openDetail(row)}
+                        className={`rounded-full border px-2.5 py-1 text-xs font-medium transition hover:shadow-sm ${
+                          row.status === "fejl"
+                            ? "border-red-200 bg-white/90 text-[#C42B2B] hover:bg-red-50"
+                            : "border-amber-200 bg-white/90 text-[#C47B0A] hover:bg-amber-50"
+                        }`}
+                      >
+                        {row.friendly}
+                      </button>
                     ))}
-                  </ul>
-                </div>
-              );
-            })}
+                  </div>
+                ) : null}
+              </>
+            )}
           </section>
 
-          {/* Uptime chart */}
+          {/* 2. Stat pills */}
+          <p className="text-center text-sm text-[#2C4A5E]">
+            <span className="inline-flex items-center gap-1">
+              <span className="text-[10px]" aria-hidden>
+                🟢
+              </span>
+              <span className="font-semibold text-[#0D1F2D]">{counts.ok}</span> OK
+            </span>
+            <span className="mx-2 text-[#D0E8F5]">·</span>
+            <span className="inline-flex items-center gap-1">
+              <span className="text-[10px]" aria-hidden>
+                🟡
+              </span>
+              <span className="font-semibold text-[#0D1F2D]">{counts.advarsel + counts.fejl}</span>{" "}
+              Advarsel
+            </span>
+            <span className="mx-2 text-[#D0E8F5]">·</span>
+            <span className="inline-flex items-center gap-1">
+              <span className="text-[10px]" aria-hidden>
+                ⚪
+              </span>
+              <span className="font-semibold text-[#0D1F2D]">{counts.afventer}</span> Afventer
+            </span>
+          </p>
+
+          {/* 3. Tabbed system list */}
+          <section className="overflow-hidden rounded-2xl border border-sky-100 bg-white shadow-sm">
+            <nav
+              className="flex gap-0 overflow-x-auto border-b border-sky-100"
+              aria-label="Systemkategorier"
+            >
+              {tabsWithSystems.map((g) => {
+                const tabRows = rowsByGroup.get(g.shortLabel) ?? [];
+                const issueCount = tabRows.filter(
+                  (r) => r.status === "fejl" || r.status === "advarsel",
+                ).length;
+                const isActive = g.shortLabel === activeTabKey;
+                return (
+                  <button
+                    key={g.shortLabel}
+                    type="button"
+                    onClick={() => setActiveTab(g.shortLabel)}
+                    className={`shrink-0 border-b-2 px-4 py-3 text-sm font-medium transition-colors ${
+                      isActive
+                        ? "border-[#0A6EBD] text-[#0D1F2D]"
+                        : "border-transparent text-[#7AAEC8] hover:text-[#2C4A5E]"
+                    }`}
+                  >
+                    {g.shortLabel}
+                    {issueCount > 0 ? (
+                      <span
+                        className={`ml-1.5 inline-flex min-w-[1.25rem] justify-center rounded-full px-1 text-[10px] font-semibold ${
+                          isActive ? "bg-[#0A6EBD] text-white" : "bg-amber-100 text-amber-800"
+                        }`}
+                      >
+                        {issueCount}
+                      </span>
+                    ) : null}
+                  </button>
+                );
+              })}
+            </nav>
+
+            <ul key={activeTabKey} className="portal-tab-panel-in divide-y divide-sky-50">
+              {activeTabRows.map((row, index) => (
+                <li key={row.key}>
+                  <button
+                    type="button"
+                    onClick={() => openDetail(row)}
+                    className={`portal-dashboard-row-in flex w-full items-center gap-3 px-4 py-2.5 text-left transition-colors hover:bg-sky-50/80 ${rowAccentClass(row.status)}`}
+                    style={{ animationDelay: `${index * 40}ms` }}
+                  >
+                    <span
+                      className={dotClassName(row.status)}
+                      style={dotStyle(row.status)}
+                      aria-hidden
+                    />
+                    <span className="min-w-0 flex-1 text-sm font-semibold text-[#0D1F2D]">
+                      {row.friendly}
+                    </span>
+                    <span className="hidden shrink-0 text-xs font-medium text-[#2C4A5E] sm:block">
+                      {rowStatusLabel(row.status)}
+                    </span>
+                    {row.status === "afventer" ? (
+                      <Link
+                        href="/portal/systemer"
+                        onClick={(e) => e.stopPropagation()}
+                        className="shrink-0 text-[11px] text-[#7AAEC8] hover:text-[#0A6EBD]"
+                      >
+                        Opsæt →
+                      </Link>
+                    ) : (
+                      <span className="shrink-0 text-[10px] text-[#7AAEC8]">
+                        {row.checked}
+                      </span>
+                    )}
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </section>
+
+          {/* 4. Collapsed uptime chart */}
           {showHistorySection ? (
-            <section className="rounded-2xl border border-sky-100 bg-white px-6 py-6 shadow-sm">
-              <h2 className="text-base font-semibold text-[#0D1F2D]">Oppetid de seneste 30 dage</h2>
-              {historyLoading ? (
-                <p className="mt-4 text-sm text-[#7AAEC8]">Indlæser historik…</p>
-              ) : showHistoryChart ? (
-                <div className="mt-6 h-56 w-full">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <AreaChart data={lineChartData} margin={{ top: 8, right: 8, left: -8, bottom: 0 }}>
-                      <defs>
-                        <linearGradient id="portalUptimeFill" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="0%" stopColor={LINE_STATUS} stopOpacity={0.22} />
-                          <stop offset="100%" stopColor={LINE_STATUS} stopOpacity={0} />
-                        </linearGradient>
-                      </defs>
-                      <XAxis
-                        dataKey="label"
-                        tick={{ fontSize: 11, fill: "#7AAEC8" }}
-                        axisLine={false}
-                        tickLine={false}
-                        dy={8}
-                      />
-                      <YAxis
-                        domain={[0, 100]}
-                        tickFormatter={(v) => `${v}%`}
-                        width={40}
-                        tick={{ fontSize: 11, fill: "#7AAEC8" }}
-                        axisLine={false}
-                        tickLine={false}
-                      />
-                      <Tooltip
-                        formatter={(value) => [
-                          `${typeof value === "number" ? value : Number(value) || 0}%`,
-                          "Andel OK",
-                        ]}
-                        contentStyle={{
-                          border: "1px solid #D0E8F5",
-                          borderRadius: "12px",
-                          fontSize: "13px",
-                        }}
-                      />
-                      <Area
-                        type="monotone"
-                        dataKey="pctOk"
-                        stroke={LINE_STATUS}
-                        strokeWidth={2.5}
-                        fill="url(#portalUptimeFill)"
-                        dot={false}
-                        activeDot={{ r: 4, fill: LINE_STATUS, strokeWidth: 0 }}
-                      />
-                    </AreaChart>
-                  </ResponsiveContainer>
-                </div>
-              ) : showHistoryFallback ? (
-                <p className="mt-4 text-sm leading-relaxed text-[#2C4A5E]">
-                  Ikke nok data endnu — grafen vises efter første overvågningsuge
-                </p>
+            <div className="text-center">
+              <button
+                type="button"
+                onClick={() => setHistoryExpanded((v) => !v)}
+                className="inline-flex items-center gap-1 text-sm font-medium text-[#0A6EBD] hover:text-[#0859A0]"
+              >
+                {historyExpanded ? (
+                  <>
+                    Skjul historik
+                    <ChevronUp className="h-4 w-4" />
+                  </>
+                ) : (
+                  <>
+                    Vis historik
+                    <ChevronDown className="h-4 w-4" />
+                  </>
+                )}
+              </button>
+              {historyExpanded ? (
+                <section className="portal-tab-panel-in mt-3 rounded-2xl border border-sky-100 bg-white px-4 py-5 shadow-sm">
+                  <h2 className="text-left text-sm font-semibold text-[#0D1F2D]">
+                    Oppetid de seneste 30 dage
+                  </h2>
+                  {historyLoading ? (
+                    <p className="mt-3 text-left text-sm text-[#7AAEC8]">Indlæser historik…</p>
+                  ) : showHistoryChart ? (
+                    <div className="mt-4 h-48 w-full">
+                      <ResponsiveContainer width="100%" height="100%">
+                        <AreaChart
+                          data={lineChartData}
+                          margin={{ top: 8, right: 8, left: -8, bottom: 0 }}
+                        >
+                          <defs>
+                            <linearGradient id="portalUptimeFill" x1="0" y1="0" x2="0" y2="1">
+                              <stop offset="0%" stopColor={LINE_STATUS} stopOpacity={0.22} />
+                              <stop offset="100%" stopColor={LINE_STATUS} stopOpacity={0} />
+                            </linearGradient>
+                          </defs>
+                          <XAxis
+                            dataKey="label"
+                            tick={{ fontSize: 11, fill: "#7AAEC8" }}
+                            axisLine={false}
+                            tickLine={false}
+                            dy={8}
+                          />
+                          <YAxis
+                            domain={[0, 100]}
+                            tickFormatter={(v) => `${v}%`}
+                            width={40}
+                            tick={{ fontSize: 11, fill: "#7AAEC8" }}
+                            axisLine={false}
+                            tickLine={false}
+                          />
+                          <Tooltip
+                            formatter={(value) => [
+                              `${typeof value === "number" ? value : Number(value) || 0}%`,
+                              "Andel OK",
+                            ]}
+                            contentStyle={{
+                              border: "1px solid #D0E8F5",
+                              borderRadius: "12px",
+                              fontSize: "13px",
+                            }}
+                          />
+                          <Area
+                            type="monotone"
+                            dataKey="pctOk"
+                            stroke={LINE_STATUS}
+                            strokeWidth={2.5}
+                            fill="url(#portalUptimeFill)"
+                            dot={false}
+                            activeDot={{ r: 4, fill: LINE_STATUS, strokeWidth: 0 }}
+                          />
+                        </AreaChart>
+                      </ResponsiveContainer>
+                    </div>
+                  ) : showHistoryFallback ? (
+                    <p className="mt-3 text-left text-sm text-[#2C4A5E]">
+                      Ikke nok data endnu — grafen vises efter første overvågningsuge
+                    </p>
+                  ) : null}
+                </section>
               ) : null}
-            </section>
+            </div>
           ) : null}
         </div>
       )}
 
-      {/* Detail slide-in */}
       {detail ? (
         <>
           <button
@@ -715,38 +808,17 @@ export function PortalSystemsDashboard({
         </>
       ) : null}
 
-      {/* FAB */}
       {!preview ? (
         <Link
           href="/portal/support"
-          className="fixed bottom-6 right-6 z-30 inline-flex items-center gap-2 rounded-full bg-[#062840] px-5 py-3.5 text-sm font-semibold text-white shadow-lg transition hover:bg-[#0D1F2D] hover:shadow-xl focus:outline-none focus-visible:ring-2 focus-visible:ring-[#0A6EBD] focus-visible:ring-offset-2"
+          className={`fixed bottom-6 right-6 z-30 inline-flex items-center gap-1.5 rounded-full bg-[#062840] px-5 py-3.5 text-sm font-semibold text-white shadow-xl transition hover:bg-[#0D1F2D] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#0A6EBD] focus-visible:ring-offset-2 ${
+            hasActiveErrors ? "portal-fab-pulse" : ""
+          }`}
         >
           <Plus className="h-4 w-4" strokeWidth={2.5} aria-hidden />
           Opret IT-sag
         </Link>
       ) : null}
-    </div>
-  );
-}
-
-function MetricPill({
-  label,
-  count,
-  dotColor,
-}: {
-  label: string;
-  count: number;
-  dotColor: string;
-}) {
-  return (
-    <div className="flex flex-1 items-center justify-center gap-2 px-3 py-1.5 text-sm text-[#2C4A5E] sm:flex-none sm:px-5">
-      <span
-        className="h-2 w-2 shrink-0 rounded-full"
-        style={{ backgroundColor: dotColor }}
-        aria-hidden
-      />
-      <span className="font-medium text-[#0D1F2D]">{count}</span>
-      <span className="text-[#7AAEC8]">{label}</span>
     </div>
   );
 }
