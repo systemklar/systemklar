@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { type FormEvent, useCallback, useEffect, useMemo, useState } from "react";
+import { ProfileAvatar } from "@/components/ProfileAvatar";
 import { createClient } from "@/lib/supabase";
 
 type OrgProfile = {
@@ -11,6 +12,7 @@ type OrgProfile = {
   email: string | null;
   role: string | null;
   avatar_initials: string | null;
+  avatar_url: string | null;
   created_at: string | null;
 };
 
@@ -262,16 +264,20 @@ export default function AdminCustomersClient() {
                       </div>
                     ) : (
                       stack.map((profile, index) => {
-                        const text =
-                          profile.avatar_initials ||
+                        const initials =
+                          profile.avatar_initials?.trim().slice(0, 2).toUpperCase() ||
                           initialsFromName(profile.full_name || profile.email || "U");
                         return (
                           <div
                             key={profile.id}
-                            className="flex h-9 w-9 items-center justify-center rounded-full border-2 border-white bg-sky-100 text-xs font-semibold text-sky-700"
+                            className="overflow-hidden rounded-full border-2 border-white"
                             style={{ marginLeft: index === 0 ? 0 : -10, zIndex: 30 - index }}
                           >
-                            {text}
+                            <ProfileAvatar
+                              avatarUrl={profile.avatar_url}
+                              initials={initials}
+                              className="h-9 w-9 text-xs"
+                            />
                           </div>
                         );
                       })

@@ -10,7 +10,10 @@ import {
   useState,
 } from "react";
 import { Camera, Loader2, Users } from "lucide-react";
+import { OrganisationLogo } from "@/components/OrganisationLogo";
+import { ProfileAvatar } from "@/components/ProfileAvatar";
 import { createClient } from "@/lib/supabase";
+import { publicOrganisationLogoUrl } from "@/lib/storage-public-urls";
 
 type TeamProfile = {
   id: string;
@@ -18,6 +21,7 @@ type TeamProfile = {
   full_name: string | null;
   role: string;
   avatar_initials: string | null;
+  avatar_url: string | null;
   created_at: string | null;
 };
 
@@ -37,6 +41,7 @@ type MyProfile = {
 type Organisation = {
   id: string;
   name: string;
+  logo_url: string | null;
 };
 
 const dateFmt = new Intl.DateTimeFormat("da-DK", { dateStyle: "medium" });
@@ -64,8 +69,7 @@ export default function PortalTeamPage() {
   const [members, setMembers] = useState<TeamProfile[]>([]);
   const [pending, setPending] = useState<PendingInvite[]>([]);
 
-  const [orgAvatarUrl, setOrgAvatarUrl] = useState<string | null>(null);
-  const [orgAvatarBroken, setOrgAvatarBroken] = useState(false);
+  const [orgLogoUrl, setOrgLogoUrl] = useState<string | null>(null);
   const [uploadingOrgAvatar, setUploadingOrgAvatar] = useState(false);
   const orgFileInputRef = useRef<HTMLInputElement>(null);
 
@@ -74,14 +78,14 @@ export default function PortalTeamPage() {
   const [inviteRole, setInviteRole] = useState("member");
   const [savingInvite, setSavingInvite] = useState(false);
 
-  const refreshOrgAvatarUrl = useCallback(
-    (orgId: string) => {
-      const { data } = supabase.storage.from("organisation-avatars").getPublicUrl(orgId);
-      setOrgAvatarUrl(`${data.publicUrl}?t=${Date.now()}`);
-      setOrgAvatarBroken(false);
-    },
-    [supabase]
-  );
+  const applyOrgLogoUrl = useCallback((storedUrl: string | null | undefined, orgId: string) => {
+    const trimmed = storedUrl?.trim();
+    if (trimmed) {
+      setOrgLogoUrl(trimmed);
+    } else {
+      setOrgLogoUrl(`${publicOrganisationLogoUrl(orgId)}?t=${Date.now()}`);
+    }
+  }, []);
 
   const loadTeam = useCallback(async () => {
     setLoading(true);
@@ -154,10 +158,10 @@ export default function PortalTeamPage() {
     }
 
     const [orgRes, membersRes, invitesRes] = await Promise.all([
-      supabase.from("organisations").select("id,name").eq("id", orgId).maybeSingle(),
+      supabase.from("organisations").select("id,name,logo_url").eq("id", orgId).maybeSingle(),
       supabase
         .from("profiles")
-        .select("id,email,full_name,role,avatar_initials,created_at")
+        .select("id,email,full_name,role,avatar_initials,avatar_url,created_at")
         .eq("organisation_id", orgId)
         .order("full_name", { ascending: true }),
       supabase
@@ -179,6 +183,7 @@ export default function PortalTeamPage() {
       | null
       | undefined;
     setOrganisationName(orgRow?.name ?? "");
+    applyOrgLogoUrl(orgRow?.logo_url, orgId);
 
     if (membersRes.error) {
       console.error("[portal/team] members select fejlede", membersRes.error);
@@ -195,9 +200,8 @@ export default function PortalTeamPage() {
       setPending((invitesRes.data ?? []) as PendingInvite[]);
     }
 
-    refreshOrgAvatarUrl(orgId);
     setLoading(false);
-  }, [supabase, refreshOrgAvatarUrl]);
+  }, [supabase, applyOrgLogoUrl]);
 
   useEffect(() => {
     void loadTeam();
@@ -221,16 +225,31 @@ export default function PortalTeamPage() {
         upsert: true,
         contentType: file.type || "image/png",
       });
-    setUploadingOrgAvatar(false);
 
     if (upError) {
+      setUploadingOrgAvatar(false);
       console.error("[portal/team] org avatar upload fejlede", upError);
       setError(`Kunne ikke uploade logo: ${upError.message}`);
       event.target.value = "";
       return;
     }
 
-    refreshOrgAvatarUrl(organisationId);
+    const logoUrl = publicOrganisationLogoUrl(organisationId);
+    const { error: logoColErr } = await supabase
+      .from("organisations")
+      .update({ logo_url: logoUrl })
+      .eq("id", organisationId);
+
+    setUploadingOrgAvatar(false);
+
+    if (logoColErr) {
+      console.error("[portal/team] logo_url update fejlede", logoColErr);
+      setError(`Logoet blev uploadet, men kunne ikke gemmes: ${logoColErr.message}`);
+      event.target.value = "";
+      return;
+    }
+
+    setOrgLogoUrl(logoUrl);
     setSuccess("Organisationens logo er opdateret.");
     event.target.value = "";
   };
@@ -297,21 +316,9 @@ export default function PortalTeamPage() {
               aria-label={
                 isOrgAdmin ? "Skift organisationens logo" : "Organisationens logo"
               }
-              className="group relative h-20 w-20 flex-shrink-0 overflow-hidden rounded-full bg-gradient-to-br from-sky-400 to-sky-600 text-2xl font-bold text-white transition focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 disabled:cursor-default"
+              className="group relative h-20 w-20 flex-shrink-0 overflow-hidden rounded-full transition focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 disabled:cursor-default"
             >
-              {orgAvatarUrl && !orgAvatarBroken ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img
-                  src={orgAvatarUrl}
-                  alt=""
-                  className="h-full w-full object-cover"
-                  onError={() => setOrgAvatarBroken(true)}
-                />
-              ) : (
-                <span className="flex h-full w-full items-center justify-center">
-                  {orgInitials}
-                </span>
-              )}
+              <OrganisationLogo logoUrl={orgLogoUrl} initials={orgInitials} className="h-20 w-20 text-2xl" />
               {isOrgAdmin ? (
                 <span
                   className={`absolute inset-0 flex items-center justify-center bg-black/40 transition ${
@@ -406,7 +413,7 @@ export default function PortalTeamPage() {
             <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
               {members.map((member) => {
                 const initials =
-                  member.avatar_initials ||
+                  member.avatar_initials?.trim().slice(0, 2).toUpperCase() ||
                   buildInitials(member.full_name ?? "") ||
                   "??";
                 const joined = member.created_at
@@ -418,9 +425,11 @@ export default function PortalTeamPage() {
                     className="rounded-xl border border-sky-100 bg-[#FBFDFE] p-4"
                   >
                     <div className="flex items-center gap-3">
-                      <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-sky-100 text-base font-bold text-sky-700">
-                        {initials}
-                      </div>
+                      <ProfileAvatar
+                        avatarUrl={member.avatar_url}
+                        initials={initials}
+                        className="h-12 w-12 text-base"
+                      />
                       <div className="min-w-0 flex-1">
                         <p className="truncate text-sm font-semibold text-[#0D1F2D]">
                           {member.full_name || "Ukendt navn"}

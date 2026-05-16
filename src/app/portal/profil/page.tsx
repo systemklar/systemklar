@@ -10,13 +10,16 @@ import {
   useState,
 } from "react";
 import { Camera, Eye, EyeOff, Loader2 } from "lucide-react";
+import { ProfileAvatar } from "@/components/ProfileAvatar";
 import { createClient } from "@/lib/supabase";
+import { publicAvatarUrl } from "@/lib/storage-public-urls";
 
 type ProfileRow = {
   id: string;
   full_name: string | null;
   email: string | null;
   avatar_initials: string | null;
+  avatar_url: string | null;
   role: string | null;
   notif_new_message: boolean | null;
   notif_status_change: boolean | null;
@@ -68,7 +71,6 @@ export default function PortalProfilePage() {
   const [authEmail, setAuthEmail] = useState<string | null>(null);
 
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
-  const [avatarBroken, setAvatarBroken] = useState(false);
   const [uploadingAvatar, setUploadingAvatar] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -91,7 +93,6 @@ export default function PortalProfilePage() {
     (uid: string) => {
       const { data } = supabase.storage.from("avatars").getPublicUrl(uid);
       setAvatarUrl(`${data.publicUrl}?t=${Date.now()}`);
-      setAvatarBroken(false);
     },
     [supabase]
   );
@@ -120,7 +121,7 @@ export default function PortalProfilePage() {
     setAuthEmail(authUser.email ?? null);
 
     const profileColumns =
-      "id,full_name,email,avatar_initials,role,notif_new_message,notif_status_change,notif_monthly_report,organisations(name)";
+      "id,full_name,email,avatar_initials,avatar_url,role,notif_new_message,notif_status_change,notif_monthly_report,organisations(name)";
 
     const { data: byIdData, error: profileError } = await supabase
       .from("profiles")
@@ -167,7 +168,12 @@ export default function PortalProfilePage() {
     setNotifNewMessage(profileRow.notif_new_message ?? true);
     setNotifStatusChange(profileRow.notif_status_change ?? true);
     setNotifMonthlyReport(profileRow.notif_monthly_report ?? true);
-    refreshAvatarUrl(authUser.id);
+    const storedAvatar = profileRow.avatar_url?.trim();
+    if (storedAvatar) {
+      setAvatarUrl(storedAvatar);
+    } else {
+      refreshAvatarUrl(authUser.id);
+    }
     setLoading(false);
   }, [supabase, refreshAvatarUrl]);
 
@@ -193,28 +199,32 @@ export default function PortalProfilePage() {
         upsert: true,
         contentType: file.type || "image/png",
       });
-    setUploadingAvatar(false);
 
     if (upErr) {
+      setUploadingAvatar(false);
       console.error("[portal/profil] avatar upload fejlede", upErr);
       setError(`Kunne ikke uploade billede: ${upErr.message}`);
       event.target.value = "";
       return;
     }
 
-    const { data: urlData } = supabase.storage.from("avatars").getPublicUrl(authUserId);
-    const publicUrl = urlData.publicUrl;
-    if (profile?.id) {
-      const { error: avatarColErr } = await supabase
-        .from("profiles")
-        .update({ avatar_url: publicUrl })
-        .eq("id", profile.id);
-      if (avatarColErr) {
-        console.error("[portal/profil] avatar_url update fejlede", avatarColErr);
-      }
+    const publicUrl = publicAvatarUrl(authUserId);
+    const { error: avatarColErr } = await supabase
+      .from("profiles")
+      .update({ avatar_url: publicUrl })
+      .eq("id", authUserId);
+
+    setUploadingAvatar(false);
+
+    if (avatarColErr) {
+      console.error("[portal/profil] avatar_url update fejlede", avatarColErr);
+      setError(`Billedet blev uploadet, men kunne ikke gemmes på profilen: ${avatarColErr.message}`);
+      event.target.value = "";
+      return;
     }
 
-    refreshAvatarUrl(authUserId);
+    setAvatarUrl(publicUrl);
+    setProfile((prev) => (prev ? { ...prev, avatar_url: publicUrl } : prev));
     setSuccess("Profilbillede er opdateret.");
     event.target.value = "";
   };
@@ -350,19 +360,12 @@ export default function PortalProfilePage() {
                     aria-label="Skift profilbillede"
                     className="group relative h-20 w-20 flex-shrink-0 overflow-hidden rounded-full bg-gradient-to-br from-sky-400 to-sky-600 text-2xl font-bold text-white transition focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 disabled:cursor-not-allowed"
                   >
-                    {avatarUrl && !avatarBroken ? (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img
-                        src={avatarUrl}
-                        alt=""
-                        className="h-full w-full object-cover"
-                        onError={() => setAvatarBroken(true)}
-                      />
-                    ) : (
-                      <span className="flex h-full w-full items-center justify-center">
-                        {avatarText}
-                      </span>
-                    )}
+                    <ProfileAvatar
+                      avatarUrl={profile.avatar_url || avatarUrl}
+                      initials={avatarText}
+                      className="h-20 w-20 text-2xl"
+                      variant="brand"
+                    />
                     <span
                       className={`absolute inset-0 flex items-center justify-center bg-black/40 transition ${
                         uploadingAvatar ? "opacity-100" : "opacity-0 group-hover:opacity-100"

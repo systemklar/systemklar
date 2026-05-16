@@ -12,6 +12,7 @@ import {
   useState,
   type ReactNode,
 } from "react";
+import { ProfileAvatar } from "@/components/ProfileAvatar";
 import { SystemklarLogo } from "@/components/SystemklarLogo";
 import { NavigationProgress, PageTransition } from "@/components/PageTransition";
 import { fetchCurrentProfile } from "@/lib/current-profile";
@@ -144,6 +145,8 @@ type PortalSession = {
   organisationId: string | null;
   role: string | null;
   fullName: string | null;
+  avatarUrl: string | null;
+  avatarInitials: string | null;
 };
 
 const PortalSessionContext = createContext<PortalSession | null>(null);
@@ -170,6 +173,8 @@ export function PortalLayout({ children, activeNav }: PortalLayoutProps) {
   const [role, setRole] = useState<string | null>(null);
   const [organisationId, setOrganisationId] = useState<string | null>(null);
   const [fullName, setFullName] = useState<string | null>(null);
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+  const [avatarInitials, setAvatarInitials] = useState<string | null>(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   useEffect(() => {
@@ -205,6 +210,21 @@ export function PortalLayout({ children, activeNav }: PortalLayoutProps) {
       setRole(profile?.role ?? null);
       setOrganisationId(profile?.organisation_id ?? null);
       setFullName(profile?.full_name ?? null);
+      setAvatarUrl(profile?.avatar_url?.trim() || null);
+      const initials = profile?.avatar_initials?.trim();
+      if (initials) {
+        setAvatarInitials(initials.slice(0, 2).toUpperCase());
+      } else {
+        const name = profile?.full_name?.trim() || session.user.email || "U";
+        setAvatarInitials(
+          name
+            .split(/\s+/)
+            .map((p) => p[0] ?? "")
+            .join("")
+            .slice(0, 2)
+            .toUpperCase(),
+        );
+      }
       setIsLoading(false);
     };
 
@@ -259,7 +279,9 @@ export function PortalLayout({ children, activeNav }: PortalLayoutProps) {
   ];
 
   return (
-    <PortalSessionContext.Provider value={{ email: userEmail, userId, organisationId, role, fullName }}>
+    <PortalSessionContext.Provider
+      value={{ email: userEmail, userId, organisationId, role, fullName, avatarUrl, avatarInitials }}
+    >
       <main className="surface-cards min-h-screen bg-[#F5FAFD] text-[#0D1F2D]">
         <NavigationProgress />
         <div className="flex h-screen w-full overflow-hidden">
@@ -324,6 +346,22 @@ export function PortalLayout({ children, activeNav }: PortalLayoutProps) {
             </nav>
 
             <div className="flex-shrink-0 border-t border-sky-50 p-3">
+              <Link
+                href="/portal/profil"
+                className="mb-2 flex items-center gap-3 rounded-xl px-3 py-2.5 transition-colors hover:bg-[#F5FAFD]"
+              >
+                <ProfileAvatar
+                  avatarUrl={avatarUrl}
+                  initials={avatarInitials ?? "?"}
+                  className="h-9 w-9 text-xs"
+                />
+                <div className="min-w-0 flex-1">
+                  <p className="truncate text-sm font-semibold text-[#0D1F2D]">
+                    {fullName?.trim() || "Min profil"}
+                  </p>
+                  <p className="truncate text-xs text-[#4A8CB5]">{userEmail}</p>
+                </div>
+              </Link>
               <button
                 type="button"
                 onClick={handleLogout}

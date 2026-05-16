@@ -33,6 +33,7 @@ export type CurrentProfile = {
   role: string;
   full_name: string | null;
   avatar_initials: string | null;
+  avatar_url: string | null;
   company_name: string | null;
   email: string | null;
   onboarding_completed: boolean | null;
@@ -46,7 +47,7 @@ export async function fetchCurrentProfile(
   if (!userId) return null;
 
   const profileColumns =
-    "id, organisation_id, role, full_name, avatar_initials, company_name, email, onboarding_completed, onboarding_systems";
+    "id, organisation_id, role, full_name, avatar_initials, avatar_url, company_name, email, onboarding_completed, onboarding_systems";
 
   const { data: byIdData, error: byIdError } = await client
     .from("profiles")
