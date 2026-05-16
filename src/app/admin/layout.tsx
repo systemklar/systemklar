@@ -8,7 +8,11 @@ import { NavigationProgress, PageTransition } from "@/components/PageTransition"
 import { createClient } from "@/lib/supabase";
 
 function activeNavFromPath(pathname: string): AdminNavKey {
-  if (pathname === "/admin" || pathname.startsWith("/admin/dashboard")) {
+  if (
+    pathname === "/admin" ||
+    pathname.startsWith("/admin/dashboard") ||
+    pathname.startsWith("/admin/overblik")
+  ) {
     return "overview";
   }
   if (pathname.startsWith("/admin/customers")) {
@@ -95,7 +99,7 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
           <span className="w-9" aria-hidden />
         </div>
 
-        <div className="app-rhythm mx-auto w-full max-w-6xl p-4 md:p-8">
+        <div className="app-rhythm mx-auto w-full max-w-7xl p-4 md:p-8">
           <PageTransition>{children}</PageTransition>
         </div>
       </div>

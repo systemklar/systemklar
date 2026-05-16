@@ -1,112 +1,128 @@
 "use client";
 
 import Link from "next/link";
-import { useCallback, useEffect, useMemo, useState } from "react";
-import { Building2, CheckCircle, Ticket, type LucideIcon } from "lucide-react";
-import { AnimatedSection } from "@/components/ui/AnimatedSection";
+import { useRouter } from "next/navigation";
+import { useCallback, useEffect, useState } from "react";
+import {
+  AlertTriangle,
+  CheckCircle2,
+  Loader2,
+  Play,
+  XCircle,
+} from "lucide-react";
+import { OrganisationLogo } from "@/components/OrganisationLogo";
 import { StatusBadge } from "@/components/tickets/StatusBadge";
-import { createClient } from "@/lib/supabase";
+import {
+  MONITORING_STATUS_COLORS,
+  MONITORING_STATUS_LABELS,
+  type DashboardActivity,
+  type DashboardStats,
+  type DashboardTicket,
+  type MonitoringCounts,
+  type MonitoringStatus,
+  type OrganisationDashboardRow,
+} from "@/lib/admin/dashboard-data";
+import { formatCheckedAgoDa } from "@/components/monitoring/MonitoringStatusBlock";
+import { formatRelativeShortDa } from "@/lib/format-relative-da";
 
-type DashboardStats = {
-  customers: number | null;
-  ticketsActive: number | null;
-  ticketsResolved: number | null;
+type DashboardPayload = {
+  stats: DashboardStats;
+  customers: OrganisationDashboardRow[];
+  recentTickets: DashboardTicket[];
+  activity: DashboardActivity[];
 };
 
-function StatCard({
-  title,
-  value,
-  hint,
-  href,
-  icon: Icon,
-}: {
-  title: string;
-  value: number | null;
-  hint: string;
-  href?: string;
-  icon: LucideIcon;
-}) {
-  const [display, setDisplay] = useState(0);
-  useEffect(() => {
-    if (value === null) return;
-    const duration = 800;
-    const stepMs = 40;
-    const steps = Math.max(1, Math.floor(duration / stepMs));
-    let currentStep = 0;
-    const timer = window.setInterval(() => {
-      currentStep += 1;
-      setDisplay(Math.round((value * currentStep) / steps));
-      if (currentStep >= steps) window.clearInterval(timer);
-    }, stepMs);
-    return () => window.clearInterval(timer);
-  }, [value]);
+function initialsFromName(name: string) {
+  return name
+    .trim()
+    .split(/\s+/)
+    .map((p) => p[0] ?? "")
+    .join("")
+    .slice(0, 2)
+    .toUpperCase();
+}
 
-  const inner = (
-    <article className="rounded-2xl border border-sky-100 bg-white p-5 shadow-sm transition-all duration-200 hover:border-sky-200 hover:shadow-md">
-      <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#F0F7FF]">
-        <Icon className="h-4 w-4 text-sky-600" />
-      </div>
-      <p className="fade-scale visible mt-3 text-3xl font-bold tabular-nums text-[#0D1F2D]">
-        {value === null ? "—" : display}
-      </p>
-      <p className="mt-1 text-xs text-[#4A8CB5]">{title}</p>
-      <p className="mt-2 text-xs text-[#4A8CB5]">{hint}</p>
+function StatCard({ label, value }: { label: string; value: number }) {
+  return (
+    <article className="rounded-2xl border border-sky-100 bg-white p-6 shadow-sm">
+      <p className="text-xs font-medium uppercase tracking-wide text-[#4A8CB5]">{label}</p>
+      <p className="mt-2 text-4xl font-bold tabular-nums text-[#062840]">{value}</p>
     </article>
   );
+}
 
-  if (href) {
-    return (
-      <Link href={href} className="block outline-none focus-visible:ring-2 focus-visible:ring-sky-500/40">
-        {inner}
-      </Link>
-    );
+function MonitoringBadges({ counts }: { counts: MonitoringCounts }) {
+  const total = counts.ok + counts.advarsel + counts.fejl + counts.afventer;
+  if (total === 0) {
+    return <span className="text-xs text-[#94a3b8]">Ingen data</span>;
   }
 
-  return inner;
+  const items: { key: MonitoringStatus; count: number }[] = [
+    { key: "fejl", count: counts.fejl },
+    { key: "advarsel", count: counts.advarsel },
+    { key: "ok", count: counts.ok },
+    { key: "afventer", count: counts.afventer },
+  ];
+
+  return (
+    <div className="flex flex-wrap gap-1.5">
+      {items
+        .filter((i) => i.count > 0)
+        .map((i) => (
+          <span
+            key={i.key}
+            className="inline-flex items-center gap-1 rounded-md px-1.5 py-0.5 text-xs font-semibold text-white"
+            style={{ backgroundColor: MONITORING_STATUS_COLORS[i.key] }}
+            title={`${MONITORING_STATUS_LABELS[i.key]}: ${i.count}`}
+          >
+            {i.count}
+          </span>
+        ))}
+    </div>
+  );
+}
+
+function ActivityIcon({ status }: { status: MonitoringStatus }) {
+  if (status === "ok") {
+    return <CheckCircle2 className="h-4 w-4 shrink-0 text-[#0A7C5C]" aria-hidden />;
+  }
+  if (status === "fejl") {
+    return <XCircle className="h-4 w-4 shrink-0 text-[#C42B2B]" aria-hidden />;
+  }
+  return <AlertTriangle className="h-4 w-4 shrink-0 text-[#C47B0A]" aria-hidden />;
+}
+
+function activityStatusLabel(status: MonitoringStatus): string {
+  return MONITORING_STATUS_LABELS[status].toLowerCase();
 }
 
 export default function AdminDashboardClient() {
-  const supabase = useMemo(() => createClient(), []);
-  const [stats, setStats] = useState<DashboardStats>({
-    customers: null,
-    ticketsActive: null,
-    ticketsResolved: null,
-  });
+  const router = useRouter();
+  const [data, setData] = useState<DashboardPayload | null>(null);
   const [loading, setLoading] = useState(true);
-  const [recentTickets, setRecentTickets] = useState<
-    { id: string; title: string; status: string; created_at: string }[]
-  >([]);
+  const [error, setError] = useState<string | null>(null);
+  const [runningOrgId, setRunningOrgId] = useState<string | null>(null);
 
   const load = useCallback(async () => {
     setLoading(true);
-
-    const [customersRes, activeRes, resolvedRes, recentRes] = await Promise.all([
-      supabase.from("organisations").select("*", { count: "exact", head: true }),
-      supabase.from("tickets").select("id", { count: "exact", head: true }).eq("status", "active"),
-      supabase.from("tickets").select("id", { count: "exact", head: true }).eq("status", "resolved"),
-      supabase.from("tickets").select("id,title,status,created_at").order("created_at", { ascending: false }).limit(8),
-    ]);
-
-    if (customersRes.error) {
-      console.error("[admin/dashboard] organisations count", customersRes.error);
+    setError(null);
+    try {
+      const res = await fetch("/api/admin/dashboard", { credentials: "include" });
+      const payload = (await res.json().catch(() => ({}))) as DashboardPayload & { error?: string };
+      if (!res.ok) {
+        setError(payload.error ?? "Kunne ikke hente dashboard.");
+        setData(null);
+        return;
+      }
+      setData(payload);
+    } catch (e) {
+      console.error("[admin/dashboard] fetch", e);
+      setError("Netværksfejl. Prøv igen.");
+      setData(null);
+    } finally {
+      setLoading(false);
     }
-    if (activeRes.error) {
-      console.error("[admin/dashboard] tickets active", activeRes.error);
-    }
-    if (resolvedRes.error) {
-      console.error("[admin/dashboard] tickets resolved", resolvedRes.error);
-    }
-
-    setStats({
-      customers: customersRes.error ? null : (customersRes.count ?? 0),
-      ticketsActive: activeRes.error ? null : (activeRes.count ?? 0),
-      ticketsResolved: resolvedRes.error ? null : (resolvedRes.count ?? 0),
-    });
-    setRecentTickets(
-      ((recentRes.data ?? []) as { id: string; title: string; status: string; created_at: string }[]) ?? [],
-    );
-    setLoading(false);
-  }, [supabase]);
+  }, []);
 
   useEffect(() => {
     queueMicrotask(() => {
@@ -114,82 +130,215 @@ export default function AdminDashboardClient() {
     });
   }, [load]);
 
+  const runMonitoring = async (orgId: string, e: { preventDefault: () => void; stopPropagation: () => void }) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (runningOrgId) return;
+    setRunningOrgId(orgId);
+    try {
+      const res = await fetch("/api/admin/monitoring/run", {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ organisationId: orgId }),
+      });
+      const payload = (await res.json().catch(() => ({}))) as { error?: string };
+      if (!res.ok) {
+        console.error("[admin/dashboard] monitoring run", payload.error);
+        return;
+      }
+      await load();
+    } catch (err) {
+      console.error("[admin/dashboard] monitoring run", err);
+    } finally {
+      setRunningOrgId(null);
+    }
+  };
+
+  const stats = data?.stats;
+  const customers = data?.customers ?? [];
+  const recentTickets = data?.recentTickets ?? [];
+  const activity = data?.activity ?? [];
+
   return (
     <div className="space-y-8">
       <div className="border-b border-sky-100 pb-6">
         <p className="mb-1 text-xs text-[#4A8CB5]">Admin</p>
-        <h1 className="text-2xl font-bold text-[#0D1F2D]">Overblik</h1>
+        <h1 className="text-2xl font-bold text-[#062840]">IT-overblik</h1>
         <p className="mt-2 max-w-2xl text-sm text-[#4A8CB5]">
-          Velkommen til admin-dashboardet. Her ser du hurtige nøgletal for kunder og supportsager.
+          Samlet status for alle kunders systemer, sager og seneste overvågning.
         </p>
       </div>
 
       {loading ? (
-        <p className="mt-10 text-sm text-[#4A8CB5]">Henter tal...</p>
-      ) : (
-        <div className="grid grid-cols-1 gap-5 sm:grid-cols-3">
-          <AnimatedSection direction="up" delay={0}>
-            <StatCard
-              title="Kunder"
-              value={stats.customers}
-              hint="Aktive organisationer"
-              href="/admin/customers"
-              icon={Building2}
-            />
-          </AnimatedSection>
-          <AnimatedSection direction="up" delay={100}>
-            <StatCard
-              title="Aktive sager"
-              value={stats.ticketsActive}
-              hint="Status: aktiv"
-              href="/admin/tickets"
-              icon={Ticket}
-            />
-          </AnimatedSection>
-          <AnimatedSection direction="up" delay={200}>
-            <StatCard
-              title="Løste sager"
-              value={stats.ticketsResolved}
-              hint="Status: løst"
-              href="/admin/tickets"
-              icon={CheckCircle}
-            />
-          </AnimatedSection>
-        </div>
-      )}
+        <p className="text-sm text-[#4A8CB5]">Henter overblik...</p>
+      ) : error ? (
+        <p className="text-sm text-red-600">{error}</p>
+      ) : stats ? (
+        <>
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+            <StatCard label="Aktive kunder" value={stats.activeCustomers} />
+            <StatCard label="Systemer med fejl" value={stats.systemsWithFejl} />
+            <StatCard label="Åbne sager" value={stats.openTickets} />
+            <StatCard label="Rapporter klar" value={stats.reportsReady} />
+          </div>
 
-      <AnimatedSection direction="up" delay={200} className="rounded-2xl border border-sky-100 bg-white p-5 shadow-sm">
-        <div className="flex items-center justify-between">
-          <h2 className="text-base font-semibold text-[#0D1F2D]">Seneste supportsager</h2>
-          <Link href="/admin/tickets" className="text-sm font-semibold text-sky-600 hover:underline">
-            Åbn alle
-          </Link>
-        </div>
-        {recentTickets.length === 0 ? (
-          <div className="mt-4 rounded-2xl border border-dashed border-sky-100 bg-[#F0F7FF] p-6 text-center">
-            <p className="text-sm font-medium text-[#0D1F2D]">Ingen sager endnu</p>
-            <p className="mt-1 text-sm text-[#4A8CB5]">Nye supportsager vil dukke op her.</p>
-          </div>
-        ) : (
-          <div className="mt-4">
-            {recentTickets.map((t) => (
-              <div key={t.id} className="border-b border-sky-50 py-3 last:border-0">
-                <div className="flex items-center justify-between gap-3">
-                  <div>
-                    <Link href={`/admin/tickets/${t.id}`} className="text-sm font-medium text-[#0D1F2D] hover:text-sky-600">
-                        {t.title}
-                      </Link>
-                    <p className="mt-1 text-xs text-[#4A8CB5]">
-                      {new Intl.DateTimeFormat("da-DK", { dateStyle: "medium" }).format(new Date(t.created_at))}
-                    </p>
-                  </div>
-                  <StatusBadge status={t.status} />
-                </div>
+          <div className="grid grid-cols-1 gap-6 xl:grid-cols-[minmax(0,1.85fr)_minmax(0,1fr)]">
+            <section className="min-w-0 rounded-2xl border border-sky-100 bg-white shadow-sm">
+              <div className="border-b border-sky-100 px-5 py-4">
+                <h2 className="text-base font-semibold text-[#062840]">Kunde IT-status oversigt</h2>
               </div>
-            ))}
+              {customers.length === 0 ? (
+                <p className="p-6 text-sm text-[#4A8CB5]">Ingen kunder endnu.</p>
+              ) : (
+                <div className="overflow-x-auto">
+                  <table className="w-full min-w-[720px] text-left text-sm">
+                    <thead>
+                      <tr className="border-b border-sky-50 text-xs font-medium uppercase tracking-wide text-[#4A8CB5]">
+                        <th className="px-5 py-3">Kunde</th>
+                        <th className="px-3 py-3">Domæne</th>
+                        <th className="px-3 py-3">Systemer</th>
+                        <th className="px-3 py-3 text-center">Åbne sager</th>
+                        <th className="px-3 py-3">Seneste tjek</th>
+                        <th className="px-5 py-3 text-right">Handling</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {customers.map((org) => {
+                        const accent =
+                          org.rowAccent === "fejl"
+                            ? "border-l-[3px] border-l-[#C42B2B]"
+                            : org.rowAccent === "advarsel"
+                              ? "border-l-[3px] border-l-[#C47B0A]"
+                              : "border-l-[3px] border-l-transparent";
+                        return (
+                          <tr
+                            key={org.id}
+                            className={`cursor-pointer border-b border-sky-50 transition-colors hover:bg-[#F5FAFD] ${accent}`}
+                            onClick={() => router.push(`/admin/customers/${org.id}`)}
+                          >
+                            <td className="px-5 py-3">
+                              <div className="flex items-center gap-3">
+                                <OrganisationLogo
+                                  logoUrl={org.logo_url}
+                                  initials={initialsFromName(org.name)}
+                                  className="h-9 w-9 text-xs"
+                                />
+                                <span className="font-medium text-[#062840]">{org.name}</span>
+                              </div>
+                            </td>
+                            <td className="px-3 py-3 text-[#4A8CB5]">
+                              {org.domain ?? <span className="text-[#94a3b8]">—</span>}
+                            </td>
+                            <td className="px-3 py-3">
+                              <MonitoringBadges counts={org.monitoring} />
+                            </td>
+                            <td className="px-3 py-3 text-center tabular-nums text-[#062840]">
+                              {org.openTickets}
+                            </td>
+                            <td className="px-3 py-3 text-[#4A8CB5]">
+                              {org.lastCheckedAt ? (
+                                <span title={formatCheckedAgoDa(org.lastCheckedAt)}>
+                                  {formatRelativeShortDa(org.lastCheckedAt)}
+                                </span>
+                              ) : (
+                                <span className="text-[#94a3b8]">—</span>
+                              )}
+                            </td>
+                            <td className="px-5 py-3">
+                              <div className="flex items-center justify-end gap-2">
+                                <Link
+                                  href={`/admin/customers/${org.id}`}
+                                  className="text-xs font-semibold text-[#0A6EBD] hover:underline"
+                                  onClick={(e) => e.stopPropagation()}
+                                >
+                                  Se kunde →
+                                </Link>
+                                <button
+                                  type="button"
+                                  title="Kør monitoring"
+                                  disabled={runningOrgId === org.id}
+                                  onClick={(e) => void runMonitoring(org.id, e)}
+                                  className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-sky-100 text-[#0A6EBD] transition-colors hover:bg-[#F0F7FF] disabled:opacity-50"
+                                >
+                                  {runningOrgId === org.id ? (
+                                    <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
+                                  ) : (
+                                    <Play className="h-4 w-4" aria-hidden />
+                                  )}
+                                </button>
+                              </div>
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </section>
+
+            <aside className="rounded-2xl border border-sky-100 bg-white p-5 shadow-sm">
+              <h2 className="text-base font-semibold text-[#062840]">Aktive sager</h2>
+              {recentTickets.length === 0 ? (
+                <p className="mt-4 text-sm text-[#4A8CB5]">Ingen åbne sager.</p>
+              ) : (
+                <ul className="mt-4 space-y-4">
+                  {recentTickets.map((t) => (
+                    <li key={t.id} className="border-b border-sky-50 pb-4 last:border-0 last:pb-0">
+                      <p className="font-medium text-[#062840]">{t.title}</p>
+                      <p className="mt-0.5 text-xs text-[#4A8CB5]">{t.organisation_name}</p>
+                      <div className="mt-2 flex items-center justify-between gap-2">
+                        <span className="text-xs text-[#94a3b8]">{formatRelativeShortDa(t.created_at)}</span>
+                        <StatusBadge status={t.status} />
+                      </div>
+                      <Link
+                        href={`/admin/tickets/${t.id}`}
+                        className="mt-2 inline-block text-xs font-semibold text-[#0A6EBD] hover:underline"
+                      >
+                        Åbn →
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              )}
+              <Link
+                href="/admin/tickets"
+                className="mt-5 inline-block text-sm font-semibold text-[#0A6EBD] hover:underline"
+              >
+                Se alle sager →
+              </Link>
+            </aside>
           </div>
-        )}
-      </AnimatedSection>
+
+          <section className="rounded-2xl border border-sky-100 bg-white p-5 shadow-sm">
+            <h2 className="text-base font-semibold text-[#062840]">Seneste aktivitet</h2>
+            <p className="mt-1 text-xs text-[#4A8CB5]">Statusændringer fra overvågning (sidste 24 timer)</p>
+            {activity.length === 0 ? (
+              <p className="mt-4 text-sm text-[#4A8CB5]">Ingen statusændringer i den seneste periode.</p>
+            ) : (
+              <ul className="mt-4 divide-y divide-sky-50">
+                {activity.map((ev, i) => (
+                  <li key={`${ev.organisation_id}-${ev.system_name}-${ev.checked_at}-${i}`} className="flex gap-3 py-3">
+                    <ActivityIcon status={ev.status} />
+                    <div className="min-w-0 flex-1">
+                      <p className="text-sm text-[#062840]">
+                        <span className="font-medium">{ev.organisation_name}</span>
+                        {" — "}
+                        <span>{ev.system_name}</span>{" "}
+                        <span className="text-[#4A8CB5]">
+                          skiftede til {activityStatusLabel(ev.status)}
+                        </span>
+                      </p>
+                      <p className="mt-0.5 text-xs text-[#94a3b8]">{formatRelativeShortDa(ev.checked_at)}</p>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </section>
+        </>
+      ) : null}
     </div>
   );
 }
