@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { type FormEvent, useCallback, useEffect, useMemo, useState } from "react";
 import { OrganisationLogo } from "@/components/OrganisationLogo";
 import { ProfileAvatar } from "@/components/ProfileAvatar";
+import { Modal } from "@/components/ui/Modal";
 import { createClient } from "@/lib/supabase";
 import { withCacheBust } from "@/lib/storage-public-urls";
 
@@ -307,26 +308,13 @@ export default function AdminCustomersClient() {
         </div>
       )}
 
-      {modalOpen && (
-        <div
-          className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-slate-900/40 p-4 sm:items-center"
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby="create-customer-title"
-          onClick={(e) => {
-            if (e.target === e.currentTarget) closeModal();
-          }}
-        >
-          <div
-            className="w-full max-w-md rounded-2xl border border-slate-200 bg-white p-6 shadow-xl"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <h2 id="create-customer-title" className="text-lg font-semibold text-slate-900">
-              Ny kunde
-            </h2>
-            <p className="mt-1 text-sm text-slate-500">Opret organisation og send invitation til kontaktpersonen.</p>
+      <Modal open={modalOpen} onClose={closeModal} titleId="create-customer-title">
+        <h2 id="create-customer-title" className="text-lg font-semibold text-slate-900">
+          Ny kunde
+        </h2>
+        <p className="mt-1 text-sm text-slate-500">Opret organisation og send invitation til kontaktpersonen.</p>
 
-            <form className="mt-6 space-y-4" onSubmit={(ev) => void handleCreate(ev)}>
+        <form className="mt-6 space-y-4" onSubmit={(ev) => void handleCreate(ev)}>
               <div>
                 <label htmlFor="cust-contact-name" className="mb-1 block text-sm font-medium text-slate-700">
                   Kontaktpersonens fulde navn
@@ -400,13 +388,9 @@ export default function AdminCustomersClient() {
                   {submitting ? "Opretter..." : "Opret"}
                 </button>
               </div>
-              {formError ? (
-                <p className="mt-2 text-sm text-red-500">{formError}</p>
-              ) : null}
-            </form>
-          </div>
-        </div>
-      )}
+          {formError ? <p className="mt-2 text-sm text-red-500">{formError}</p> : null}
+        </form>
+      </Modal>
     </div>
   );
 }
