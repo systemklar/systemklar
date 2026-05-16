@@ -7,6 +7,10 @@ const SIZES = {
   lg: { imgPx: 36, textPx: 20 },
 } as const;
 
+/** Must match `public/logo.png` intrinsic ratio so layout is stable before decode. */
+const LOGO_SRC_WIDTH = 256;
+const LOGO_SRC_HEIGHT = 256;
+
 export type SystemklarLogoVariant = "light" | "dark";
 export type SystemklarLogoSize = keyof typeof SIZES;
 
@@ -30,11 +34,13 @@ export function SystemklarLogo({
 }: SystemklarLogoProps) {
   const { imgPx, textPx } = SIZES[size];
   const isDark = variant === "dark";
+  const imgWidthAttr = Math.max(1, Math.round((imgPx * LOGO_SRC_WIDTH) / LOGO_SRC_HEIGHT));
 
   const imgStyle: CSSProperties = {
+    display: "block",
+    flexShrink: 0,
     height: imgPx,
     width: "auto",
-    display: "block",
     ...(isDark
       ? {
           filter: "brightness(0) invert(1)",
@@ -51,7 +57,13 @@ export function SystemklarLogo({
   const mark: ReactNode = (
     <>
       {/* eslint-disable-next-line @next/next/no-img-element -- statisk brand-PNG */}
-      <img src="/logo.png" alt="" width={160} height={imgPx} style={imgStyle} />
+      <img
+        src="/logo.png"
+        alt=""
+        width={imgWidthAttr}
+        height={imgPx}
+        style={imgStyle}
+      />
       <span
         className={isDark ? "font-bold text-white" : "font-bold text-[#0A6EBD]"}
         style={{ fontSize: textPx, lineHeight: 1.1 }}
