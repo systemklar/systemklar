@@ -110,7 +110,7 @@ function buildHealthSparklineFromDaily(daily: DailyPctOkPoint[]): HealthSparklin
 const ghostLinkClass =
   "text-sm font-medium text-[#0A6EBD] transition-colors hover:text-[#0859A0] hover:underline";
 const dashboardCardClass =
-  "flex h-full flex-col rounded-2xl border border-sky-100 bg-white p-6 shadow-sm";
+  "flex h-full min-h-0 flex-col rounded-2xl border border-sky-100 bg-white p-5 shadow-sm md:p-6";
 
 function easeOutCubic(t: number) {
   return 1 - (1 - t) ** 3;
@@ -785,7 +785,7 @@ export function PortalSystemsDashboard({
 
     return (
       <div
-        className={`portal-hero-enter flex max-h-[120px] flex-col justify-center overflow-hidden rounded-xl px-4 py-3 ${heroSurfaceClass}`}
+        className={`portal-hero-enter flex max-h-[108px] flex-col justify-center overflow-hidden rounded-xl px-4 py-2.5 md:max-h-[100px] ${heroSurfaceClass}`}
       >
         <div className="flex items-center gap-3">
           <div className="portal-hero-icon-fade-in shrink-0" aria-hidden>
@@ -881,7 +881,7 @@ export function PortalSystemsDashboard({
   }
 
   return (
-    <div className="relative w-full max-w-none">
+    <div className="relative flex h-full min-h-0 w-full max-w-none flex-col md:overflow-hidden">
       {preview ? (
         <p className="mb-4 text-center text-xs text-[#7AAEC8]">
           Forhåndsvisning af kundens portal-overblik
@@ -894,12 +894,12 @@ export function PortalSystemsDashboard({
         </div>
       ) : (
         <>
-        <div className="grid grid-cols-1 items-stretch gap-6 lg:grid-cols-3">
-          <article className={`${dashboardCardClass} lg:col-span-2`}>
+        <div className="grid min-h-0 flex-1 grid-cols-1 items-stretch gap-4 md:gap-5 lg:grid-cols-3 lg:grid-rows-[minmax(0,1fr)_auto]">
+          <article className={`${dashboardCardClass} min-h-0 lg:col-span-2`}>
             <h2 className="text-sm font-semibold uppercase tracking-wide text-[#7AAEC8]">
               Systemstatus
             </h2>
-            <div className="mt-4 flex min-h-0 flex-1 flex-col space-y-4">
+            <div className="mt-3 flex min-h-0 flex-1 flex-col space-y-3 md:mt-4 md:space-y-3">
               {renderMiniHero()}
               {!monitoringLoading ? (
                 <p className="text-sm text-[#2C4A5E]">
@@ -920,7 +920,7 @@ export function PortalSystemsDashboard({
                 </p>
               ) : null}
               <div
-                className="-mx-2 flex min-h-[240px] flex-1 flex-col overflow-hidden rounded-xl border border-sky-100"
+                className="-mx-2 flex min-h-[200px] flex-1 flex-col overflow-hidden rounded-xl border border-sky-100 md:min-h-0"
                 onMouseEnter={() => setTabsHovered(true)}
                 onMouseLeave={() => setTabsHovered(false)}
               >
@@ -1007,7 +1007,7 @@ export function PortalSystemsDashboard({
                 </div>
               </div>
             </div>
-            <div className="mt-auto pt-5">
+            <div className="mt-auto shrink-0 pt-4">
               <Link href="/portal/systemer" className={ghostLinkClass}>
                 Se alle systemer →
               </Link>
@@ -1015,7 +1015,7 @@ export function PortalSystemsDashboard({
           </article>
 
           {!preview ? (
-            <article className={dashboardCardClass}>
+            <article className={`${dashboardCardClass} min-h-0`}>
               <div className="flex items-center gap-2">
                 <h2 className="text-sm font-semibold text-[#0D1F2D]">Aktive sager</h2>
                 {!ticketsLoading ? (
@@ -1097,14 +1097,14 @@ export function PortalSystemsDashboard({
                   </div>
                 )}
               </div>
-              <div className="mt-auto pt-5">
+              <div className="mt-auto shrink-0 pt-4">
                 <Link href="/portal/rapport" className={ghostLinkClass}>
                   Se alle rapporter →
                 </Link>
               </div>
               </article>
 
-              <article className={dashboardCardClass}>
+              <article className={`${dashboardCardClass} min-h-0`}>
                 <h2 className="text-sm font-semibold uppercase tracking-wide text-[#7AAEC8]">
                   Systemsundhed
                 </h2>
@@ -1176,7 +1176,7 @@ export function PortalSystemsDashboard({
         </div>
 
         {showUptimeChart ? (
-          <section className="mt-6 overflow-hidden rounded-2xl border border-sky-100 bg-white shadow-sm">
+          <section className="mt-4 overflow-hidden rounded-2xl border border-sky-100 bg-white shadow-sm md:hidden">
             <button
               type="button"
               onClick={() => setChartOpen((open) => !open)}

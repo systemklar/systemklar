@@ -268,9 +268,9 @@ export function PortalLayout({ children, activeNav }: PortalLayoutProps) {
     <PortalSessionContext.Provider
       value={{ email: userEmail, userId, organisationId, role, fullName, avatarUrl, avatarInitials }}
     >
-      <main className="surface-cards min-h-screen bg-[#F5FAFD] text-[#0D1F2D]">
+      <main className="surface-cards h-dvh overflow-hidden bg-[#F5FAFD] text-[#0D1F2D]">
         <NavigationProgress />
-        <div className="flex h-screen w-full overflow-hidden">
+        <div className="flex h-full min-h-0 w-full overflow-hidden">
           {sidebarOpen ? (
             <button
               type="button"
@@ -359,8 +359,8 @@ export function PortalLayout({ children, activeNav }: PortalLayoutProps) {
             </div>
           </aside>
 
-          <section className="flex min-w-0 flex-1 flex-col bg-[#F5FAFD]">
-            <div className="flex-1 overflow-y-auto">
+          <section className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden bg-[#F5FAFD]">
+            <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
               <div className="sticky top-0 z-10 flex flex-shrink-0 items-center justify-between border-b border-[#D0E8F5] bg-white px-4 py-3 md:hidden">
                 <Link href="/portal" className="block">
                   <SystemklarLogo variant="light" size="sm" />
@@ -369,10 +369,10 @@ export function PortalLayout({ children, activeNav }: PortalLayoutProps) {
               </div>
 
               <div
-                className={`app-rhythm min-w-0 flex-1 ${
+                className={`app-rhythm flex min-h-0 min-w-0 flex-1 flex-col ${
                   activeNav === "dashboard"
-                    ? "p-3 pb-24 md:p-5 md:pb-8"
-                    : "p-4 pb-24 md:p-8 md:pb-8"
+                    ? "overflow-y-auto p-3 pb-24 md:overflow-hidden md:p-4 md:pb-4"
+                    : "overflow-y-auto p-4 pb-24 md:p-8 md:pb-8"
                 }`}
               >
                 <PageTransition>{children}</PageTransition>
