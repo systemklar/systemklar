@@ -4,7 +4,6 @@ import {
   countsFromLatestBySystem,
   detectStatusChangeEvents,
   emptyMonitoringCounts,
-  latestMonitoringByOrg,
   rowAccentFromCounts,
   worstRankFromCounts,
   type DashboardActivity,
@@ -43,6 +42,56 @@ function logQueryFail(scope: string, error: PostgrestError) {
     hint: error.hint,
     code: error.code,
   });
+}
+
+type MonitoringResultDbRow = {
+  organisation_id: string;
+  system_name: string;
+  status: string;
+  checked_at: string;
+};
+
+type LatestMonitoringPerSystem = {
+  system_name: string;
+  status: string;
+  checked_at: string;
+};
+
+/**
+ * Seneste række pr. (organisation_id, system_name) fra monitoring_results.
+ * Rækker forventes sorteret checked_at desc fra Supabase; vi tager første per nøgle.
+ */
+function groupLatestMonitoringByOrg(
+  rows: MonitoringResultDbRow[],
+): Map<string, Map<string, LatestMonitoringPerSystem>> {
+  const byOrg = new Map<string, LatestMonitoringPerSystem[]>();
+
+  for (const row of rows) {
+    const list = byOrg.get(row.organisation_id) ?? [];
+    list.push({
+      system_name: row.system_name,
+      status: row.status,
+      checked_at: row.checked_at,
+    });
+    byOrg.set(row.organisation_id, list);
+  }
+
+  const result = new Map<string, Map<string, LatestMonitoringPerSystem>>();
+
+  for (const [orgId, list] of byOrg) {
+    const sorted = [...list].sort(
+      (a, b) => new Date(b.checked_at).getTime() - new Date(a.checked_at).getTime(),
+    );
+    const bySystem = new Map<string, LatestMonitoringPerSystem>();
+    for (const r of sorted) {
+      if (!bySystem.has(r.system_name)) {
+        bySystem.set(r.system_name, r);
+      }
+    }
+    result.set(orgId, bySystem);
+  }
+
+  return result;
 }
 
 async function fetchRecentTickets(admin: SupabaseClient, warnings: string[]) {
@@ -143,7 +192,9 @@ export async function GET() {
       .gte("checked_at", monitoringSince)
       .order("checked_at", { ascending: false });
 
-    const monitoringRows = monitoringRes.error ? [] : (monitoringRes.data ?? []);
+    const monitoringRows: MonitoringResultDbRow[] = monitoringRes.error
+      ? []
+      : ((monitoringRes.data ?? []) as MonitoringResultDbRow[]);
     if (monitoringRes.error) {
       logQueryFail("monitoring_results", monitoringRes.error);
       warnings.push(formatQueryError("monitoring_results", monitoringRes.error));
@@ -216,7 +267,7 @@ export async function GET() {
       }
     }
 
-    const latestByOrg = latestMonitoringByOrg(monitoringRows);
+    const latestByOrg = groupLatestMonitoringByOrg(monitoringRows);
 
     let systemsWithFejl = 0;
     for (const latest of latestByOrg.values()) {

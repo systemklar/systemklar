@@ -1,5 +1,9 @@
-import type { MonitoringResultRow } from "@/components/monitoring/MonitoringStatusBlock";
-import { monitoringResultsBySystemName } from "@/components/monitoring/MonitoringStatusBlock";
+import {
+  latestMonitoringByOrgAndSystem,
+  type MonitoringResultRow,
+} from "@/lib/monitoring/monitoring-results";
+
+export type { MonitoringResultRow };
 
 export type MonitoringStatus = "ok" | "advarsel" | "fejl" | "afventer";
 
@@ -91,22 +95,7 @@ export function rowAccentFromCounts(counts: MonitoringCounts): "fejl" | "advarse
 export function latestMonitoringByOrg(
   rows: { organisation_id: string; system_name: string; status: string; checked_at: string }[],
 ): Map<string, Map<string, MonitoringResultRow>> {
-  const byOrg = new Map<string, MonitoringResultRow[]>();
-  for (const row of rows) {
-    const list = byOrg.get(row.organisation_id) ?? [];
-    list.push({
-      system_name: row.system_name,
-      status: row.status,
-      checked_at: row.checked_at,
-    });
-    byOrg.set(row.organisation_id, list);
-  }
-
-  const result = new Map<string, Map<string, MonitoringResultRow>>();
-  for (const [orgId, list] of byOrg) {
-    result.set(orgId, monitoringResultsBySystemName(list));
-  }
-  return result;
+  return latestMonitoringByOrgAndSystem(rows);
 }
 
 export function detectStatusChangeEvents(

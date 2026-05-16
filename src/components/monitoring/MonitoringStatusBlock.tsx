@@ -1,21 +1,16 @@
 "use client";
 
-export type MonitoringResultRow = {
-  system_name: string;
-  status: string;
-  checked_at: string;
-  details?: Record<string, unknown>;
-};
+import {
+  latestResultPerSystemName,
+  type MonitoringResultRow,
+} from "@/lib/monitoring/monitoring-results";
 
-export function monitoringResultsBySystemName(rows: MonitoringResultRow[] | null): Map<string, MonitoringResultRow> {
-  const sorted = [...(rows ?? [])].sort(
-    (a, b) => new Date(b.checked_at).getTime() - new Date(a.checked_at).getTime(),
-  );
-  const m = new Map<string, MonitoringResultRow>();
-  for (const r of sorted) {
-    if (!m.has(r.system_name)) m.set(r.system_name, r);
-  }
-  return m;
+export type { MonitoringResultRow };
+
+export function monitoringResultsBySystemName(
+  rows: MonitoringResultRow[] | null,
+): Map<string, MonitoringResultRow> {
+  return latestResultPerSystemName(rows);
 }
 
 export function formatCheckedAgoDa(iso: string): string {
