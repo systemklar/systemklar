@@ -3,8 +3,10 @@
 import { useEffect, useMemo, useState } from "react";
 import { Check, Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { OnboardingPhotoUploads } from "@/components/portal/OnboardingPhotoUploads";
 import { SystemklarLogo } from "@/components/SystemklarLogo";
 import { fetchCurrentProfile } from "@/lib/current-profile";
+import { withCacheBust } from "@/lib/storage-public-urls";
 import { needsOnboarding, onboardingFirstName } from "@/lib/onboarding";
 import { ONBOARDING_SYSTEM_GROUPS, systemNameById } from "@/lib/onboarding-systems";
 import { createClient } from "@/lib/supabase";
@@ -36,9 +38,24 @@ function OnboardingProgress({ step }: { step: 1 | 2 | 3 }) {
 type OnboardingContentProps = {
   profileId: string;
   fullName: string | null;
+  avatarInitials: string | null;
+  initialAvatarUrl: string | null;
+  organisationId: string | null;
+  organisationName: string | null;
+  isOrgAdmin: boolean;
+  initialLogoUrl: string | null;
 };
 
-function OnboardingContent({ profileId, fullName }: OnboardingContentProps) {
+function OnboardingContent({
+  profileId,
+  fullName,
+  avatarInitials,
+  initialAvatarUrl,
+  organisationId,
+  organisationName,
+  isOrgAdmin,
+  initialLogoUrl,
+}: OnboardingContentProps) {
   const router = useRouter();
   const supabase = useMemo(() => createClient(), []);
   const [step, setStep] = useState<1 | 2 | 3>(1);
@@ -95,10 +112,24 @@ function OnboardingContent({ profileId, fullName }: OnboardingContentProps) {
             Vi overvåger din IT så du ikke behøver. Lad os starte med at lære din virksomhed at
             kende.
           </p>
+
+          <OnboardingPhotoUploads
+            supabase={supabase}
+            profileId={profileId}
+            fullName={fullName}
+            avatarInitials={avatarInitials}
+            initialAvatarUrl={initialAvatarUrl}
+            organisationId={organisationId}
+            organisationName={organisationName}
+            isOrgAdmin={isOrgAdmin}
+            initialLogoUrl={initialLogoUrl}
+            onSkip={() => setStep(2)}
+          />
+
           <button
             type="button"
             onClick={() => setStep(2)}
-            className="mt-8 w-full rounded-full bg-[#0A6EBD] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#0859A0] sm:w-auto"
+            className="mt-6 w-full rounded-full bg-[#0A6EBD] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#0859A0] sm:w-auto"
           >
             Kom i gang →
           </button>
@@ -201,6 +232,12 @@ export default function PortalOnboardingPage() {
   const [bootstrapping, setBootstrapping] = useState(true);
   const [profileId, setProfileId] = useState<string | null>(null);
   const [fullName, setFullName] = useState<string | null>(null);
+  const [avatarInitials, setAvatarInitials] = useState<string | null>(null);
+  const [initialAvatarUrl, setInitialAvatarUrl] = useState<string | null>(null);
+  const [organisationId, setOrganisationId] = useState<string | null>(null);
+  const [organisationName, setOrganisationName] = useState<string | null>(null);
+  const [isOrgAdmin, setIsOrgAdmin] = useState(false);
+  const [initialLogoUrl, setInitialLogoUrl] = useState<string | null>(null);
   const [bootstrapError, setBootstrapError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -235,6 +272,29 @@ export default function PortalOnboardingPage() {
 
       setProfileId(profile.id);
       setFullName(profile.full_name);
+      setAvatarInitials(profile.avatar_initials);
+      const storedAvatar = profile.avatar_url?.trim();
+      setInitialAvatarUrl(storedAvatar ? withCacheBust(storedAvatar) : null);
+      setOrganisationId(profile.organisation_id?.trim() || null);
+      setIsOrgAdmin(profile.role === "org_admin");
+
+      const orgId = profile.organisation_id?.trim();
+      if (orgId) {
+        const { data: orgRow } = await supabase
+          .from("organisations")
+          .select("name, logo_url")
+          .eq("id", orgId)
+          .maybeSingle();
+        if (!cancelled) {
+          setOrganisationName(orgRow?.name?.trim() || profile.company_name?.trim() || null);
+          const storedLogo = orgRow?.logo_url?.trim();
+          setInitialLogoUrl(storedLogo ? withCacheBust(storedLogo) : null);
+        }
+      } else {
+        setOrganisationName(profile.company_name?.trim() || null);
+        setInitialLogoUrl(null);
+      }
+
       setBootstrapping(false);
     };
 
@@ -277,7 +337,16 @@ export default function PortalOnboardingPage() {
       </header>
 
       <div className="mx-auto flex w-full flex-1 flex-col items-center">
-        <OnboardingContent profileId={profileId} fullName={fullName} />
+        <OnboardingContent
+          profileId={profileId}
+          fullName={fullName}
+          avatarInitials={avatarInitials}
+          initialAvatarUrl={initialAvatarUrl}
+          organisationId={organisationId}
+          organisationName={organisationName}
+          isOrgAdmin={isOrgAdmin}
+          initialLogoUrl={initialLogoUrl}
+        />
       </div>
     </main>
   );

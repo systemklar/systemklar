@@ -126,6 +126,8 @@ export default function AdminCustomerDetailClient() {
   const [monitoringRefreshNonce, setMonitoringRefreshNonce] = useState(0);
   const [toast, setToast] = useState<{ type: "success" | "error"; message: string } | null>(null);
   const [mediaVersion, setMediaVersion] = useState(0);
+  const [confirmRemoveProfileId, setConfirmRemoveProfileId] = useState<string | null>(null);
+  const [removingProfileId, setRemovingProfileId] = useState<string | null>(null);
 
   const load = useCallback(async () => {
     if (!id) {
@@ -215,6 +217,39 @@ export default function AdminCustomerDetailClient() {
     const timer = window.setTimeout(() => setToast(null), 5000);
     return () => clearTimeout(timer);
   }, [toast]);
+
+  const removeMember = async (profileId: string) => {
+    if (!org) return;
+    setRemovingProfileId(profileId);
+    setError(null);
+
+    try {
+      const res = await fetch(
+        `/api/admin/organisations/${encodeURIComponent(org.id)}/members/${encodeURIComponent(profileId)}`,
+        { method: "DELETE", credentials: "include" },
+      );
+      const payload = (await res.json().catch(() => ({}))) as { error?: string };
+
+      if (!res.ok) {
+        setError(payload.error ?? "Kunne ikke fjerne brugeren.");
+        return;
+      }
+
+      setOrg((prev) =>
+        prev
+          ? {
+              ...prev,
+              profiles: (prev.profiles ?? []).filter((p) => p.id !== profileId),
+            }
+          : prev,
+      );
+      setConfirmRemoveProfileId(null);
+    } catch {
+      setError("Netværksfejl. Prøv igen.");
+    } finally {
+      setRemovingProfileId(null);
+    }
+  };
 
   const onboardingSystemNames = useMemo(() => {
     const list = org?.profiles ?? [];
@@ -395,6 +430,7 @@ export default function AdminCustomerDetailClient() {
   const tickets = org.tickets ?? [];
   const systems = org.systems ?? [];
   const isActive = profiles.length > 0;
+  const isOnlyMember = profiles.length <= 1;
 
   return (
     <div className="space-y-8">
@@ -531,7 +567,7 @@ export default function AdminCustomerDetailClient() {
                   initials={profileDisplayInitials(p)}
                   className="h-10 w-10 text-sm"
                 />
-                <div>
+                <div className="min-w-0 flex-1">
                   <p className="font-semibold text-[#0D1F2D]">{p.full_name || p.email || "Ukendt bruger"}</p>
                   <p className="text-sm text-[#4A8CB5]">{p.email || "—"}</p>
                   <span
@@ -542,6 +578,42 @@ export default function AdminCustomerDetailClient() {
                     {p.role === "org_admin" ? "Administrator" : "Medlem"}
                   </span>
                   <p className="mt-2 text-xs text-slate-500">Oprettet {formatDanishDateTime(p.created_at || "")}</p>
+
+                  {confirmRemoveProfileId === p.id ? (
+                    <div className="mt-3 rounded-lg border border-red-100 bg-red-50/60 p-3">
+                      <p className="text-xs text-red-800">
+                        Er du sikker? Dette fjerner brugerens adgang til organisationen.
+                      </p>
+                      <div className="mt-2 flex flex-wrap gap-2">
+                        <button
+                          type="button"
+                          disabled={removingProfileId === p.id}
+                          onClick={() => void removeMember(p.id)}
+                          className="rounded-full bg-red-600 px-3 py-1 text-xs font-semibold text-white hover:bg-red-700 disabled:opacity-50"
+                        >
+                          {removingProfileId === p.id ? "Fjerner…" : "Ja, fjern"}
+                        </button>
+                        <button
+                          type="button"
+                          disabled={removingProfileId === p.id}
+                          onClick={() => setConfirmRemoveProfileId(null)}
+                          className="rounded-full px-3 py-1 text-xs font-medium text-slate-600 hover:bg-white disabled:opacity-50"
+                        >
+                          Annuller
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    <button
+                      type="button"
+                      disabled={isOnlyMember}
+                      title={isOnlyMember ? "Kan ikke fjerne sidste medlem" : undefined}
+                      onClick={() => setConfirmRemoveProfileId(p.id)}
+                      className="mt-3 text-xs font-medium text-red-600 hover:text-red-700 disabled:cursor-not-allowed disabled:text-slate-400"
+                    >
+                      Fjern
+                    </button>
+                  )}
                 </div>
               </div>
             </article>
