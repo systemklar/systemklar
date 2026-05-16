@@ -202,6 +202,18 @@ export default function PortalProfilePage() {
       return;
     }
 
+    const { data: urlData } = supabase.storage.from("avatars").getPublicUrl(authUserId);
+    const publicUrl = urlData.publicUrl;
+    if (profile?.id) {
+      const { error: avatarColErr } = await supabase
+        .from("profiles")
+        .update({ avatar_url: publicUrl })
+        .eq("id", profile.id);
+      if (avatarColErr) {
+        console.error("[portal/profil] avatar_url update fejlede", avatarColErr);
+      }
+    }
+
     refreshAvatarUrl(authUserId);
     setSuccess("Profilbillede er opdateret.");
     event.target.value = "";

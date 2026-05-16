@@ -5,6 +5,7 @@ import { useParams, useRouter } from "next/navigation";
 import { FormEvent, useCallback, useEffect, useMemo, useState } from "react";
 import { Loader2, Pencil } from "lucide-react";
 import { AdminOnboardingSystemsTabs } from "@/components/admin/AdminOnboardingSystemsTabs";
+import { ProfileAvatar } from "@/components/admin/ProfileAvatar";
 import { StatusBadge, formatDanishDateTime } from "@/components/tickets/StatusBadge";
 import { isLikelyOrganisationDomain, normalizeOrganisationDomainInput } from "@/lib/organisation-domain";
 
@@ -14,6 +15,7 @@ type OrgProfile = {
   email: string | null;
   role: string | null;
   avatar_initials: string | null;
+  avatar_url: string | null;
   created_at: string | null;
   /** Valgte systemnavne fra kunde-onboarding (`profiles.onboarding_systems`). */
   onboarding_systems?: string[] | null;
@@ -80,6 +82,12 @@ function initialsOf(profile: OrgProfile | OrgInvitation) {
     .join("")
     .slice(0, 2)
     .toUpperCase();
+}
+
+function profileDisplayInitials(profile: OrgProfile): string {
+  const fromDb = profile.avatar_initials?.trim();
+  if (fromDb) return fromDb.slice(0, 2).toUpperCase();
+  return initialsOf(profile);
 }
 
 export default function AdminCustomerDetailClient() {
@@ -488,9 +496,11 @@ export default function AdminCustomerDetailClient() {
           {profiles.map((p) => (
             <article key={p.id} className="rounded-2xl border border-sky-100 bg-white p-5 shadow-sm">
               <div className="flex items-start gap-4">
-                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-sky-100 text-sm font-bold text-sky-700">
-                  {initialsOf(p)}
-                </div>
+                <ProfileAvatar
+                  avatarUrl={p.avatar_url}
+                  initials={profileDisplayInitials(p)}
+                  className="h-12 w-12 text-sm"
+                />
                 <div>
                   <p className="font-semibold text-[#0D1F2D]">{p.full_name || p.email || "Ukendt bruger"}</p>
                   <p className="text-sm text-[#4A8CB5]">{p.email || "—"}</p>
