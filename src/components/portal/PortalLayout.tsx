@@ -409,7 +409,13 @@ export function PortalLayout({ children, activeNav }: PortalLayoutProps) {
                 <span className="w-9" aria-hidden />
               </div>
 
-              <div className="app-rhythm min-w-0 flex-1 p-4 pb-24 md:p-8 md:pb-8">
+              <div
+                className={`app-rhythm min-w-0 flex-1 ${
+                  activeNav === "dashboard"
+                    ? "p-3 pb-24 md:p-5 md:pb-8"
+                    : "p-4 pb-24 md:p-8 md:pb-8"
+                }`}
+              >
                 <PageTransition>{children}</PageTransition>
               </div>
             </div>

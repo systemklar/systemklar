@@ -55,7 +55,7 @@ const CHART_ADVARSEL = "#C47B0A";
 const CHART_FEJL = "#C42B2B";
 const CHART_AFVENTER = "#94A3B8";
 const LINE_STATUS = "#0A6EBD";
-const TAB_ROTATE_MS = 5000;
+const TAB_ROTATE_MS = 8000;
 
 function easeOutCubic(t: number) {
   return 1 - (1 - t) ** 3;
@@ -238,7 +238,6 @@ export function PortalSystemsDashboard({
   const [historyLoading, setHistoryLoading] = useState(false);
   const [activeTab, setActiveTab] = useState<string>("");
   const [tabsHovered, setTabsHovered] = useState(false);
-  const [tabSlidePhase, setTabSlidePhase] = useState<"idle" | "exit" | "enter">("idle");
   const [tabProgressKey, setTabProgressKey] = useState(0);
   const [tabRowGeneration, setTabRowGeneration] = useState(0);
   const [detail, setDetail] = useState<DetailSelection | null>(null);
@@ -246,7 +245,6 @@ export function PortalSystemsDashboard({
   const tabNavRef = useRef<HTMLDivElement>(null);
   const tabButtonRefs = useRef<Map<string, HTMLButtonElement>>(new Map());
   const [tabIndicator, setTabIndicator] = useState({ left: 0, width: 0 });
-  const tabSwitchTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const rotateTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const prevMonitoringLoadingRef = useRef(true);
 
@@ -462,8 +460,6 @@ export function PortalSystemsDashboard({
     return defaultTabKey;
   }, [activeTab, defaultTabKey, tabsWithSystems]);
 
-  const activeTabRows = rowsByGroup.get(activeTabKey) ?? [];
-
   const updateTabIndicator = useCallback(() => {
     const nav = tabNavRef.current;
     const btn = tabButtonRefs.current.get(activeTabKey);
@@ -500,29 +496,12 @@ export function PortalSystemsDashboard({
     (key: string, manual = false) => {
       if (manual) resetTabRotateTimer();
       if (key === activeTabKey) return;
-
-      if (tabSwitchTimeoutRef.current) clearTimeout(tabSwitchTimeoutRef.current);
-
-      setTabSlidePhase("exit");
-      tabSwitchTimeoutRef.current = setTimeout(() => {
-        setActiveTab(key);
-        setTabProgressKey((k) => k + 1);
-        setTabRowGeneration((g) => g + 1);
-        setTabSlidePhase("enter");
-        tabSwitchTimeoutRef.current = setTimeout(() => {
-          setTabSlidePhase("idle");
-          tabSwitchTimeoutRef.current = null;
-        }, 250);
-      }, 250);
+      setActiveTab(key);
+      setTabProgressKey((k) => k + 1);
+      setTabRowGeneration((g) => g + 1);
     },
     [activeTabKey, resetTabRotateTimer],
   );
-
-  useLayoutEffect(() => {
-    if (tabSlidePhase !== "enter") return;
-    const id = requestAnimationFrame(() => setTabSlidePhase("idle"));
-    return () => cancelAnimationFrame(id);
-  }, [tabSlidePhase, activeTabKey]);
 
   useEffect(() => {
     if (!activeTab && defaultTabKey) {
@@ -538,20 +517,13 @@ export function PortalSystemsDashboard({
   }, [monitoringLoading]);
 
   useEffect(() => {
-    return () => {
-      if (tabSwitchTimeoutRef.current) clearTimeout(tabSwitchTimeoutRef.current);
-    };
-  }, []);
-
-  useEffect(() => {
     if (rotateTimeoutRef.current) clearTimeout(rotateTimeoutRef.current);
 
     if (
       tabsHovered ||
       tabsWithSystems.length <= 1 ||
       preview ||
-      monitoringLoading ||
-      tabSlidePhase !== "idle"
+      monitoringLoading
     ) {
       return;
     }
@@ -572,7 +544,6 @@ export function PortalSystemsDashboard({
     monitoringLoading,
     preview,
     tabProgressKey,
-    tabSlidePhase,
     tabsHovered,
     tabsWithSystems,
   ]);
@@ -627,12 +598,47 @@ export function PortalSystemsDashboard({
     historyDistinctDayCount >= 2 &&
     lineChartData.length >= 2;
 
+  const renderSystemRow = (row: SystemRowModel, tabKey: string, index: number, animate: boolean) => (
+    <li
+      key={`${tabKey}-${tabRowGeneration}-${row.key}`}
+      className={animate ? "portal-dash-row-enter" : undefined}
+      style={animate ? { animationDelay: `${index * 60}ms` } : undefined}
+    >
+      <button
+        type="button"
+        onClick={() => openDetail(row)}
+        className={`group/dash-row flex w-full items-center gap-3 px-4 py-4 text-left transition-colors duration-150 hover:bg-sky-50 ${rowAccentClass(row.status)}`}
+      >
+        <span
+          className={dotClassName(row.status)}
+          style={dotStyle(row.status)}
+          aria-hidden
+        />
+        <span className="min-w-0 flex-1 text-sm font-semibold text-[#0D1F2D]">{row.friendly}</span>
+        <span className="hidden shrink-0 text-xs font-medium text-[#2C4A5E] sm:block">
+          {rowStatusLabel(row.status)}
+        </span>
+        {row.status === "afventer" ? (
+          <Link
+            href="/portal/systemer"
+            onClick={(e) => e.stopPropagation()}
+            className="shrink-0 text-[11px] text-[#7AAEC8] hover:text-[#0A6EBD]"
+          >
+            Opsæt →
+          </Link>
+        ) : (
+          <span className="shrink-0 text-[10px] text-[#7AAEC8]">{row.checked}</span>
+        )}
+      </button>
+    </li>
+  );
+
   if (loading) {
     return <p className="text-sm text-[#7AAEC8]">Indlæser overblik...</p>;
   }
 
   return (
-    <div className="relative mx-auto max-w-3xl">
+    <div className="relative w-full max-w-none">
       {preview ? (
         <p className="mb-4 text-center text-xs text-[#7AAEC8]">
           Forhåndsvisning af kundens portal-overblik
@@ -650,7 +656,7 @@ export function PortalSystemsDashboard({
             <PortalDashboardHeroSkeleton />
           ) : (
           <section
-            className={`portal-hero-enter flex min-h-[240px] flex-col items-center justify-center rounded-2xl px-6 py-10 text-center shadow-sm ${
+            className={`portal-hero-enter flex min-h-[260px] flex-col items-center justify-center rounded-2xl px-6 py-10 text-center shadow-sm ${
               heroAllOk
                 ? "border border-emerald-100/80 bg-[#EDFAF5]"
                 : heroHasFejl
@@ -673,14 +679,14 @@ export function PortalSystemsDashboard({
             ) : (
               <>
                 <div className="portal-hero-icon-fade-in mb-3" aria-hidden>
-                  <div className="portal-hero-icon-wrap flex h-14 w-14 items-center justify-center rounded-full bg-white/90 shadow-sm">
+                  <div className="portal-hero-icon-wrap portal-hero-warning-icon-glow flex h-14 w-14 items-center justify-center rounded-full bg-white/90 shadow-sm">
                     <AlertTriangle
                       className={`h-8 w-8 ${heroHasFejl ? "text-[#C42B2B]" : "text-[#C47B0A]"}`}
                       strokeWidth={2}
                     />
                   </div>
                 </div>
-                <h1 className="text-2xl font-light tracking-tight text-[#0D1F2D] sm:text-3xl">
+                <h1 className="portal-hero-warning-shimmer text-2xl font-light tracking-tight sm:text-3xl">
                   {counts.needsAttention === 1
                     ? "1 system kræver opmærksomhed"
                     : `${counts.needsAttention} systemer kræver opmærksomhed`}
@@ -688,20 +694,17 @@ export function PortalSystemsDashboard({
                 <p className="mt-1 text-xs text-[#7AAEC8]">Senest tjekket {latestCheckSubtext}</p>
                 {attentionRows.length > 0 ? (
                   <div className="mt-3 flex max-w-lg flex-wrap justify-center gap-2">
-                    {attentionRows.map((row) => (
+                    {attentionRows.map((row, pillIndex) => (
                       <button
                         key={row.key}
                         type="button"
                         onClick={() => openDetail(row)}
-                        className={`rounded-full border px-2.5 py-1 text-xs font-medium transition hover:shadow-sm ${
-                          row.friendly === "Domæne" || row.technical.includes("Domæne")
-                            ? "portal-hero-pill-shake "
-                            : ""
-                        }${
+                        className={`portal-hero-pill-bob rounded-full border px-2.5 py-1 text-xs font-medium transition hover:shadow-sm ${
                           row.status === "fejl"
                             ? "border-red-200 bg-white/90 text-[#C42B2B] hover:bg-red-50"
                             : "border-amber-200 bg-white/90 text-[#C47B0A] hover:bg-amber-50"
                         }`}
+                        style={{ animationDelay: `${pillIndex * 200}ms` }}
                       >
                         {row.friendly}
                       </button>
@@ -745,15 +748,12 @@ export function PortalSystemsDashboard({
 
           {/* 3. Tabbed system list */}
           <section className="overflow-hidden rounded-2xl border border-sky-100 bg-white shadow-sm">
-            <div
-              ref={tabNavRef}
-              className="relative border-b border-sky-100"
-              onMouseEnter={() => setTabsHovered(true)}
-              onMouseLeave={() => setTabsHovered(false)}
-            >
+            <div ref={tabNavRef} className="relative border-b border-sky-100">
               <nav
                 className="flex gap-0 overflow-x-auto"
                 aria-label="Systemkategorier"
+                onMouseEnter={() => setTabsHovered(true)}
+                onMouseLeave={() => setTabsHovered(false)}
               >
                 {tabsWithSystems.map((g) => {
                   const tabRows = rowsByGroup.get(g.shortLabel) ?? [];
@@ -810,62 +810,27 @@ export function PortalSystemsDashboard({
               </span>
             </div>
 
-            <div className="overflow-hidden" aria-busy={monitoringLoading}>
-            <ul
-              key={activeTabKey}
-              className={`divide-y divide-sky-50 transition-[transform,opacity] duration-[250ms] ease-out ${
-                tabSlidePhase === "exit"
-                  ? "-translate-x-full opacity-0"
-                  : tabSlidePhase === "enter"
-                    ? "translate-x-full opacity-0"
-                    : "translate-x-0 opacity-100"
-              }`}
-            >
-              {monitoringLoading
-                ? activeTabRows.map((row) => <PortalDashboardSystemRowSkeleton key={row.key} />)
-                : activeTabRows.map((row, index) => (
-                <li
-                  key={`${activeTabKey}-${tabRowGeneration}-${row.key}`}
-                  className={tabSlidePhase === "idle" ? "portal-dash-row-enter" : undefined}
-                  style={
-                    tabSlidePhase === "idle"
-                      ? { animationDelay: `${index * 60}ms` }
-                      : undefined
-                  }
-                >
-                  <button
-                    type="button"
-                    onClick={() => openDetail(row)}
-                    className={`group/dash-row flex w-full items-center gap-3 px-4 py-4 text-left transition-colors duration-150 hover:bg-sky-50 ${rowAccentClass(row.status)}`}
+            <div className="min-h-[280px] overflow-hidden" aria-busy={monitoringLoading}>
+              {tabsWithSystems.map((g) => {
+                const tabKey = g.shortLabel;
+                const tabRows = rowsByGroup.get(tabKey) ?? [];
+                const isActive = tabKey === activeTabKey;
+                return (
+                  <ul
+                    key={tabKey}
+                    className={`divide-y divide-sky-50 ${isActive ? "block" : "hidden"}`}
+                    aria-hidden={!isActive}
                   >
-                    <span
-                      className={dotClassName(row.status)}
-                      style={dotStyle(row.status)}
-                      aria-hidden
-                    />
-                    <span className="min-w-0 flex-1 text-sm font-semibold text-[#0D1F2D]">
-                      {row.friendly}
-                    </span>
-                    <span className="hidden shrink-0 text-xs font-medium text-[#2C4A5E] sm:block">
-                      {rowStatusLabel(row.status)}
-                    </span>
-                    {row.status === "afventer" ? (
-                      <Link
-                        href="/portal/systemer"
-                        onClick={(e) => e.stopPropagation()}
-                        className="shrink-0 text-[11px] text-[#7AAEC8] hover:text-[#0A6EBD]"
-                      >
-                        Opsæt →
-                      </Link>
-                    ) : (
-                      <span className="shrink-0 text-[10px] text-[#7AAEC8]">
-                        {row.checked}
-                      </span>
-                    )}
-                  </button>
-                </li>
-              ))}
-            </ul>
+                    {monitoringLoading
+                      ? tabRows.map((row) => (
+                          <PortalDashboardSystemRowSkeleton key={row.key} />
+                        ))
+                      : tabRows.map((row, index) =>
+                          renderSystemRow(row, tabKey, index, isActive),
+                        )}
+                  </ul>
+                );
+              })}
             </div>
           </section>
 

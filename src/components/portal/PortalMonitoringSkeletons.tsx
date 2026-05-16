@@ -3,7 +3,7 @@
 export function PortalDashboardHeroSkeleton() {
   return (
     <section
-      className="flex min-h-[240px] flex-col items-center justify-center rounded-2xl border border-sky-100 bg-white px-6 py-10 shadow-sm"
+      className="flex min-h-[260px] flex-col items-center justify-center rounded-2xl border border-sky-100 bg-white px-6 py-10 shadow-sm"
       aria-hidden
     >
       <div className="h-16 w-16 animate-pulse rounded-full bg-sky-100" />
