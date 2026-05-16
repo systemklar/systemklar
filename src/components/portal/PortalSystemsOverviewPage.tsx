@@ -16,6 +16,8 @@ import {
   type MonitoringStatusKey,
 } from "@/lib/monitoring/monitoring-dashboard-copy";
 import { isAutoMonitoredCustomerSystem } from "@/lib/monitoring/monitoring-system-names";
+import { isSelfServiceCredentialSystem } from "@/lib/system-self-service-setup";
+import { SystemCredentialSetupModal } from "@/components/portal/SystemCredentialSetupModal";
 import {
   buildOnboardingDashboardGroups,
   ONBOARDING_SYSTEM_GROUPS,
@@ -226,6 +228,10 @@ export function PortalSystemsOverviewPage() {
   const [orgId, setOrgId] = useState<string | null>(null);
   const [monitoringByName, setMonitoringByName] = useState<Map<string, MonitoringResultRow>>(() => new Map());
   const [modal, setModal] = useState<SetupModal | null>(null);
+  const [credentialModal, setCredentialModal] = useState<{
+    storedName: string;
+    friendlyName: string;
+  } | null>(null);
   const [addingName, setAddingName] = useState<string | null>(null);
   const [addError, setAddError] = useState<string | null>(null);
   const [addOpen, setAddOpen] = useState(false);
@@ -334,6 +340,12 @@ export function PortalSystemsOverviewPage() {
   const openSetupModal = (storedName: string, friendlyName: string) => {
     if (isAutoMonitoredCustomerSystem(storedName)) {
       setModal({ kind: "auto", friendlyName });
+    } else if (isSelfServiceCredentialSystem(storedName)) {
+      if (!orgId) {
+        setAddError("Din organisation mangler — kontakt os for at opsætte integrationen.");
+        return;
+      }
+      setCredentialModal({ storedName, friendlyName });
     } else {
       setModal({ kind: "manual", storedName, friendlyName });
     }
@@ -529,6 +541,16 @@ export function PortalSystemsOverviewPage() {
         </p>
       )}
 
+      {credentialModal && orgId ? (
+        <SystemCredentialSetupModal
+          systemName={credentialModal.storedName}
+          friendlyName={credentialModal.friendlyName}
+          organisationId={orgId}
+          onClose={() => setCredentialModal(null)}
+          onVerified={() => void refreshMonitoring()}
+        />
+      ) : null}
+
       {modal ? (
         <div
           className="fixed inset-0 z-50 flex items-end justify-center bg-[#062840]/40 p-4 sm:items-center"
@@ -563,14 +585,13 @@ export function PortalSystemsOverviewPage() {
             ) : (
               <>
                 <p className="mt-5 text-sm leading-relaxed text-[#2C4A5E]">
-                  For at overvåge <strong className="text-[#0D1F2D]">{modal.storedName}</strong> har vi brug for at du
-                  sender os adgang. Opret en support-sag og vi hjælper dig igennem opsætningen.
+                  Denne integration kræver at vi hjælper dig med opsætningen. Opret en sag og vi sørger for resten.
                 </p>
                 <Link
                   href={supportSetupHref(modal.storedName)}
                   className="mt-6 inline-flex w-full items-center justify-center rounded-full bg-[#0A6EBD] px-5 py-3 text-sm font-semibold text-white transition-colors hover:bg-[#0859A0] sm:w-auto"
                 >
-                  Opret sag om opsætning
+                  Opret sag
                 </Link>
               </>
             )}
