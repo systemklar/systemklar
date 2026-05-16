@@ -1,7 +1,17 @@
 import { requireAdmin } from "@/lib/require-admin";
 import AdminTicketsClient from "./tickets-client";
 
-export default async function AdminTicketsPage() {
+type PageProps = {
+  searchParams: Promise<{ org?: string; create?: string }>;
+};
+
+export default async function AdminTicketsPage({ searchParams }: PageProps) {
   await requireAdmin();
-  return <AdminTicketsClient />;
+  const { org, create } = await searchParams;
+  return (
+    <AdminTicketsClient
+      initialOrganisationId={org?.trim() || undefined}
+      initialOpenCreate={create === "1"}
+    />
+  );
 }

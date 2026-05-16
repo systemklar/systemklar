@@ -2,12 +2,13 @@ import { NextResponse } from "next/server";
 import type { PostgrestError, SupabaseClient } from "@supabase/supabase-js";
 import {
   countsFromLatestBySystem,
-  detectStatusChangeEvents,
   emptyMonitoringCounts,
+  normalizeMonitoringStatus,
   rowAccentFromCounts,
   worstRankFromCounts,
-  type DashboardActivity,
+  type DashboardPendingReport,
   type DashboardStats,
+  type DashboardSystemError,
   type DashboardTicket,
   type OrganisationDashboardRow,
 } from "@/lib/admin/dashboard-data";
@@ -17,7 +18,6 @@ import { createServiceRoleClient } from "@/lib/supabase-service-role";
 export const dynamic = "force-dynamic";
 
 const MONITORING_LOOKBACK_DAYS = 45;
-const ACTIVITY_HOURS = 24;
 
 function emptyStats(): DashboardStats {
   return {
@@ -94,44 +94,62 @@ function groupLatestMonitoringByOrg(
   return result;
 }
 
-async function fetchRecentTickets(admin: SupabaseClient, warnings: string[]) {
-  console.log("[api/admin/dashboard] query:start tickets (seneste)");
+async function fetchOpenTickets(admin: SupabaseClient, warnings: string[]) {
+  console.log("[api/admin/dashboard] query:start tickets (åbne, liste)");
   const primary = await admin
     .from("tickets")
     .select("id, ticket_number, title, status, created_at, organisation_id")
     .neq("status", "resolved")
-    .order("created_at", { ascending: false })
-    .limit(5);
+    .order("created_at", { ascending: true });
 
   if (!primary.error) {
-    console.log("[api/admin/dashboard] query:ok tickets (seneste)", primary.data?.length ?? 0);
+    console.log("[api/admin/dashboard] query:ok tickets (åbne, liste)", primary.data?.length ?? 0);
     return primary.data ?? [];
   }
 
-  logQueryFail("tickets (seneste)", primary.error);
+  logQueryFail("tickets (åbne, liste)", primary.error);
   const msg = primary.error.message ?? "";
   if (msg.includes("ticket_number") || primary.error.code === "42703") {
-    console.log("[api/admin/dashboard] query:retry tickets (seneste) uden ticket_number");
+    console.log("[api/admin/dashboard] query:retry tickets (åbne) uden ticket_number");
     const fallback = await admin
       .from("tickets")
       .select("id, title, status, created_at, organisation_id")
       .neq("status", "resolved")
-      .order("created_at", { ascending: false })
-      .limit(5);
+      .order("created_at", { ascending: true });
     if (fallback.error) {
-      logQueryFail("tickets (seneste) fallback", fallback.error);
-      warnings.push(formatQueryError("tickets (seneste)", fallback.error));
+      logQueryFail("tickets (åbne) fallback", fallback.error);
+      warnings.push(formatQueryError("tickets (åbne)", fallback.error));
       return [];
     }
-    console.log("[api/admin/dashboard] query:ok tickets (seneste) fallback", fallback.data?.length ?? 0);
+    console.log("[api/admin/dashboard] query:ok tickets (åbne) fallback", fallback.data?.length ?? 0);
     warnings.push(
       "ticket_number-kolonnen findes ikke endnu — kør migration 032_ticket_numbers.sql.",
     );
     return fallback.data ?? [];
   }
 
-  warnings.push(formatQueryError("tickets (seneste)", primary.error));
+  warnings.push(formatQueryError("tickets (åbne)", primary.error));
   return [];
+}
+
+function buildSystemsWithFejl(
+  latestByOrg: Map<string, Map<string, LatestMonitoringPerSystem>>,
+  orgNames: Map<string, string>,
+): DashboardSystemError[] {
+  const out: DashboardSystemError[] = [];
+  for (const [orgId, bySystem] of latestByOrg) {
+    for (const row of bySystem.values()) {
+      if (normalizeMonitoringStatus(row.status) !== "fejl") continue;
+      out.push({
+        organisation_id: orgId,
+        organisation_name: orgNames.get(orgId) ?? "Ukendt",
+        system_name: row.system_name,
+        checked_at: row.checked_at,
+      });
+    }
+  }
+  out.sort((a, b) => new Date(b.checked_at).getTime() - new Date(a.checked_at).getTime());
+  return out;
 }
 
 export async function GET() {
@@ -155,8 +173,9 @@ export async function GET() {
       return NextResponse.json({
         stats: emptyStats(),
         customers: [],
-        recentTickets: [],
-        activity: [],
+        openTickets: [],
+        systemsWithFejl: [],
+        pendingReports: [],
         warnings,
       });
     }
@@ -164,8 +183,6 @@ export async function GET() {
     const monitoringSince = new Date(
       Date.now() - MONITORING_LOOKBACK_DAYS * 24 * 60 * 60 * 1000,
     ).toISOString();
-    const activitySinceMs = Date.now() - ACTIVITY_HOURS * 60 * 60 * 1000;
-    const activityFetchSince = new Date(activitySinceMs - 24 * 60 * 60 * 1000).toISOString();
 
     console.log("[api/admin/dashboard] query:start organisations");
     const orgsRes = await admin
@@ -202,52 +219,34 @@ export async function GET() {
       console.log("[api/admin/dashboard] query:ok monitoring_results", monitoringRows.length);
     }
 
-    console.log("[api/admin/dashboard] query:start monitoring aktivitet");
-    const activityMonitoringRes = await admin
-      .from("monitoring_results")
-      .select("organisation_id, system_name, status, checked_at")
-      .gte("checked_at", activityFetchSince)
-      .order("checked_at", { ascending: true });
-
-    const activityRows = activityMonitoringRes.error ? [] : (activityMonitoringRes.data ?? []);
-    if (activityMonitoringRes.error) {
-      logQueryFail("monitoring aktivitet", activityMonitoringRes.error);
-      warnings.push(formatQueryError("monitoring aktivitet", activityMonitoringRes.error));
-    } else {
-      console.log("[api/admin/dashboard] query:ok monitoring aktivitet", activityRows.length);
-    }
-
-    const recentTicketRows = await fetchRecentTickets(admin, warnings);
-
-    console.log("[api/admin/dashboard] query:start tickets (åbne)");
-    const openTicketsRes = await admin
-      .from("tickets")
-      .select("organisation_id")
-      .neq("status", "resolved");
+    const openTicketRows = await fetchOpenTickets(admin, warnings);
 
     const openTicketCountByOrg = new Map<string, number>();
-    if (openTicketsRes.error) {
-      logQueryFail("tickets (åbne)", openTicketsRes.error);
-      warnings.push(formatQueryError("tickets (åbne)", openTicketsRes.error));
-    } else {
-      console.log("[api/admin/dashboard] query:ok tickets (åbne)", openTicketsRes.data?.length ?? 0);
-      for (const t of openTicketsRes.data ?? []) {
-        const orgId = (t as { organisation_id: string }).organisation_id;
-        openTicketCountByOrg.set(orgId, (openTicketCountByOrg.get(orgId) ?? 0) + 1);
-      }
+    for (const t of openTicketRows) {
+      const orgId = (t as { organisation_id: string }).organisation_id;
+      openTicketCountByOrg.set(orgId, (openTicketCountByOrg.get(orgId) ?? 0) + 1);
     }
 
-    console.log("[api/admin/dashboard] query:start it_reports");
-    const reportsRes = await admin
+    console.log("[api/admin/dashboard] query:start it_reports (afventer)");
+    const pendingReportsRes = await admin
       .from("it_reports")
-      .select("id", { count: "exact", head: true })
-      .in("status", ["draft", "approved"]);
+      .select("id, organisation_id, period_start, period_end, status")
+      .in("status", ["draft", "approved"])
+      .order("updated_at", { ascending: false });
 
-    if (reportsRes.error) {
-      logQueryFail("it_reports", reportsRes.error);
-      warnings.push(formatQueryError("it_reports", reportsRes.error));
+    let pendingReportRows: {
+      id: string;
+      organisation_id: string;
+      period_start: string;
+      period_end: string;
+      status: string;
+    }[] = [];
+    if (pendingReportsRes.error) {
+      logQueryFail("it_reports (afventer)", pendingReportsRes.error);
+      warnings.push(formatQueryError("it_reports (afventer)", pendingReportsRes.error));
     } else {
-      console.log("[api/admin/dashboard] query:ok it_reports count", reportsRes.count ?? 0);
+      pendingReportRows = pendingReportsRes.data ?? [];
+      console.log("[api/admin/dashboard] query:ok it_reports (afventer)", pendingReportRows.length);
     }
 
     console.log("[api/admin/dashboard] query:start profiles");
@@ -279,8 +278,8 @@ export async function GET() {
     const stats: DashboardStats = {
       activeCustomers: activeOrgIds.size,
       systemsWithFejl,
-      openTickets: openTicketsRes.error ? 0 : (openTicketsRes.data?.length ?? 0),
-      reportsReady: reportsRes.error ? 0 : (reportsRes.count ?? 0),
+      openTickets: openTicketRows.length,
+      reportsReady: pendingReportRows.length,
     };
 
     const customers: OrganisationDashboardRow[] = organisations.map((org) => {
@@ -310,12 +309,12 @@ export async function GET() {
       return a.name.localeCompare(b.name, "da");
     });
 
-    const recentTickets: DashboardTicket[] = recentTicketRows.map((t) => ({
+    const openTickets: DashboardTicket[] = openTicketRows.map((t) => ({
       id: t.id,
-    ticket_number:
-      typeof (t as { ticket_number?: number | null }).ticket_number === "number"
-        ? (t as { ticket_number?: number | null }).ticket_number ?? null
-        : null,
+      ticket_number:
+        typeof (t as { ticket_number?: number | null }).ticket_number === "number"
+          ? (t as { ticket_number?: number | null }).ticket_number ?? null
+          : null,
       title: t.title,
       status: t.status,
       created_at: t.created_at,
@@ -323,12 +322,18 @@ export async function GET() {
       organisation_name: orgNames.get(t.organisation_id) ?? "Ukendt",
     }));
 
-    const activity: DashboardActivity[] = detectStatusChangeEvents(
-      activityRows,
-      activitySinceMs,
-      orgNames,
-      10,
-    );
+    const systemsWithFejlList = buildSystemsWithFejl(latestByOrg, orgNames);
+
+    const pendingReports: DashboardPendingReport[] = pendingReportRows
+      .filter((r) => r.status === "draft" || r.status === "approved")
+      .map((r) => ({
+        id: r.id,
+        organisation_id: r.organisation_id,
+        organisation_name: orgNames.get(r.organisation_id) ?? "Ukendt",
+        period_start: r.period_start,
+        period_end: r.period_end,
+        status: r.status as "draft" | "approved",
+      }));
 
     console.log("[api/admin/dashboard] GET ok", {
       customers: customers.length,
@@ -338,8 +343,9 @@ export async function GET() {
     return NextResponse.json({
       stats,
       customers,
-      recentTickets,
-      activity,
+      openTickets,
+      systemsWithFejl: systemsWithFejlList,
+      pendingReports,
       warnings: warnings.length > 0 ? warnings : undefined,
     });
   } catch (error) {
@@ -350,8 +356,9 @@ export async function GET() {
     return NextResponse.json({
       stats: emptyStats(),
       customers: [],
-      recentTickets: [],
-      activity: [],
+      openTickets: [],
+      systemsWithFejl: [],
+      pendingReports: [],
       warnings,
     });
   }

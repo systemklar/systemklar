@@ -1,7 +1,12 @@
 import { requireAdmin } from "@/lib/require-admin";
 import AdminItRapporterClient from "./it-rapporter-client";
 
-export default async function AdminItRapporterPage() {
+type PageProps = {
+  searchParams: Promise<{ org?: string }>;
+};
+
+export default async function AdminItRapporterPage({ searchParams }: PageProps) {
   await requireAdmin();
-  return <AdminItRapporterClient />;
+  const { org } = await searchParams;
+  return <AdminItRapporterClient initialOrganisationId={org?.trim() || undefined} />;
 }

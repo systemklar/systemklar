@@ -46,7 +46,13 @@ function periodDa(start: string, end: string): string {
   return `${a.toLocaleDateString("da-DK", { day: "numeric", month: "short" })} – ${b.toLocaleDateString("da-DK", { day: "numeric", month: "short", year: "numeric" })}`;
 }
 
-export default function AdminItRapporterClient() {
+type AdminItRapporterClientProps = {
+  initialOrganisationId?: string;
+};
+
+export default function AdminItRapporterClient({
+  initialOrganisationId,
+}: AdminItRapporterClientProps = {}) {
   const router = useRouter();
   const supabase = useMemo(() => createClient(), []);
   const [rows, setRows] = useState<ItReportListRow[]>([]);
@@ -86,7 +92,10 @@ export default function AdminItRapporterClient() {
   }, [load]);
 
   const groupedReports = useMemo(() => {
-    const sorted = [...rows].sort(
+    const filtered = initialOrganisationId
+      ? rows.filter((r) => r.organisation_id === initialOrganisationId)
+      : rows;
+    const sorted = [...filtered].sort(
       (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
     );
     const map = new Map<string, ItReportListRow[]>();
@@ -103,7 +112,7 @@ export default function AdminItRapporterClient() {
         reports,
       }))
       .sort((a, b) => a.name.localeCompare(b.name, "da"));
-  }, [rows]);
+  }, [rows, initialOrganisationId]);
 
   const multiOrg = groupedReports.length > 1;
 

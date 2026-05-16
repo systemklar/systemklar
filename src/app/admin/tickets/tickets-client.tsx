@@ -22,7 +22,15 @@ type OrganisationOption = {
   name: string;
 };
 
-export default function AdminTicketsClient() {
+type AdminTicketsClientProps = {
+  initialOrganisationId?: string;
+  initialOpenCreate?: boolean;
+};
+
+export default function AdminTicketsClient({
+  initialOrganisationId,
+  initialOpenCreate = false,
+}: AdminTicketsClientProps = {}) {
   const supabase = useMemo(() => createClient(), []);
   const [tickets, setTickets] = useState<TicketWithProfileRow[]>([]);
   const [unreadByTicket, setUnreadByTicket] = useState<Record<string, number>>({});
@@ -101,8 +109,23 @@ export default function AdminTicketsClient() {
   }, [loadTickets, loadOrganisations]);
 
   useEffect(() => {
+    if (!initialOrganisationId) return;
+    setFilterOrganisationId(initialOrganisationId);
+    setSelectedOrganisationId(initialOrganisationId);
+  }, [initialOrganisationId]);
+
+  useEffect(() => {
+    if (!initialOpenCreate) return;
+    setModalOpen(true);
+    if (initialOrganisationId) {
+      setSelectedOrganisationId(initialOrganisationId);
+    }
+  }, [initialOpenCreate, initialOrganisationId]);
+
+  useEffect(() => {
+    if (initialOrganisationId) return;
     setFilterOrganisationId("all");
-  }, [statusFilter]);
+  }, [statusFilter, initialOrganisationId]);
 
   const orgNameById = useMemo(() => {
     const m = new Map<string, string>();

@@ -23,7 +23,23 @@ export type OrganisationDashboardRow = {
   openTickets: number;
   lastCheckedAt: string | null;
   worstRank: number;
-  rowAccent: "fejl" | "advarsel" | null;
+  rowAccent: "fejl" | "advarsel" | "ok" | null;
+};
+
+export type DashboardSystemError = {
+  organisation_id: string;
+  organisation_name: string;
+  system_name: string;
+  checked_at: string;
+};
+
+export type DashboardPendingReport = {
+  id: string;
+  organisation_id: string;
+  organisation_name: string;
+  period_start: string;
+  period_end: string;
+  status: "draft" | "approved";
 };
 
 export type DashboardTicket = {
@@ -86,10 +102,19 @@ export function worstRankFromCounts(counts: MonitoringCounts): number {
   return total > 0 ? WORST_RANK.afventer : 4;
 }
 
-export function rowAccentFromCounts(counts: MonitoringCounts): "fejl" | "advarsel" | null {
+export function rowAccentFromCounts(counts: MonitoringCounts): "fejl" | "advarsel" | "ok" | null {
   if (counts.fejl > 0) return "fejl";
   if (counts.advarsel > 0) return "advarsel";
+  const total = counts.ok + counts.advarsel + counts.fejl + counts.afventer;
+  if (total > 0 && counts.fejl === 0 && counts.advarsel === 0 && counts.ok > 0) return "ok";
   return null;
+}
+
+export function formatReportPeriodDa(start: string, end: string): string {
+  const a = new Date(start);
+  const b = new Date(end);
+  if (Number.isNaN(a.getTime()) || Number.isNaN(b.getTime())) return `${start} – ${end}`;
+  return `${a.toLocaleDateString("da-DK", { day: "numeric", month: "short" })} – ${b.toLocaleDateString("da-DK", { day: "numeric", month: "short", year: "numeric" })}`;
 }
 
 export function latestMonitoringByOrg(
