@@ -232,7 +232,7 @@ button {
   animation-delay: 0.36s;
 }
 
-/* Portal dashboard: hero icon pulse */
+/* Portal dashboard: hero icon breathe */
 @keyframes portal-hero-icon-pulse {
   0%,
   100% {
@@ -240,8 +240,8 @@ button {
     opacity: 1;
   }
   50% {
-    transform: scale(1.05);
-    opacity: 0.88;
+    transform: scale(1.08);
+    opacity: 0.92;
   }
 }
 
@@ -249,7 +249,45 @@ button {
   animation: portal-hero-icon-pulse 3s ease-in-out infinite;
 }
 
-/* Portal dashboard: system row stagger */
+/* Portal dashboard: hero attention pill shake */
+@keyframes portal-hero-pill-shake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  20% {
+    transform: translateX(-3px);
+  }
+  40% {
+    transform: translateX(3px);
+  }
+  60% {
+    transform: translateX(-2px);
+  }
+  80% {
+    transform: translateX(2px);
+  }
+}
+
+.portal-hero-pill-shake {
+  animation: portal-hero-pill-shake 0.55s ease-in-out 1s 3;
+}
+
+/* Portal dashboard: system row exit */
+@keyframes portal-dashboard-row-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+.portal-dashboard-row-out {
+  animation: portal-dashboard-row-out 100ms ease-out forwards;
+}
+
+/* Portal dashboard: system row enter (stagger via delay) */
 @keyframes portal-dashboard-row-in {
   from {
     opacity: 0;
@@ -262,7 +300,7 @@ button {
 }
 
 .portal-dashboard-row-in {
-  animation: portal-dashboard-row-in 180ms ease-out forwards;
+  animation: portal-dashboard-row-in 150ms ease-out forwards;
   opacity: 0;
 }
 
@@ -278,6 +316,58 @@ button {
 
 .portal-tab-panel-in {
   animation: portal-tab-panel-in 200ms ease-out;
+}
+
+/* Portal dashboard: tab auto-rotate progress */
+@keyframes portal-tab-progress {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+.portal-tab-progress {
+  transform-origin: left center;
+  animation: portal-tab-progress 4s linear forwards;
+}
+
+.portal-tabs-paused .portal-tab-progress {
+  animation-play-state: paused;
+}
+
+/* Portal dashboard: tab issue badge pop */
+@keyframes portal-tab-badge-pop {
+  0% {
+    transform: scale(0);
+  }
+  70% {
+    transform: scale(1.12);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.portal-tab-badge-pop {
+  animation: portal-tab-badge-pop 200ms cubic-bezier(0.34, 1.4, 0.64, 1) forwards;
+}
+
+/* Portal dashboard: FAB enter */
+@keyframes portal-fab-enter {
+  0% {
+    opacity: 0;
+    transform: translateY(20px) scale(0.92);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.portal-fab-enter {
+  animation: portal-fab-enter 600ms cubic-bezier(0.34, 1.35, 0.64, 1) 800ms both;
 }
 
 /* Portal dashboard: FAB pulse when errors active */
@@ -296,20 +386,36 @@ button {
 }
 
 .portal-fab-pulse {
-  animation: portal-fab-pulse 2.5s ease-in-out infinite;
+  animation: portal-fab-enter 600ms cubic-bezier(0.34, 1.35, 0.64, 1) 800ms both,
+    portal-fab-pulse 2.5s ease-in-out 1.4s infinite;
 }
 
 /* Portal dashboard: fejl status dot glow */
 @keyframes portal-status-dot-fejl-glow {
   0%,
   100% {
-    box-shadow: 0 0 0 0 rgba(196, 43, 43, 0.35);
+    box-shadow: 0 0 0 0 rgba(196, 43, 43, 0.4);
   }
   50% {
-    box-shadow: 0 0 0 6px rgba(196, 43, 43, 0);
+    box-shadow: 0 0 0 8px rgba(196, 43, 43, 0);
   }
 }
 
 .portal-status-dot-fejl {
-  animation: portal-status-dot-fejl-glow 2.5s ease-in-out infinite;
+  animation: portal-status-dot-fejl-glow 2s ease-in-out infinite;
+}
+
+/* Portal dashboard: advarsel status dot glow */
+@keyframes portal-status-dot-advarsel-glow {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(196, 123, 10, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 0 8px rgba(196, 123, 10, 0);
+  }
+}
+
+.portal-status-dot-advarsel {
+  animation: portal-status-dot-advarsel-glow 2s ease-in-out infinite;
 }

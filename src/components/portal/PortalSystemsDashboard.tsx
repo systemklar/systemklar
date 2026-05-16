@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { AlertTriangle, Check, ChevronDown, ChevronUp, Plus, X } from "lucide-react";
 import {
   Area,
@@ -50,6 +50,7 @@ const CHART_ADVARSEL = "#C47B0A";
 const CHART_FEJL = "#C42B2B";
 const CHART_AFVENTER = "#94A3B8";
 const LINE_STATUS = "#0A6EBD";
+const TAB_ROTATE_MS = 4000;
 
 function friendlySystemLabel(technicalName: string): string {
   const t = technicalName.trim();
@@ -76,7 +77,31 @@ function rowStatusLabel(status: "ok" | "advarsel" | "fejl" | "afventer"): string
 function dotClassName(status: "ok" | "advarsel" | "fejl" | "afventer"): string {
   const base = "h-2 w-2 shrink-0 rounded-full";
   if (status === "fejl") return `${base} portal-status-dot-fejl`;
+  if (status === "advarsel") return `${base} portal-status-dot-advarsel`;
   return base;
+}
+
+function AnimatedCount({ value, duration = 300 }: { value: number; duration?: number }) {
+  const [display, setDisplay] = useState(0);
+
+  useEffect(() => {
+    if (value <= 0) {
+      setDisplay(0);
+      return;
+    }
+    const start = performance.now();
+    let frame = 0;
+    const tick = (now: number) => {
+      const t = Math.min(1, (now - start) / duration);
+      const eased = 1 - (1 - t) ** 2;
+      setDisplay(Math.round(value * eased));
+      if (t < 1) frame = requestAnimationFrame(tick);
+    };
+    frame = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(frame);
+  }, [value, duration]);
+
+  return <>{display}</>;
 }
 
 function dotStyle(status: "ok" | "advarsel" | "fejl" | "afventer"): { backgroundColor: string } {
@@ -197,7 +222,17 @@ export function PortalSystemsDashboard({
   const [historyLoading, setHistoryLoading] = useState(false);
   const [historyExpanded, setHistoryExpanded] = useState(false);
   const [activeTab, setActiveTab] = useState<string>("");
+  const [displayTabKey, setDisplayTabKey] = useState<string>("");
+  const [rowListPhase, setRowListPhase] = useState<"in" | "out">("in");
+  const [autoRotateEnabled, setAutoRotateEnabled] = useState(true);
+  const [tabsHovered, setTabsHovered] = useState(false);
+  const [tabProgressEpoch, setTabProgressEpoch] = useState(0);
   const [detail, setDetail] = useState<DetailSelection | null>(null);
+
+  const tabNavRef = useRef<HTMLDivElement>(null);
+  const tabButtonRefs = useRef<Map<string, HTMLButtonElement>>(new Map());
+  const [tabIndicator, setTabIndicator] = useState({ left: 0, width: 0 });
+  const switchTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const orgIdForMonitoring = preview
     ? (organisationIdProp?.trim() || null)
@@ -405,13 +440,91 @@ export function PortalSystemsDashboard({
     return defaultTabKey;
   }, [activeTab, defaultTabKey, tabsWithSystems]);
 
+  const displayedTabKey = displayTabKey || activeTabKey;
+  const displayedTabRows = rowsByGroup.get(displayedTabKey) ?? [];
+
+  const updateTabIndicator = useCallback(() => {
+    const nav = tabNavRef.current;
+    const btn = tabButtonRefs.current.get(activeTabKey);
+    if (!nav || !btn) return;
+    const navRect = nav.getBoundingClientRect();
+    const btnRect = btn.getBoundingClientRect();
+    setTabIndicator({
+      left: btnRect.left - navRect.left + nav.scrollLeft,
+      width: btnRect.width,
+    });
+  }, [activeTabKey]);
+
+  useLayoutEffect(() => {
+    updateTabIndicator();
+  }, [updateTabIndicator, tabsWithSystems, activeTabKey]);
+
+  useEffect(() => {
+    const nav = tabNavRef.current;
+    if (!nav) return;
+    const onResize = () => updateTabIndicator();
+    nav.addEventListener("scroll", onResize);
+    window.addEventListener("resize", onResize);
+    return () => {
+      nav.removeEventListener("scroll", onResize);
+      window.removeEventListener("resize", onResize);
+    };
+  }, [updateTabIndicator]);
+
+  const goToTab = useCallback(
+    (key: string, manual = false) => {
+      if (manual) setAutoRotateEnabled(false);
+      if (key === activeTabKey) return;
+
+      if (switchTimeoutRef.current) clearTimeout(switchTimeoutRef.current);
+
+      setRowListPhase("out");
+      switchTimeoutRef.current = setTimeout(() => {
+        setActiveTab(key);
+        setDisplayTabKey(key);
+        setTabProgressEpoch((e) => e + 1);
+        setRowListPhase("in");
+        switchTimeoutRef.current = null;
+      }, 100);
+    },
+    [activeTabKey],
+  );
+
   useEffect(() => {
     if (!activeTab && defaultTabKey) {
       setActiveTab(defaultTabKey);
+      setDisplayTabKey(defaultTabKey);
     }
   }, [activeTab, defaultTabKey]);
 
-  const activeTabRows = rowsByGroup.get(activeTabKey) ?? [];
+  useEffect(() => {
+    return () => {
+      if (switchTimeoutRef.current) clearTimeout(switchTimeoutRef.current);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!autoRotateEnabled || tabsHovered || tabsWithSystems.length <= 1 || preview) {
+      return;
+    }
+
+    const id = window.setInterval(() => {
+      const currentIndex = tabsWithSystems.findIndex((g) => g.shortLabel === activeTabKey);
+      const nextIndex = currentIndex < 0 ? 0 : (currentIndex + 1) % tabsWithSystems.length;
+      const nextKey = tabsWithSystems[nextIndex]?.shortLabel;
+      if (nextKey) goToTab(nextKey, false);
+    }, TAB_ROTATE_MS);
+
+    return () => window.clearInterval(id);
+  }, [
+    activeTabKey,
+    autoRotateEnabled,
+    goToTab,
+    preview,
+    tabProgressEpoch,
+    tabsHovered,
+    tabsWithSystems,
+  ]);
 
   const counts = useMemo(() => {
     let ok = 0;
@@ -480,7 +593,7 @@ export function PortalSystemsDashboard({
         <div className="flex flex-col gap-4">
           {/* 1. Hero status */}
           <section
-            className={`flex min-h-[200px] flex-col items-center justify-center rounded-2xl px-5 py-6 text-center shadow-sm ${
+            className={`flex min-h-[220px] flex-col items-center justify-center rounded-2xl px-6 py-8 text-center shadow-sm ${
               heroAllOk
                 ? "border border-emerald-100/80 bg-[#EDFAF5]"
                 : heroHasFejl
@@ -529,7 +642,7 @@ export function PortalSystemsDashboard({
                           row.status === "fejl"
                             ? "border-red-200 bg-white/90 text-[#C42B2B] hover:bg-red-50"
                             : "border-amber-200 bg-white/90 text-[#C47B0A] hover:bg-amber-50"
-                        }`}
+                        } ${row.friendly === "Domæne" ? "portal-hero-pill-shake" : ""}`}
                       >
                         {row.friendly}
                       </button>
@@ -546,14 +659,19 @@ export function PortalSystemsDashboard({
               <span className="text-[10px]" aria-hidden>
                 🟢
               </span>
-              <span className="font-semibold text-[#0D1F2D]">{counts.ok}</span> OK
+              <span className="font-semibold tabular-nums text-[#0D1F2D]">
+                <AnimatedCount value={counts.ok} />
+              </span>{" "}
+              OK
             </span>
             <span className="mx-2 text-[#D0E8F5]">·</span>
             <span className="inline-flex items-center gap-1">
               <span className="text-[10px]" aria-hidden>
                 🟡
               </span>
-              <span className="font-semibold text-[#0D1F2D]">{counts.advarsel + counts.fejl}</span>{" "}
+              <span className="font-semibold tabular-nums text-[#0D1F2D]">
+                <AnimatedCount value={counts.advarsel + counts.fejl} />
+              </span>{" "}
               Advarsel
             </span>
             <span className="mx-2 text-[#D0E8F5]">·</span>
@@ -561,56 +679,99 @@ export function PortalSystemsDashboard({
               <span className="text-[10px]" aria-hidden>
                 ⚪
               </span>
-              <span className="font-semibold text-[#0D1F2D]">{counts.afventer}</span> Afventer
+              <span className="font-semibold tabular-nums text-[#0D1F2D]">
+                <AnimatedCount value={counts.afventer} />
+              </span>{" "}
+              Afventer
             </span>
           </p>
 
           {/* 3. Tabbed system list */}
           <section className="overflow-hidden rounded-2xl border border-sky-100 bg-white shadow-sm">
-            <nav
-              className="flex gap-0 overflow-x-auto border-b border-sky-100"
-              aria-label="Systemkategorier"
+            <div
+              ref={tabNavRef}
+              className={`relative border-b border-sky-100 ${tabsHovered ? "portal-tabs-paused" : ""}`}
+              onMouseEnter={() => setTabsHovered(true)}
+              onMouseLeave={() => setTabsHovered(false)}
             >
-              {tabsWithSystems.map((g) => {
-                const tabRows = rowsByGroup.get(g.shortLabel) ?? [];
-                const issueCount = tabRows.filter(
-                  (r) => r.status === "fejl" || r.status === "advarsel",
-                ).length;
-                const isActive = g.shortLabel === activeTabKey;
-                return (
-                  <button
-                    key={g.shortLabel}
-                    type="button"
-                    onClick={() => setActiveTab(g.shortLabel)}
-                    className={`shrink-0 border-b-2 px-4 py-3 text-sm font-medium transition-colors ${
-                      isActive
-                        ? "border-[#0A6EBD] text-[#0D1F2D]"
-                        : "border-transparent text-[#7AAEC8] hover:text-[#2C4A5E]"
-                    }`}
-                  >
-                    {g.shortLabel}
-                    {issueCount > 0 ? (
-                      <span
-                        className={`ml-1.5 inline-flex min-w-[1.25rem] justify-center rounded-full px-1 text-[10px] font-semibold ${
-                          isActive ? "bg-[#0A6EBD] text-white" : "bg-amber-100 text-amber-800"
-                        }`}
-                      >
-                        {issueCount}
-                      </span>
-                    ) : null}
-                  </button>
-                );
-              })}
-            </nav>
+              <nav
+                className="flex gap-0 overflow-x-auto"
+                aria-label="Systemkategorier"
+              >
+                {tabsWithSystems.map((g) => {
+                  const tabRows = rowsByGroup.get(g.shortLabel) ?? [];
+                  const issueCount = tabRows.filter(
+                    (r) => r.status === "fejl" || r.status === "advarsel",
+                  ).length;
+                  const isActive = g.shortLabel === activeTabKey;
+                  return (
+                    <button
+                      key={g.shortLabel}
+                      ref={(el) => {
+                        if (el) tabButtonRefs.current.set(g.shortLabel, el);
+                        else tabButtonRefs.current.delete(g.shortLabel);
+                      }}
+                      type="button"
+                      onClick={() => goToTab(g.shortLabel, true)}
+                      className={`relative shrink-0 px-4 py-3.5 text-sm font-medium transition-colors duration-150 ${
+                        isActive ? "text-[#0D1F2D]" : "text-[#7AAEC8] hover:text-[#2C4A5E]"
+                      }`}
+                    >
+                      {g.shortLabel}
+                      {issueCount > 0 ? (
+                        <span
+                          className={`ml-1.5 inline-flex min-w-[1.25rem] justify-center rounded-full px-1 text-[10px] font-semibold ${
+                            isActive ? "bg-[#0A6EBD] text-white" : "bg-amber-100 text-amber-800"
+                          } portal-tab-badge-pop`}
+                        >
+                          {issueCount}
+                        </span>
+                      ) : null}
+                    </button>
+                  );
+                })}
+              </nav>
 
-            <ul key={activeTabKey} className="portal-tab-panel-in divide-y divide-sky-50">
-              {activeTabRows.map((row, index) => (
+              <span
+                className="pointer-events-none absolute bottom-0 left-0 h-0.5 bg-[#0A6EBD] transition-[transform,width] duration-300 ease-out"
+                style={{
+                  transform: `translateX(${tabIndicator.left}px)`,
+                  width: tabIndicator.width,
+                }}
+                aria-hidden
+              />
+
+              {autoRotateEnabled && !tabsHovered && tabsWithSystems.length > 1 ? (
+                <span
+                  key={`progress-${activeTabKey}-${tabProgressEpoch}`}
+                  className="portal-tab-progress pointer-events-none absolute bottom-0 left-0 h-0.5 bg-[#0A6EBD]/35"
+                  style={{
+                    transform: `translateX(${tabIndicator.left}px)`,
+                    width: tabIndicator.width,
+                  }}
+                  aria-hidden
+                />
+              ) : null}
+            </div>
+
+            <ul key={displayedTabKey} className="divide-y divide-sky-50">
+              {displayedTabRows.map((row, index) => (
                 <li key={row.key}>
                   <button
                     type="button"
                     onClick={() => openDetail(row)}
-                    className={`portal-dashboard-row-in flex w-full items-center gap-3 px-4 py-2.5 text-left transition-colors hover:bg-sky-50/80 ${rowAccentClass(row.status)}`}
-                    style={{ animationDelay: `${index * 40}ms` }}
+                    className={`flex w-full items-center gap-3 px-4 py-4 text-left transition-colors duration-150 hover:bg-sky-50/80 ${rowAccentClass(row.status)} ${
+                      rowListPhase === "in"
+                        ? "portal-dashboard-row-in"
+                        : rowListPhase === "out"
+                          ? "portal-dashboard-row-out"
+                          : ""
+                    }`}
+                    style={
+                      rowListPhase === "in"
+                        ? { animationDelay: `${index * 40}ms` }
+                        : undefined
+                    }
                   >
                     <span
                       className={dotClassName(row.status)}
@@ -812,7 +973,7 @@ export function PortalSystemsDashboard({
         <Link
           href="/portal/support"
           className={`fixed bottom-6 right-6 z-30 inline-flex items-center gap-1.5 rounded-full bg-[#062840] px-5 py-3.5 text-sm font-semibold text-white shadow-xl transition hover:bg-[#0D1F2D] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#0A6EBD] focus-visible:ring-offset-2 ${
-            hasActiveErrors ? "portal-fab-pulse" : ""
+            hasActiveErrors ? "portal-fab-pulse" : "portal-fab-enter"
           }`}
         >
           <Plus className="h-4 w-4" strokeWidth={2.5} aria-hidden />
