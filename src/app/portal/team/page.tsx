@@ -13,7 +13,7 @@ import { Camera, Loader2, Users } from "lucide-react";
 import { OrganisationLogo } from "@/components/OrganisationLogo";
 import { ProfileAvatar } from "@/components/ProfileAvatar";
 import { createClient } from "@/lib/supabase";
-import { publicOrganisationLogoUrl } from "@/lib/storage-public-urls";
+import { publicOrganisationLogoUrl, withCacheBust } from "@/lib/storage-public-urls";
 
 type TeamProfile = {
   id: string;
@@ -81,9 +81,9 @@ export default function PortalTeamPage() {
   const applyOrgLogoUrl = useCallback((storedUrl: string | null | undefined, orgId: string) => {
     const trimmed = storedUrl?.trim();
     if (trimmed) {
-      setOrgLogoUrl(trimmed);
+      setOrgLogoUrl(withCacheBust(trimmed));
     } else {
-      setOrgLogoUrl(`${publicOrganisationLogoUrl(orgId)}?t=${Date.now()}`);
+      setOrgLogoUrl(withCacheBust(publicOrganisationLogoUrl(orgId)));
     }
   }, []);
 
@@ -249,7 +249,7 @@ export default function PortalTeamPage() {
       return;
     }
 
-    setOrgLogoUrl(logoUrl);
+    setOrgLogoUrl(withCacheBust(logoUrl));
     setSuccess("Organisationens logo er opdateret.");
     event.target.value = "";
   };
@@ -316,9 +316,9 @@ export default function PortalTeamPage() {
               aria-label={
                 isOrgAdmin ? "Skift organisationens logo" : "Organisationens logo"
               }
-              className="group relative h-20 w-20 flex-shrink-0 overflow-hidden rounded-full transition focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 disabled:cursor-default"
+              className="group relative h-20 w-20 flex-shrink-0 overflow-hidden rounded-full p-0 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 disabled:cursor-default"
             >
-              <OrganisationLogo logoUrl={orgLogoUrl} initials={orgInitials} className="h-20 w-20 text-2xl" />
+              <OrganisationLogo logoUrl={orgLogoUrl} initials={orgInitials} className="h-full w-full text-2xl" />
               {isOrgAdmin ? (
                 <span
                   className={`absolute inset-0 flex items-center justify-center bg-black/40 transition ${

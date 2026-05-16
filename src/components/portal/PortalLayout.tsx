@@ -16,6 +16,10 @@ import { ProfileAvatar } from "@/components/ProfileAvatar";
 import { SystemklarLogo } from "@/components/SystemklarLogo";
 import { NavigationProgress, PageTransition } from "@/components/PageTransition";
 import { fetchCurrentProfile } from "@/lib/current-profile";
+import {
+  PORTAL_PROFILE_AVATAR_UPDATED_EVENT,
+  withCacheBust,
+} from "@/lib/storage-public-urls";
 import { needsOnboarding } from "@/lib/onboarding";
 import { createClient } from "@/lib/supabase";
 
@@ -210,7 +214,8 @@ export function PortalLayout({ children, activeNav }: PortalLayoutProps) {
       setRole(profile?.role ?? null);
       setOrganisationId(profile?.organisation_id ?? null);
       setFullName(profile?.full_name ?? null);
-      setAvatarUrl(profile?.avatar_url?.trim() || null);
+      const storedAvatar = profile?.avatar_url?.trim();
+      setAvatarUrl(storedAvatar ? withCacheBust(storedAvatar) : null);
       const initials = profile?.avatar_initials?.trim();
       if (initials) {
         setAvatarInitials(initials.slice(0, 2).toUpperCase());
@@ -255,6 +260,27 @@ export function PortalLayout({ children, activeNav }: PortalLayoutProps) {
       subscription.unsubscribe();
     };
   }, [router, supabase]);
+
+  useEffect(() => {
+    if (!userId) return;
+
+    const refreshSidebarAvatar = async () => {
+      const profile = await fetchCurrentProfile(supabase, userId);
+      const storedAvatar = profile?.avatar_url?.trim();
+      setAvatarUrl(storedAvatar ? withCacheBust(storedAvatar) : null);
+      const initials = profile?.avatar_initials?.trim();
+      if (initials) {
+        setAvatarInitials(initials.slice(0, 2).toUpperCase());
+      }
+    };
+
+    const onAvatarUpdated = () => {
+      void refreshSidebarAvatar();
+    };
+
+    window.addEventListener(PORTAL_PROFILE_AVATAR_UPDATED_EVENT, onAvatarUpdated);
+    return () => window.removeEventListener(PORTAL_PROFILE_AVATAR_UPDATED_EVENT, onAvatarUpdated);
+  }, [userId, supabase]);
 
   const handleLogout = async () => {
     await supabase.auth.signOut();

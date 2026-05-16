@@ -12,7 +12,11 @@ import {
 import { Camera, Eye, EyeOff, Loader2 } from "lucide-react";
 import { ProfileAvatar } from "@/components/ProfileAvatar";
 import { createClient } from "@/lib/supabase";
-import { publicAvatarUrl } from "@/lib/storage-public-urls";
+import {
+  notifyPortalProfileAvatarUpdated,
+  publicAvatarUrl,
+  withCacheBust,
+} from "@/lib/storage-public-urls";
 
 type ProfileRow = {
   id: string;
@@ -92,7 +96,7 @@ export default function PortalProfilePage() {
   const refreshAvatarUrl = useCallback(
     (uid: string) => {
       const { data } = supabase.storage.from("avatars").getPublicUrl(uid);
-      setAvatarUrl(`${data.publicUrl}?t=${Date.now()}`);
+      setAvatarUrl(withCacheBust(data.publicUrl));
     },
     [supabase]
   );
@@ -170,7 +174,7 @@ export default function PortalProfilePage() {
     setNotifMonthlyReport(profileRow.notif_monthly_report ?? true);
     const storedAvatar = profileRow.avatar_url?.trim();
     if (storedAvatar) {
-      setAvatarUrl(storedAvatar);
+      setAvatarUrl(withCacheBust(storedAvatar));
     } else {
       refreshAvatarUrl(authUser.id);
     }
@@ -223,8 +227,9 @@ export default function PortalProfilePage() {
       return;
     }
 
-    setAvatarUrl(publicUrl);
+    setAvatarUrl(withCacheBust(publicUrl));
     setProfile((prev) => (prev ? { ...prev, avatar_url: publicUrl } : prev));
+    notifyPortalProfileAvatarUpdated();
     setSuccess("Profilbillede er opdateret.");
     event.target.value = "";
   };
@@ -358,12 +363,12 @@ export default function PortalProfilePage() {
                     onClick={onAvatarPick}
                     disabled={uploadingAvatar}
                     aria-label="Skift profilbillede"
-                    className="group relative h-20 w-20 flex-shrink-0 overflow-hidden rounded-full bg-gradient-to-br from-sky-400 to-sky-600 text-2xl font-bold text-white transition focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 disabled:cursor-not-allowed"
+                    className="group relative h-20 w-20 flex-shrink-0 overflow-hidden rounded-full p-0 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 disabled:cursor-not-allowed"
                   >
                     <ProfileAvatar
-                      avatarUrl={profile.avatar_url || avatarUrl}
+                      avatarUrl={avatarUrl ?? profile.avatar_url}
                       initials={avatarText}
-                      className="h-20 w-20 text-2xl"
+                      className="h-full w-full text-2xl"
                       variant="brand"
                     />
                     <span
