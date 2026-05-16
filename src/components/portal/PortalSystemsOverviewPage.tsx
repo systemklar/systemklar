@@ -18,6 +18,7 @@ import {
 import { isAutoMonitoredCustomerSystem } from "@/lib/monitoring/monitoring-system-names";
 import { isSelfServiceCredentialSystem } from "@/lib/system-self-service-setup";
 import { SystemCredentialSetupModal } from "@/components/portal/SystemCredentialSetupModal";
+import { PortalSystemsOverviewRowSkeleton } from "@/components/portal/PortalMonitoringSkeletons";
 import {
   buildOnboardingDashboardGroups,
   ONBOARDING_SYSTEM_GROUPS,
@@ -227,6 +228,7 @@ export function PortalSystemsOverviewPage() {
   const [unionNames, setUnionNames] = useState<string[]>([]);
   const [orgId, setOrgId] = useState<string | null>(null);
   const [monitoringByName, setMonitoringByName] = useState<Map<string, MonitoringResultRow>>(() => new Map());
+  const [monitoringLoading, setMonitoringLoading] = useState(true);
   const [modal, setModal] = useState<SetupModal | null>(null);
   const [credentialModal, setCredentialModal] = useState<{
     storedName: string;
@@ -293,9 +295,11 @@ export function PortalSystemsOverviewPage() {
   useEffect(() => {
     if (!orgId) {
       setMonitoringByName(new Map());
+      setMonitoringLoading(false);
       return;
     }
     let cancelled = false;
+    setMonitoringLoading(true);
     void (async () => {
       try {
         const res = await fetch(`/api/monitoring/${encodeURIComponent(orgId)}`, { credentials: "include" });
@@ -307,6 +311,8 @@ export function PortalSystemsOverviewPage() {
         if (!cancelled) setMonitoringByName(monitoringResultsBySystemName(data.results ?? []));
       } catch {
         if (!cancelled) setMonitoringByName(new Map());
+      } finally {
+        if (!cancelled) setMonitoringLoading(false);
       }
     })();
     return () => {
@@ -355,8 +361,10 @@ export function PortalSystemsOverviewPage() {
     const oid = orgId?.trim();
     if (!oid) {
       setMonitoringByName(new Map());
+      setMonitoringLoading(false);
       return;
     }
+    setMonitoringLoading(true);
     try {
       const mon = await fetch(`/api/monitoring/${encodeURIComponent(oid)}`, { credentials: "include" });
       if (mon.ok) {
@@ -365,6 +373,8 @@ export function PortalSystemsOverviewPage() {
       }
     } catch {
       /* ignore */
+    } finally {
+      setMonitoringLoading(false);
     }
   }, [orgId]);
 
@@ -429,13 +439,16 @@ export function PortalSystemsOverviewPage() {
 
   const renderRow = (entry: ResolvedOnboardingEntry) => {
     const { storedName, friendlyName, Icon } = entryMeta(entry);
+    const key = entry.kind === "known" ? entry.system.id : `u-${storedName}`;
+    if (monitoringLoading) {
+      return <PortalSystemsOverviewRowSkeleton key={key} />;
+    }
     const row = monitoringByName.get(storedName);
     const status = normalizeMonitoringStatus(row?.status);
     const checkedAgo =
       row?.checked_at && !Number.isNaN(new Date(row.checked_at).getTime())
         ? formatCheckedAgoDa(row.checked_at)
         : null;
-    const key = entry.kind === "known" ? entry.system.id : `u-${storedName}`;
     const blocked = monitoringBlocksRemove(status);
     return (
       <SystemRow

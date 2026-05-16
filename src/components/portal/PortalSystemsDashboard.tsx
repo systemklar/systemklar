@@ -28,6 +28,10 @@ import {
   monitoringResultsBySystemName,
   type MonitoringResultRow,
 } from "@/components/monitoring/MonitoringStatusBlock";
+import {
+  PortalDashboardHeroSkeleton,
+  PortalDashboardSystemRowSkeleton,
+} from "@/components/portal/PortalMonitoringSkeletons";
 
 type PortalSystemsDashboardProps = {
   preview?: boolean;
@@ -193,6 +197,7 @@ export function PortalSystemsDashboard({
   const [monitoringByName, setMonitoringByName] = useState<Map<string, MonitoringResultRow>>(
     () => new Map(),
   );
+  const [monitoringLoading, setMonitoringLoading] = useState(true);
   const [historyDaily, setHistoryDaily] = useState<DailyPctOkPoint[]>([]);
   const [historyDistinctDayCount, setHistoryDistinctDayCount] = useState<number | null>(null);
   const [historyLoading, setHistoryLoading] = useState(false);
@@ -291,13 +296,17 @@ export function PortalSystemsDashboard({
     if (!orgIdForMonitoring) {
       let cancelled = false;
       void Promise.resolve().then(() => {
-        if (!cancelled) setMonitoringByName(new Map());
+        if (!cancelled) {
+          setMonitoringByName(new Map());
+          setMonitoringLoading(false);
+        }
       });
       return () => {
         cancelled = true;
       };
     }
     let cancelled = false;
+    setMonitoringLoading(true);
     void (async () => {
       try {
         const res = await fetch(`/api/monitoring/${encodeURIComponent(orgIdForMonitoring)}`, {
@@ -312,6 +321,8 @@ export function PortalSystemsDashboard({
         setMonitoringByName(monitoringResultsBySystemName(data.results ?? []));
       } catch {
         if (!cancelled) setMonitoringByName(new Map());
+      } finally {
+        if (!cancelled) setMonitoringLoading(false);
       }
     })();
     return () => {
@@ -473,7 +484,13 @@ export function PortalSystemsDashboard({
   }, []);
 
   useEffect(() => {
-    if (!autoRotateEnabled || tabsHovered || tabsWithSystems.length <= 1 || preview) {
+    if (
+      !autoRotateEnabled ||
+      tabsHovered ||
+      tabsWithSystems.length <= 1 ||
+      preview ||
+      monitoringLoading
+    ) {
       return;
     }
 
@@ -485,7 +502,15 @@ export function PortalSystemsDashboard({
     }, TAB_ROTATE_MS);
 
     return () => window.clearInterval(id);
-  }, [activeTabKey, autoRotateEnabled, goToTab, preview, tabsHovered, tabsWithSystems]);
+  }, [
+    activeTabKey,
+    autoRotateEnabled,
+    goToTab,
+    monitoringLoading,
+    preview,
+    tabsHovered,
+    tabsWithSystems,
+  ]);
 
   const counts = useMemo(() => {
     let ok = 0;
@@ -552,6 +577,9 @@ export function PortalSystemsDashboard({
       ) : (
         <div className="flex flex-col gap-4">
           {/* 1. Hero status */}
+          {monitoringLoading ? (
+            <PortalDashboardHeroSkeleton />
+          ) : (
           <section
             className={`flex min-h-[240px] flex-col items-center justify-center rounded-2xl px-6 py-10 text-center shadow-sm ${
               heroAllOk
@@ -612,8 +640,10 @@ export function PortalSystemsDashboard({
               </>
             )}
           </section>
+          )}
 
           {/* 2. Stat pills */}
+          {!monitoringLoading ? (
           <p className="text-center text-sm text-[#2C4A5E]">
             <span className="inline-flex items-center gap-1">
               <span className="text-[10px]" aria-hidden>
@@ -640,6 +670,7 @@ export function PortalSystemsDashboard({
               Afventer
             </span>
           </p>
+          ) : null}
 
           {/* 3. Tabbed system list */}
           <section className="overflow-hidden rounded-2xl border border-sky-100 bg-white shadow-sm">
@@ -655,9 +686,10 @@ export function PortalSystemsDashboard({
               >
                 {tabsWithSystems.map((g) => {
                   const tabRows = rowsByGroup.get(g.shortLabel) ?? [];
-                  const issueCount = tabRows.filter(
-                    (r) => r.status === "fejl" || r.status === "advarsel",
-                  ).length;
+                  const issueCount =
+                    monitoringLoading
+                      ? 0
+                      : tabRows.filter((r) => r.status === "fejl" || r.status === "advarsel").length;
                   const isActive = g.shortLabel === activeTabKey;
                   return (
                     <button
@@ -668,12 +700,13 @@ export function PortalSystemsDashboard({
                       }}
                       type="button"
                       onClick={() => goToTab(g.shortLabel, true)}
+                      disabled={monitoringLoading}
                       className={`relative shrink-0 px-4 py-3.5 text-sm font-medium transition-colors duration-150 ${
                         isActive ? "text-[#0D1F2D]" : "text-[#7AAEC8] hover:text-[#2C4A5E]"
                       }`}
                     >
                       {g.shortLabel}
-                      {issueCount > 0 ? (
+                      {!monitoringLoading && issueCount > 0 ? (
                         <span
                           className={`ml-1.5 inline-flex min-w-[1.25rem] justify-center rounded-full px-1 text-[10px] font-semibold ${
                             isActive ? "bg-[#0A6EBD] text-white" : "bg-amber-100 text-amber-800"
@@ -702,8 +735,11 @@ export function PortalSystemsDashboard({
               className={`divide-y divide-sky-50 transition-opacity duration-150 ease-out ${
                 tabListVisible ? "opacity-100" : "opacity-0"
               }`}
+              aria-busy={monitoringLoading}
             >
-              {activeTabRows.map((row) => (
+              {monitoringLoading
+                ? activeTabRows.map((row) => <PortalDashboardSystemRowSkeleton key={row.key} />)
+                : activeTabRows.map((row) => (
                 <li key={row.key}>
                   <button
                     type="button"
