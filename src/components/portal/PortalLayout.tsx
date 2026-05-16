@@ -35,6 +35,7 @@ import {
   PORTAL_PROFILE_AVATAR_UPDATED_EVENT,
   withCacheBust,
 } from "@/lib/storage-public-urls";
+import { PORTAL_TOUR_OPEN_SIDEBAR_EVENT } from "@/components/portal/portal-onboarding-tour";
 import { needsOnboarding } from "@/lib/onboarding";
 import { createClient } from "@/lib/supabase";
 
@@ -144,6 +145,12 @@ export function PortalLayout({ children, activeNav }: PortalLayoutProps) {
   useEffect(() => {
     queueMicrotask(() => setSidebarOpen(false));
   }, [pathname]);
+
+  useEffect(() => {
+    const openSidebarForTour = () => setSidebarOpen(true);
+    window.addEventListener(PORTAL_TOUR_OPEN_SIDEBAR_EVENT, openSidebarForTour);
+    return () => window.removeEventListener(PORTAL_TOUR_OPEN_SIDEBAR_EVENT, openSidebarForTour);
+  }, []);
 
   useEffect(() => {
     let cancelled = false;
@@ -281,6 +288,7 @@ export function PortalLayout({ children, activeNav }: PortalLayoutProps) {
           ) : null}
 
           <aside
+            data-tour="portal-sidebar"
             className={`fixed inset-y-0 left-0 z-30 flex h-full w-56 flex-shrink-0 flex-col border-r border-[#D0E8F5] bg-white transition-transform duration-300 md:static md:translate-x-0 ${
               sidebarOpen ? "translate-x-0" : "-translate-x-full"
             }`}

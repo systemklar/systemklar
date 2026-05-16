@@ -28,6 +28,7 @@ import {
   monitoringResultsBySystemName,
   type MonitoringResultRow,
 } from "@/components/monitoring/MonitoringStatusBlock";
+import { PortalOnboardingTour } from "@/components/portal/PortalOnboardingTour";
 import {
   PortalDashboardSystemRowSkeleton,
   PortalDashboardTicketRowSkeleton,
@@ -308,6 +309,8 @@ export function PortalSystemsDashboard({
   const [ticketsLoading, setTicketsLoading] = useState(true);
   const [latestReport, setLatestReport] = useState<LatestReportRow | null>(null);
   const [reportsLoading, setReportsLoading] = useState(true);
+  const [tourOpen, setTourOpen] = useState(false);
+  const tourEligibilityCheckedRef = useRef(false);
 
   const orgIdForMonitoring = preview
     ? (organisationIdProp?.trim() || null)
@@ -747,6 +750,42 @@ export function PortalSystemsDashboard({
 
   const hasSystems = systemRows.length > 0;
   const statsReady = hasSystems && !monitoringLoading;
+
+  const completeOnboardingTour = useCallback(async () => {
+    setTourOpen(false);
+    try {
+      await fetch("/api/portal/profile/onboarding-tour", {
+        method: "POST",
+        credentials: "include",
+      });
+    } catch {
+      /* tour stays dismissed locally */
+    }
+  }, []);
+
+  useEffect(() => {
+    if (preview || loading || !hasSystems || tourEligibilityCheckedRef.current) return;
+    const userId = portalSession?.userId?.trim();
+    if (!userId) return;
+
+    tourEligibilityCheckedRef.current = true;
+    let cancelled = false;
+
+    const timer = window.setTimeout(() => {
+      void (async () => {
+        const profile = await fetchCurrentProfile(supabase, userId);
+        if (cancelled || !profile) return;
+        if (profile.onboarding_completed !== true) return;
+        if (profile.onboarding_tour_completed === true) return;
+        setTourOpen(true);
+      })();
+    }, 450);
+
+    return () => {
+      cancelled = true;
+      window.clearTimeout(timer);
+    };
+  }, [preview, loading, hasSystems, portalSession?.userId, supabase]);
   const displayOk = useCountUp(counts.ok, statsReady);
   const displayAdvarsel = useCountUp(counts.advarsel + counts.fejl, statsReady);
   const displayAfventer = useCountUp(counts.afventer, statsReady);
@@ -895,7 +934,10 @@ export function PortalSystemsDashboard({
       ) : (
         <>
         <div className="grid min-h-0 flex-1 grid-cols-1 items-stretch gap-4 md:gap-5 lg:grid-cols-3 lg:grid-rows-[minmax(0,1fr)_auto]">
-          <article className={`${dashboardCardClass} min-h-0 lg:col-span-2`}>
+          <article
+            data-tour="dashboard-systemstatus"
+            className={`${dashboardCardClass} min-h-0 lg:col-span-2`}
+          >
             <h2 className="text-sm font-semibold uppercase tracking-wide text-[#7AAEC8]">
               Systemstatus
             </h2>
@@ -924,7 +966,7 @@ export function PortalSystemsDashboard({
                 onMouseEnter={() => setTabsHovered(true)}
                 onMouseLeave={() => setTabsHovered(false)}
               >
-                <div ref={tabNavRef} className="relative border-b border-sky-100">
+                <div ref={tabNavRef} data-tour="dashboard-system-tabs" className="relative border-b border-sky-100">
                   <nav className="flex gap-0 overflow-x-auto" aria-label="Systemkategorier">
                     {tabsWithSystems.map((g) => {
                       const tabRows = rowsByGroup.get(g.shortLabel) ?? [];
@@ -1015,7 +1057,7 @@ export function PortalSystemsDashboard({
           </article>
 
           {!preview ? (
-            <article className={`${dashboardCardClass} min-h-0`}>
+            <article data-tour="dashboard-active-tickets" className={`${dashboardCardClass} min-h-0`}>
               <div className="flex items-center gap-2">
                 <h2 className="text-sm font-semibold text-[#0D1F2D]">Aktive sager</h2>
                 {!ticketsLoading ? (
@@ -1067,7 +1109,7 @@ export function PortalSystemsDashboard({
 
           {!preview ? (
             <div className="grid grid-cols-1 gap-6 lg:col-span-3 lg:grid-cols-2">
-              <article className={dashboardCardClass}>
+              <article data-tour="dashboard-latest-report" className={dashboardCardClass}>
                 <h2 className="text-sm font-semibold text-[#0D1F2D]">Seneste rapport</h2>
               <div className="mt-4 min-h-0 flex-1">
                 {reportsLoading ? (
@@ -1318,6 +1360,9 @@ export function PortalSystemsDashboard({
         </PortalSlideInPanel>
       ) : null}
 
+      {!preview ? (
+        <PortalOnboardingTour open={tourOpen} onComplete={() => void completeOnboardingTour()} />
+      ) : null}
     </div>
   );
 }

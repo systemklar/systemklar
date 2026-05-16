@@ -381,6 +381,11 @@ button {
   animation-play-state: paused;
 }
 
+.portal-tour-target {
+  position: relative;
+  z-index: 51;
+}
+
 /* Portal dashboard: attention row left border pulse */
 @keyframes portal-attention-border-pulse {
   0%,

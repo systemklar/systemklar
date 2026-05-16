@@ -38,6 +38,7 @@ export type CurrentProfile = {
   email: string | null;
   onboarding_completed: boolean | null;
   onboarding_systems: string[] | null;
+  onboarding_tour_completed: boolean | null;
 };
 
 export async function fetchCurrentProfile(
@@ -47,7 +48,7 @@ export async function fetchCurrentProfile(
   if (!userId) return null;
 
   const profileColumns =
-    "id, organisation_id, role, full_name, avatar_initials, avatar_url, company_name, email, onboarding_completed, onboarding_systems";
+    "id, organisation_id, role, full_name, avatar_initials, avatar_url, company_name, email, onboarding_completed, onboarding_systems, onboarding_tour_completed";
 
   const { data: byIdData, error: byIdError } = await client
     .from("profiles")
