@@ -9,9 +9,12 @@ import {
   type PortalOnboardingTourStep,
 } from "@/components/portal/portal-onboarding-tour";
 
-const SPOTLIGHT_SHADOW = "0 0 0 4px #0A6EBD, 0 0 0 9999px rgba(0,0,0,0.6)";
+const SPOTLIGHT_SHADOW =
+  "0 0 0 6px #0A6EBD, 0 0 0 12px rgba(10,110,189,0.2), 0 0 0 9999px rgba(0,0,0,0.7)";
 const TOOLTIP_GAP = 16;
 const VIEWPORT_PAD = 16;
+const TOOLTIP_MOVE_MS = 400;
+const TOOLTIP_ENTER_MS = 300;
 
 type Rect = { top: number; left: number; width: number; height: number };
 
@@ -56,10 +59,11 @@ export function PortalOnboardingTour({ open, onComplete }: PortalOnboardingTourP
   const [mounted, setMounted] = useState(false);
   const [stepIndex, setStepIndex] = useState(0);
   const [targetRect, setTargetRect] = useState<Rect | null>(null);
-  const [tooltipVisible, setTooltipVisible] = useState(true);
+  const [tooltipEntering, setTooltipEntering] = useState(true);
   const [tooltipPos, setTooltipPos] = useState({ top: 0, left: 0 });
   const tooltipRef = useRef<HTMLDivElement>(null);
   const highlightedRef = useRef<Element | null>(null);
+  const prevPosRef = useRef({ top: 0, left: 0 });
 
   const step: PortalOnboardingTourStep = steps[stepIndex] ?? steps[0];
   const isLast = stepIndex >= steps.length - 1;
@@ -88,7 +92,9 @@ export function PortalOnboardingTour({ open, onComplete }: PortalOnboardingTourP
     setTargetRect(rect);
     if (tooltipRef.current && rect) {
       const tr = tooltipRef.current.getBoundingClientRect();
-      setTooltipPos(tooltipPosition(rect, tr.width, tr.height));
+      const next = tooltipPosition(rect, tr.width, tr.height);
+      setTooltipPos(next);
+      prevPosRef.current = next;
     }
   }, [step.target]);
 
@@ -99,7 +105,7 @@ export function PortalOnboardingTour({ open, onComplete }: PortalOnboardingTourP
   useEffect(() => {
     if (!open) return;
     setStepIndex(0);
-    setTooltipVisible(true);
+    setTooltipEntering(true);
   }, [open]);
 
   useLayoutEffect(() => {
@@ -129,8 +135,10 @@ export function PortalOnboardingTour({ open, onComplete }: PortalOnboardingTourP
   useLayoutEffect(() => {
     if (!open || !mounted || !targetRect || !tooltipRef.current) return;
     const tr = tooltipRef.current.getBoundingClientRect();
-    setTooltipPos(tooltipPosition(targetRect, tr.width, tr.height));
-  }, [open, mounted, targetRect, stepIndex, tooltipVisible]);
+    const next = tooltipPosition(targetRect, tr.width, tr.height);
+    setTooltipPos(next);
+    prevPosRef.current = next;
+  }, [open, mounted, targetRect, stepIndex]);
 
   useEffect(() => {
     if (!open) {
@@ -155,25 +163,28 @@ export function PortalOnboardingTour({ open, onComplete }: PortalOnboardingTourP
       finish();
       return;
     }
-    setTooltipVisible(false);
+    setTooltipEntering(false);
     window.setTimeout(() => {
       setStepIndex((i) => i + 1);
-      setTooltipVisible(true);
-    }, 150);
+      setTooltipEntering(true);
+    }, 120);
   }, [isLast, finish]);
 
   if (!open || !mounted) return null;
 
-  const spotlightRadius =
-    step.target.includes("portal-sidebar") ? 12 : 16;
+  const spotlightRadius = step.target.includes("portal-sidebar") ? 12 : 16;
 
   return createPortal(
     <div className="portal-onboarding-tour-root" role="presentation">
-      <div className="fixed inset-0 z-50" aria-hidden onClick={(e) => e.preventDefault()} />
+      <div
+        className="fixed inset-0 z-50 bg-slate-900/70 backdrop-blur-sm"
+        aria-hidden
+        onClick={(e) => e.preventDefault()}
+      />
 
       {targetRect ? (
         <div
-          className="pointer-events-none fixed z-[51] transition-all duration-150 ease-out"
+          className="pointer-events-none fixed z-[51] ease-in-out"
           style={{
             top: targetRect.top,
             left: targetRect.left,
@@ -181,6 +192,7 @@ export function PortalOnboardingTour({ open, onComplete }: PortalOnboardingTourP
             height: targetRect.height,
             borderRadius: spotlightRadius,
             boxShadow: SPOTLIGHT_SHADOW,
+            transition: `top ${TOOLTIP_MOVE_MS}ms ease-in-out, left ${TOOLTIP_MOVE_MS}ms ease-in-out, width ${TOOLTIP_MOVE_MS}ms ease-in-out, height ${TOOLTIP_MOVE_MS}ms ease-in-out`,
           }}
           aria-hidden
         />
@@ -191,40 +203,56 @@ export function PortalOnboardingTour({ open, onComplete }: PortalOnboardingTourP
         role="dialog"
         aria-modal="true"
         aria-labelledby="portal-tour-title"
-        className={`pointer-events-auto fixed z-[53] w-[min(100vw-2rem,24rem)] max-w-sm rounded-2xl border border-sky-100 bg-white p-6 shadow-xl transition-opacity duration-150 ${
-          tooltipVisible ? "opacity-100" : "opacity-0"
-        }`}
-        style={{ top: tooltipPos.top, left: tooltipPos.left }}
+        className="pointer-events-auto fixed z-[53] w-[min(calc(100vw-2rem),28rem)] max-w-md rounded-3xl border border-sky-100/80 bg-white p-8 shadow-2xl ease-out"
+        style={{
+          top: tooltipPos.top,
+          left: tooltipPos.left,
+          transition: `top ${TOOLTIP_MOVE_MS}ms ease-in-out, left ${TOOLTIP_MOVE_MS}ms ease-in-out, opacity ${TOOLTIP_ENTER_MS}ms ease-out, transform ${TOOLTIP_ENTER_MS}ms ease-out`,
+          opacity: tooltipEntering ? 1 : 0,
+          transform: tooltipEntering ? "translateY(0)" : "translateY(20px)",
+        }}
       >
         <button
           type="button"
           onClick={finish}
-          className="absolute right-3 top-3 rounded-full p-1.5 text-[#7AAEC8] transition hover:bg-sky-50 hover:text-[#0D1F2D]"
+          className="absolute right-4 top-4 rounded-full p-1.5 text-[#7AAEC8] transition hover:bg-sky-50 hover:text-[#0D1F2D]"
           aria-label="Spring tour over"
         >
           <X className="h-4 w-4" aria-hidden />
         </button>
 
-        <p className="text-xs font-medium text-[#7AAEC8]">
+        <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-sky-400">
           Trin {stepIndex + 1} af {steps.length}
         </p>
-        <h2 id="portal-tour-title" className="mt-2 pr-6 text-lg font-semibold text-[#0D1F2D]">
+
+        <div className="mt-4 flex gap-2" aria-hidden>
+          {steps.map((_, i) => (
+            <span
+              key={i}
+              className={`h-2 w-2 rounded-full transition-colors ${
+                i === stepIndex ? "bg-[#0A6EBD]" : "border border-sky-200 bg-transparent"
+              }`}
+            />
+          ))}
+        </div>
+
+        <h2 id="portal-tour-title" className="mt-5 pr-8 text-2xl font-light text-[#0D1F2D]">
           {step.title}
         </h2>
-        <p className="mt-2 text-sm leading-relaxed text-[#2C4A5E]">{step.text}</p>
+        <p className="mt-3 max-w-xs text-base leading-relaxed text-[#2C4A5E]">{step.text}</p>
 
-        <div className="mt-6 flex items-center justify-end gap-3">
+        <div className="mt-8 flex items-center justify-between gap-4">
           <button
             type="button"
             onClick={finish}
-            className="rounded-full px-4 py-2 text-sm font-medium text-[#2C4A5E] transition hover:bg-sky-50 hover:text-[#0D1F2D]"
+            className="text-sm font-medium text-[#7AAEC8] transition hover:text-[#0D1F2D]"
           >
             Spring over
           </button>
           <button
             type="button"
             onClick={goNext}
-            className="rounded-full bg-[#0A6EBD] px-5 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-[#0859A0]"
+            className="rounded-full bg-[#0A6EBD] px-6 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-[#0859A0]"
           >
             {isLast ? "Kom i gang →" : "Næste →"}
           </button>

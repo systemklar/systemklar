@@ -31,6 +31,8 @@ type DashboardPayload = {
   customers: OrganisationDashboardRow[];
   recentTickets: DashboardTicket[];
   activity: DashboardActivity[];
+  warnings?: string[];
+  errors?: string[];
 };
 
 function initialsFromName(name: string) {
@@ -109,13 +111,23 @@ export default function AdminDashboardClient() {
     setError(null);
     try {
       const res = await fetch("/api/admin/dashboard", { credentials: "include" });
-      const payload = (await res.json().catch(() => ({}))) as DashboardPayload & { error?: string };
+      const payload = (await res.json().catch(() => ({}))) as DashboardPayload & {
+        error?: string;
+        errors?: string[];
+      };
       if (!res.ok) {
-        setError(payload.error ?? "Kunne ikke hente dashboard.");
+        const detail =
+          payload.errors?.join(" ") ||
+          payload.error ||
+          `Kunne ikke hente dashboard (HTTP ${res.status}).`;
+        setError(detail);
         setData(null);
         return;
       }
       setData(payload);
+      if (payload.warnings?.length) {
+        console.warn("[admin/dashboard] partial data:", payload.warnings);
+      }
     } catch (e) {
       console.error("[admin/dashboard] fetch", e);
       setError("Netværksfejl. Prøv igen.");
@@ -174,9 +186,29 @@ export default function AdminDashboardClient() {
       {loading ? (
         <p className="text-sm text-[#4A8CB5]">Henter overblik...</p>
       ) : error ? (
-        <p className="text-sm text-red-600">{error}</p>
+        <div className="rounded-2xl border border-red-200 bg-red-50 p-5 text-sm text-red-800">
+          <p className="font-semibold">Kunne ikke indlæse IT-overblik</p>
+          <p className="mt-2 leading-relaxed">{error}</p>
+          <button
+            type="button"
+            onClick={() => void load()}
+            className="mt-4 rounded-full bg-red-700 px-4 py-2 text-xs font-semibold text-white hover:bg-red-800"
+          >
+            Prøv igen
+          </button>
+        </div>
       ) : stats ? (
         <>
+          {data?.warnings?.length ? (
+            <div className="rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900">
+              <p className="font-semibold">Delvis data</p>
+              <ul className="mt-2 list-inside list-disc space-y-1 text-xs">
+                {data.warnings.map((w) => (
+                  <li key={w}>{w}</li>
+                ))}
+              </ul>
+            </div>
+          ) : null}
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
             <StatCard label="Aktive kunder" value={stats.activeCustomers} />
             <StatCard label="Systemer med fejl" value={stats.systemsWithFejl} />

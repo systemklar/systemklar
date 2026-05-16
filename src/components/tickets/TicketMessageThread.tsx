@@ -7,6 +7,11 @@ import { createClient } from "@/lib/supabase";
 import { AttachmentList } from "@/components/ui/AttachmentList";
 import { FileUpload } from "@/components/ui/FileUpload";
 import { normalizeTicketAttachmentRow, type TicketAttachment } from "@/lib/ticket-attachments";
+import {
+  SYSTEMKLAR_SENDER_NAME,
+  isAdminMessage,
+  messageSenderDisplayName,
+} from "@/lib/message-sender-display";
 import { formatDanishDateTime } from "./StatusBadge";
 
 export type MessageRow = {
@@ -354,24 +359,6 @@ export function TicketMessageThread({
       data: { session },
     } = await supabase.auth.getSession();
     const user = session?.user;
-    const senderNameFromAuth = user
-      ? (typeof user.user_metadata?.full_name === "string" && user.user_metadata.full_name.trim()
-          ? user.user_metadata.full_name.trim()
-          : user.email?.trim() || (sendAsAdmin ? "Admin" : customerSenderLabel))
-      : (sendAsAdmin ? "Admin" : customerSenderLabel);
-    let senderName = senderNameFromAuth;
-    if (!sendAsAdmin) {
-      if (user) {
-        const { data: profile } = await supabase
-          .from("profiles")
-          .select("full_name")
-          .eq("id", user.id)
-          .maybeSingle();
-        const fullName = profile?.full_name as string | undefined;
-        if (fullName?.trim()) senderName = fullName.trim();
-      }
-    }
-
     if (!user) {
       setSendError("Du er ikke logget ind.");
       return;
@@ -388,7 +375,6 @@ export function TicketMessageThread({
       body: JSON.stringify({
         content: text,
         sendAsAdmin,
-        senderName,
       }),
     });
     const payload = (await res.json().catch(() => ({}))) as { error?: string };
@@ -454,20 +440,20 @@ export function TicketMessageThread({
           <p className="text-sm text-[#4A8CB5]">Ingen beskeder endnu.</p>
         ) : (
           <>
-            {messages.map((m) => (
+            {messages.map((m) => {
+              const fromCustomer = !isAdminMessage(m);
+              const senderLabel = messageSenderDisplayName(m, customerSenderLabel);
+              return (
               <div
                 key={m.id}
-                className={`flex w-full flex-col ${
-                  m.sender_role === "customer" ? "items-end" : "items-start"
-                }`}
+                className={`flex w-full flex-col ${fromCustomer ? "items-end" : "items-start"}`}
               >
                 <div className="mb-1 text-[10px] text-[#7AAEC8]">
-                  {(m.sender_name?.trim() || (m.sender_role === "customer" ? customerSenderLabel : "systemklar"))} ·{" "}
-                  {formatDanishDateTime(m.created_at)}
+                  {senderLabel} · {formatDanishDateTime(m.created_at)}
                 </div>
                 <div
                   className={`max-w-[75%] rounded-2xl px-4 py-3 text-sm ${
-                    m.sender_role === "customer"
+                    fromCustomer
                       ? "ml-auto rounded-tr-sm bg-[#0A6EBD] text-white"
                       : "rounded-tl-sm bg-[#F0F7FF] text-[#2C4A5E]"
                   }`}
@@ -477,14 +463,15 @@ export function TicketMessageThread({
                 {attachmentsByMessageId.get(m.id)?.length ? (
                   <div
                     className={`mt-1 max-w-[min(100%,28rem)] ${
-                      m.sender_role === "customer" ? "self-end text-left" : "self-start text-left"
+                      fromCustomer ? "self-end text-left" : "self-start text-left"
                     }`}
                   >
                     <AttachmentList attachments={attachmentsByMessageId.get(m.id) ?? []} />
                   </div>
                 ) : null}
               </div>
-            ))}
+              );
+            })}
 
             {showTypingIndicator && (
               <div
@@ -497,7 +484,7 @@ export function TicketMessageThread({
                       : "normal-case tracking-normal text-blue-600"
                   }`}
                 >
-                  {typingOnRight ? "systemklar" : customerSenderLabel}
+                  {typingOnRight ? SYSTEMKLAR_SENDER_NAME : customerSenderLabel}
                 </span>
                 <div
                   className={`flex items-center gap-2 rounded-2xl px-4 py-3 text-sm ${

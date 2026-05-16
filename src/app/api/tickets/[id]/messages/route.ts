@@ -3,6 +3,7 @@ import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 import { isAdminEmail } from "@/lib/admin-email";
 import { sendTicketReplyEmail } from "@/lib/email";
+import { resolveMessageSenderForInsert } from "@/lib/message-sender-display";
 import { profileWantsTicketUpdatedEmails } from "@/lib/notification-preferences";
 
 export const dynamic = 'force-dynamic';
@@ -77,17 +78,23 @@ export async function POST(request: Request, context: { params: Promise<{ id: st
     return NextResponse.json({ error: "Ticket ikke fundet." }, { status: 404 });
   }
 
-  const canAdmin = isAdminEmail(user.email) || profile?.role === "org_admin";
+  const isSystemAdmin = isAdminEmail(user.email);
   const sameOrg = profile?.organisation_id && profile.organisation_id === ticket.organisation_id;
-  if (!canAdmin && !sameOrg) {
+  if (!isSystemAdmin && !sameOrg) {
     return NextResponse.json({ error: "Ingen adgang." }, { status: 403 });
   }
-  if (sendAsAdmin && !canAdmin) {
+  if (sendAsAdmin && !isSystemAdmin) {
     return NextResponse.json({ error: "Ingen adgang til admin-beskeder." }, { status: 403 });
   }
 
-  const senderName =
-    (profile?.full_name as string | null)?.trim() || user.user_metadata?.full_name || user.email || (sendAsAdmin ? "Admin" : "Kunde");
+  const { sender_name, sender_role } = resolveMessageSenderForInsert({
+    sendAsAdmin,
+    isSystemAdmin,
+    profileRole: profile?.role as string | null | undefined,
+    profileFullName: profile?.full_name as string | null | undefined,
+    userEmail: user.email,
+  });
+
   const { data: insertedMessage, error: insertError } = await supabase
     .from("messages")
     .insert({
@@ -95,8 +102,8 @@ export async function POST(request: Request, context: { params: Promise<{ id: st
       user_id: user.id,
       content,
       is_admin: sendAsAdmin,
-      sender_name: senderName,
-      sender_role: sendAsAdmin ? "admin" : "customer",
+      sender_name,
+      sender_role,
     })
     .select("id")
     .single();

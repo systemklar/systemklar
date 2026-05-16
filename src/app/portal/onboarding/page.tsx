@@ -11,7 +11,7 @@ import { needsOnboarding, onboardingFirstName } from "@/lib/onboarding";
 import { ONBOARDING_SYSTEM_GROUPS, systemNameById } from "@/lib/onboarding-systems";
 import { createClient } from "@/lib/supabase";
 
-function OnboardingProgress({ step }: { step: 1 | 2 | 3 }) {
+function OnboardingProgress({ step }: { step: 1 | 2 | 3 | 4 }) {
   return (
     <div className="mb-8">
       <div
@@ -19,9 +19,9 @@ function OnboardingProgress({ step }: { step: 1 | 2 | 3 }) {
         role="progressbar"
         aria-valuenow={step}
         aria-valuemin={1}
-        aria-valuemax={3}
+        aria-valuemax={4}
       >
-        {[1, 2, 3].map((n) => (
+        {[1, 2, 3, 4].map((n) => (
           <div
             key={n}
             className={`h-1.5 flex-1 rounded-full transition-colors ${
@@ -30,7 +30,7 @@ function OnboardingProgress({ step }: { step: 1 | 2 | 3 }) {
           />
         ))}
       </div>
-      <p className="mt-2 text-center text-xs font-medium text-[#4A8CB5]">Trin {step} af 3</p>
+      <p className="mt-2 text-center text-xs font-medium text-[#4A8CB5]">Trin {step} af 4</p>
     </div>
   );
 }
@@ -58,7 +58,7 @@ function OnboardingContent({
 }: OnboardingContentProps) {
   const router = useRouter();
   const supabase = useMemo(() => createClient(), []);
-  const [step, setStep] = useState<1 | 2 | 3>(1);
+  const [step, setStep] = useState<1 | 2 | 3 | 4>(1);
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -112,24 +112,10 @@ function OnboardingContent({
             Vi overvåger din IT så du ikke behøver. Lad os starte med at lære din virksomhed at
             kende.
           </p>
-
-          <OnboardingPhotoUploads
-            supabase={supabase}
-            profileId={profileId}
-            fullName={fullName}
-            avatarInitials={avatarInitials}
-            initialAvatarUrl={initialAvatarUrl}
-            organisationId={organisationId}
-            organisationName={organisationName}
-            isOrgAdmin={isOrgAdmin}
-            initialLogoUrl={initialLogoUrl}
-            onSkip={() => setStep(2)}
-          />
-
           <button
             type="button"
             onClick={() => setStep(2)}
-            className="mt-6 w-full rounded-full bg-[#0A6EBD] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#0859A0] sm:w-auto"
+            className="mt-8 w-full rounded-full bg-[#0A6EBD] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#0859A0] sm:w-auto"
           >
             Kom i gang →
           </button>
@@ -196,6 +182,37 @@ function OnboardingContent({
       ) : null}
 
       {step === 3 ? (
+        <section className="rounded-2xl border border-sky-100 bg-white p-8 shadow-sm">
+          <h1 className="text-2xl font-bold tracking-tight text-[#0D1F2D]">
+            Næsten klar — tilpas din profil
+          </h1>
+          <p className="mt-3 text-sm leading-relaxed text-[#2C4A5E]">
+            Hjælper os med at genkende dig — du kan altid ændre det senere.
+          </p>
+          <OnboardingPhotoUploads
+            supabase={supabase}
+            profileId={profileId}
+            fullName={fullName}
+            avatarInitials={avatarInitials}
+            initialAvatarUrl={initialAvatarUrl}
+            organisationId={organisationId}
+            organisationName={organisationName}
+            isOrgAdmin={isOrgAdmin}
+            initialLogoUrl={initialLogoUrl}
+            variant="profile-step"
+            onSkip={() => setStep(4)}
+          />
+          <button
+            type="button"
+            onClick={() => setStep(4)}
+            className="mt-8 w-full rounded-full bg-[#0A6EBD] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#0859A0] sm:w-auto"
+          >
+            Fortsæt →
+          </button>
+        </section>
+      ) : null}
+
+      {step === 4 ? (
         <section className="rounded-2xl border border-sky-100 bg-white p-8 shadow-sm">
           <h1 className="text-2xl font-bold tracking-tight text-[#0D1F2D]">Perfekt, {firstName}!</h1>
           <p className="mt-4 text-sm leading-relaxed text-[#2C4A5E]">
