@@ -24,6 +24,7 @@ export type OrganisationDashboardRow = {
 
 export type DashboardTicket = {
   id: string;
+  ticket_number: number | null;
   title: string;
   status: string;
   created_at: string;

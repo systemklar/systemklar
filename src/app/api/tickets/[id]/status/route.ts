@@ -83,7 +83,7 @@ export async function PATCH(
 
   const { data: ticketRow, error: fetchErr } = await admin
     .from("tickets")
-    .select("organisation_id,title")
+    .select("organisation_id, title, ticket_number")
     .eq("id", id)
     .maybeSingle();
 
@@ -134,7 +134,8 @@ export async function PATCH(
           email,
           ((recipient.full_name as string | undefined)?.trim() || "der"),
           title,
-          id
+          id,
+          (ticketRow as { ticket_number?: number }).ticket_number ?? null,
         );
       }
     } catch (error) {

@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import { OrganisationLogo } from "@/components/OrganisationLogo";
 import { StatusBadge } from "@/components/tickets/StatusBadge";
+import { TicketNumberBadge } from "@/components/tickets/TicketNumberBadge";
 import {
   MONITORING_STATUS_COLORS,
   MONITORING_STATUS_LABELS,
@@ -350,7 +351,10 @@ export default function AdminDashboardClient() {
                 <ul className="mt-4 space-y-4">
                   {recentTickets.map((t) => (
                     <li key={t.id} className="border-b border-sky-50 pb-4 last:border-0 last:pb-0">
-                      <p className="font-medium text-[#062840]">{t.title}</p>
+                      <div className="flex flex-wrap items-center gap-2">
+                        <TicketNumberBadge ticketNumber={t.ticket_number} />
+                        <p className="font-medium text-[#062840]">{t.title}</p>
+                      </div>
                       <p className="mt-0.5 text-xs text-[#4A8CB5]">{t.organisation_name}</p>
                       <div className="mt-2 flex items-center justify-between gap-2">
                         <span className="text-xs text-[#94a3b8]">{formatRelativeShortDa(t.created_at)}</span>

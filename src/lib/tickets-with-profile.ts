@@ -1,10 +1,12 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { UNKNOWN_COMPANY_LABEL } from "@/lib/profile-customer";
+import { normalizeTicketPriority, type TicketPriority } from "@/lib/ticket-display";
 
 /** PostgREST-embed når FK tickets.organisation_id → organisations/profiles findes. */
 export const TICKET_SELECT_WITH_PROFILE =
-  "id,title,description,status,organisation_id,created_at,profiles(company_name,email)";
-export const TICKET_SELECT_BASE = "id,title,description,status,organisation_id,created_at";
+  "id,ticket_number,title,description,status,priority,organisation_id,created_at,updated_at,profiles(company_name,email)";
+export const TICKET_SELECT_BASE =
+  "id,ticket_number,title,description,status,priority,organisation_id,created_at,updated_at";
 
 export type ProfileEmbed = {
   company_name: string;
@@ -13,11 +15,14 @@ export type ProfileEmbed = {
 
 export type TicketWithProfileRow = {
   id: string;
+  ticket_number: number | null;
   title: string;
   description: string | null;
   status: string;
+  priority: TicketPriority;
   organisation_id: string;
   created_at: string;
+  updated_at: string | null;
   profiles: ProfileEmbed;
 };
 
@@ -38,6 +43,15 @@ function normalizeProfileEmbed(raw: unknown): ProfileEmbed {
   };
 }
 
+function parseTicketNumber(raw: unknown): number | null {
+  if (typeof raw === "number" && Number.isFinite(raw)) return Math.floor(raw);
+  if (typeof raw === "string" && raw.trim()) {
+    const n = Number.parseInt(raw, 10);
+    return Number.isFinite(n) ? n : null;
+  }
+  return null;
+}
+
 export function companyFromTicketRow(row: TicketWithProfileRow): string {
   const name = row.profiles?.company_name?.trim();
   return name || UNKNOWN_COMPANY_LABEL;
@@ -54,14 +68,19 @@ export function normalizeTicketWithProfile(raw: Record<string, unknown>): Ticket
   }
   const description =
     typeof raw.description === "string" ? raw.description : raw.description == null ? null : null;
+  const updated_at =
+    typeof raw.updated_at === "string" ? raw.updated_at : raw.updated_at == null ? null : null;
 
   return {
     id,
+    ticket_number: parseTicketNumber(raw.ticket_number),
     title,
     description,
     status: typeof status === "string" ? status : "active",
+    priority: normalizeTicketPriority(typeof raw.priority === "string" ? raw.priority : null),
     organisation_id,
     created_at: typeof created_at === "string" ? created_at : "",
+    updated_at,
     profiles: normalizeProfileEmbed(raw.profiles),
   };
 }

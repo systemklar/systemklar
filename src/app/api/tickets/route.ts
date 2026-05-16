@@ -79,7 +79,7 @@ export async function POST(request: Request) {
       organisation_id: profile.organisation_id,
       created_by_name: createdByName,
     })
-    .select("id,title")
+    .select("id, title, ticket_number")
     .single();
 
   if (insertError || !inserted) {
@@ -94,7 +94,8 @@ export async function POST(request: Request) {
       inserted.title as string,
       orgNameRaw?.trim() || "Ukendt virksomhed",
       createdByName,
-      inserted.id as string
+      inserted.id as string,
+      (inserted as { ticket_number?: number }).ticket_number ?? null,
     );
   } catch (error) {
     console.error("[api/tickets] sendNewTicketEmailToAdmin", error);

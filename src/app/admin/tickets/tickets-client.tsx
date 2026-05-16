@@ -1,15 +1,20 @@
 "use client";
 
-import Link from "next/link";
 import { FormEvent, useCallback, useEffect, useMemo, useState } from "react";
-import { TicketUnreadCountBadge } from "@/components/tickets/TicketUnreadCountBadge";
+import { TicketListRowCompact } from "@/components/tickets/TicketListRow";
+import { TicketStatusFilterTabs } from "@/components/tickets/TicketStatusFilterTabs";
 import {
-  formatDanishDateTime,
-  normalizeTicketStatus,
-  StatusBadge,
-} from "@/components/tickets/StatusBadge";
+  sortTickets,
+  ticketMatchesSearch,
+  ticketMatchesStatusFilter,
+  ticketSearchHaystack,
+  type AdminTicketSort,
+  type TicketListStatusFilter,
+} from "@/lib/ticket-display";
+import { fetchLastMessageAtByTicket } from "@/lib/ticket-messages-meta";
 import { companyFromTicketRow, type TicketWithProfileRow } from "@/lib/tickets-with-profile";
 import { fetchUnreadMessageCountsByTicket } from "@/lib/ticket-last-viewed";
+import { useDebouncedValue } from "@/lib/use-debounced-value";
 import { createClient } from "@/lib/supabase";
 
 type OrganisationOption = {
@@ -17,16 +22,17 @@ type OrganisationOption = {
   name: string;
 };
 
-type TicketView = "active" | "resolved";
-
 export default function AdminTicketsClient() {
   const supabase = useMemo(() => createClient(), []);
   const [tickets, setTickets] = useState<TicketWithProfileRow[]>([]);
   const [unreadByTicket, setUnreadByTicket] = useState<Record<string, number>>({});
   const [ticketsLoading, setTicketsLoading] = useState(true);
   const [organisations, setOrganisations] = useState<OrganisationOption[]>([]);
-  const [selectedCompany, setSelectedCompany] = useState<string>("all");
+  const [filterOrganisationId, setFilterOrganisationId] = useState<string>("all");
   const [query, setQuery] = useState("");
+  const debouncedSearch = useDebouncedValue(query, 300);
+  const [lastMessageAtByTicket, setLastMessageAtByTicket] = useState<Record<string, string>>({});
+  const [sortBy, setSortBy] = useState<AdminTicketSort>("newest");
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
@@ -35,7 +41,7 @@ export default function AdminTicketsClient() {
   const [newTicketDescription, setNewTicketDescription] = useState("");
   const [newTicketPriority, setNewTicketPriority] = useState("normal");
   const [creatingTicket, setCreatingTicket] = useState(false);
-  const [ticketView, setTicketView] = useState<TicketView>("active");
+  const [statusFilter, setStatusFilter] = useState<TicketListStatusFilter>("active");
   const [resolvingIds, setResolvingIds] = useState<Set<string>>(() => new Set());
 
   const loadTickets = useCallback(async () => {
@@ -52,11 +58,13 @@ export default function AdminTicketsClient() {
       setUnreadByTicket({});
     } else {
       setTickets(payload.tickets);
-      const unread = await fetchUnreadMessageCountsByTicket(
-        supabase,
-        payload.tickets.map((t) => t.id),
-      );
+      const ids = payload.tickets.map((t) => t.id);
+      const [unread, lastMessages] = await Promise.all([
+        fetchUnreadMessageCountsByTicket(supabase, ids),
+        fetchLastMessageAtByTicket(supabase, ids),
+      ]);
       setUnreadByTicket(unread);
+      setLastMessageAtByTicket(lastMessages);
     }
     setTicketsLoading(false);
   }, [supabase]);
@@ -93,21 +101,33 @@ export default function AdminTicketsClient() {
   }, [loadTickets, loadOrganisations]);
 
   useEffect(() => {
-    setSelectedCompany("all");
-  }, [ticketView]);
+    setFilterOrganisationId("all");
+  }, [statusFilter]);
+
+  const orgNameById = useMemo(() => {
+    const m = new Map<string, string>();
+    for (const o of organisations) m.set(o.id, o.name);
+    return m;
+  }, [organisations]);
 
   const viewFilteredTickets = useMemo(() => {
+    const q = debouncedSearch.trim();
     const filtered = tickets.filter((t) => {
-      const status = normalizeTicketStatus(t.status);
-      return ticketView === "resolved" ? status === "resolved" : status !== "resolved";
-    });
-    if (ticketView === "resolved") {
-      return [...filtered].sort(
-        (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
+      if (!ticketMatchesStatusFilter(t.status, statusFilter)) return false;
+      if (filterOrganisationId !== "all" && t.organisation_id !== filterOrganisationId) {
+        return false;
+      }
+      if (!q) return true;
+      const company = companyFromTicketRow(t);
+      const orgName = orgNameById.get(t.organisation_id) ?? company;
+      return ticketMatchesSearch(
+        ticketSearchHaystack([t.title, company, orgName, String(t.ticket_number ?? "")]),
+        q,
+        t.ticket_number,
       );
-    }
-    return filtered;
-  }, [tickets, ticketView]);
+    });
+    return sortTickets(filtered, sortBy);
+  }, [tickets, statusFilter, debouncedSearch, filterOrganisationId, sortBy, orgNameById]);
 
   const resetNewTicketForm = () => {
     setSelectedOrganisationId("");
@@ -175,87 +195,15 @@ export default function AdminTicketsClient() {
     }
   };
 
-  const groupedByCompany = useMemo(() => {
-    const map = new Map<string, TicketWithProfileRow[]>();
-    for (const t of viewFilteredTickets) {
-      const company = companyFromTicketRow(t);
-      if (!map.has(company)) {
-        map.set(company, []);
-      }
-      map.get(company)!.push(t);
-    }
-    return Array.from(map.entries())
-      .map(([company, rows]) => ({
-        company,
-        tickets: rows,
-        ticketCount: rows.length,
-      }))
-      .sort((a, b) => a.company.localeCompare(b.company, "da"));
-  }, [viewFilteredTickets]);
-
-  const filteredGroups = useMemo(() => {
-    const q = query.trim().toLowerCase();
-    return groupedByCompany
-      .filter((g) => selectedCompany === "all" || g.company === selectedCompany)
-      .map((g) => ({
-        ...g,
-        tickets: g.tickets.filter((t) => {
-          if (!q) return true;
-          const title = t.title.toLowerCase();
-          const company = g.company.toLowerCase();
-          return title.includes(q) || company.includes(q);
-        }),
-      }))
-      .filter((g) => g.tickets.length > 0);
-  }, [groupedByCompany, selectedCompany, query]);
-
-  const totalFiltered = useMemo(
-    () => filteredGroups.reduce((acc, g) => acc + g.tickets.length, 0),
-    [filteredGroups],
-  );
-
-  const countLabel = ticketView === "resolved" ? "løste" : "aktive";
-
   return (
     <div>
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div>
           <h1 className="text-2xl font-bold tracking-tight text-slate-900 md:text-3xl">Support & sager</h1>
-          <p className="mt-2 text-sm text-slate-600">Tickets grupperet per kunde.</p>
+          <p className="mt-2 text-sm text-slate-600">Alle supportssager på tværs af kunder.</p>
         </div>
         <div className="flex flex-wrap items-center gap-3 sm:justify-end">
-          <div
-            className="inline-flex rounded-full border border-slate-200 bg-slate-100 p-0.5"
-            role="tablist"
-            aria-label="Vis aktive eller løste sager"
-          >
-            <button
-              type="button"
-              role="tab"
-              aria-selected={ticketView === "active"}
-              onClick={() => setTicketView("active")}
-              className={`rounded-full px-4 py-1.5 text-sm font-semibold transition ${
-                ticketView === "active"
-                  ? "bg-white text-sky-700 shadow-sm"
-                  : "text-slate-600 hover:text-slate-900"
-              }`}
-            >
-              Aktive
-            </button>
-            <button
-              type="button"
-              role="tab"
-              aria-selected={ticketView === "resolved"}
-              onClick={() => setTicketView("resolved")}
-              className={`rounded-full px-4 py-1.5 text-sm font-semibold transition ${
-                ticketView === "resolved"
-                  ? "bg-white text-sky-700 shadow-sm"
-                  : "text-slate-600 hover:text-slate-900"
-              }`}
-            >
-              Løste
-            </button>
-          </div>
+          <TicketStatusFilterTabs value={statusFilter} onChange={setStatusFilter} />
           <button
             type="button"
             onClick={() => {
@@ -281,113 +229,91 @@ export default function AdminTicketsClient() {
         <p className="mt-8 text-sm text-slate-500">Henter tickets...</p>
       ) : tickets.length === 0 ? (
         <p className="mt-8 text-sm text-slate-600">Ingen tickets.</p>
-      ) : viewFilteredTickets.length === 0 ? (
-        <p className="mt-8 text-sm text-slate-600">
-          Ingen {ticketView === "resolved" ? "løste" : "aktive"} sager.
-        </p>
       ) : (
-        <div className="mt-8 grid grid-cols-1 gap-6 lg:grid-cols-[280px_minmax(0,1fr)]">
-          <aside className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
-            <p className="px-2 text-xs font-semibold uppercase tracking-wide text-slate-500">Kunder</p>
-            <div className="mt-2 space-y-1">
-              <button
-                type="button"
-                onClick={() => setSelectedCompany("all")}
-                className={`flex w-full items-center justify-between rounded-lg px-2 py-2 text-left text-sm ${
-                  selectedCompany === "all" ? "bg-blue-50 text-blue-700" : "hover:bg-slate-50"
-                }`}
-              >
-                <span>Alle sager</span>
-                <span className="text-xs font-semibold">
-                  {viewFilteredTickets.length} {countLabel}
-                </span>
-              </button>
-              {groupedByCompany.map((group) => (
-                <button
-                  key={group.company}
-                  type="button"
-                  onClick={() => setSelectedCompany(group.company)}
-                  className={`flex w-full items-center justify-between rounded-lg px-2 py-2 text-left text-sm ${
-                    selectedCompany === group.company ? "bg-blue-50 text-blue-700" : "hover:bg-slate-50"
-                  }`}
+        <div className="mt-8 space-y-4">
+          <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
+              <label className="block lg:col-span-2">
+                <span className="text-xs font-semibold uppercase tracking-wide text-slate-500">Søg</span>
+                <input
+                  type="search"
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
+                  placeholder="Søg på titel, sagsnr. eller kunde..."
+                  className="mt-2 w-full rounded-lg border border-slate-300 px-3 py-2.5 text-base md:text-sm"
+                />
+              </label>
+              <label className="block">
+                <span className="text-xs font-semibold uppercase tracking-wide text-slate-500">Kunde</span>
+                <select
+                  value={filterOrganisationId}
+                  onChange={(e) => setFilterOrganisationId(e.target.value)}
+                  className="mt-2 w-full rounded-lg border border-slate-300 px-3 py-2.5 text-base md:text-sm"
                 >
-                  <span className="truncate">{group.company}</span>
-                  <span className="ml-2 shrink-0 text-xs font-semibold">
-                    {group.ticketCount} {countLabel}
-                  </span>
-                </button>
-              ))}
+                  <option value="all">Alle kunder</option>
+                  {organisations.map((o) => (
+                    <option key={o.id} value={o.id}>
+                      {o.name}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              <label className="block">
+                <span className="text-xs font-semibold uppercase tracking-wide text-slate-500">Sortering</span>
+                <select
+                  value={sortBy}
+                  onChange={(e) => setSortBy(e.target.value as AdminTicketSort)}
+                  className="mt-2 w-full rounded-lg border border-slate-300 px-3 py-2.5 text-base md:text-sm"
+                >
+                  <option value="newest">Nyeste</option>
+                  <option value="oldest">Ældste</option>
+                  <option value="updated">Senest opdateret</option>
+                </select>
+              </label>
             </div>
-          </aside>
-
-          <section>
-            <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
-              <label className="block text-xs font-semibold uppercase tracking-wide text-slate-500">Søg</label>
-              <input
-                type="text"
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                placeholder="Filtrer på kundenavn eller sagsnavn..."
-                className="mt-2 w-full rounded-lg border border-slate-300 px-3 py-2 text-base md:text-sm"
-              />
-            </div>
-
-            {totalFiltered === 0 ? (
-              <p className="mt-6 text-sm text-slate-600">
-                Ingen {ticketView === "resolved" ? "løste" : "aktive"} sager matcher filteret.
-              </p>
-            ) : (
-              <div className="mt-6 space-y-6">
-                {filteredGroups.map((group) => (
-                  <div key={group.company} className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
-                    <div className="border-b border-slate-200 bg-slate-50 px-5 py-3">
-                      <p className="font-semibold text-slate-900">{group.company}</p>
-                      <p className="text-xs text-slate-500">{group.tickets.length} sager</p>
-                    </div>
-                    <ul className="divide-y divide-slate-200">                      {group.tickets.map((t) => {
-                        const isResolving = resolvingIds.has(t.id);
-                        return (
-                          <li
-                            key={t.id}
-                            className="flex flex-col gap-2 px-5 py-4 sm:flex-row sm:items-center sm:justify-between"
+          </div>
+          {viewFilteredTickets.length === 0 ? (
+            <p className="text-sm text-slate-600">
+              {debouncedSearch.trim()
+                ? "Ingen sager matcher din søgning."
+                : "Ingen sager matcher filteret."}
+            </p>
+          ) : (
+            <ul className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+              {viewFilteredTickets.map((t) => {
+                const isResolving = resolvingIds.has(t.id);
+                const company =
+                  orgNameById.get(t.organisation_id) ?? companyFromTicketRow(t);
+                return (
+                  <TicketListRowCompact
+                    key={t.id}
+                    ticket={t}
+                    href={`/admin/tickets/${t.id}`}
+                    lastMessageAt={lastMessageAtByTicket[t.id]}
+                    unreadCount={unreadByTicket[t.id] ?? 0}
+                    trailing={
+                      <>
+                        <span className="hidden text-xs text-[#4A8CB5] sm:inline">{company}</span>
+                        {statusFilter !== "resolved" && t.status !== "resolved" ? (
+                          <button
+                            type="button"
+                            disabled={isResolving}
+                            onClick={(event) => {
+                              event.preventDefault();
+                              void markAsResolved(t.id);
+                            }}
+                            className="rounded-full border border-slate-200 bg-white px-2.5 py-1 text-xs font-medium text-slate-600 transition hover:border-slate-300 hover:bg-slate-50 disabled:opacity-50"
                           >
-                            <Link
-                              href={`/admin/tickets/${t.id}`}
-                              className="min-w-0 flex-1 transition hover:opacity-80"
-                            >
-                              <div className="flex flex-wrap items-center gap-2">
-                                <p className="font-medium text-slate-900">{t.title}</p>
-                                <TicketUnreadCountBadge count={unreadByTicket[t.id] ?? 0} />
-                              </div>
-                              <p className="mt-0.5 text-sm text-slate-500">
-                                {formatDanishDateTime(t.created_at)}
-                              </p>
-                            </Link>
-                            <div className="flex shrink-0 flex-wrap items-center gap-2 sm:justify-end">
-                              <StatusBadge status={t.status} />
-                              {ticketView === "active" ? (
-                                <button
-                                  type="button"
-                                  disabled={isResolving}
-                                  onClick={(event) => {
-                                    event.preventDefault();
-                                    void markAsResolved(t.id);
-                                  }}
-                                  className="rounded-full border border-slate-200 bg-white px-2.5 py-1 text-xs font-medium text-slate-600 transition hover:border-slate-300 hover:bg-slate-50 disabled:opacity-50"
-                                >
-                                  {isResolving ? "Gemmer…" : "Markér som løst"}
-                                </button>
-                              ) : null}
-                            </div>
-                          </li>
-                        );
-                      })}
-                    </ul>
-                  </div>
-                ))}
-              </div>
-            )}
-          </section>
+                            {isResolving ? "Gemmer…" : "Markér som løst"}
+                          </button>
+                        ) : null}
+                      </>
+                    }
+                  />
+                );
+              })}
+            </ul>
+          )}
         </div>
       )}
 

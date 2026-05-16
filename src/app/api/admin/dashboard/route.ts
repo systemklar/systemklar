@@ -47,7 +47,7 @@ export async function GET() {
         .order("checked_at", { ascending: true }),
       admin
         .from("tickets")
-        .select("id, title, status, created_at, organisation_id")
+        .select("id, ticket_number, title, status, created_at, organisation_id")
         .neq("status", "resolved")
         .order("created_at", { ascending: false })
         .limit(5),
@@ -135,6 +135,10 @@ export async function GET() {
 
   const recentTickets: DashboardTicket[] = (ticketsRes.error ? [] : (ticketsRes.data ?? [])).map((t) => ({
     id: t.id,
+    ticket_number:
+      typeof (t as { ticket_number?: number }).ticket_number === "number"
+        ? (t as { ticket_number: number }).ticket_number
+        : null,
     title: t.title,
     status: t.status,
     created_at: t.created_at,

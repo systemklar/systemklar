@@ -29,7 +29,7 @@ export async function GET(
 
   const { data: ticket, error } = await admin
     .from("tickets")
-    .select("id, title, description, status, organisation_id, created_at")
+    .select("id, ticket_number, title, description, status, priority, organisation_id, created_at, updated_at")
     .eq("id", id)
     .maybeSingle();
 

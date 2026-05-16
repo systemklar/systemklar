@@ -5,9 +5,17 @@ import { FileText, Loader2, Paperclip, X } from "lucide-react";
 import { FormEvent, Suspense, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { usePortalSession } from "@/components/portal/PortalLayout";
-import { TicketUnreadCountBadge } from "@/components/tickets/TicketUnreadCountBadge";
+import { TicketListRow } from "@/components/tickets/TicketListRow";
+import { TicketStatusFilterTabs } from "@/components/tickets/TicketStatusFilterTabs";
 import { AttachmentList } from "@/components/ui/AttachmentList";
-import { formatDanishDateTime, StatusBadge } from "@/components/tickets/StatusBadge";
+import {
+  ticketMatchesSearch,
+  ticketMatchesStatusFilter,
+  ticketSearchHaystack,
+  type TicketListStatusFilter,
+} from "@/lib/ticket-display";
+import { fetchLastMessageAtByTicket } from "@/lib/ticket-messages-meta";
+import { useDebouncedValue } from "@/lib/use-debounced-value";
 import { fetchCurrentProfile } from "@/lib/current-profile";
 import { formatFileSize, type TicketAttachment } from "@/lib/ticket-attachments";
 import {
@@ -170,6 +178,10 @@ function PortalSupportPageInner() {
   const [companyName, setCompanyName] = useState<string | null>(null);
   const [pendingFiles, setPendingFiles] = useState<File[]>([]);
   const [uploadingFiles, setUploadingFiles] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [statusFilter, setStatusFilter] = useState<TicketListStatusFilter>("all");
+  const [lastMessageAtByTicket, setLastMessageAtByTicket] = useState<Record<string, string>>({});
+  const debouncedSearch = useDebouncedValue(searchQuery, 300);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const applySubjectFromQuery = useCallback((subject: string) => {
@@ -214,9 +226,26 @@ function PortalSupportPageInner() {
     setErrorMessage(null);
 
     const ids = rows.map((t) => t.id);
-    const unread = await fetchUnreadMessageCountsByTicket(supabase, ids);
+    const [unread, lastMessages] = await Promise.all([
+      fetchUnreadMessageCountsByTicket(supabase, ids),
+      fetchLastMessageAtByTicket(supabase, ids),
+    ]);
     setUnreadByTicket(unread);
+    setLastMessageAtByTicket(lastMessages);
   }, [supabase]);
+
+  const filteredTickets = useMemo(() => {
+    const q = debouncedSearch.trim();
+    return tickets.filter((t) => {
+      if (!ticketMatchesStatusFilter(t.status, statusFilter)) return false;
+      if (!q) return true;
+      return ticketMatchesSearch(
+        ticketSearchHaystack([t.title, String(t.ticket_number ?? "")]),
+        q,
+        t.ticket_number,
+      );
+    });
+  }, [tickets, debouncedSearch, statusFilter]);
 
   useEffect(() => {
     void (async () => {
@@ -526,7 +555,20 @@ function PortalSupportPageInner() {
         ) : null}
 
         <div className="rounded-2xl border border-sky-100 bg-white p-5 shadow-sm">
-          <h2 className="text-base font-semibold text-[#0D1F2D]">Dine sager</h2>
+          <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+            <h2 className="text-base font-semibold text-[#0D1F2D]">Dine sager</h2>
+            <TicketStatusFilterTabs value={statusFilter} onChange={setStatusFilter} />
+          </div>
+          <label className="mt-4 block">
+            <span className="sr-only">Søg i dine sager</span>
+            <input
+              type="search"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Søg i dine sager..."
+              className="w-full rounded-xl border border-sky-200 px-4 py-3 text-base outline-none focus:ring-2 focus:ring-sky-500 md:text-sm"
+            />
+          </label>
           {errorMessage && !showForm ? (
             <p className="mt-3 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-900">
               {errorMessage}
@@ -550,29 +592,20 @@ function PortalSupportPageInner() {
                 Opret ny sag
               </button>
             </div>
+          ) : filteredTickets.length === 0 ? (
+            <p className="mt-6 text-center text-sm text-[#4A8CB5]">Ingen sager matcher din søgning.</p>
           ) : (
             <ul className="mt-4 space-y-3">
-              {tickets.map((ticket) => (
-                <li key={ticket.id}>
-                  <Link
-                    href={`/portal/support/${ticket.id}`}
-                    className="flex cursor-pointer flex-col gap-2 rounded-2xl border border-sky-100 bg-white p-5 shadow-sm transition-all hover:border-sky-200 hover:shadow-md md:flex-row md:items-center md:justify-between"
-                  >
-                    <div>
-                      <div className="flex flex-wrap items-center gap-2">
-                        <p className="text-base font-semibold text-[#0D1F2D]">{ticket.title}</p>
-                        <TicketUnreadCountBadge count={unreadByTicket[ticket.id] ?? 0} />
-                      </div>
-                      {companyName ? (
-                        <p className="mt-1 text-xs text-[#4A8CB5]">{companyName}</p>
-                      ) : null}
-                      <p className="mt-0.5 text-xs text-[#4A8CB5]">
-                        {formatDanishDateTime(ticket.created_at)}
-                      </p>
-                    </div>
-                    <StatusBadge status={ticket.status} />
-                  </Link>
-                </li>
+              {filteredTickets.map((ticket) => (
+                <TicketListRow
+                  key={ticket.id}
+                  ticket={ticket}
+                  href={`/portal/support/${ticket.id}`}
+                  lastMessageAt={lastMessageAtByTicket[ticket.id]}
+                  unreadCount={unreadByTicket[ticket.id] ?? 0}
+                  showCompany={Boolean(companyName)}
+                  companyName={companyName}
+                />
               ))}
             </ul>
           )}

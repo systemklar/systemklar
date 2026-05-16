@@ -7,7 +7,7 @@ import {
   fetchTicketWithProfileForUser,
   type TicketWithProfileRow,
 } from "@/lib/tickets-with-profile";
-import { formatDanishDateTime } from "@/components/tickets/StatusBadge";
+import { TicketDetailHeader } from "@/components/tickets/TicketDetailHeader";
 import { TicketStatusToggle } from "@/components/tickets/TicketStatusToggle";
 import { TicketMessageThread } from "@/components/tickets/TicketMessageThread";
 import { TicketAttachmentsPanel } from "@/components/tickets/TicketAttachmentsPanel";
@@ -124,30 +124,21 @@ export default function PortalSupportTicketPage() {
 
           <aside className="space-y-4">
             <section className="rounded-2xl border border-sky-100 bg-white p-5 shadow-sm">
-              <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-[#4A8CB5]">Sag-info</p>
-              <div className="border-b border-sky-50 py-2">
-                <p className="text-xs text-[#4A8CB5]">Titel</p>
-                <h1 className="mt-1 text-base font-semibold text-[#0D1F2D]">{ticket.title}</h1>
-              </div>
-              {companyName ? (
-                <div className="border-b border-sky-50 py-2">
-                  <p className="text-xs text-[#4A8CB5]">Virksomhed</p>
-                  <p className="mt-1 text-sm text-[#0D1F2D]">{companyName}</p>
-                </div>
-              ) : null}
-              <div className="border-b border-sky-50 py-2">
-                <p className="text-xs text-[#4A8CB5]">Oprettet</p>
-                <p className="mt-1 text-sm text-[#0D1F2D]">{formatDanishDateTime(ticket.created_at)}</p>
-              </div>
-              <div className="py-2">
+              <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-[#4A8CB5]">Sag-info</p>
+              <TicketDetailHeader
+                ticket={ticket}
+                subtitle={companyName ?? undefined}
+                showExpectedResponse
+              />
+              <div className="mt-4 border-t border-sky-50 pt-4">
                 <p className="mb-2 text-xs text-[#4A8CB5]">Status</p>
-            <TicketStatusToggle
-              ticketId={ticket.id}
-              status={ticket.status}
-              onUpdated={(next) =>
-                setTicket((t) => (t ? { ...t, status: next } : null))
-              }
-            />
+                <TicketStatusToggle
+                  ticketId={ticket.id}
+                  status={ticket.status}
+                  onUpdated={(next) =>
+                    setTicket((t) => (t ? { ...t, status: next } : null))
+                  }
+                />
               </div>
             </section>
 

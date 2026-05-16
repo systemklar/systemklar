@@ -70,7 +70,7 @@ export async function POST(request: Request, context: { params: Promise<{ id: st
 
   const { data: ticket, error: ticketError } = await supabase
     .from("tickets")
-    .select("id, title, organisation_id")
+    .select("id, title, organisation_id, ticket_number")
     .eq("id", id)
     .maybeSingle();
   if (ticketError || !ticket?.organisation_id) {
@@ -130,7 +130,8 @@ export async function POST(request: Request, context: { params: Promise<{ id: st
           ((recipient.full_name as string | null)?.trim() || "der"),
           ticketTitle,
           id,
-          preview
+          preview,
+          (ticket as { ticket_number?: number }).ticket_number ?? null,
         );
       }
     } catch (error) {

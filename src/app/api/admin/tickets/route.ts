@@ -17,7 +17,7 @@ export async function GET() {
 
   const { data: tickets, error } = await admin
     .from("tickets")
-    .select("id, title, description, status, organisation_id, created_at")
+    .select("id, ticket_number, title, description, status, priority, organisation_id, created_at, updated_at")
     .order("created_at", { ascending: false });
 
   if (error) {
@@ -57,8 +57,13 @@ export async function POST(request: Request) {
   const organisationId = String(bodyRecord.organisation_id ?? "").trim();
   const title = String(bodyRecord.title ?? "").trim();
   const description = String(bodyRecord.description ?? "").trim();
-  const priorityRaw = String(bodyRecord.priority ?? "normal").trim().toLowerCase();
-  const priority = ["lav", "normal", "høj"].includes(priorityRaw) ? priorityRaw : "normal";
+  const priorityRaw = String(bodyRecord.priority ?? "medium").trim().toLowerCase();
+  const priority =
+    priorityRaw === "lav" || priorityRaw === "low"
+      ? "low"
+      : priorityRaw === "høj" || priorityRaw === "hoj" || priorityRaw === "high"
+        ? "high"
+        : "medium";
 
   if (!organisationId) {
     return NextResponse.json({ error: "Vælg en kunde/organisation." }, { status: 400 });
@@ -96,7 +101,7 @@ export async function POST(request: Request) {
       created_by: auth.user.id,
       created_by_name: auth.user.email ?? "Admin",
     })
-    .select("id,title")
+    .select("id, title, ticket_number")
     .single();
 
   if (insertError || !inserted) {

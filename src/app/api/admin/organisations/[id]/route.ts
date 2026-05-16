@@ -12,7 +12,7 @@ const PROFILE_EMBED =
   "id, full_name, email, role, avatar_initials, avatar_url, created_at, onboarding_systems";
 
 /** `systems` har ikke FK til organisations; tickets/profiles/invitations har. */
-const ORGANISATION_DETAIL_SELECT = `id, name, created_at, domain, logo_url, profiles(${PROFILE_EMBED}), invitations(id, email, contact_name, role, accepted_at, created_at), tickets(id, title, status, created_by_name, created_at)`;
+const ORGANISATION_DETAIL_SELECT = `id, name, created_at, domain, logo_url, profiles(${PROFILE_EMBED}), invitations(id, email, contact_name, role, accepted_at, created_at), tickets(id, ticket_number, title, status, created_by_name, created_at)`;
 
 export async function GET(_request: Request, context: { params: Promise<{ id: string }> }) {
   const { id } = await context.params;

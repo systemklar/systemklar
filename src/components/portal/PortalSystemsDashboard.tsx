@@ -35,6 +35,7 @@ import {
 } from "@/components/portal/PortalMonitoringSkeletons";
 import { PortalSlideInPanel } from "@/components/portal/PortalOverlay";
 import { StatusBadge } from "@/components/tickets/StatusBadge";
+import { TicketNumberBadge } from "@/components/tickets/TicketNumberBadge";
 import {
   TICKET_SELECT_BASE,
   normalizeTicketWithProfile,
@@ -1079,7 +1080,10 @@ export function PortalSystemsDashboard({
                   <ul className="divide-y divide-sky-50">
                     {displayedTickets.map((ticket) => (
                       <li key={ticket.id} className="py-3 first:pt-0">
-                        <p className="truncate text-sm font-semibold text-[#0D1F2D]">{ticket.title}</p>
+                        <div className="flex min-w-0 items-center gap-2">
+                          <TicketNumberBadge ticketNumber={ticket.ticket_number} />
+                          <p className="truncate text-sm font-semibold text-[#0D1F2D]">{ticket.title}</p>
+                        </div>
                         <div className="mt-1.5 flex flex-wrap items-center gap-2">
                           <p className="text-xs text-[#7AAEC8]">
                             {ticket.created_at

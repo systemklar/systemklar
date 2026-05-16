@@ -76,20 +76,20 @@ export const DEFAULT_EMAIL_TEMPLATE_ROWS: readonly EmailTemplateDefaultRow[] = [
 <div style="${STYLE_QUOTE}">{{messagePreview}}</div>
 {{ticketButton}}
 <p style="${STYLE_P_HELP}">Du kan også svare direkte i portalen for at fortsætte samtalen.</p>`,
-    variables: ["name", "ticketTitle", "messagePreview", "ticketButton"],
+    variables: ["name", "ticketTitle", "ticketNumber", "messagePreview", "ticketButton"],
   },
   {
     id: "ticket_closed",
     name: "Sag lukket",
     description: "Til kunde når sagen markeres som løst.",
-    subject: "Sag løst: {{ticketTitle}}",
+    subject: "Sag løst {{ticketNumber}}: {{ticketTitle}}",
     body: `<h2 style="${STYLE_H2}">Din sag er løst</h2>
 <p style="${STYLE_P}">Hej {{name}},</p>
 <p style="${STYLE_P_LAST}">Vi har markeret sagen <strong style="${STYLE_STRONG_DARK}">{{ticketTitle}}</strong> som løst.</p>
 <p style="${STYLE_P_LAST}">Har du stadig problemer? Svar på denne email eller opret en ny sag i portalen.</p>
 {{ticketButton}}
 <p style="${STYLE_P_HELP}">Tak fordi du brugte systemklar.</p>`,
-    variables: ["name", "ticketTitle", "ticketButton"],
+    variables: ["name", "ticketTitle", "ticketNumber", "ticketButton"],
   },
   {
     id: "monthly_report",
@@ -108,13 +108,13 @@ export const DEFAULT_EMAIL_TEMPLATE_ROWS: readonly EmailTemplateDefaultRow[] = [
     id: "new_ticket_admin",
     name: "Ny supportsag (intern)",
     description: "Til kontakt@systemklar.dk når kunde opretter ny sag.",
-    subject: "Ny sag fra {{orgName}}: {{ticketTitle}}",
+    subject: "Ny sag {{ticketNumber}} fra {{orgName}}: {{ticketTitle}}",
     body: `<h2 style="${STYLE_H2}">Ny supportsag</h2>
 <p style="${STYLE_P_INFO}"><strong style="${STYLE_STRONG_DARK}">Virksomhed:</strong> {{orgName}}</p>
 <p style="${STYLE_P_INFO}"><strong style="${STYLE_STRONG_DARK}">Oprettet af:</strong> {{createdBy}}</p>
 <p style="margin:0 0 20px 0;font-size:14px;color:#2C4A5E;line-height:1.6;font-family:Arial,sans-serif;"><strong style="${STYLE_STRONG_DARK}">Emne:</strong> {{ticketTitle}}</p>
 {{adminButton}}`,
-    variables: ["orgName", "createdBy", "ticketTitle", "adminButton"],
+    variables: ["orgName", "createdBy", "ticketTitle", "ticketNumber", "adminButton"],
   },
   {
     id: "contact",

@@ -9,6 +9,7 @@ import { OrganisationLogo } from "@/components/OrganisationLogo";
 import { ProfileAvatar } from "@/components/admin/ProfileAvatar";
 import { withCacheBust } from "@/lib/storage-public-urls";
 import { StatusBadge, formatDanishDateTime } from "@/components/tickets/StatusBadge";
+import { TicketNumberBadge } from "@/components/tickets/TicketNumberBadge";
 import { isLikelyOrganisationDomain, normalizeOrganisationDomainInput } from "@/lib/organisation-domain";
 
 type OrgProfile = {
@@ -34,6 +35,7 @@ type OrgInvitation = {
 
 type OrgTicket = {
   id: string;
+  ticket_number: number | null;
   title: string | null;
   status: string | null;
   created_by_name: string | null;
@@ -661,7 +663,10 @@ export default function AdminCustomerDetailClient() {
                   className="flex flex-col gap-2 px-4 py-3 transition hover:bg-sky-50 sm:flex-row sm:items-center sm:justify-between"
                 >
                   <div>
-                    <p className="font-medium text-[#0D1F2D]">{ticket.title || "Uden titel"}</p>
+                    <div className="flex flex-wrap items-center gap-2">
+                      <TicketNumberBadge ticketNumber={ticket.ticket_number} />
+                      <p className="font-medium text-[#0D1F2D]">{ticket.title || "Uden titel"}</p>
+                    </div>
                     <p className="text-xs text-slate-500">{ticket.created_by_name || "Ukendt afsender"}</p>
                   </div>
                   <div className="flex items-center gap-3">

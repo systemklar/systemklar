@@ -89,14 +89,23 @@ export async function sendNewTicketEmailToAdmin(
   ticketTitle: string,
   orgName: string,
   createdBy: string,
-  ticketId: string
+  ticketId: string,
+  ticketNumber?: number | null,
 ) {
   const template = await getTemplate("new_ticket_admin");
   const adminButton = btn("Se sagen i admin", `${SITE}/admin/tickets/${ticketId}`);
+  const ticketLabel =
+    ticketNumber != null && ticketNumber > 0
+      ? `#${String(ticketNumber).padStart(4, "0")} — ${ticketTitle}`
+      : ticketTitle;
   const vars = {
     orgName: escapeHtml(orgName),
     createdBy: escapeHtml(createdBy),
-    ticketTitle: escapeHtml(ticketTitle),
+    ticketTitle: escapeHtml(ticketLabel),
+    ticketNumber:
+      ticketNumber != null && ticketNumber > 0
+        ? escapeHtml(`#${String(ticketNumber).padStart(4, "0")}`)
+        : "",
     adminButton,
   };
   const subject = interpolate(template.subject, vars);
@@ -114,13 +123,22 @@ export async function sendTicketReplyEmail(
   name: string,
   ticketTitle: string,
   ticketId: string,
-  preview: string
+  preview: string,
+  ticketNumber?: number | null,
 ) {
   const template = await getTemplate("ticket_reply");
   const ticketButton = btn("Se svaret", `${SITE}/portal/support/${ticketId}`);
+  const ticketLabel =
+    ticketNumber != null && ticketNumber > 0
+      ? `#${String(ticketNumber).padStart(4, "0")} — ${ticketTitle}`
+      : ticketTitle;
   const vars = {
     name: escapeHtml(name),
-    ticketTitle: escapeHtml(ticketTitle),
+    ticketTitle: escapeHtml(ticketLabel),
+    ticketNumber:
+      ticketNumber != null && ticketNumber > 0
+        ? escapeHtml(`#${String(ticketNumber).padStart(4, "0")}`)
+        : "",
     messagePreview: escapeHtml(preview),
     ticketButton,
   };
@@ -138,13 +156,22 @@ export async function sendTicketClosedEmail(
   to: string,
   name: string,
   ticketTitle: string,
-  ticketId: string
+  ticketId: string,
+  ticketNumber?: number | null,
 ) {
   const template = await getTemplate("ticket_closed");
   const ticketButton = btn("Se sagen", `${SITE}/portal/support/${ticketId}`);
+  const ticketLabel =
+    ticketNumber != null && ticketNumber > 0
+      ? `#${String(ticketNumber).padStart(4, "0")} — ${ticketTitle}`
+      : ticketTitle;
   const vars = {
     name: escapeHtml(name),
-    ticketTitle: escapeHtml(ticketTitle),
+    ticketTitle: escapeHtml(ticketLabel),
+    ticketNumber:
+      ticketNumber != null && ticketNumber > 0
+        ? escapeHtml(`#${String(ticketNumber).padStart(4, "0")}`)
+        : "",
     ticketButton,
   };
   const subject = interpolate(template.subject, vars);
