@@ -1,15 +1,18 @@
-import { mkdirSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, writeFileSync } from "node:fs";
 import { dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import sharp from "sharp";
 
 // Source: original screenshot of the brand blue SK on a near-white background.
-const SOURCE = fileURLToPath(
+const KEYED_SOURCE = fileURLToPath(
   new URL(
     "../../../.cursor/projects/Users-benjamin-Documents/assets/Sk_rmbillede_2026-05-09_kl._00.38.16-58ef4174-889a-4dfb-be54-1765a071d6c5.png",
     import.meta.url,
   ),
 );
+
+/** Blue SK on black (repo); used when `KEYED_SOURCE` is not present locally. */
+const ICON_FALLBACK = fileURLToPath(new URL("../public/icon.png", import.meta.url));
 
 const FAVICON_SIZE = 256;
 const PADDING = 12;
@@ -19,7 +22,7 @@ const ICO_SIZE = 64;
 // pixel is and pre-multiplying the RGB channels. This avoids the white halo
 // that a hard threshold leaves on anti-aliased edges.
 async function loadKeyedSk() {
-  const { data, info } = await sharp(SOURCE)
+  const { data, info } = await sharp(KEYED_SOURCE)
     .ensureAlpha()
     .raw()
     .toBuffer({ resolveWithObject: true });
@@ -63,22 +66,52 @@ async function loadKeyedSk() {
     .toBuffer();
 }
 
-/** Monochrome glyph for SystemklarLogo CSS filters and email header invert. */
-async function buildLogoGlyph(coloredPng) {
-  const { data, info } = await sharp(coloredPng)
+/** Same canvas size as `loadKeyedSk`, from `public/icon.png` (black keyed out). */
+async function loadFromIconFallback() {
+  const { data, info } = await sharp(ICON_FALLBACK)
     .ensureAlpha()
     .raw()
     .toBuffer({ resolveWithObject: true });
 
   for (let i = 0; i < data.length; i += 4) {
-    if (data[i + 3] > 0) {
+    const r = data[i];
+    const g = data[i + 1];
+    const b = data[i + 2];
+    if (r < 35 && g < 35 && b < 35) {
       data[i] = 0;
       data[i + 1] = 0;
       data[i + 2] = 0;
+      data[i + 3] = 0;
     }
   }
 
-  return sharp(data, { raw: info }).png({ compressionLevel: 9 }).toBuffer();
+  return sharp(data, { raw: info })
+    .trim({ threshold: 0 })
+    .resize(FAVICON_SIZE - PADDING * 2, FAVICON_SIZE - PADDING * 2, {
+      fit: "contain",
+      background: { r: 0, g: 0, b: 0, alpha: 0 },
+    })
+    .extend({
+      top: PADDING,
+      bottom: PADDING,
+      left: PADDING,
+      right: PADDING,
+      background: { r: 0, g: 0, b: 0, alpha: 0 },
+    })
+    .png({ compressionLevel: 9 })
+    .toBuffer();
+}
+
+async function loadBrandPng() {
+  if (existsSync(KEYED_SOURCE)) {
+    return loadKeyedSk();
+  }
+  if (existsSync(ICON_FALLBACK)) {
+    return loadFromIconFallback();
+  }
+  throw new Error(
+    "Brand source missing: add the keyed screenshot at KEYED_SOURCE, or commit public/icon.png for fallback.",
+  );
 }
 
 function buildIco(pngForIco) {
@@ -101,12 +134,11 @@ function buildIco(pngForIco) {
 }
 
 async function main() {
-  const png = await loadKeyedSk();
-  const logoGlyph = await buildLogoGlyph(png);
+  const png = await loadBrandPng();
   const icoPng = await sharp(png).resize(ICO_SIZE, ICO_SIZE).png().toBuffer();
   const ico = buildIco(icoPng);
 
-  writeFileSync("public/logo.png", logoGlyph);
+  writeFileSync("public/logo.png", png);
 
   for (const target of [
     "public/icon.png",

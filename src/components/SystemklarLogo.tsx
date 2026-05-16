@@ -35,7 +35,15 @@ export function SystemklarLogo({
     height: imgPx,
     width: "auto",
     display: "block",
-    ...(isDark ? { filter: "brightness(0) invert(1)" } : {}),
+    ...(isDark
+      ? {
+          filter: "brightness(0) invert(1)",
+          WebkitFilter: "brightness(0) invert(1)",
+        }
+      : {
+          filter: "none",
+          WebkitFilter: "none",
+        }),
   };
 
   const wrapClass = `inline-flex items-center font-bold lowercase tracking-tight ${className}`.trim();
