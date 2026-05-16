@@ -393,10 +393,10 @@ export default function AdminTicketsClient() {
 
       {modalOpen ? (
         <div
-          className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-slate-900/40 p-4 sm:items-center"
+          className="fixed inset-0 z-50 flex items-stretch justify-center overflow-y-auto bg-slate-900/40 md:items-center md:p-4"
           onClick={(event) => event.target === event.currentTarget && setModalOpen(false)}
         >
-          <div className="w-full max-w-lg rounded-2xl border border-slate-200 bg-white p-6 shadow-xl">
+          <div className="flex h-full min-h-0 w-full flex-col overflow-y-auto border-slate-200 bg-white p-6 shadow-xl md:h-auto md:max-h-[min(90vh,calc(100dvh-2rem))] md:max-w-lg md:rounded-2xl md:border">
             <div className="mb-5">
               <h2 className="text-lg font-semibold text-slate-900">Ny supportssag</h2>
               <p className="mt-1 text-sm text-slate-500">

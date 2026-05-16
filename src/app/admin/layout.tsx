@@ -48,9 +48,20 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
     pathname === "/admin/forgot-password" ||
     pathname === "/admin/set-password";
 
+  const closeSidebar = () => setSidebarOpen(false);
+
   useEffect(() => {
-    queueMicrotask(() => setSidebarOpen(false));
+    queueMicrotask(() => closeSidebar());
   }, [pathname]);
+
+  useEffect(() => {
+    if (!sidebarOpen || isAuthPage) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = prev;
+    };
+  }, [sidebarOpen, isAuthPage]);
 
   useEffect(() => {
     if (isAuthPage) return;
@@ -72,35 +83,39 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
   const activeNav = activeNavFromPath(pathname);
 
   return (
-    <div className="surface-cards flex h-screen overflow-hidden bg-[#F5FAFD] text-[#0D1F2D]">
+    <div className="surface-cards flex h-dvh overflow-x-hidden bg-[#F5FAFD] text-[#0D1F2D]">
       <NavigationProgress />
-      {sidebarOpen ? (
-        <button
-          type="button"
-          aria-label="Luk menu"
-          className="fixed inset-0 z-20 bg-black/30 md:hidden"
-          onClick={() => setSidebarOpen(false)}
-        />
-      ) : null}
-
-      <AdminSidebar activeNav={activeNav} open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
-
-      <div className="min-w-0 flex-1 overflow-y-auto">
-        <div className="sticky top-0 z-10 flex items-center justify-between border-b border-[#D0E8F5] bg-white px-4 py-3 md:hidden">
+      <div className="flex h-full min-h-0 w-full overflow-hidden">
+        {sidebarOpen ? (
           <button
             type="button"
-            onClick={() => setSidebarOpen(true)}
-            className="p-2 text-[#2C4A5E]"
-            aria-label="Åbn menu"
-          >
-            <Menu className="h-5 w-5" />
-          </button>
-          <span className="text-sm font-bold text-[#0A6EBD]">Admin</span>
-          <span className="w-9" aria-hidden />
-        </div>
+            aria-label="Luk menu"
+            className="fixed inset-0 z-40 bg-slate-900/50 backdrop-blur-sm lg:hidden"
+            onClick={closeSidebar}
+          />
+        ) : null}
 
-        <div className="app-rhythm mx-auto w-full max-w-7xl p-4 md:p-8">
-          <PageTransition>{children}</PageTransition>
+        <AdminSidebar activeNav={activeNav} open={sidebarOpen} onClose={closeSidebar} />
+
+        <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden">
+          <header className="sticky top-0 z-30 flex flex-shrink-0 items-center gap-3 border-b border-[#D0E8F5] bg-white px-3 py-2 lg:hidden">
+            <button
+              type="button"
+              onClick={() => setSidebarOpen(true)}
+              className="inline-flex min-h-11 min-w-11 shrink-0 items-center justify-center rounded-lg text-[#2C4A5E] hover:bg-sky-50"
+              aria-label="Åbn menu"
+            >
+              <Menu className="h-5 w-5" />
+            </button>
+            <span className="min-w-0 flex-1 text-center text-sm font-bold text-[#0A6EBD]">Admin</span>
+            <span className="w-11 shrink-0" aria-hidden />
+          </header>
+
+          <div className="min-h-0 flex-1 overflow-x-hidden overflow-y-auto">
+            <div className="app-rhythm mx-auto w-full max-w-7xl p-4 md:p-6 lg:p-8">
+              <PageTransition>{children}</PageTransition>
+            </div>
+          </div>
         </div>
       </div>
     </div>

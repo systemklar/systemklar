@@ -522,7 +522,7 @@ export default function AdminCustomerDetailClient() {
             <div className="flex flex-wrap items-center justify-end gap-2 sm:gap-3">
               <Link
                 href={`/admin/customers/${org.id}/dashboard`}
-                className="inline-flex shrink-0 items-center justify-center rounded-full border border-sky-200 bg-white px-5 py-2.5 text-center text-sm font-semibold text-sky-700 shadow-sm transition hover:border-sky-300 hover:bg-sky-50"
+                className="inline-flex min-h-11 shrink-0 items-center justify-center rounded-full border border-sky-200 bg-white px-5 py-2.5 text-center text-sm font-semibold text-sky-700 shadow-sm transition hover:border-sky-300 hover:bg-sky-50"
               >
                 Se kundens dashboard
               </Link>
@@ -530,7 +530,7 @@ export default function AdminCustomerDetailClient() {
                 type="button"
                 disabled={monitoringRunBusy}
                 onClick={() => void runMonitoringNow()}
-                className="inline-flex shrink-0 items-center justify-center gap-2 rounded-full border border-slate-200 bg-white px-5 py-2.5 text-sm font-semibold text-slate-700 shadow-sm transition hover:border-slate-300 hover:bg-slate-50 disabled:pointer-events-none disabled:opacity-50"
+                className="inline-flex min-h-11 shrink-0 items-center justify-center gap-2 rounded-full border border-slate-200 bg-white px-5 py-2.5 text-sm font-semibold text-slate-700 shadow-sm transition hover:border-slate-300 hover:bg-slate-50 disabled:pointer-events-none disabled:opacity-50"
               >
                 {monitoringRunBusy ? (
                   <>
@@ -544,7 +544,7 @@ export default function AdminCustomerDetailClient() {
               <button
                 type="button"
                 onClick={() => setInviteModalOpen(true)}
-                className="inline-flex shrink-0 rounded-full bg-[#0A6EBD] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[#0859A0]"
+                className="inline-flex min-h-11 shrink-0 items-center justify-center rounded-full bg-[#0A6EBD] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[#0859A0]"
               >
                 Inviter bruger
               </button>

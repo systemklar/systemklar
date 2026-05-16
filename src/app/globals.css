@@ -488,3 +488,21 @@ button {
 .portal-dot-afventer-anim {
   animation: portal-dot-afventer-fade 2s ease-in-out infinite;
 }
+
+/* App shells: prevent horizontal scroll; mobile-friendly form controls */
+.surface-cards {
+  overflow-x: hidden;
+}
+
+@media (max-width: 767px) {
+  .surface-cards input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]),
+  .surface-cards select,
+  .surface-cards textarea {
+    font-size: 16px;
+  }
+}
+
+.surface-cards .min-touch {
+  min-height: 44px;
+  min-width: 44px;
+}

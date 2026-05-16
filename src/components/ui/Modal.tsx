@@ -48,7 +48,7 @@ export function Modal({
 
   return createPortal(
     <div
-      className="fixed inset-0 z-[100] flex items-center justify-center overflow-y-auto bg-slate-900/50 p-4 backdrop-blur-[2px] sm:p-6"
+      className="fixed inset-0 z-[100] flex items-stretch justify-center overflow-y-auto bg-slate-900/50 backdrop-blur-[2px] md:items-center md:p-6"
       onClick={(event) => {
         if (event.target === event.currentTarget) onClose();
       }}
@@ -57,7 +57,7 @@ export function Modal({
         role="dialog"
         aria-modal="true"
         aria-labelledby={titleId}
-        className={`w-full ${panelClassName} max-h-[min(90vh,calc(100dvh-2rem))] overflow-y-auto rounded-2xl border border-slate-200 bg-white p-6 shadow-2xl`}
+        className={`flex h-full min-h-0 w-full flex-col overflow-y-auto border-slate-200 bg-white p-6 shadow-2xl md:h-auto md:max-h-[min(90vh,calc(100dvh-2rem))] md:rounded-2xl md:border ${panelClassName}`}
         onClick={(event) => event.stopPropagation()}
       >
         {children}

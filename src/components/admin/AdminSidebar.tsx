@@ -67,7 +67,7 @@ export function AdminSidebar({ activeNav, open = false, onClose }: AdminSidebarP
 
   return (
     <aside
-      className={`fixed inset-y-0 left-0 z-30 flex h-screen w-64 shrink-0 flex-col border-r border-[#D0E8F5] bg-white p-4 transition-transform duration-300 md:static md:h-auto md:min-h-screen md:translate-x-0 ${
+      className={`fixed inset-y-0 left-0 z-50 flex h-full w-[280px] shrink-0 flex-col border-r border-[#D0E8F5] bg-white p-4 shadow-xl transition-transform duration-300 ease-out lg:static lg:z-auto lg:h-auto lg:min-h-screen lg:translate-x-0 lg:shadow-none ${
         open ? "translate-x-0" : "-translate-x-full"
       }`}
     >
@@ -80,7 +80,7 @@ export function AdminSidebar({ activeNav, open = false, onClose }: AdminSidebarP
           <button
             type="button"
             onClick={onClose}
-            className="p-2 text-[#2C4A5E] md:hidden"
+            className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-lg text-[#2C4A5E] lg:hidden"
             aria-label="Luk menu"
           >
             <X className="h-5 w-5" />
@@ -101,7 +101,8 @@ export function AdminSidebar({ activeNav, open = false, onClose }: AdminSidebarP
                     <Link
                       key={item.key}
                       href={item.href}
-                      className={`flex cursor-pointer items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition-colors ${
+                      onClick={onClose}
+                      className={`flex min-h-11 cursor-pointer items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition-colors ${
                         isActive
                           ? "border border-[#D0E8F5] bg-sky-50 font-semibold text-sky-800"
                           : "text-[#2C4A5E] hover:bg-[#F5FAFD] hover:text-[#0A6EBD]"
@@ -121,7 +122,7 @@ export function AdminSidebar({ activeNav, open = false, onClose }: AdminSidebarP
         <button
           type="button"
           onClick={() => void handleLogout()}
-          className="flex w-full items-center gap-2 rounded-xl px-3 py-2.5 text-sm text-[#4A8CB5] transition-all hover:bg-red-50 hover:text-red-500"
+          className="flex min-h-11 w-full items-center gap-2 rounded-xl px-3 py-2.5 text-sm text-[#4A8CB5] transition-all hover:bg-red-50 hover:text-red-500"
         >
           <LogOut className="h-4 w-4" />
           Log ud

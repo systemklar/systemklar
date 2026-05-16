@@ -824,7 +824,7 @@ export function PortalSystemsDashboard({
 
     return (
       <div
-        className={`portal-hero-enter flex max-h-[108px] flex-col justify-center overflow-hidden rounded-xl px-4 py-2.5 md:max-h-[100px] ${heroSurfaceClass}`}
+        className={`portal-hero-enter flex max-h-none flex-col justify-center overflow-hidden rounded-xl px-3 py-2 md:max-h-[100px] md:px-4 md:py-2.5 ${heroSurfaceClass}`}
       >
         <div className="flex items-center gap-3">
           <div className="portal-hero-icon-fade-in shrink-0" aria-hidden>
@@ -845,7 +845,7 @@ export function PortalSystemsDashboard({
           </div>
           <div className="min-w-0 flex-1 text-left">
             <h1
-              className={`text-xl font-semibold leading-snug tracking-tight ${
+              className={`text-lg font-semibold leading-snug tracking-tight md:text-xl ${
                 heroAllOk ? "text-[#0D1F2D]" : "portal-hero-warning-shimmer"
               }`}
             >
@@ -909,7 +909,7 @@ export function PortalSystemsDashboard({
             Opsæt →
           </Link>
         ) : (
-          <span className="shrink-0 text-[10px] text-[#7AAEC8]">{row.checked}</span>
+          <span className="hidden shrink-0 text-[10px] text-[#7AAEC8] md:inline">{row.checked}</span>
         )}
       </button>
     </li>
@@ -1096,7 +1096,7 @@ export function PortalSystemsDashboard({
               <div className="mt-auto space-y-3 pt-5">
                 <Link
                   href="/portal/support/new"
-                  className="inline-flex w-full items-center justify-center rounded-full bg-[#0A6EBD] px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-[#0859A0]"
+                  className="inline-flex min-h-11 w-full items-center justify-center rounded-full bg-[#0A6EBD] px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-[#0859A0]"
                 >
                   Opret IT-sag
                 </Link>

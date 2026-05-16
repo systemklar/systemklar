@@ -191,8 +191,71 @@ export default function AdminDashboardClient() {
               {customers.length === 0 ? (
                 <p className="p-6 text-sm text-[#4A8CB5]">Ingen kunder endnu.</p>
               ) : (
-                <div className="overflow-x-auto">
-                  <table className="w-full min-w-[720px] text-left text-sm">
+                <>
+                <ul className="divide-y divide-sky-50 lg:hidden">
+                  {customers.map((org) => {
+                    const accent =
+                      org.rowAccent === "fejl"
+                        ? "border-l-[3px] border-l-[#C42B2B]"
+                        : org.rowAccent === "advarsel"
+                          ? "border-l-[3px] border-l-[#C47B0A]"
+                          : "border-l-[3px] border-l-transparent";
+                    return (
+                      <li
+                        key={org.id}
+                        className={`cursor-pointer p-4 transition-colors hover:bg-[#F5FAFD] ${accent}`}
+                        onClick={() => router.push(`/admin/customers/${org.id}`)}
+                      >
+                        <div className="flex items-start gap-3">
+                          <OrganisationLogo
+                            logoUrl={org.logo_url}
+                            initials={initialsFromName(org.name)}
+                            className="h-10 w-10 text-sm"
+                          />
+                          <div className="min-w-0 flex-1">
+                            <p className="font-semibold text-[#062840]">{org.name}</p>
+                            <p className="mt-0.5 truncate text-xs text-[#4A8CB5]">
+                              {org.domain ?? "Intet domæne"}
+                            </p>
+                            <div className="mt-2">
+                              <MonitoringBadges counts={org.monitoring} />
+                            </div>
+                            <div className="mt-2 flex flex-wrap items-center gap-3 text-xs text-[#4A8CB5]">
+                              <span>{org.openTickets} åbne sager</span>
+                              {org.lastCheckedAt ? (
+                                <span>{formatRelativeShortDa(org.lastCheckedAt)}</span>
+                              ) : null}
+                            </div>
+                          </div>
+                        </div>
+                        <div className="mt-3 flex items-center gap-2">
+                          <Link
+                            href={`/admin/customers/${org.id}`}
+                            className="flex min-h-11 flex-1 items-center justify-center rounded-lg border border-sky-100 text-xs font-semibold text-[#0A6EBD]"
+                            onClick={(e) => e.stopPropagation()}
+                          >
+                            Se kunde
+                          </Link>
+                          <button
+                            type="button"
+                            title="Kør monitoring"
+                            disabled={runningOrgId === org.id}
+                            onClick={(e) => void runMonitoring(org.id, e)}
+                            className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-lg border border-sky-100 text-[#0A6EBD] disabled:opacity-50"
+                          >
+                            {runningOrgId === org.id ? (
+                              <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
+                            ) : (
+                              <Play className="h-4 w-4" aria-hidden />
+                            )}
+                          </button>
+                        </div>
+                      </li>
+                    );
+                  })}
+                </ul>
+                <div className="hidden overflow-x-auto lg:block">
+                  <table className="w-full text-left text-sm">
                     <thead>
                       <tr className="border-b border-sky-50 text-xs font-medium uppercase tracking-wide text-[#4A8CB5]">
                         <th className="px-5 py-3">Kunde</th>
@@ -259,7 +322,7 @@ export default function AdminDashboardClient() {
                                   title="Kør monitoring"
                                   disabled={runningOrgId === org.id}
                                   onClick={(e) => void runMonitoring(org.id, e)}
-                                  className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-sky-100 text-[#0A6EBD] transition-colors hover:bg-[#F0F7FF] disabled:opacity-50"
+                                  className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-lg border border-sky-100 text-[#0A6EBD] transition-colors hover:bg-[#F0F7FF] disabled:opacity-50"
                                 >
                                   {runningOrgId === org.id ? (
                                     <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
@@ -275,6 +338,7 @@ export default function AdminDashboardClient() {
                     </tbody>
                   </table>
                 </div>
+                </>
               )}
             </section>
 

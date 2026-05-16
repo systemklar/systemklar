@@ -174,7 +174,7 @@ export default function ItReportDetailClient() {
   const periodLabel = periodLabelDa(row.period_start, row.period_end);
 
   return (
-    <div className="mx-auto max-w-[1200px] px-4 py-8">
+    <div className="w-full max-w-[1200px]">
       <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div>
           <Link href="/admin/it-rapporter" className="text-sm font-semibold text-[#0A6EBD] hover:underline">
@@ -193,7 +193,7 @@ export default function ItReportDetailClient() {
             href={`/api/portal/reports/${id}/pdf`}
             target="_blank"
             rel="noreferrer"
-            className="inline-flex items-center justify-center rounded-full border border-sky-200 bg-white px-4 py-2 text-sm font-semibold text-sky-900 transition-colors hover:bg-sky-50"
+            className="inline-flex min-h-11 w-full items-center justify-center rounded-full border border-sky-200 bg-white px-4 py-2 text-sm font-semibold text-sky-900 transition-colors hover:bg-sky-50 sm:w-auto"
           >
             Download rapport (HTML)
           </a>
@@ -202,7 +202,7 @@ export default function ItReportDetailClient() {
               type="button"
               disabled={sending}
               onClick={() => void sendToCustomer()}
-              className="inline-flex items-center justify-center rounded-full bg-[#0A6EBD] px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-[#0859A0] disabled:opacity-50"
+              className="inline-flex min-h-11 w-full items-center justify-center rounded-full bg-[#0A6EBD] px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-[#0859A0] disabled:opacity-50 sm:w-auto"
             >
               {sending ? "Sender…" : "Godkend & send til kunde"}
             </button>
@@ -222,7 +222,7 @@ export default function ItReportDetailClient() {
               onChange={(e) => setSummary(e.target.value)}
               disabled={row.status === "sent"}
               rows={10}
-              className="mt-1 w-full rounded-xl border border-[#D0E8F5] px-3 py-2 text-sm text-[#0D1F2D] disabled:bg-slate-50"
+              className="mt-1 w-full rounded-xl border border-[#D0E8F5] px-3 py-2 text-base text-[#0D1F2D] md:text-sm disabled:bg-slate-50"
             />
           </label>
           <label className="block">
@@ -232,7 +232,7 @@ export default function ItReportDetailClient() {
               onChange={(e) => setRecommendations(e.target.value)}
               disabled={row.status === "sent"}
               rows={8}
-              className="mt-1 w-full rounded-xl border border-[#D0E8F5] px-3 py-2 text-sm text-[#0D1F2D] disabled:bg-slate-50"
+              className="mt-1 w-full rounded-xl border border-[#D0E8F5] px-3 py-2 text-base text-[#0D1F2D] md:text-sm disabled:bg-slate-50"
               placeholder="- Første anbefaling&#10;- Anden anbefaling"
             />
           </label>
@@ -256,7 +256,7 @@ export default function ItReportDetailClient() {
             <iframe
               ref={iframeRef}
               title="Rapport forhåndsvisning"
-              className="h-[920px] w-full bg-white"
+              className="h-[min(60vh,520px)] w-full bg-white md:h-[720px] lg:h-[920px]"
               sandbox="allow-same-origin"
             />
           </div>

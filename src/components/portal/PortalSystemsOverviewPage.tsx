@@ -138,7 +138,7 @@ function SystemRow({
         >
           {customerStatusLabel(status)}
         </span>
-        <span className="hidden shrink-0 text-xs text-[#7AAEC8] sm:inline sm:w-36 sm:text-right">
+        <span className="hidden shrink-0 text-xs text-[#7AAEC8] md:inline md:w-36 md:text-right">
           {checkedAgo ?? "Ingen seneste tjek"}
         </span>
         {status === "afventer" && onStartSetup ? (

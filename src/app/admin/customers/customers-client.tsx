@@ -233,7 +233,7 @@ export default function AdminCustomersClient() {
         <button
           type="button"
           onClick={() => setModalOpen(true)}
-          className="rounded-full bg-[#0A6EBD] px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-[#0859A0]"
+          className="inline-flex min-h-11 items-center justify-center rounded-full bg-[#0A6EBD] px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-[#0859A0]"
         >
           Ny kunde
         </button>

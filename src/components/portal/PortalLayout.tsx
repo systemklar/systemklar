@@ -51,7 +51,7 @@ export type PortalNavKey =
   | "team"
   | "profile";
 
-const navIconClass = "h-4 w-4 shrink-0";
+const navIconClass = "h-5 w-5 shrink-0";
 
 type NavItemDef = {
   label: string;
@@ -77,6 +77,14 @@ const navItems: NavItemDef[] = [
   { label: "Vejledninger", href: "/portal/vejledninger", key: "guides", icon: BookOpen },
   { label: "Team", href: "/portal/team", key: "team", icon: Users },
   { label: "Profil", href: "/portal/profil", key: "profile", icon: User },
+];
+
+const mobileBottomNav: { key: PortalNavKey; href: string; label: string; icon: LucideIcon }[] = [
+  { key: "dashboard", href: "/portal", label: "Overblik", icon: LayoutDashboard },
+  { key: "support", href: "/portal/support", label: "Support", icon: MessageSquare },
+  { key: "rapport", href: "/portal/rapport", label: "IT-rapport", icon: FileText },
+  { key: "systems", href: "/portal/systemer", label: "Systemer", icon: Monitor },
+  { key: "profile", href: "/portal/profil", label: "Profil", icon: User },
 ];
 
 function NavIcon({ icon: Icon, active }: { icon: LucideIcon; active: boolean }) {
@@ -142,9 +150,20 @@ export function PortalLayout({ children, activeNav }: PortalLayoutProps) {
   const [avatarInitials, setAvatarInitials] = useState<string | null>(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
+  const closeSidebar = () => setSidebarOpen(false);
+
   useEffect(() => {
-    queueMicrotask(() => setSidebarOpen(false));
+    queueMicrotask(() => closeSidebar());
   }, [pathname]);
+
+  useEffect(() => {
+    if (!sidebarOpen) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = prev;
+    };
+  }, [sidebarOpen]);
 
   useEffect(() => {
     const openSidebarForTour = () => setSidebarOpen(true);
@@ -256,7 +275,7 @@ export function PortalLayout({ children, activeNav }: PortalLayoutProps) {
 
   if (isLoading) {
     return (
-      <main className="min-h-screen bg-[#F5FAFD] px-6 py-20 text-[#0D1F2D]">
+      <main className="min-h-screen overflow-x-hidden bg-[#F5FAFD] px-6 py-20 text-[#0D1F2D]">
         <div className="mx-auto max-w-3xl rounded-2xl border border-[#D0E8F5] bg-white p-8 text-center shadow-sm">
           Indlæser portal...
         </div>
@@ -275,40 +294,40 @@ export function PortalLayout({ children, activeNav }: PortalLayoutProps) {
     <PortalSessionContext.Provider
       value={{ email: userEmail, userId, organisationId, role, fullName, avatarUrl, avatarInitials }}
     >
-      <main className="surface-cards h-dvh overflow-hidden bg-[#F5FAFD] text-[#0D1F2D]">
+      <main className="surface-cards h-dvh overflow-x-hidden bg-[#F5FAFD] text-[#0D1F2D]">
         <NavigationProgress />
         <div className="flex h-full min-h-0 w-full overflow-hidden">
           {sidebarOpen ? (
             <button
               type="button"
               aria-label="Luk menu"
-              className="fixed inset-0 top-0 right-0 bottom-0 left-0 z-20 bg-slate-900/50 backdrop-blur-sm md:hidden"
-              onClick={() => setSidebarOpen(false)}
+              className="fixed inset-0 z-40 bg-slate-900/50 backdrop-blur-sm lg:hidden"
+              onClick={closeSidebar}
             />
           ) : null}
 
           <aside
             data-tour="portal-sidebar"
-            className={`fixed inset-y-0 left-0 z-30 flex h-full w-56 flex-shrink-0 flex-col border-r border-[#D0E8F5] bg-white transition-transform duration-300 md:static md:translate-x-0 ${
+            className={`fixed inset-y-0 left-0 z-50 flex h-full w-[280px] flex-shrink-0 flex-col border-r border-[#D0E8F5] bg-white shadow-xl transition-transform duration-300 ease-out lg:static lg:z-auto lg:translate-x-0 lg:shadow-none ${
               sidebarOpen ? "translate-x-0" : "-translate-x-full"
             }`}
           >
             <div className="flex flex-shrink-0 items-center justify-between border-b border-sky-50 p-4">
-              <Link href="/portal" className="block">
+              <Link href="/portal" className="block" onClick={closeSidebar}>
                 <SystemklarLogo variant="light" size="sm" />
                 <p className="mt-0.5 text-xs font-medium text-[#4A8CB5]">Kundeportal</p>
               </Link>
               <button
                 type="button"
-                onClick={() => setSidebarOpen(false)}
-                className="p-2 text-[#2C4A5E] md:hidden"
+                onClick={closeSidebar}
+                className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-lg text-[#2C4A5E] lg:hidden"
                 aria-label="Luk menu"
               >
                 <X className="h-5 w-5" />
               </button>
             </div>
 
-            <nav className="flex-1 overflow-y-auto p-3">
+            <nav className="flex-1 overflow-y-auto overscroll-contain p-3">
               {navGroups.map((group) => {
                 const items = visibleNavItems.filter((item) => group.keys.includes(item.key));
                 if (items.length === 0) return null;
@@ -323,7 +342,8 @@ export function PortalLayout({ children, activeNav }: PortalLayoutProps) {
                         <Link
                           key={item.key}
                           href={item.href}
-                          className={`group flex cursor-pointer items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors ${
+                          onClick={closeSidebar}
+                          className={`group flex min-h-11 cursor-pointer items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition-colors ${
                             isActive
                               ? "bg-sky-50 font-medium text-sky-800"
                               : "text-slate-600 hover:bg-sky-50 hover:text-slate-800"
@@ -342,7 +362,8 @@ export function PortalLayout({ children, activeNav }: PortalLayoutProps) {
             <div className="flex-shrink-0 border-t border-sky-50 p-3">
               <Link
                 href="/portal/profil"
-                className="mb-2 flex items-center gap-3 rounded-xl px-3 py-2.5 transition-colors hover:bg-[#F5FAFD]"
+                onClick={closeSidebar}
+                className="mb-2 flex min-h-11 items-center gap-3 rounded-xl px-3 py-2.5 transition-colors hover:bg-[#F5FAFD]"
               >
                 <ProfileAvatar
                   avatarUrl={avatarUrl}
@@ -359,7 +380,7 @@ export function PortalLayout({ children, activeNav }: PortalLayoutProps) {
               <button
                 type="button"
                 onClick={handleLogout}
-                className="group flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm text-slate-600 transition-colors hover:bg-sky-50 hover:text-slate-800"
+                className="group flex min-h-11 w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-slate-600 transition-colors hover:bg-sky-50 hover:text-slate-800"
               >
                 <LogOut className={`${navIconClass} text-slate-500 group-hover:text-slate-700`} aria-hidden />
                 Log ud
@@ -368,64 +389,54 @@ export function PortalLayout({ children, activeNav }: PortalLayoutProps) {
           </aside>
 
           <section className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden bg-[#F5FAFD]">
-            <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
-              <div className="sticky top-0 z-10 flex flex-shrink-0 items-center justify-between border-b border-[#D0E8F5] bg-white px-4 py-3 md:hidden">
-                <Link href="/portal" className="block">
-                  <SystemklarLogo variant="light" size="sm" />
-                </Link>
-                <span className="w-9" aria-hidden />
-              </div>
-
-              <div
-                className={`app-rhythm flex min-h-0 min-w-0 flex-1 flex-col ${
-                  activeNav === "dashboard"
-                    ? "overflow-y-auto p-3 pb-24 md:overflow-hidden md:p-4 md:pb-4"
-                    : "overflow-y-auto pb-24 md:pb-8"
-                }`}
-              >
-                <PageTransition>{children}</PageTransition>
-              </div>
-            </div>
-
-            <nav
-              className="fixed inset-x-0 bottom-0 z-20 grid grid-cols-5 border-t border-sky-100 bg-white shadow-[0_-2px_8px_rgba(0,0,0,0.04)] md:hidden"
-              aria-label="Hovednavigation mobil"
-            >
-              {(
-                [
-                  { key: "dashboard" as PortalNavKey, href: "/portal", label: "Overblik", icon: LayoutDashboard },
-                  { key: "support" as PortalNavKey, href: "/portal/support", label: "Support", icon: MessageSquare },
-                  { key: "vault" as PortalNavKey, href: "/portal/kodebank", label: "Kodebank", icon: Lock },
-                  { key: "profile" as PortalNavKey, href: "/portal/profil", label: "Profil", icon: User },
-                ] as const
-              ).map((item) => {
-                const isActive = item.key === activeNav;
-                const Icon = item.icon;
-                return (
-                  <Link
-                    key={item.key}
-                    href={item.href}
-                    className={`flex min-h-[56px] flex-col items-center justify-center gap-1 px-2 py-2 text-[11px] font-medium transition-colors ${
-                      isActive ? "text-sky-700" : "text-slate-500 hover:text-slate-700"
-                    }`}
-                  >
-                    <Icon className="h-4 w-4 shrink-0" aria-hidden />
-                    <span>{item.label}</span>
-                  </Link>
-                );
-              })}
+            <header className="sticky top-0 z-30 flex flex-shrink-0 items-center gap-3 border-b border-[#D0E8F5] bg-white px-3 py-2 lg:hidden">
               <button
                 type="button"
                 onClick={() => setSidebarOpen(true)}
-                aria-label="Åbn fuld menu"
-                className="flex min-h-[56px] flex-col items-center justify-center gap-1 px-2 py-2 text-[11px] font-medium text-[#4A8CB5] transition-colors hover:text-sky-700"
+                className="inline-flex min-h-11 min-w-11 shrink-0 items-center justify-center rounded-lg text-[#2C4A5E] hover:bg-sky-50"
+                aria-label="Åbn menu"
               >
-                <Menu className="h-4 w-4 flex-shrink-0" aria-hidden />
-                <span>Mere</span>
+                <Menu className="h-5 w-5" />
               </button>
-            </nav>
+              <Link href="/portal" className="min-w-0 flex-1 truncate">
+                <SystemklarLogo variant="light" size="sm" />
+              </Link>
+              <span className="w-11 shrink-0" aria-hidden />
+            </header>
+
+            <div
+              className={`app-rhythm flex min-h-0 min-w-0 flex-1 flex-col overflow-x-hidden ${
+                activeNav === "dashboard"
+                  ? "overflow-y-auto p-3 pb-[calc(4.5rem+env(safe-area-inset-bottom))] lg:overflow-hidden lg:p-4 lg:pb-4"
+                  : "overflow-y-auto pb-[calc(4.5rem+env(safe-area-inset-bottom))] lg:pb-8"
+              }`}
+            >
+              <PageTransition>{children}</PageTransition>
+            </div>
           </section>
         </div>
+
+        <nav
+          className="fixed inset-x-0 bottom-0 z-30 grid grid-cols-5 border-t border-sky-100 bg-white pb-[env(safe-area-inset-bottom)] shadow-[0_-2px_12px_rgba(0,0,0,0.06)] lg:hidden"
+          aria-label="Hovednavigation mobil"
+        >
+          {mobileBottomNav.map((item) => {
+            const isActive = item.key === activeNav;
+            const Icon = item.icon;
+            return (
+              <Link
+                key={item.key}
+                href={item.href}
+                className={`flex min-h-[52px] flex-col items-center justify-center gap-0.5 px-1 py-2 transition-colors ${
+                  isActive ? "text-sky-700" : "text-slate-500 hover:text-slate-700"
+                }`}
+              >
+                <Icon className="h-5 w-5 shrink-0" aria-hidden />
+                <span className="sr-only text-[10px] font-medium sm:not-sr-only sm:block">{item.label}</span>
+              </Link>
+            );
+          })}
+        </nav>
       </main>
     </PortalSessionContext.Provider>
   );
