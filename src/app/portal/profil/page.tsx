@@ -10,7 +10,7 @@ import {
   useState,
 } from "react";
 import Link from "next/link";
-import { Camera, Eye, EyeOff, Loader2 } from "lucide-react";
+import { Camera, Loader2 } from "lucide-react";
 import { ProfileAvatar } from "@/components/ProfileAvatar";
 import { ComingSoonBadge } from "@/components/portal/settings/ComingSoonBadge";
 import { SaveButton } from "@/components/portal/settings/SaveButton";
@@ -88,7 +88,6 @@ export default function PortalProfilePage() {
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmNewPassword, setConfirmNewPassword] = useState("");
-  const [showCurrentPassword, setShowCurrentPassword] = useState(false);
   const [savingPassword, setSavingPassword] = useState(false);
 
   const [notifPrefs, setNotifPrefs] = useState<ProfileNotificationPreferences>({
@@ -411,26 +410,13 @@ export default function PortalProfilePage() {
     <SettingsSection title="Sikkerhed">
       <form onSubmit={(e) => void savePassword(e)}>
         <SettingsRow label="Nuværende adgangskode">
-          <div className="relative w-full max-w-xs">
-            <input
-              type={showCurrentPassword ? "text" : "password"}
-              value={currentPassword}
-              onChange={(e) => setCurrentPassword(e.target.value)}
-              className={`${inputClass} pr-10 sm:text-right`}
-              autoComplete="current-password"
-            />
-            <button
-              type="button"
-              onClick={() => setShowCurrentPassword(!showCurrentPassword)}
-              className="absolute top-1/2 right-3 -translate-y-1/2 text-[#7AAEC8]"
-            >
-              {showCurrentPassword ? (
-                <EyeOff className="h-4 w-4" />
-              ) : (
-                <Eye className="h-4 w-4" />
-              )}
-            </button>
-          </div>
+          <input
+            type="password"
+            value={currentPassword}
+            onChange={(e) => setCurrentPassword(e.target.value)}
+            className={inputClass}
+            autoComplete="current-password"
+          />
         </SettingsRow>
         <SettingsRow label="Ny adgangskode">
           <input

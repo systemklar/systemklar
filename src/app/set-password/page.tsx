@@ -1,7 +1,6 @@
 "use client";
 
 import { FormEvent, useEffect, useMemo, useState } from "react";
-import { Eye, EyeOff } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { AuthSplitLayout } from "@/components/auth/AuthSplitLayout";
@@ -17,7 +16,6 @@ export default function SetPasswordPage() {
   const [sessionError, setSessionError] = useState<string | null>(null);
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
 
@@ -123,25 +121,16 @@ export default function SetPasswordPage() {
               <label htmlFor="pw1" className="mb-1 block text-sm font-medium">
                 Vælg adgangskode
               </label>
-              <div className="relative">
-                <input
-                  id="pw1"
-                  type={showPassword ? "text" : "password"}
-                  autoComplete="new-password"
-                  required
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="w-full rounded-lg border border-[#E7E5E4] px-3 py-2 outline-none transition focus:border-blue-600 focus:ring-2 focus:ring-blue-600/15"
-                  placeholder="Mindst 8 tegn"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
-                >
-                  {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                </button>
-              </div>
+              <input
+                id="pw1"
+                type="password"
+                autoComplete="new-password"
+                required
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="w-full rounded-lg border border-[#E7E5E4] px-3 py-2 outline-none transition focus:border-blue-600 focus:ring-2 focus:ring-blue-600/15"
+                placeholder="Mindst 8 tegn"
+              />
             </div>
             <div>
               <label htmlFor="pw2" className="mb-1 block text-sm font-medium">

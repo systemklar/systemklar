@@ -1,6 +1,6 @@
 "use client";
 
-import { Check, Eye, EyeOff, X } from "lucide-react";
+import { Check, X } from "lucide-react";
 import { useMemo, useState } from "react";
 import { PortalModalOverlay } from "@/components/portal/PortalOverlay";
 import {
@@ -33,7 +33,6 @@ export function SystemCredentialSetupModal({
     for (const f of config?.fields ?? []) init[f.key] = "";
     return init;
   });
-  const [visible, setVisible] = useState<Record<string, boolean>>({});
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
@@ -49,10 +48,6 @@ export function SystemCredentialSetupModal({
   const setField = (key: string, value: string) => {
     setValues((prev) => ({ ...prev, [key]: value }));
     setError(null);
-  };
-
-  const toggleVisible = (key: string) => {
-    setVisible((prev) => ({ ...prev, [key]: !prev[key] }));
   };
 
   const handleNext = () => {
@@ -173,30 +168,14 @@ export function SystemCredentialSetupModal({
               {config.fields.map((field) => (
                 <label key={field.key} className="block">
                   <span className="text-sm font-medium text-[#2C4A5E]">{field.label}</span>
-                  <div className="relative mt-1">
-                    <input
-                      type={field.sensitive && !visible[field.key] ? "password" : "text"}
-                      value={values[field.key] ?? ""}
-                      onChange={(e) => setField(field.key, e.target.value)}
-                      placeholder={field.placeholder}
-                      autoComplete="off"
-                      className="w-full rounded-xl border border-[#D0E8F5] py-2.5 pl-3 pr-10 text-sm text-[#0D1F2D] outline-none ring-[#0A6EBD]/30 focus:border-[#0A6EBD] focus:ring-2"
-                    />
-                    {field.sensitive ? (
-                      <button
-                        type="button"
-                        onClick={() => toggleVisible(field.key)}
-                        className="absolute right-2 top-1/2 -translate-y-1/2 rounded p-1 text-[#7AAEC8] hover:text-[#0D1F2D]"
-                        aria-label={visible[field.key] ? "Skjul" : "Vis"}
-                      >
-                        {visible[field.key] ? (
-                          <EyeOff className="h-4 w-4" aria-hidden />
-                        ) : (
-                          <Eye className="h-4 w-4" aria-hidden />
-                        )}
-                      </button>
-                    ) : null}
-                  </div>
+                  <input
+                    type={field.sensitive ? "password" : "text"}
+                    value={values[field.key] ?? ""}
+                    onChange={(e) => setField(field.key, e.target.value)}
+                    placeholder={field.placeholder}
+                    autoComplete="off"
+                    className="mt-1 w-full rounded-xl border border-[#D0E8F5] py-2.5 px-3 text-sm text-[#0D1F2D] outline-none ring-[#0A6EBD]/30 focus:border-[#0A6EBD] focus:ring-2"
+                  />
                 </label>
               ))}
               {config.helpUrl ? (

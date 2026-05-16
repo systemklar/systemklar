@@ -9,8 +9,9 @@ import {
   type PortalOnboardingTourStep,
 } from "@/components/portal/portal-onboarding-tour";
 
-const SPOTLIGHT_SHADOW =
-  "0 0 0 6px #0A6EBD, 0 0 0 12px rgba(10,110,189,0.2), 0 0 0 9999px rgba(0,0,0,0.7)";
+const SPOTLIGHT_RING =
+  "0 0 0 6px #0A6EBD, 0 0 0 12px rgba(10,110,189,0.2)";
+const SCRIM_COLOR = "rgba(15, 23, 42, 0.7)";
 const TOOLTIP_GAP = 16;
 const VIEWPORT_PAD = 16;
 const TOOLTIP_MOVE_MS = 400;
@@ -49,6 +50,54 @@ function tooltipPosition(
   return { top, left };
 }
 
+/** Fire scrim panels around a rectangular hole — no backdrop-blur on the page. */
+function TourScrim({ rect }: { rect: Rect | null }) {
+  if (!rect) {
+    return (
+      <div
+        className="fixed inset-0 z-50"
+        style={{ backgroundColor: SCRIM_COLOR }}
+        aria-hidden
+      />
+    );
+  }
+
+  const pad = 8;
+  const top = Math.max(0, rect.top - pad);
+  const left = Math.max(0, rect.left - pad);
+  const width = rect.width + pad * 2;
+  const height = rect.height + pad * 2;
+  const bottom = top + height;
+  const right = left + width;
+
+  const panelClass = "fixed z-50 pointer-events-auto";
+
+  return (
+    <>
+      <div
+        className={panelClass}
+        style={{ top: 0, left: 0, right: 0, height: top, backgroundColor: SCRIM_COLOR }}
+        aria-hidden
+      />
+      <div
+        className={panelClass}
+        style={{ top, left: 0, width: left, height, backgroundColor: SCRIM_COLOR }}
+        aria-hidden
+      />
+      <div
+        className={panelClass}
+        style={{ top, left: right, right: 0, height, backgroundColor: SCRIM_COLOR }}
+        aria-hidden
+      />
+      <div
+        className={panelClass}
+        style={{ top: bottom, left: 0, right: 0, bottom: 0, backgroundColor: SCRIM_COLOR }}
+        aria-hidden
+      />
+    </>
+  );
+}
+
 type PortalOnboardingTourProps = {
   open: boolean;
   onComplete: () => void;
@@ -63,7 +112,6 @@ export function PortalOnboardingTour({ open, onComplete }: PortalOnboardingTourP
   const [tooltipPos, setTooltipPos] = useState({ top: 0, left: 0 });
   const tooltipRef = useRef<HTMLDivElement>(null);
   const highlightedRef = useRef<Element | null>(null);
-  const prevPosRef = useRef({ top: 0, left: 0 });
 
   const step: PortalOnboardingTourStep = steps[stepIndex] ?? steps[0];
   const isLast = stepIndex >= steps.length - 1;
@@ -92,9 +140,7 @@ export function PortalOnboardingTour({ open, onComplete }: PortalOnboardingTourP
     setTargetRect(rect);
     if (tooltipRef.current && rect) {
       const tr = tooltipRef.current.getBoundingClientRect();
-      const next = tooltipPosition(rect, tr.width, tr.height);
-      setTooltipPos(next);
-      prevPosRef.current = next;
+      setTooltipPos(tooltipPosition(rect, tr.width, tr.height));
     }
   }, [step.target]);
 
@@ -135,9 +181,7 @@ export function PortalOnboardingTour({ open, onComplete }: PortalOnboardingTourP
   useLayoutEffect(() => {
     if (!open || !mounted || !targetRect || !tooltipRef.current) return;
     const tr = tooltipRef.current.getBoundingClientRect();
-    const next = tooltipPosition(targetRect, tr.width, tr.height);
-    setTooltipPos(next);
-    prevPosRef.current = next;
+    setTooltipPos(tooltipPosition(targetRect, tr.width, tr.height));
   }, [open, mounted, targetRect, stepIndex]);
 
   useEffect(() => {
@@ -173,25 +217,30 @@ export function PortalOnboardingTour({ open, onComplete }: PortalOnboardingTourP
   if (!open || !mounted) return null;
 
   const spotlightRadius = step.target.includes("portal-sidebar") ? 12 : 16;
+  const pad = 8;
+  const ringRect = targetRect
+    ? {
+        top: Math.max(0, targetRect.top - pad),
+        left: Math.max(0, targetRect.left - pad),
+        width: targetRect.width + pad * 2,
+        height: targetRect.height + pad * 2,
+      }
+    : null;
 
   return createPortal(
     <div className="portal-onboarding-tour-root" role="presentation">
-      <div
-        className="fixed inset-0 z-50 bg-slate-900/70 backdrop-blur-sm"
-        aria-hidden
-        onClick={(e) => e.preventDefault()}
-      />
+      <TourScrim rect={targetRect} />
 
-      {targetRect ? (
+      {ringRect ? (
         <div
-          className="pointer-events-none fixed z-[51] ease-in-out"
+          className="pointer-events-none fixed z-[51]"
           style={{
-            top: targetRect.top,
-            left: targetRect.left,
-            width: targetRect.width,
-            height: targetRect.height,
+            top: ringRect.top,
+            left: ringRect.left,
+            width: ringRect.width,
+            height: ringRect.height,
             borderRadius: spotlightRadius,
-            boxShadow: SPOTLIGHT_SHADOW,
+            boxShadow: SPOTLIGHT_RING,
             transition: `top ${TOOLTIP_MOVE_MS}ms ease-in-out, left ${TOOLTIP_MOVE_MS}ms ease-in-out, width ${TOOLTIP_MOVE_MS}ms ease-in-out, height ${TOOLTIP_MOVE_MS}ms ease-in-out`,
           }}
           aria-hidden
@@ -203,7 +252,7 @@ export function PortalOnboardingTour({ open, onComplete }: PortalOnboardingTourP
         role="dialog"
         aria-modal="true"
         aria-labelledby="portal-tour-title"
-        className="pointer-events-auto fixed z-[53] w-[min(calc(100vw-2rem),28rem)] max-w-md rounded-3xl border border-sky-100/80 bg-white p-8 shadow-2xl ease-out"
+        className="pointer-events-auto fixed z-[52] w-[min(calc(100vw-2rem),28rem)] max-w-md rounded-3xl border border-sky-100/80 bg-white p-8 shadow-2xl ease-out"
         style={{
           top: tooltipPos.top,
           left: tooltipPos.left,

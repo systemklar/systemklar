@@ -384,6 +384,11 @@ button {
 .portal-tour-target {
   position: relative;
   z-index: 51;
+  isolation: isolate;
+  pointer-events: auto;
+  filter: none !important;
+  opacity: 1 !important;
+  backdrop-filter: none !important;
 }
 
 /* Portal dashboard: attention row left border pulse */
