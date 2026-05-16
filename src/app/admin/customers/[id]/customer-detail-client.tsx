@@ -362,11 +362,14 @@ export default function AdminCustomerDetailClient() {
       method: "DELETE",
       credentials: "same-origin",
     });
-    const payload = (await res.json().catch(() => ({}))) as { error?: string };
+    const payload = (await res.json().catch(() => ({}))) as { error?: string; warning?: string };
     setDeleteBusy(false);
     if (!res.ok) {
       setError(payload.error ?? "Kunne ikke slette virksomhed.");
       return;
+    }
+    if (payload.warning?.trim()) {
+      setToast({ type: "error", message: payload.warning.trim() });
     }
     router.push("/admin/customers");
   };

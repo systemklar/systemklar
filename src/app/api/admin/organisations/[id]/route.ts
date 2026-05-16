@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { deleteAuthUsersForOrganisationProfiles } from "@/lib/admin-delete-organisation-auth";
 import { isLikelyOrganisationDomain, normalizeOrganisationDomainInput } from "@/lib/organisation-domain";
 import { requireAdminSession } from "@/lib/require-admin-api";
 import { createServiceRoleClient } from "@/lib/supabase-service-role";
@@ -163,10 +164,10 @@ export async function DELETE(_request: Request, context: { params: Promise<{ id:
 
   const organisationId = id;
 
-  // 1. Hent alle profiles for organisationen (auth-uid kan stå i user_id eller id).
+  // 1. Hent alle profiles for organisationen (auth-uid kan stå i user_id og/eller id).
   const { data: profiles, error: profilesError } = await supabaseAdmin
     .from("profiles")
-    .select("id, user_id")
+    .select("id, user_id, email")
     .eq("organisation_id", organisationId);
 
   if (profilesError) {
@@ -174,35 +175,11 @@ export async function DELETE(_request: Request, context: { params: Promise<{ id:
     return NextResponse.json({ error: profilesError.message }, { status: 400 });
   }
 
-  // 2. Slet alle auth-brugere først (FK constraint: skal ske før profiles slettes).
-  const authUserIds = new Set<string>();
-  for (const profile of profiles ?? []) {
-    const fromUserId =
-      typeof profile.user_id === "string" && profile.user_id.trim()
-        ? profile.user_id.trim()
-        : null;
-    const fromProfileId =
-      typeof profile.id === "string" && profile.id.trim() ? profile.id.trim() : null;
-    const uid = fromUserId ?? fromProfileId;
-    if (uid) {
-      authUserIds.add(uid);
-    }
-  }
-
-  const warnings: string[] = [];
-  for (const authUid of authUserIds) {
-    const { error: authError } = await supabaseAdmin.auth.admin.deleteUser(authUid);
-    if (authError) {
-      const detail = authError.message || "Ukendt fejl";
-      console.error("[api/admin/organisations/[id]] deleteUser failed", {
-        organisationId,
-        authUid,
-        detail,
-      });
-      warnings.push(`Auth ${authUid}: ${detail}`);
-      // Fortsæt — vi afbryder ikke hele flowet hvis én bruger fejler.
-    }
-  }
+  // 2. Slet alle tilknyttede auth-brugere (frigør e-mails til geninvitation).
+  const authDelete = await deleteAuthUsersForOrganisationProfiles(
+    supabaseAdmin,
+    profiles ?? [],
+  );
 
   // 3. Slet alle invitationer for organisationen.
   const { error: invitationsError } = await supabaseAdmin
@@ -236,7 +213,8 @@ export async function DELETE(_request: Request, context: { params: Promise<{ id:
 
   return NextResponse.json({
     success: true,
-    deletedAuthUsers: authUserIds.size,
-    ...(warnings.length ? { warning: warnings.join(" | ") } : {}),
+    deletedAuthUsers: authDelete.deleted,
+    attemptedAuthUsers: authDelete.attempted,
+    ...(authDelete.warnings.length ? { warning: authDelete.warnings.join(" | ") } : {}),
   });
 }
