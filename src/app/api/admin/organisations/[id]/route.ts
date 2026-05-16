@@ -7,8 +7,11 @@ export const dynamic = 'force-dynamic';
 
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
+const PROFILE_EMBED =
+  "id, full_name, email, role, avatar_initials, avatar_url, created_at, onboarding_systems";
+
 /** `systems` har ikke FK til organisations; tickets/profiles/invitations har. */
-const ORGANISATION_DETAIL_SELECT = "*, profiles(*), invitations(*), tickets(*)";
+const ORGANISATION_DETAIL_SELECT = `id, name, created_at, domain, logo_url, profiles(${PROFILE_EMBED}), invitations(id, email, contact_name, role, accepted_at, created_at), tickets(id, title, status, created_by_name, created_at)`;
 
 export async function GET(_request: Request, context: { params: Promise<{ id: string }> }) {
   const { id } = await context.params;

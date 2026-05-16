@@ -3,8 +3,10 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { type FormEvent, useCallback, useEffect, useMemo, useState } from "react";
+import { OrganisationLogo } from "@/components/OrganisationLogo";
 import { ProfileAvatar } from "@/components/ProfileAvatar";
 import { createClient } from "@/lib/supabase";
+import { withCacheBust } from "@/lib/storage-public-urls";
 
 type OrgProfile = {
   id: string;
@@ -28,6 +30,7 @@ type OrganisationRow = {
   id: string;
   name: string;
   created_at: string;
+  logo_url: string | null;
   profiles: OrgProfile[] | null;
   invitations: OrgInvitation[] | null;
 };
@@ -55,6 +58,7 @@ export default function AdminCustomersClient() {
   const [submitting, setSubmitting] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
   const [actionError, setActionError] = useState<string | null>(null);
+  const [mediaVersion, setMediaVersion] = useState(0);
 
   const loadData = useCallback(async () => {
     setLoading(true);
@@ -90,6 +94,7 @@ export default function AdminCustomersClient() {
       }
 
       setOrgs((payload.organisations ?? []) as OrganisationRow[]);
+      setMediaVersion(Date.now());
       setActionError(null);
     } catch (e) {
       console.error("[admin/customers] organisations fetch", e);
@@ -241,11 +246,22 @@ export default function AdminCustomersClient() {
                 className="cursor-pointer rounded-2xl border border-sky-100 bg-white p-6 shadow-sm transition-all hover:border-sky-200 hover:shadow-md"
               >
                 <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                  <div>
-                    <h2 className="text-xl font-semibold text-[#0D1F2D]">{org.name}</h2>
-                    <p className="mt-1 text-sm text-[#4A8CB5]">
-                      {profiles.length} aktive brugere · {pendingInvites.length} afventende invitationer
-                    </p>
+                  <div className="flex items-center gap-3">
+                    <OrganisationLogo
+                      logoUrl={
+                        org.logo_url?.trim()
+                          ? withCacheBust(org.logo_url.trim(), mediaVersion || undefined)
+                          : null
+                      }
+                      initials={initialsFromName(org.name)}
+                      className="h-10 w-10 text-sm"
+                    />
+                    <div>
+                      <h2 className="text-xl font-semibold text-[#0D1F2D]">{org.name}</h2>
+                      <p className="mt-1 text-sm text-[#4A8CB5]">
+                        {profiles.length} aktive brugere · {pendingInvites.length} afventende invitationer
+                      </p>
+                    </div>
                   </div>
                   <span
                     className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-semibold ${
@@ -270,7 +286,11 @@ export default function AdminCustomersClient() {
                         return (
                           <ProfileAvatar
                             key={profile.id}
-                            avatarUrl={profile.avatar_url}
+                            avatarUrl={
+                              profile.avatar_url?.trim()
+                                ? withCacheBust(profile.avatar_url.trim(), mediaVersion || undefined)
+                                : null
+                            }
                             initials={initials}
                             className="h-10 w-10 border-2 border-white text-xs"
                             style={{ marginLeft: index === 0 ? 0 : -10, zIndex: 30 - index }}

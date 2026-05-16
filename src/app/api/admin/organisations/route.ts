@@ -5,7 +5,7 @@ import { createServiceRoleClient } from "@/lib/supabase-service-role";
 export const dynamic = 'force-dynamic';
 
 const ORGANISATIONS_SELECT =
-  "*, profiles(id, full_name, email, role, avatar_initials, avatar_url, created_at), invitations(id, email, contact_name, accepted_at, created_at)";
+  "id, name, created_at, logo_url, domain, profiles(id, full_name, email, role, avatar_initials, avatar_url, created_at), invitations(id, email, contact_name, accepted_at, created_at)";
 
 /** Admin-liste af organisationer (service role bypasser RLS). Kræver admin cookie-session. */
 export async function GET() {

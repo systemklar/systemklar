@@ -5,7 +5,9 @@ import { useParams, useRouter } from "next/navigation";
 import { FormEvent, useCallback, useEffect, useMemo, useState } from "react";
 import { Loader2, Pencil } from "lucide-react";
 import { AdminOnboardingSystemsTabs } from "@/components/admin/AdminOnboardingSystemsTabs";
+import { OrganisationLogo } from "@/components/OrganisationLogo";
 import { ProfileAvatar } from "@/components/admin/ProfileAvatar";
+import { withCacheBust } from "@/lib/storage-public-urls";
 import { StatusBadge, formatDanishDateTime } from "@/components/tickets/StatusBadge";
 import { isLikelyOrganisationDomain, normalizeOrganisationDomainInput } from "@/lib/organisation-domain";
 
@@ -50,6 +52,7 @@ type OrganisationDetail = {
   id: string;
   name: string;
   created_at: string;
+  logo_url: string | null;
   /** Website hostname uden protokol (fx benjasmod.dk). */
   domain: string | null;
   profiles: OrgProfile[] | null;
@@ -90,6 +93,16 @@ function profileDisplayInitials(profile: OrgProfile): string {
   return initialsOf(profile);
 }
 
+function initialsFromName(name: string) {
+  return name
+    .trim()
+    .split(/\s+/)
+    .map((p) => p[0] ?? "")
+    .join("")
+    .slice(0, 2)
+    .toUpperCase();
+}
+
 export default function AdminCustomerDetailClient() {
   const params = useParams();
   const router = useRouter();
@@ -112,6 +125,7 @@ export default function AdminCustomerDetailClient() {
   const [monitoringRunBusy, setMonitoringRunBusy] = useState(false);
   const [monitoringRefreshNonce, setMonitoringRefreshNonce] = useState(0);
   const [toast, setToast] = useState<{ type: "success" | "error"; message: string } | null>(null);
+  const [mediaVersion, setMediaVersion] = useState(0);
 
   const load = useCallback(async () => {
     if (!id) {
@@ -173,6 +187,7 @@ export default function AdminCustomerDetailClient() {
       }
 
       setOrg(payload.organisation as OrganisationDetail);
+      setMediaVersion(Date.now());
     } catch (e) {
       console.error("[admin/customers/[id]] fetch organisation", e);
       setOrg(null);
@@ -389,7 +404,18 @@ export default function AdminCustomerDetailClient() {
             <Link href="/admin/customers" className="text-sm font-semibold text-sky-700 hover:underline">
               ← Kunder
             </Link>
-            <h1 className="mt-3 text-3xl font-bold text-[#0D1F2D]">{org.name}</h1>
+            <div className="mt-3 flex items-center gap-4">
+              <OrganisationLogo
+                logoUrl={
+                  org.logo_url?.trim()
+                    ? withCacheBust(org.logo_url.trim(), mediaVersion || undefined)
+                    : null
+                }
+                initials={initialsFromName(org.name)}
+                className="h-14 w-14 text-lg"
+              />
+              <h1 className="text-3xl font-bold text-[#0D1F2D]">{org.name}</h1>
+            </div>
 
             <div className="mt-3">
               <p className="text-xs font-semibold uppercase tracking-wide text-[#7AAEC8]">Domæne</p>
@@ -497,7 +523,11 @@ export default function AdminCustomerDetailClient() {
             <article key={p.id} className="rounded-2xl border border-sky-100 bg-white p-5 shadow-sm">
               <div className="flex items-start gap-4">
                 <ProfileAvatar
-                  avatarUrl={p.avatar_url}
+                  avatarUrl={
+                    p.avatar_url?.trim()
+                      ? withCacheBust(p.avatar_url.trim(), mediaVersion || undefined)
+                      : null
+                  }
                   initials={profileDisplayInitials(p)}
                   className="h-10 w-10 text-sm"
                 />
