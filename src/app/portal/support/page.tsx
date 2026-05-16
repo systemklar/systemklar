@@ -353,7 +353,7 @@ function PortalSupportPageInner() {
   };
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex w-full flex-col gap-6 p-6 md:p-8">
       <Suspense fallback={null}>
         <SupportSubjectFromQuery onApplySubject={applySubjectFromQuery} />
       </Suspense>
@@ -583,7 +583,7 @@ function PortalSupportPageInner() {
 
 export default function PortalSupportPage() {
   return (
-    <Suspense fallback={<div className="p-6 text-sm text-slate-500">Indlæser…</div>}>
+    <Suspense fallback={<div className="w-full p-6 text-sm text-slate-500 md:p-8">Indlæser…</div>}>
       <PortalSupportPageInner />
     </Suspense>
   );

@@ -326,7 +326,7 @@ export default function PortalProfilePage() {
 
   if (!profile && !loading) {
     return (
-      <div className="mx-auto max-w-xl p-8 text-center">
+      <div className="w-full p-6 text-center md:p-8">
         <h1 className="mb-3 text-xl font-bold text-[#0D1F2D]">Kunne ikke hente profil</h1>
         <p className="rounded-lg bg-red-50 px-4 py-3 text-sm text-red-700">
           {error ?? "Der opstod en ukendt fejl."}
@@ -516,7 +516,7 @@ export default function PortalProfilePage() {
   );
 
   return (
-    <div className="mx-auto max-w-2xl">
+    <div className="w-full p-6 md:p-8">
       <div>
         <h1 className="text-2xl font-bold text-[#0D1F2D]">Profil</h1>
         <p className="mt-1 text-sm text-[#7AAEC8]">Personlige indstillinger og sikkerhed</p>

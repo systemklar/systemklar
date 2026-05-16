@@ -2,10 +2,14 @@
 
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState, type ReactNode } from "react";
 import { ItReportInlineView } from "@/components/reports/ItReportInlineView";
 import { fetchPortalItReportDetail, type PortalItReportRow } from "@/lib/it-report-portal-fetch";
 import { createClient } from "@/lib/supabase";
+
+function RapportDetailShell({ children }: { children: ReactNode }) {
+  return <div className="w-full p-6 md:p-8">{children}</div>;
+}
 
 export default function PortalRapportDetailPage() {
   const supabase = useMemo(() => createClient(), []);
@@ -47,26 +51,32 @@ export default function PortalRapportDetailPage() {
   }, [load]);
 
   if (loading) {
-    return <p className="text-sm text-[#4A8CB5]">Indlæser rapport...</p>;
+    return (
+      <RapportDetailShell>
+        <p className="text-sm text-[#4A8CB5]">Indlæser rapport...</p>
+      </RapportDetailShell>
+    );
   }
 
   if (!report) {
     return (
-      <>
+      <RapportDetailShell>
         <Link href="/portal/rapport" className="text-sm font-semibold text-[#0A6EBD] hover:underline">
           ← Tilbage til IT-rapport
         </Link>
         <p className="mt-6 text-sm text-[#4A8CB5]">Rapporten findes ikke.</p>
-      </>
+      </RapportDetailShell>
     );
   }
 
   return (
-    <ItReportInlineView
-      report={report}
-      backHref="/portal/rapport"
-      backLabel="← Tilbage til IT-rapport"
-      pdfHref={`/api/portal/reports/${report.id}/pdf`}
-    />
+    <RapportDetailShell>
+      <ItReportInlineView
+        report={report}
+        backHref="/portal/rapport"
+        backLabel="← Tilbage til IT-rapport"
+        pdfHref={`/api/portal/reports/${report.id}/pdf`}
+      />
+    </RapportDetailShell>
   );
 }

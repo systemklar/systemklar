@@ -372,7 +372,7 @@ export function PortalLayout({ children, activeNav }: PortalLayoutProps) {
                 className={`app-rhythm flex min-h-0 min-w-0 flex-1 flex-col ${
                   activeNav === "dashboard"
                     ? "overflow-y-auto p-3 pb-24 md:overflow-hidden md:p-4 md:pb-4"
-                    : "overflow-y-auto p-4 pb-24 md:p-8 md:pb-8"
+                    : "overflow-y-auto pb-24 md:pb-8"
                 }`}
               >
                 <PageTransition>{children}</PageTransition>

@@ -106,7 +106,7 @@ export default function PortalSupportTicketPage() {
   }
 
   return (
-    <div className="flex min-h-0 flex-1 flex-col">
+    <div className="flex min-h-0 w-full flex-1 flex-col p-6 md:p-8">
         <Link href="/portal/support" className="text-sm font-semibold text-sky-600 hover:underline">
           ← Tilbage til Support & sager
         </Link>

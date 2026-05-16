@@ -130,22 +130,26 @@ export default function PortalTilbudDetailPage() {
   };
 
   if (loading) {
-    return <p className="text-sm text-slate-600">Indlæser tilbud...</p>;
+    return (
+      <div className="w-full p-6 md:p-8">
+        <p className="text-sm text-slate-600">Indlæser tilbud...</p>
+      </div>
+    );
   }
 
   if (!quote) {
     return (
-      <>
+      <div className="w-full p-6 md:p-8">
         <Link href="/portal/tilbudsgenerator" className="text-sm font-semibold text-blue-600 hover:underline">
           ← Tilbage til AI Tilbudsgenerator
         </Link>
         <p className="mt-6 text-sm text-slate-600">Tilbud ikke fundet.</p>
-      </>
+      </div>
     );
   }
 
   return (
-    <>
+    <div className="w-full p-6 md:p-8">
       <Link href="/portal/tilbudsgenerator" className="text-sm font-semibold text-blue-600 hover:underline">
         ← Tilbage til AI Tilbudsgenerator
       </Link>
@@ -220,6 +224,6 @@ export default function PortalTilbudDetailPage() {
           </button>
         </div>
       </form>
-    </>
+    </div>
   );
 }

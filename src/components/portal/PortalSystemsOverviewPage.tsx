@@ -475,15 +475,19 @@ export function PortalSystemsOverviewPage() {
   };
 
   if (loading) {
-    return <p className="text-sm text-[#7AAEC8]">Indlæser systemer…</p>;
+    return (
+      <div className="w-full p-6 md:p-8">
+        <p className="text-sm text-[#7AAEC8]">Indlæser systemer…</p>
+      </div>
+    );
   }
 
   return (
-    <div className="space-y-6 pb-8">
+    <div className="w-full space-y-6 p-6 md:p-8">
       <header className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div>
           <h1 className="text-2xl font-bold tracking-tight text-[#0D1F2D] md:text-3xl">Dine IT-systemer</h1>
-          <p className="mt-2 max-w-2xl text-sm leading-relaxed text-[#2C4A5E]">
+          <p className="mt-2 text-sm leading-relaxed text-[#2C4A5E]">
             Overblik over overvågning og status for de systemer, I bruger.
           </p>
         </div>

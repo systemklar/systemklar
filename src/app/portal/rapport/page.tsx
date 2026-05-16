@@ -81,7 +81,7 @@ export default function PortalRapportPage() {
   }, [load]);
 
   return (
-    <div className="mx-auto max-w-3xl">
+    <div className="w-full p-6 md:p-8">
       <h1 className="text-2xl font-bold text-[#0D1F2D]">IT-rapport</h1>
       <p className="mt-2 text-sm text-[#4A8CB5]">
         Dine månedlige IT-statusrapporter — åbn og læs dem her i portalen.

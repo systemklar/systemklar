@@ -142,7 +142,8 @@ export default function PortalAiAssistantPage() {
   };
 
   return (
-      <div className="card-hover mx-auto flex h-[calc(100vh-8rem)] w-full max-w-4xl flex-col rounded-2xl border border-[#E7E5E4] bg-white shadow-sm">
+    <div className="w-full p-6 md:p-8">
+      <div className="flex h-[min(calc(100dvh-11rem),52rem)] w-full flex-col rounded-2xl border border-sky-100 bg-white shadow-sm">
         <header className="shrink-0 border-b border-[#E7E5E4] px-5 py-4">
           <h1 className="text-xl font-bold text-[#1C1917]">AI-assistent</h1>
           <p className="mt-1 text-sm text-[#78716C]">
@@ -224,5 +225,6 @@ export default function PortalAiAssistantPage() {
           </form>
         </footer>
       </div>
+    </div>
   );
 }

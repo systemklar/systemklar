@@ -409,7 +409,7 @@ export default function PortalTilbudsgeneratorPage() {
   };
 
   return (
-      <div className="space-y-10">
+      <div className="w-full space-y-10 p-6 md:p-8">
         <header>
           <h1 className="text-2xl font-bold tracking-tight text-[#1C1917] md:text-3xl">AI Tilbudsgenerator</h1>
           <p className="mt-2 text-sm text-[#78716C]">

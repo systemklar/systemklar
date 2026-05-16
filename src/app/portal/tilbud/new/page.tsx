@@ -172,7 +172,7 @@ export default function PortalQuoteNewPage() {
   };
 
   return (
-      <div>
+      <div className="w-full p-6 md:p-8">
         <Link href="/portal/tilbudsgenerator" className="text-sm font-semibold text-blue-600 hover:underline">
           ← Tilbage til AI Tilbudsgenerator
         </Link>

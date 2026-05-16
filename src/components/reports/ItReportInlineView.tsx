@@ -52,7 +52,7 @@ export function ItReportInlineView({ report, backHref, backLabel, pdfHref }: ItR
   }
 
   return (
-    <div className="mx-auto max-w-4xl">
+    <div className="w-full">
       <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <Link href={backHref} className="text-sm font-semibold text-[#0A6EBD] hover:underline">
           {backLabel}

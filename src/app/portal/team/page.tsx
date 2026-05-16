@@ -680,7 +680,7 @@ export default function PortalTeamPage() {
 
   return (
     <>
-      <div className="mx-auto max-w-4xl">
+      <div className="w-full p-6 md:p-8">
         <div>
           <h1 className="text-2xl font-bold text-[#0D1F2D]">Team</h1>
           <p className="mt-1 text-sm text-[#7AAEC8]">Organisation og teammedlemmer</p>

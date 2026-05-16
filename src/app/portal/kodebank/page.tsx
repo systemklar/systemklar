@@ -221,7 +221,7 @@ export default function PortalKodebankPage() {
 
   return (
     <>
-      <div className="space-y-6">
+      <div className="w-full space-y-6 p-6 md:p-8">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
             <h1 className="text-2xl font-bold text-[#0D1F2D]">Kodebank</h1>
