@@ -393,7 +393,7 @@ export default function PortalTeamPage() {
 
   const orgInitials = buildInitials(orgName) || "??";
 
-  const renderMemberCard = (member: TeamProfile) => {
+  const renderMemberCard = (member: TeamProfile, readOnly = false) => {
     const initials =
       member.avatar_initials?.trim().slice(0, 2).toUpperCase() ||
       buildInitials(member.full_name ?? "") ||
@@ -426,7 +426,7 @@ export default function PortalTeamPage() {
           <p className="mt-2 truncate text-xs text-[#7AAEC8]">{member.email || "—"}</p>
           {joined ? <p className="mt-1 text-[11px] text-[#7AAEC8]">Tilføjet {joined}</p> : null}
         </div>
-        {canRemove ? (
+        {!readOnly && canRemove ? (
           <button
             type="button"
             onClick={() => setRemoveTarget(member)}
@@ -486,28 +486,28 @@ export default function PortalTeamPage() {
             {isOrgAdmin ? (
               <button
                 type="button"
-                onClick={() => setModalOpen(true)}
+                onClick={() => setActiveTab("invitationer")}
                 className="text-sm font-semibold text-[#0A6EBD] hover:underline"
               >
-                Inviter første kollega
+                Gå til invitationer for at tilføje kolleger
               </button>
             ) : null}
           </div>
         ) : (
           <ul className="-mx-1 flex gap-4 overflow-x-auto px-1 pb-2">
-            {members.map((member) => renderMemberCard(member))}
+            {members.map((member) => renderMemberCard(member, true))}
             {members.length === 1 && isOrgAdmin ? (
               <li className="w-[min(100%,220px)] shrink-0">
                 <button
                   type="button"
-                  onClick={() => setModalOpen(true)}
+                  onClick={() => setActiveTab("invitationer")}
                   className="flex h-full min-h-[220px] w-full flex-col items-center justify-center gap-3 rounded-2xl border-2 border-dashed border-sky-200 bg-[#FAFCFE] p-5 text-center transition hover:border-[#0A6EBD] hover:bg-sky-50/50"
                 >
                   <span className="flex h-14 w-14 items-center justify-center rounded-full border border-sky-200 bg-white text-[#0A6EBD] shadow-sm">
                     <Plus className="h-7 w-7" strokeWidth={2} />
                   </span>
-                  <span className="text-sm font-semibold text-[#0A6EBD]">Inviter dine kolleger</span>
-                  <span className="text-xs text-[#7AAEC8]">Tilføj flere til teamet</span>
+                  <span className="text-sm font-semibold text-[#0A6EBD]">+ Tilføj kollega</span>
+                  <span className="text-xs text-[#7AAEC8]">Gå til invitationer</span>
                 </button>
               </li>
             ) : null}
@@ -619,6 +619,22 @@ export default function PortalTeamPage() {
   );
 
   const renderInvitationer = () => (
+    <div className="space-y-6">
+      <div className="flex flex-wrap items-center justify-between gap-4">
+        <div>
+          <h3 className="text-lg font-semibold text-[#0D1F2D]">Invitationer</h3>
+          <p className="mt-1 text-sm text-[#7AAEC8]">Inviter kolleger til organisationen</p>
+        </div>
+        {isOrgAdmin ? (
+          <button
+            type="button"
+            onClick={() => setModalOpen(true)}
+            className="rounded-full bg-[#0A6EBD] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[#0859A0]"
+          >
+            Inviter kollega
+          </button>
+        ) : null}
+      </div>
     <SettingsSection title="Afventende invitationer">
       {pending.length === 0 ? (
         <p className="py-6 text-center text-sm text-[#7AAEC8]">Ingen afventende invitationer.</p>
@@ -659,25 +675,15 @@ export default function PortalTeamPage() {
         </ul>
       )}
     </SettingsSection>
+    </div>
   );
 
   return (
     <>
       <div className="mx-auto max-w-4xl">
-        <div className="flex flex-wrap items-start justify-between gap-4">
-          <div>
-            <h1 className="text-2xl font-bold text-[#0D1F2D]">Team</h1>
-            <p className="mt-1 text-sm text-[#7AAEC8]">Organisation og teammedlemmer</p>
-          </div>
-          {isOrgAdmin ? (
-            <button
-              type="button"
-              onClick={() => setModalOpen(true)}
-              className="rounded-full bg-[#0A6EBD] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[#0859A0]"
-            >
-              Inviter kollega
-            </button>
-          ) : null}
+        <div>
+          <h1 className="text-2xl font-bold text-[#0D1F2D]">Team</h1>
+          <p className="mt-1 text-sm text-[#7AAEC8]">Organisation og teammedlemmer</p>
         </div>
 
         {error ? (

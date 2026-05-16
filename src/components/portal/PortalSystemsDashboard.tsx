@@ -57,6 +57,38 @@ const CHART_AFVENTER = "#94A3B8";
 const LINE_STATUS = "#0A6EBD";
 const TAB_ROTATE_MS = 5000;
 
+function easeOutCubic(t: number) {
+  return 1 - (1 - t) ** 3;
+}
+
+function useCountUp(target: number, active: boolean, delayMs = 300, durationMs = 600) {
+  const [value, setValue] = useState(0);
+
+  useEffect(() => {
+    if (!active) {
+      setValue(0);
+      return;
+    }
+    setValue(0);
+    let raf = 0;
+    const delay = window.setTimeout(() => {
+      const start = performance.now();
+      const tick = (now: number) => {
+        const p = Math.min(1, (now - start) / durationMs);
+        setValue(Math.round(easeOutCubic(p) * target));
+        if (p < 1) raf = requestAnimationFrame(tick);
+      };
+      raf = requestAnimationFrame(tick);
+    }, delayMs);
+    return () => {
+      clearTimeout(delay);
+      cancelAnimationFrame(raf);
+    };
+  }, [target, active, delayMs, durationMs]);
+
+  return value;
+}
+
 function friendlySystemLabel(technicalName: string): string {
   const t = technicalName.trim();
   return FRIENDLY_SYSTEM_LABEL_DA[t] ?? t;
@@ -81,10 +113,10 @@ function rowStatusLabel(status: "ok" | "advarsel" | "fejl" | "afventer"): string
 
 function dotClassName(status: "ok" | "advarsel" | "fejl" | "afventer"): string {
   const base = "portal-dashboard-row-dot h-2 w-2 shrink-0 rounded-full";
-  if (status === "fejl") return `${base} portal-status-dot-fejl portal-dashboard-row-dot-fejl`;
-  if (status === "advarsel") return `${base} portal-dashboard-row-dot-advarsel`;
+  if (status === "fejl") return `${base} portal-dot-fejl-anim portal-dashboard-row-dot-fejl`;
+  if (status === "advarsel") return `${base} portal-dot-advarsel-anim portal-dashboard-row-dot-advarsel`;
   if (status === "ok") return `${base} portal-dashboard-row-dot-ok`;
-  return `${base} portal-dashboard-row-dot-afventer`;
+  return `${base} portal-dot-afventer-anim portal-dashboard-row-dot-afventer`;
 }
 
 function dotStyle(status: "ok" | "advarsel" | "fejl" | "afventer"): { backgroundColor: string } {
@@ -208,6 +240,7 @@ export function PortalSystemsDashboard({
   const [tabsHovered, setTabsHovered] = useState(false);
   const [tabSlidePhase, setTabSlidePhase] = useState<"idle" | "exit" | "enter">("idle");
   const [tabProgressKey, setTabProgressKey] = useState(0);
+  const [tabRowGeneration, setTabRowGeneration] = useState(0);
   const [detail, setDetail] = useState<DetailSelection | null>(null);
 
   const tabNavRef = useRef<HTMLDivElement>(null);
@@ -215,6 +248,7 @@ export function PortalSystemsDashboard({
   const [tabIndicator, setTabIndicator] = useState({ left: 0, width: 0 });
   const tabSwitchTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const rotateTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const prevMonitoringLoadingRef = useRef(true);
 
   const orgIdForMonitoring = preview
     ? (organisationIdProp?.trim() || null)
@@ -473,6 +507,7 @@ export function PortalSystemsDashboard({
       tabSwitchTimeoutRef.current = setTimeout(() => {
         setActiveTab(key);
         setTabProgressKey((k) => k + 1);
+        setTabRowGeneration((g) => g + 1);
         setTabSlidePhase("enter");
         tabSwitchTimeoutRef.current = setTimeout(() => {
           setTabSlidePhase("idle");
@@ -494,6 +529,13 @@ export function PortalSystemsDashboard({
       setActiveTab(defaultTabKey);
     }
   }, [activeTab, defaultTabKey]);
+
+  useEffect(() => {
+    if (prevMonitoringLoadingRef.current && !monitoringLoading) {
+      setTabRowGeneration((g) => g + 1);
+    }
+    prevMonitoringLoadingRef.current = monitoringLoading;
+  }, [monitoringLoading]);
 
   useEffect(() => {
     return () => {
@@ -572,6 +614,10 @@ export function PortalSystemsDashboard({
   );
 
   const hasSystems = systemRows.length > 0;
+  const statsReady = hasSystems && !monitoringLoading;
+  const displayOk = useCountUp(counts.ok, statsReady);
+  const displayAdvarsel = useCountUp(counts.advarsel + counts.fejl, statsReady);
+  const displayAfventer = useCountUp(counts.afventer, statsReady);
   const showUptimeChart =
     !preview &&
     hasSystems &&
@@ -586,7 +632,7 @@ export function PortalSystemsDashboard({
   }
 
   return (
-    <div className="relative mx-auto max-w-3xl pb-24">
+    <div className="relative mx-auto max-w-3xl">
       {preview ? (
         <p className="mb-4 text-center text-xs text-[#7AAEC8]">
           Forhåndsvisning af kundens portal-overblik
@@ -604,7 +650,7 @@ export function PortalSystemsDashboard({
             <PortalDashboardHeroSkeleton />
           ) : (
           <section
-            className={`flex min-h-[240px] flex-col items-center justify-center rounded-2xl px-6 py-10 text-center shadow-sm ${
+            className={`portal-hero-enter flex min-h-[240px] flex-col items-center justify-center rounded-2xl px-6 py-10 text-center shadow-sm ${
               heroAllOk
                 ? "border border-emerald-100/80 bg-[#EDFAF5]"
                 : heroHasFejl
@@ -614,11 +660,10 @@ export function PortalSystemsDashboard({
           >
             {heroAllOk ? (
               <>
-                <div
-                  className="portal-hero-icon-pulse mb-3 flex h-16 w-16 items-center justify-center rounded-full bg-white/90 shadow-sm"
-                  aria-hidden
-                >
-                  <Check className="h-9 w-9 text-[#0A7C5C]" strokeWidth={2.5} />
+                <div className="portal-hero-icon-fade-in mb-3" aria-hidden>
+                  <div className="portal-hero-icon-wrap flex h-16 w-16 items-center justify-center rounded-full bg-white/90 shadow-sm">
+                    <Check className="h-9 w-9 text-[#0A7C5C]" strokeWidth={2.5} />
+                  </div>
                 </div>
                 <h1 className="text-3xl font-light tracking-tight text-[#0D1F2D]">Alt fungerer</h1>
                 <p className="mt-1.5 text-sm text-[#7AAEC8]">
@@ -627,14 +672,13 @@ export function PortalSystemsDashboard({
               </>
             ) : (
               <>
-                <div
-                  className="portal-hero-icon-pulse mb-3 flex h-14 w-14 items-center justify-center rounded-full bg-white/90 shadow-sm"
-                  aria-hidden
-                >
-                  <AlertTriangle
-                    className={`h-8 w-8 ${heroHasFejl ? "text-[#C42B2B]" : "text-[#C47B0A]"}`}
-                    strokeWidth={2}
-                  />
+                <div className="portal-hero-icon-fade-in mb-3" aria-hidden>
+                  <div className="portal-hero-icon-wrap flex h-14 w-14 items-center justify-center rounded-full bg-white/90 shadow-sm">
+                    <AlertTriangle
+                      className={`h-8 w-8 ${heroHasFejl ? "text-[#C42B2B]" : "text-[#C47B0A]"}`}
+                      strokeWidth={2}
+                    />
+                  </div>
                 </div>
                 <h1 className="text-2xl font-light tracking-tight text-[#0D1F2D] sm:text-3xl">
                   {counts.needsAttention === 1
@@ -650,6 +694,10 @@ export function PortalSystemsDashboard({
                         type="button"
                         onClick={() => openDetail(row)}
                         className={`rounded-full border px-2.5 py-1 text-xs font-medium transition hover:shadow-sm ${
+                          row.friendly === "Domæne" || row.technical.includes("Domæne")
+                            ? "portal-hero-pill-shake "
+                            : ""
+                        }${
                           row.status === "fejl"
                             ? "border-red-200 bg-white/90 text-[#C42B2B] hover:bg-red-50"
                             : "border-amber-200 bg-white/90 text-[#C47B0A] hover:bg-amber-50"
@@ -672,7 +720,7 @@ export function PortalSystemsDashboard({
               <span className="text-[10px]" aria-hidden>
                 🟢
               </span>
-              <span className="font-semibold tabular-nums text-[#0D1F2D]">{counts.ok}</span> OK
+              <span className="font-semibold tabular-nums text-[#0D1F2D]">{displayOk}</span> OK
             </span>
             <span className="mx-2 text-[#D0E8F5]">·</span>
             <span className="inline-flex items-center gap-1">
@@ -680,7 +728,7 @@ export function PortalSystemsDashboard({
                 🟡
               </span>
               <span className="font-semibold tabular-nums text-[#0D1F2D]">
-                {counts.advarsel + counts.fejl}
+                {displayAdvarsel}
               </span>{" "}
               Advarsel
             </span>
@@ -689,7 +737,7 @@ export function PortalSystemsDashboard({
               <span className="text-[10px]" aria-hidden>
                 ⚪
               </span>
-              <span className="font-semibold tabular-nums text-[#0D1F2D]">{counts.afventer}</span>{" "}
+              <span className="font-semibold tabular-nums text-[#0D1F2D]">{displayAfventer}</span>{" "}
               Afventer
             </span>
           </p>
@@ -744,7 +792,7 @@ export function PortalSystemsDashboard({
               </nav>
 
               <span
-                className="pointer-events-none absolute bottom-0 left-0 h-0.5 overflow-hidden bg-sky-100/80 transition-[transform,width] duration-300 ease-out"
+                className="pointer-events-none absolute bottom-0 left-0 h-[2px] overflow-hidden bg-sky-100/80 transition-[transform,width] duration-300 ease-out"
                 style={{
                   transform: `translateX(${tabIndicator.left}px)`,
                   width: tabIndicator.width,
@@ -775,8 +823,16 @@ export function PortalSystemsDashboard({
             >
               {monitoringLoading
                 ? activeTabRows.map((row) => <PortalDashboardSystemRowSkeleton key={row.key} />)
-                : activeTabRows.map((row) => (
-                <li key={row.key}>
+                : activeTabRows.map((row, index) => (
+                <li
+                  key={`${activeTabKey}-${tabRowGeneration}-${row.key}`}
+                  className={tabSlidePhase === "idle" ? "portal-dash-row-enter" : undefined}
+                  style={
+                    tabSlidePhase === "idle"
+                      ? { animationDelay: `${index * 60}ms` }
+                      : undefined
+                  }
+                >
                   <button
                     type="button"
                     onClick={() => openDetail(row)}
@@ -940,15 +996,6 @@ export function PortalSystemsDashboard({
         </PortalSlideInPanel>
       ) : null}
 
-      {!preview ? (
-        <Link
-          href="/portal/support"
-          className="fixed bottom-6 right-6 z-30 inline-flex items-center gap-1.5 rounded-full bg-[#062840] px-5 py-3.5 text-sm font-semibold text-white shadow-lg transition-colors hover:bg-[#0D1F2D] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#0A6EBD] focus-visible:ring-offset-2"
-        >
-          <Plus className="h-4 w-4" strokeWidth={2.5} aria-hidden />
-          Opret IT-sag
-        </Link>
-      ) : null}
     </div>
   );
 }

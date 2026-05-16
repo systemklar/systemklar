@@ -15,6 +15,7 @@ import {
 import { ProfileAvatar } from "@/components/ProfileAvatar";
 import { SystemklarLogo } from "@/components/SystemklarLogo";
 import { NavigationProgress, PageTransition } from "@/components/PageTransition";
+import { PortalSupportFab } from "@/components/portal/PortalSupportFab";
 import { fetchCurrentProfile } from "@/lib/current-profile";
 import {
   PORTAL_PROFILE_AVATAR_UPDATED_EVENT,
@@ -449,6 +450,7 @@ export function PortalLayout({ children, activeNav }: PortalLayoutProps) {
             </nav>
           </section>
         </div>
+        {activeNav === "dashboard" ? <PortalSupportFab /> : null}
       </main>
     </PortalSessionContext.Provider>
   );
