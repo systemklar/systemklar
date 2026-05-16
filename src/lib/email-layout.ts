@@ -1,3 +1,6 @@
+import { escapeHtml } from "@/lib/escape-html";
+import { systemklarLogoPngAbsoluteUrl } from "@/lib/systemklar-logo-url";
+
 export const EMAIL_SITE =
   process.env.NEXT_PUBLIC_SITE_URL ?? "https://systemklar.dk";
 
@@ -9,6 +12,7 @@ export const EMAIL_SITE =
  * `content` skal være HTML der lever inde i body-cellen (typisk h2 + p + button).
  */
 export function emailOuterHtml(content: string): string {
+  const logoUrl = escapeHtml(systemklarLogoPngAbsoluteUrl());
   return `<!DOCTYPE html>
 <html lang="da">
 <head>
@@ -29,8 +33,16 @@ export function emailOuterHtml(content: string): string {
             <table width="100%" cellpadding="0" cellspacing="0" border="0">
               <tr>
                 <td style="vertical-align:middle;">
-                  <span style="display:inline-block;width:8px;height:8px;border-radius:999px;background:#ffffff;margin-right:10px;vertical-align:middle;">&nbsp;</span>
-                  <span style="color:#ffffff;font-size:20px;font-weight:700;font-family:Inter,Arial,sans-serif;letter-spacing:-0.02em;text-transform:lowercase;vertical-align:middle;">systemklar</span>
+                  <table cellpadding="0" cellspacing="0" border="0" style="display:inline-table;">
+                    <tr>
+                      <td style="vertical-align:middle;padding:0;">
+                        <img src="${logoUrl}" alt="" width="120" height="28" style="display:block;height:28px;width:auto;filter:brightness(0) invert(1);" />
+                      </td>
+                      <td style="vertical-align:middle;padding:0;padding-left:8px;">
+                        <span style="color:#ffffff;font-size:20px;font-weight:700;font-family:Inter,Arial,sans-serif;letter-spacing:-0.02em;text-transform:lowercase;">systemklar</span>
+                      </td>
+                    </tr>
+                  </table>
                 </td>
                 <td align="right" style="vertical-align:middle;">
                   <span style="color:#ffffff;font-size:11px;font-weight:300;font-family:Inter,Arial,sans-serif;letter-spacing:0.22em;text-transform:uppercase;">IT-status</span>

@@ -4,6 +4,7 @@ import { escapeHtml, getAppOrigin } from "@/lib/resend-welcome-email";
 import { requireAdminSession } from "@/lib/require-admin-api";
 import { createServiceRoleClient } from "@/lib/supabase-service-role";
 import { getResend, FROM } from "@/lib/email";
+import { systemklarLogoPngAbsoluteUrl } from "@/lib/systemklar-logo-url";
 
 export const dynamic = "force-dynamic";
 
@@ -74,6 +75,7 @@ export async function POST(_request: Request, context: { params: Promise<{ id: s
 
   try {
     const resend = getResend();
+    const logoUrl = escapeHtml(systemklarLogoPngAbsoluteUrl());
     for (const r of recipients) {
       const to = r.email.trim();
       const name = (r.full_name ?? "").trim() || "der";
@@ -99,7 +101,16 @@ export async function POST(_request: Request, context: { params: Promise<{ id: s
                 </table>
               </td>
               <td style="vertical-align:top;text-align:right;white-space:nowrap;padding-left:16px;">
-                <p style="margin:0;font-size:18px;font-weight:700;color:#0A6EBD;font-family:Inter,Arial,sans-serif;letter-spacing:-0.02em;text-transform:lowercase;"><span style="display:inline-block;width:7px;height:7px;border-radius:999px;background:#0A6EBD;margin-right:6px;vertical-align:middle;">&nbsp;</span>systemklar</p>
+                <table cellpadding="0" cellspacing="0" border="0" align="right" style="margin-left:auto;">
+                  <tr>
+                    <td style="vertical-align:middle;padding:0;">
+                      <img src="${logoUrl}" alt="" width="120" height="28" style="display:block;height:28px;width:auto;" />
+                    </td>
+                    <td style="vertical-align:middle;padding:0;padding-left:8px;">
+                      <span style="font-size:18px;font-weight:700;color:#0A6EBD;font-family:Inter,Arial,sans-serif;letter-spacing:-0.02em;text-transform:lowercase;">systemklar</span>
+                    </td>
+                  </tr>
+                </table>
                 <p style="margin:6px 0 0;font-size:12px;color:#7AAEC8;font-family:Inter,Arial,sans-serif;">systemklar.dk</p>
               </td>
             </tr>

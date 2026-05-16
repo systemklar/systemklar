@@ -2,7 +2,7 @@
 
 import { FormEvent, MouseEvent, useEffect, useState } from "react";
 import { CheckCircle, X } from "lucide-react";
-import { SystemklarLogo } from "@/components/branding/SystemklarLogo";
+import { SystemklarLogo } from "@/components/SystemklarLogo";
 
 type DemoModalProps = {
   isOpen: boolean;
@@ -97,7 +97,7 @@ export function DemoModal({ isOpen, onClose, subject }: DemoModalProps) {
           <X className="h-4 w-4" />
         </button>
 
-        <SystemklarLogo href="/" variant="light" textClassName="text-base font-bold tracking-tight" />
+        <SystemklarLogo href="/" variant="light" size="md" />
         <h2 id="demo-modal-title" className="mt-6 text-xl font-bold text-[#0D1F2D]">
           Book en gratis snak
         </h2>

@@ -1,14 +1,8 @@
 import { Resend } from "resend";
 import { emailOuterHtml } from "@/lib/email-layout";
+import { escapeHtml } from "@/lib/escape-html";
 
-export function escapeHtml(s: string): string {
-  return s
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#39;");
-}
+export { escapeHtml };
 
 export function getAppOrigin(): string {
   const fromEnv = process.env.NEXT_PUBLIC_SITE_URL?.trim();

@@ -1,5 +1,7 @@
 import { MONITORING_SYSTEM_NAMES } from "@/lib/monitoring/monitoring-system-names";
 import { buildDailyPctOkFromRows, expandDailyPctOkToLast30Days } from "@/lib/monitoring/history-daily";
+import { escapeHtml } from "@/lib/escape-html";
+import { systemklarLogoPngAbsoluteUrl } from "@/lib/systemklar-logo-url";
 
 export const IT_REPORTS_TABLE_COLUMNS =
   "id, organisation_id, title, period_start, period_end, content, ai_summary, ai_recommendations, status, pdf_url, created_at, updated_at, sent_at";
@@ -122,14 +124,6 @@ export function recommendationsToBullets(text: string | null | undefined): strin
     .filter(Boolean);
 }
 
-function escapeHtml(s: string): string {
-  return s
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;");
-}
-
 function formatDaDate(isoDate: string): string {
   const [y, m, d] = isoDate.split("-").map(Number);
   if (!y || !m || !d) return isoDate;
@@ -182,6 +176,7 @@ export function buildItReportHtmlDocument(input: ItReportHtmlInput): string {
   const { organisationName, periodLabel, aiSummary, aiRecommendations, content, forPrint } = input;
   const bullets = recommendationsToBullets(aiRecommendations);
   const t = content.tickets;
+  const logoSrc = escapeHtml(systemklarLogoPngAbsoluteUrl());
 
   const ticketRows = t.rows
     .map((row) => {
@@ -249,8 +244,9 @@ export function buildItReportHtmlDocument(input: ItReportHtmlInput): string {
     * { box-sizing: border-box; }
     body { font-family: Inter, ui-sans-serif, system-ui, sans-serif; margin: 0; color: ${DS.text}; background: ${DS.pageBg}; }
     .header { background: ${DS.navy}; color: #fff; padding: 18px 24px; display: flex; align-items: center; justify-content: space-between; gap: 20px; }
-    .header-brand { display: flex; align-items: center; flex-shrink: 0; }
-    .header-brand img { width: auto; display: block; }
+    .header-brandline { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+    .header-brandline img { height: 32px; width: auto; display: block; filter: brightness(0) invert(1); }
+    .header-brandline .header-word { margin: 0; font-size: 20px; font-weight: 700; color: #fff; letter-spacing: -0.02em; text-transform: lowercase; }
     .header h1 { margin: 0; font-size: 15px; font-weight: 300; letter-spacing: 0.14em; text-transform: none; color: #fff; text-align: right; }
     .sub { padding: 20px 24px 22px; border-bottom: 1px solid ${DS.border}; background: ${DS.card}; }
     .sub h2 { margin: 0 0 6px; font-size: 22px; font-weight: 700; color: ${DS.text}; letter-spacing: -0.02em; }
@@ -271,16 +267,18 @@ export function buildItReportHtmlDocument(input: ItReportHtmlInput): string {
     .signoff-left h4 { margin: 0 0 8px; font-size: 16px; font-weight: 700; color: ${DS.text}; line-height: 1.35; }
     .signoff-left p { margin: 0; font-size: 13px; line-height: 1.55; color: ${DS.textSecondary}; max-width: 38rem; }
     .signoff-right { flex-shrink: 0; display: flex; flex-direction: column; align-items: flex-end; text-align: right; gap: 6px; }
-    .signoff-wordmark { font-size: 20px; font-weight: 700; color: ${DS.accent}; letter-spacing: -0.02em; text-transform: lowercase; }
-    .signoff-wordmark::before { content: ""; display: inline-block; width: 8px; height: 8px; border-radius: 999px; background: ${DS.accent}; margin-right: 8px; vertical-align: middle; }
+    .signoff-brandline { display: flex; align-items: center; gap: 8px; justify-content: flex-end; }
+    .signoff-brandline img { height: 28px; width: auto; display: block; }
+    .signoff-brandline .signoff-word { margin: 0; font-size: 20px; font-weight: 700; color: ${DS.accent}; letter-spacing: -0.02em; text-transform: lowercase; }
     .signoff-right .domain { font-size: 12px; color: ${DS.helper}; font-weight: 500; }
     .footer { text-align: center; font-size: 12px; color: ${DS.helper}; padding: 18px 16px 28px; border-top: 1px solid ${DS.border}; background: ${DS.pageBg}; text-transform: lowercase; }
   </style>
 </head>
 <body>
   <div class="header">
-    <div class="header-brand">
-      <img src="/logo.png" alt="systemklar" style="height:32px;width:auto;display:block;" />
+    <div class="header-brandline">
+      <img src="${logoSrc}" alt="" />
+      <span class="header-word">systemklar</span>
     </div>
     <h1>IT-statusrapport</h1>
   </div>
@@ -325,7 +323,10 @@ export function buildItReportHtmlDocument(input: ItReportHtmlInput): string {
         </div>
       </div>
       <div class="signoff-right">
-        <span class="signoff-wordmark">systemklar</span>
+        <div class="signoff-brandline">
+          <img src="${logoSrc}" alt="" />
+          <span class="signoff-word">systemklar</span>
+        </div>
         <span class="domain">systemklar.dk</span>
       </div>
     </div>

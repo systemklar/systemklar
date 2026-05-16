@@ -12,7 +12,7 @@ import {
   useState,
   type ReactNode,
 } from "react";
-import { SystemklarLogo } from "@/components/branding/SystemklarLogo";
+import { SystemklarLogo } from "@/components/SystemklarLogo";
 import { NavigationProgress, PageTransition } from "@/components/PageTransition";
 import { fetchCurrentProfile } from "@/lib/current-profile";
 import { needsOnboarding } from "@/lib/onboarding";
@@ -279,7 +279,7 @@ export function PortalLayout({ children, activeNav }: PortalLayoutProps) {
           >
             <div className="flex flex-shrink-0 items-center justify-between border-b border-sky-50 p-4">
               <Link href="/portal" className="block">
-                <SystemklarLogo variant="light" textClassName="text-sm font-bold tracking-tight" />
+                <SystemklarLogo variant="light" size="sm" />
                 <p className="mt-0.5 text-xs font-medium text-[#4A8CB5]">Kundeportal</p>
               </Link>
               <button
@@ -339,7 +339,7 @@ export function PortalLayout({ children, activeNav }: PortalLayoutProps) {
             <div className="flex-1 overflow-y-auto">
               <div className="sticky top-0 z-10 flex flex-shrink-0 items-center justify-between border-b border-[#D0E8F5] bg-white px-4 py-3 md:hidden">
                 <Link href="/portal" className="block">
-                  <SystemklarLogo variant="light" textClassName="text-sm font-bold tracking-tight" />
+                  <SystemklarLogo variant="light" size="sm" />
                 </Link>
                 <span className="w-9" aria-hidden />
               </div>

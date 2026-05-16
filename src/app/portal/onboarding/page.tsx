@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Check, Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { SystemklarLogo } from "@/components/branding/SystemklarLogo";
+import { SystemklarLogo } from "@/components/SystemklarLogo";
 import { fetchCurrentProfile } from "@/lib/current-profile";
 import { needsOnboarding, onboardingFirstName } from "@/lib/onboarding";
 import { ONBOARDING_SYSTEM_GROUPS, systemNameById } from "@/lib/onboarding-systems";
@@ -273,7 +273,7 @@ export default function PortalOnboardingPage() {
   return (
     <main className="flex min-h-dvh flex-col px-4 pb-12 pt-8 md:px-8 md:pt-10">
       <header className="mx-auto flex w-full max-w-[640px] justify-center pb-8 md:justify-start">
-        <SystemklarLogo variant="light" textClassName="text-base font-bold tracking-tight text-sky-700" />
+        <SystemklarLogo variant="light" size="md" />
       </header>
 
       <div className="mx-auto flex w-full flex-1 flex-col items-center">
