@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { isAdminEmail } from "@/lib/admin-email";
 import { sendInviteEmail } from "@/lib/email";
 import { getAppOrigin } from "@/lib/resend-welcome-email";
+import { isLikelyOrganisationDomain, normalizeOrganisationDomainInput } from "@/lib/organisation-domain";
 import { createServiceRoleClient } from "@/lib/supabase-service-role";
 
 export const dynamic = 'force-dynamic';
@@ -16,6 +17,27 @@ function createUserClient(accessToken: string) {
       auth: { autoRefreshToken: false, persistSession: false },
     }
   );
+}
+
+function parseOptionalDomain(raw: unknown): { ok: true; domain: string | null } | { ok: false; error: string } {
+  if (raw === undefined || raw === null) {
+    return { ok: true, domain: null };
+  }
+  if (typeof raw !== "string") {
+    return { ok: false, error: "Domæne skal være tekst." };
+  }
+  const trimmed = raw.trim();
+  if (!trimmed) {
+    return { ok: true, domain: null };
+  }
+  const normalized = normalizeOrganisationDomainInput(trimmed);
+  if (normalized === "" || !isLikelyOrganisationDomain(normalized)) {
+    return {
+      ok: false,
+      error: "Domænet ser ikke gyldigt ud. Brug fx firmadomain.dk uden https://.",
+    };
+  }
+  return { ok: true, domain: normalized };
 }
 
 function readInviteBody(body: unknown): {
@@ -104,6 +126,15 @@ export async function POST(request: Request) {
 
   const { email, organisationName, contactName, role } = parsed;
 
+  const domainRaw =
+    typeof body === "object" && body !== null
+      ? (body as Record<string, unknown>).domain
+      : undefined;
+  const domainParsed = parseOptionalDomain(domainRaw);
+  if (!domainParsed.ok) {
+    return NextResponse.json({ error: domainParsed.error }, { status: 400 });
+  }
+
   const supabaseAdmin = createServiceRoleClient();
   if (!supabaseAdmin) {
     console.error("[api/admin/invite-customer] SUPABASE_SERVICE_ROLE_KEY mangler eller NEXT_PUBLIC_SUPABASE_URL");
@@ -118,7 +149,7 @@ export async function POST(request: Request) {
 
   const { data: organisation, error: organisationError } = await supabaseAdmin
     .from("organisations")
-    .insert({ name: organisationName })
+    .insert({ name: organisationName, domain: domainParsed.domain })
     .select("id,name")
     .single();
 

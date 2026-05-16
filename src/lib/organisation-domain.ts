@@ -13,6 +13,9 @@ export function normalizeOrganisationDomainInput(raw: string): string {
   try {
     const u = new URL(candidate);
     let host = u.hostname.toLowerCase();
+    if (host.startsWith("www.")) {
+      host = host.slice(4);
+    }
     if (host.endsWith(".")) {
       host = host.slice(0, -1);
     }

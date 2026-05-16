@@ -6,6 +6,7 @@ import { type FormEvent, useCallback, useEffect, useMemo, useState } from "react
 import { OrganisationLogo } from "@/components/OrganisationLogo";
 import { ProfileAvatar } from "@/components/ProfileAvatar";
 import { Modal } from "@/components/ui/Modal";
+import { isLikelyOrganisationDomain, normalizeOrganisationDomainInput } from "@/lib/organisation-domain";
 import { createClient } from "@/lib/supabase";
 import { withCacheBust } from "@/lib/storage-public-urls";
 
@@ -55,6 +56,7 @@ export default function AdminCustomersClient() {
   const [email, setEmail] = useState("");
   const [contactName, setContactName] = useState("");
   const [companyName, setCompanyName] = useState("");
+  const [domain, setDomain] = useState("");
   const [role, setRole] = useState<"org_admin" | "member">("org_admin");
   const [submitting, setSubmitting] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
@@ -118,6 +120,7 @@ export default function AdminCustomersClient() {
     setEmail("");
     setContactName("");
     setCompanyName("");
+    setDomain("");
     setRole("org_admin");
   };
 
@@ -129,6 +132,17 @@ export default function AdminCustomersClient() {
     if (!em || !contact || !co) {
       setFormError("Udfyld fuldt navn, email og virksomhedsnavn.");
       return;
+    }
+
+    const domainTrimmed = domain.trim();
+    let domainToSend: string | undefined;
+    if (domainTrimmed) {
+      const normalized = normalizeOrganisationDomainInput(domainTrimmed);
+      if (!normalized || !isLikelyOrganisationDomain(normalized)) {
+        setFormError("Domænet ser ikke gyldigt ud. Brug fx firmadomain.dk uden https://.");
+        return;
+      }
+      domainToSend = normalized;
     }
 
     setSubmitting(true);
@@ -148,6 +162,7 @@ export default function AdminCustomersClient() {
       email: em,
       organisationName: co,
       role,
+      ...(domainToSend ? { domain: domainToSend } : {}),
     };
 
     console.log("Opretter kunde:", body);
@@ -355,6 +370,20 @@ export default function AdminCustomersClient() {
                   onChange={(e) => setEmail(e.target.value)}
                   className="w-full rounded-lg border border-slate-300 px-3 py-2 text-base outline-none focus:border-blue-600 md:text-sm"
                   placeholder="kunde@firma.dk"
+                />
+              </div>
+              <div>
+                <label htmlFor="cust-domain" className="mb-1 block text-sm font-medium text-slate-700">
+                  Domæne
+                </label>
+                <input
+                  id="cust-domain"
+                  type="text"
+                  value={domain}
+                  onChange={(e) => setDomain(e.target.value)}
+                  className="w-full rounded-lg border border-slate-300 px-3 py-2 text-base outline-none focus:border-blue-600 md:text-sm"
+                  placeholder="firmadomain.dk (valgfrit)"
+                  autoComplete="off"
                 />
               </div>
               <div>
