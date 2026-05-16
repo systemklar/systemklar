@@ -14,8 +14,13 @@ import {
 import { fetchLastMessageAtByTicket } from "@/lib/ticket-messages-meta";
 import { companyFromTicketRow, type TicketWithProfileRow } from "@/lib/tickets-with-profile";
 import { fetchUnreadMessageCountsByTicket } from "@/lib/ticket-last-viewed";
+import { Modal } from "@/components/ui/Modal";
 import { useDebouncedValue } from "@/lib/use-debounced-value";
 import { createClient } from "@/lib/supabase";
+
+const adminFieldClass =
+  "mt-1.5 w-full rounded-lg border border-sky-100 bg-white px-3 py-2.5 text-sm text-[#062840] outline-none transition focus:border-[#0A6EBD] focus:ring-2 focus:ring-[#0A6EBD]/20 disabled:cursor-not-allowed disabled:bg-sky-50/50";
+const adminLabelClass = "block text-sm font-medium text-[#062840]";
 
 type OrganisationOption = {
   id: string;
@@ -43,6 +48,7 @@ export default function AdminTicketsClient({
   const [sortBy, setSortBy] = useState<AdminTicketSort>("newest");
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [modalError, setModalError] = useState<string | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedOrganisationId, setSelectedOrganisationId] = useState("");
   const [newTicketTitle, setNewTicketTitle] = useState("");
@@ -117,6 +123,7 @@ export default function AdminTicketsClient({
   useEffect(() => {
     if (!initialOpenCreate) return;
     setModalOpen(true);
+    setModalError(null);
     if (initialOrganisationId) {
       setSelectedOrganisationId(initialOrganisationId);
     }
@@ -153,16 +160,29 @@ export default function AdminTicketsClient({
   }, [tickets, statusFilter, debouncedSearch, filterOrganisationId, sortBy, orgNameById]);
 
   const resetNewTicketForm = () => {
-    setSelectedOrganisationId("");
+    setSelectedOrganisationId(initialOrganisationId ?? "");
     setNewTicketTitle("");
     setNewTicketDescription("");
     setNewTicketPriority("normal");
   };
 
+  const closeNewTicketModal = () => {
+    setModalOpen(false);
+    setModalError(null);
+    resetNewTicketForm();
+  };
+
+  const openNewTicketModal = () => {
+    setErrorMessage(null);
+    setSuccessMessage(null);
+    setModalError(null);
+    setModalOpen(true);
+  };
+
   const createTicket = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setCreatingTicket(true);
-    setErrorMessage(null);
+    setModalError(null);
     setSuccessMessage(null);
 
     const res = await fetch("/api/admin/tickets", {
@@ -180,12 +200,12 @@ export default function AdminTicketsClient({
     setCreatingTicket(false);
 
     if (!res.ok) {
-      setErrorMessage(payload.error ?? "Kunne ikke oprette sag.");
+      setModalError(payload.error ?? "Kunne ikke oprette sag.");
       return;
     }
 
-    resetNewTicketForm();
     setModalOpen(false);
+    resetNewTicketForm();
     setSuccessMessage("Sagen er oprettet.");
     await loadTickets();
   };
@@ -220,20 +240,17 @@ export default function AdminTicketsClient({
 
   return (
     <div>
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+      <div className="flex flex-col gap-4 border-b border-sky-100 pb-6 sm:flex-row sm:items-start sm:justify-between">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-slate-900 md:text-3xl">Support & sager</h1>
-          <p className="mt-2 text-sm text-slate-600">Alle supportssager på tværs af kunder.</p>
+          <p className="mb-1 text-xs text-[#4A8CB5]">Admin</p>
+          <h1 className="text-2xl font-bold text-[#062840]">Support & sager</h1>
+          <p className="mt-2 text-sm text-[#4A8CB5]">Alle supportssager på tværs af kunder.</p>
         </div>
         <div className="flex flex-wrap items-center gap-3 sm:justify-end">
           <TicketStatusFilterTabs value={statusFilter} onChange={setStatusFilter} />
           <button
             type="button"
-            onClick={() => {
-              setErrorMessage(null);
-              setSuccessMessage(null);
-              setModalOpen(true);
-            }}
+            onClick={openNewTicketModal}
             className="rounded-full bg-[#0A6EBD] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[#0859A0]"
           >
             Ny sag
@@ -340,104 +357,104 @@ export default function AdminTicketsClient({
         </div>
       )}
 
-      {modalOpen ? (
-        <div
-          className="fixed inset-0 z-50 flex items-stretch justify-center overflow-y-auto bg-slate-900/40 md:items-center md:p-4"
-          onClick={(event) => event.target === event.currentTarget && setModalOpen(false)}
-        >
-          <div className="flex h-full min-h-0 w-full flex-col overflow-y-auto border-slate-200 bg-white p-6 shadow-xl md:h-auto md:max-h-[min(90vh,calc(100dvh-2rem))] md:max-w-lg md:rounded-2xl md:border">
-            <div className="mb-5">
-              <h2 className="text-lg font-semibold text-slate-900">Ny supportssag</h2>
-              <p className="mt-1 text-sm text-slate-500">
-                Opret en sag på vegne af en kunde direkte fra admin-panelet.
-              </p>
-            </div>
+      <Modal open={modalOpen} onClose={closeNewTicketModal} titleId="new-ticket-title" panelClassName="max-w-lg">
+        <h2 id="new-ticket-title" className="text-lg font-semibold text-[#062840]">
+          Ny supportssag
+        </h2>
+        <p className="mt-1 text-sm text-[#4A8CB5]">
+          Opret en sag på vegne af en kunde direkte fra admin-panelet.
+        </p>
 
-            <form className="space-y-4" onSubmit={(event) => void createTicket(event)}>
-              <div>
-                <label htmlFor="organisation" className="mb-1 block text-sm font-medium text-slate-700">
-                  Kunde/organisation
-                </label>
-                <select
-                  id="organisation"
-                  required
-                  value={selectedOrganisationId}
-                  onChange={(event) => setSelectedOrganisationId(event.target.value)}
-                  className="w-full rounded-lg border border-slate-300 px-3 py-2 text-base outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20 md:text-sm"
-                >
-                  <option value="">Vælg kunde...</option>
-                  {organisations.map((organisation) => (
-                    <option key={organisation.id} value={organisation.id}>
-                      {organisation.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              <div>
-                <label htmlFor="ticket-title" className="mb-1 block text-sm font-medium text-slate-700">
-                  Titel på sagen
-                </label>
-                <input
-                  id="ticket-title"
-                  type="text"
-                  required
-                  value={newTicketTitle}
-                  onChange={(event) => setNewTicketTitle(event.target.value)}
-                  className="w-full rounded-lg border border-slate-300 px-3 py-2 text-base outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20 md:text-sm"
-                />
-              </div>
-
-              <div>
-                <label htmlFor="ticket-description" className="mb-1 block text-sm font-medium text-slate-700">
-                  Beskrivelse
-                </label>
-                <textarea
-                  id="ticket-description"
-                  required
-                  rows={5}
-                  value={newTicketDescription}
-                  onChange={(event) => setNewTicketDescription(event.target.value)}
-                  className="w-full rounded-lg border border-slate-300 px-3 py-2 text-base outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20 md:text-sm"
-                />
-              </div>
-
-              <div>
-                <label htmlFor="ticket-priority" className="mb-1 block text-sm font-medium text-slate-700">
-                  Prioritet
-                </label>
-                <select
-                  id="ticket-priority"
-                  value={newTicketPriority}
-                  onChange={(event) => setNewTicketPriority(event.target.value)}
-                  className="w-full rounded-lg border border-slate-300 px-3 py-2 text-base outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20 md:text-sm"
-                >
-                  <option value="lav">Lav</option>
-                  <option value="normal">Normal</option>
-                  <option value="høj">Høj</option>
-                </select>
-              </div>
-
-              <div className="flex justify-end gap-2 pt-2">
-                <button
-                  type="button"
-                  onClick={() => setModalOpen(false)}
-                  className="rounded-full px-4 py-2 text-sm text-slate-600 hover:bg-slate-100"
-                >
-                  Annuller
-                </button>
-                <button
-                  type="submit"
-                  disabled={creatingTicket}
-                  className="rounded-full bg-[#0A6EBD] px-5 py-2 text-sm font-semibold text-white transition hover:bg-[#0859A0] disabled:opacity-60"
-                >
-                  {creatingTicket ? "Opretter..." : "Opret sag"}
-                </button>
-              </div>
-            </form>
+        <form className="mt-6 space-y-4" onSubmit={(event) => void createTicket(event)}>
+          <div>
+            <label htmlFor="organisation" className={adminLabelClass}>
+              Kunde / organisation
+            </label>
+            <select
+              id="organisation"
+              required
+              value={selectedOrganisationId}
+              onChange={(event) => setSelectedOrganisationId(event.target.value)}
+              className={adminFieldClass}
+            >
+              <option value="">Vælg kunde…</option>
+              {organisations.map((organisation) => (
+                <option key={organisation.id} value={organisation.id}>
+                  {organisation.name}
+                </option>
+              ))}
+            </select>
           </div>
-        </div>
-      ) : null}
+
+          <div>
+            <label htmlFor="ticket-title" className={adminLabelClass}>
+              Titel
+            </label>
+            <input
+              id="ticket-title"
+              type="text"
+              required
+              value={newTicketTitle}
+              onChange={(event) => setNewTicketTitle(event.target.value)}
+              placeholder="Kort beskrivelse af problemet"
+              className={adminFieldClass}
+            />
+          </div>
+
+          <div>
+            <label htmlFor="ticket-description" className={adminLabelClass}>
+              Beskrivelse
+            </label>
+            <textarea
+              id="ticket-description"
+              required
+              rows={5}
+              value={newTicketDescription}
+              onChange={(event) => setNewTicketDescription(event.target.value)}
+              placeholder="Detaljer kunden eller du har brug for i sagen"
+              className={`${adminFieldClass} resize-y`}
+            />
+          </div>
+
+          <div>
+            <label htmlFor="ticket-priority" className={adminLabelClass}>
+              Prioritet
+            </label>
+            <select
+              id="ticket-priority"
+              value={newTicketPriority}
+              onChange={(event) => setNewTicketPriority(event.target.value)}
+              className={adminFieldClass}
+            >
+              <option value="lav">Lav</option>
+              <option value="normal">Normal</option>
+              <option value="høj">Høj</option>
+            </select>
+          </div>
+
+          {modalError ? (
+            <p className="rounded-lg border border-red-100 bg-red-50 px-3 py-2 text-sm text-red-800">{modalError}</p>
+          ) : null}
+
+          <div className="flex flex-col-reverse gap-2 border-t border-sky-50 pt-4 sm:flex-row sm:justify-end sm:gap-3">
+            <button
+              type="button"
+              onClick={closeNewTicketModal}
+              disabled={creatingTicket}
+              className="rounded-full px-4 py-2.5 text-sm font-medium text-[#4A8CB5] transition hover:bg-sky-50 disabled:opacity-50"
+            >
+              Annuller
+            </button>
+            <button
+              type="submit"
+              disabled={creatingTicket || !selectedOrganisationId}
+              className="rounded-full bg-[#0A6EBD] px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-[#0859A0] disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              {creatingTicket ? "Opretter…" : "Opret sag"}
+            </button>
+          </div>
+        </form>
+      </Modal>
     </div>
   );
 }

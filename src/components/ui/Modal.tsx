@@ -9,7 +9,7 @@ type ModalProps = {
   children: ReactNode;
   /** id of the modal title element for aria-labelledby */
   titleId?: string;
-  /** Tailwind max-width class, e.g. max-w-md */
+  /** Tailwind classes for the panel (max-width, border color, etc.) */
   panelClassName?: string;
 };
 
@@ -57,7 +57,7 @@ export function Modal({
         role="dialog"
         aria-modal="true"
         aria-labelledby={titleId}
-        className={`flex h-full min-h-0 w-full flex-col overflow-y-auto border-slate-200 bg-white p-6 shadow-2xl md:h-auto md:max-h-[min(90vh,calc(100dvh-2rem))] md:rounded-2xl md:border ${panelClassName}`}
+        className={`flex h-full min-h-0 w-full flex-col overflow-y-auto bg-white p-6 shadow-2xl md:h-auto md:max-h-[min(90vh,calc(100dvh-2rem))] md:rounded-2xl md:border md:border-sky-100 md:shadow-sm ${panelClassName}`}
         onClick={(event) => event.stopPropagation()}
       >
         {children}
