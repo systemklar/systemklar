@@ -1,14 +1,14 @@
 "use client";
 
-import { useState } from "react";
+import { useState, type CSSProperties } from "react";
 
 type ProfileAvatarProps = {
   avatarUrl?: string | null;
   initials: string;
-  /** Tailwind size classes for width/height, e.g. h-12 w-12 */
+  /** Size + optional text/border utilities, e.g. `h-10 w-10 text-sm` or `h-9 w-9 border-2 border-white text-xs` */
   className?: string;
-  /** Background/text when showing initials */
   variant?: "sky" | "amber" | "brand";
+  style?: CSSProperties;
 };
 
 const variantClasses = {
@@ -20,30 +20,35 @@ const variantClasses = {
 export function ProfileAvatar({
   avatarUrl,
   initials,
-  className = "h-12 w-12 text-sm",
+  className = "h-10 w-10 text-sm",
   variant = "sky",
+  style,
 }: ProfileAvatarProps) {
   const [broken, setBroken] = useState(false);
   const url = avatarUrl?.trim();
-
-  if (url && !broken) {
-    return (
-      // eslint-disable-next-line @next/next/no-img-element -- external Supabase Storage URL
-      <img
-        src={url}
-        alt=""
-        className={`shrink-0 rounded-full object-cover ${className}`}
-        onError={() => setBroken(true)}
-      />
-    );
-  }
+  const showImage = Boolean(url && !broken);
 
   return (
-    <div
-      className={`flex shrink-0 items-center justify-center rounded-full font-bold ${variantClasses[variant]} ${className}`}
-      aria-hidden
+    <span
+      className={`relative inline-block shrink-0 overflow-hidden rounded-full ${className}`}
+      style={style}
     >
-      {initials}
-    </div>
+      {showImage ? (
+        // eslint-disable-next-line @next/next/no-img-element -- external Supabase Storage URL
+        <img
+          src={url}
+          alt=""
+          className="block h-full w-full object-cover"
+          onError={() => setBroken(true)}
+        />
+      ) : (
+        <span
+          className={`flex h-full w-full items-center justify-center font-bold ${variantClasses[variant]}`}
+          aria-hidden
+        >
+          {initials}
+        </span>
+      )}
+    </span>
   );
 }

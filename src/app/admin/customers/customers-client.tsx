@@ -268,17 +268,13 @@ export default function AdminCustomersClient() {
                           profile.avatar_initials?.trim().slice(0, 2).toUpperCase() ||
                           initialsFromName(profile.full_name || profile.email || "U");
                         return (
-                          <div
+                          <ProfileAvatar
                             key={profile.id}
-                            className="overflow-hidden rounded-full border-2 border-white"
+                            avatarUrl={profile.avatar_url}
+                            initials={initials}
+                            className="h-10 w-10 border-2 border-white text-xs"
                             style={{ marginLeft: index === 0 ? 0 : -10, zIndex: 30 - index }}
-                          >
-                            <ProfileAvatar
-                              avatarUrl={profile.avatar_url}
-                              initials={initials}
-                              className="h-9 w-9 text-xs"
-                            />
-                          </div>
+                          />
                         );
                       })
                     )}

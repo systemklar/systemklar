@@ -499,7 +499,7 @@ export default function AdminCustomerDetailClient() {
                 <ProfileAvatar
                   avatarUrl={p.avatar_url}
                   initials={profileDisplayInitials(p)}
-                  className="h-12 w-12 text-sm"
+                  className="h-10 w-10 text-sm"
                 />
                 <div>
                   <p className="font-semibold text-[#0D1F2D]">{p.full_name || p.email || "Ukendt bruger"}</p>
