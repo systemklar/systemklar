@@ -583,9 +583,19 @@ export function PortalSystemsDashboard({
                       <p className="text-sm font-medium text-[#0D1F2D]">{friendly}</p>
                       <p className="text-xs text-[#7AAEC8]">{rowStatusText(status)}</p>
                     </div>
-                    {checked ? (
-                      <span className="shrink-0 text-right text-[10px] leading-tight text-[#7AAEC8]">{checked}</span>
-                    ) : null}
+                    <div className="flex shrink-0 flex-col items-end gap-1 text-right">
+                      {status === "afventer" ? (
+                        <Link
+                          href="/portal/systemer"
+                          className="text-xs font-medium text-[#7AAEC8] transition-colors hover:text-[#0A6EBD]"
+                        >
+                          Opsæt →
+                        </Link>
+                      ) : null}
+                      {checked ? (
+                        <span className="text-[10px] leading-tight text-[#7AAEC8]">{checked}</span>
+                      ) : null}
+                    </div>
                   </button>
                 );
               })}

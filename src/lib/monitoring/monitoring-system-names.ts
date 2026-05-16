@@ -7,3 +7,10 @@ export const MONITORING_SYSTEM_NAMES = {
   pagespeed: "Google PageSpeed",
   hibp: "Have I Been Pwned (datalæk)",
 } as const;
+
+const AUTO_MONITORED_NAMES = new Set<string>(Object.values(MONITORING_SYSTEM_NAMES));
+
+/** Systemer der overvåges automatisk uden manuel adgang (samme strenge som i onboarding). */
+export function isAutoMonitoredCustomerSystem(storedDisplayName: string): boolean {
+  return AUTO_MONITORED_NAMES.has(storedDisplayName.trim());
+}
