@@ -7,7 +7,7 @@ export const dynamic = 'force-dynamic';
 
 const MODEL = "claude-sonnet-4-5";
 const SYSTEM_PROMPT =
-  "Du er en IT-konsulent for Systemklar. Generer en professionel dansk IT-rapport baseret på følgende sager. Inkluder: statusoversigt, løste problemer, aktive problemer og anbefalinger.";
+  "Du repræsenterer Systemklar. Generer en professionel dansk IT-rapport baseret på følgende sager. Inkluder: statusoversigt, løste problemer, aktive problemer og anbefalinger.";
 
 function extractAnthropicText(body: unknown): string | null {
   if (!body || typeof body !== "object") return null;

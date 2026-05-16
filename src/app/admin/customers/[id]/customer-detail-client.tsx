@@ -401,7 +401,7 @@ export default function AdminCustomerDetailClient() {
                       type="button"
                       disabled={domainSaving}
                       onClick={() => void saveDomain()}
-                      className="rounded-full bg-sky-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-sky-700 disabled:opacity-50"
+                      className="rounded-full bg-[#0A6EBD] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#0859A0] disabled:opacity-50"
                     >
                       {domainSaving ? "Gemmer..." : "Gem"}
                     </button>
@@ -471,7 +471,7 @@ export default function AdminCustomerDetailClient() {
               <button
                 type="button"
                 onClick={() => setInviteModalOpen(true)}
-                className="inline-flex shrink-0 rounded-full bg-sky-600 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-sky-700"
+                className="inline-flex shrink-0 rounded-full bg-[#0A6EBD] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[#0859A0]"
               >
                 Inviter bruger
               </button>
@@ -687,7 +687,7 @@ export default function AdminCustomerDetailClient() {
                 <button
                   type="submit"
                   disabled={inviteSaving}
-                  className="rounded-full bg-sky-600 px-5 py-2 text-sm font-semibold text-white hover:bg-sky-700 disabled:opacity-60"
+                  className="rounded-full bg-[#0A6EBD] px-5 py-2 text-sm font-semibold text-white hover:bg-[#0859A0] disabled:opacity-60"
                 >
                   {inviteSaving ? "Sender..." : "Send invitation"}
                 </button>

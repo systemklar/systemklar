@@ -138,7 +138,7 @@ function LoginForm() {
           <button
             type="submit"
             disabled={isLoading}
-            className="w-full rounded-full bg-sky-600 py-3 font-semibold text-white transition hover:bg-sky-700 disabled:opacity-60"
+            className="w-full rounded-full bg-[#0A6EBD] py-3 font-semibold text-white transition hover:bg-[#0859A0] disabled:opacity-60"
           >
             {isLoading ? "Logger ind..." : "Log ind"}
           </button>

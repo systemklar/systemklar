@@ -353,7 +353,7 @@ export default function PortalTeamPage() {
               <button
                 type="button"
                 onClick={() => setModalOpen(true)}
-                className="hidden shrink-0 rounded-full bg-sky-600 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-sky-700 md:inline-block"
+                className="hidden shrink-0 rounded-full bg-[#0A6EBD] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[#0859A0] md:inline-block"
               >
                 Inviter kollega
               </button>
@@ -363,7 +363,7 @@ export default function PortalTeamPage() {
             <button
               type="button"
               onClick={() => setModalOpen(true)}
-              className="mt-4 w-full rounded-full bg-sky-600 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-sky-700 md:hidden"
+              className="mt-4 w-full rounded-full bg-[#0A6EBD] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[#0859A0] md:hidden"
             >
               Inviter kollega
             </button>
@@ -396,7 +396,7 @@ export default function PortalTeamPage() {
                 <button
                   type="button"
                   onClick={() => setModalOpen(true)}
-                  className="mt-2 rounded-full bg-sky-600 px-5 py-2 text-sm font-semibold text-white transition hover:bg-sky-700"
+                  className="mt-2 rounded-full bg-[#0A6EBD] px-5 py-2 text-sm font-semibold text-white transition hover:bg-[#0859A0]"
                 >
                   Inviter første kollega
                 </button>
@@ -545,7 +545,7 @@ export default function PortalTeamPage() {
                 <button
                   type="submit"
                   disabled={savingInvite}
-                  className="rounded-full bg-sky-600 px-5 py-2 text-sm font-semibold text-white hover:bg-sky-700 disabled:opacity-60"
+                  className="rounded-full bg-[#0A6EBD] px-5 py-2 text-sm font-semibold text-white hover:bg-[#0859A0] disabled:opacity-60"
                 >
                   {savingInvite ? "Sender…" : "Send invitation"}
                 </button>

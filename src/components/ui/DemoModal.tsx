@@ -97,11 +97,7 @@ export function DemoModal({ isOpen, onClose, subject }: DemoModalProps) {
           <X className="h-4 w-4" />
         </button>
 
-        <SystemklarLogo
-          href="/"
-          variant="light"
-          textClassName="text-base font-bold tracking-tight text-sky-700"
-        />
+        <SystemklarLogo href="/" variant="light" textClassName="text-base font-bold tracking-tight" />
         <h2 id="demo-modal-title" className="mt-6 text-xl font-bold text-[#0D1F2D]">
           Book en gratis snak
         </h2>
@@ -162,7 +158,7 @@ export function DemoModal({ isOpen, onClose, subject }: DemoModalProps) {
             <button
               type="submit"
               disabled={loading}
-              className="w-full rounded-full bg-sky-600 py-3 font-semibold text-white transition-colors hover:bg-sky-700 disabled:cursor-not-allowed disabled:opacity-60"
+              className="w-full rounded-full bg-[#0A6EBD] py-3 font-semibold text-white transition-colors hover:bg-[#0859A0] disabled:cursor-not-allowed disabled:opacity-60"
             >
               {loading ? "Sender..." : "Send forespørgsel"}
             </button>

@@ -94,10 +94,6 @@ export default function ItReportDetailClient() {
   const previewHtml = useMemo(() => {
     if (!row || !content) return "";
     const periodLabel = periodLabelDa(row.period_start, row.period_end);
-    const assetBaseUrl =
-      typeof window !== "undefined"
-        ? window.location.origin
-        : (process.env.NEXT_PUBLIC_SITE_URL ?? "").replace(/\/$/, "");
     return buildItReportHtmlDocument({
       organisationName: content.organisationName,
       periodLabel,
@@ -105,7 +101,6 @@ export default function ItReportDetailClient() {
       aiRecommendations: recommendations,
       content,
       forPrint: false,
-      assetBaseUrl: assetBaseUrl || undefined,
     });
   }, [row, content, summary, recommendations]);
 
@@ -182,13 +177,13 @@ export default function ItReportDetailClient() {
     <div className="mx-auto max-w-[1200px] px-4 py-8">
       <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div>
-          <Link href="/admin/it-rapporter" className="text-sm font-semibold text-sky-700 hover:underline">
+          <Link href="/admin/it-rapporter" className="text-sm font-semibold text-[#0A6EBD] hover:underline">
             ← Tilbage til IT-rapporter
           </Link>
-          <h1 className="mt-2 text-2xl font-bold text-slate-900">
+          <h1 className="mt-2 text-2xl font-bold text-[#0D1F2D]">
             IT-rapport — {orgTitle}
           </h1>
-          <p className="mt-1 text-sm text-slate-600">{periodLabel}</p>
+          <p className="mt-1 text-sm text-[#2C4A5E]">{periodLabel}</p>
           <span className={`mt-2 inline-flex rounded-full px-2.5 py-0.5 text-xs font-semibold ${badge.className}`}>
             {badge.label}
           </span>
@@ -198,7 +193,7 @@ export default function ItReportDetailClient() {
             href={`/api/portal/reports/${id}/pdf`}
             target="_blank"
             rel="noreferrer"
-            className="inline-flex items-center justify-center rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-800 hover:bg-slate-50"
+            className="inline-flex items-center justify-center rounded-full border border-sky-200 bg-white px-4 py-2 text-sm font-semibold text-sky-900 transition-colors hover:bg-sky-50"
           >
             Download rapport (HTML)
           </a>
@@ -207,7 +202,7 @@ export default function ItReportDetailClient() {
               type="button"
               disabled={sending}
               onClick={() => void sendToCustomer()}
-              className="inline-flex items-center justify-center rounded-lg bg-sky-600 px-4 py-2 text-sm font-semibold text-white hover:bg-sky-700 disabled:opacity-50"
+              className="inline-flex items-center justify-center rounded-full bg-[#0A6EBD] px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-[#0859A0] disabled:opacity-50"
             >
               {sending ? "Sender…" : "Godkend & send til kunde"}
             </button>
@@ -218,26 +213,26 @@ export default function ItReportDetailClient() {
       {error ? <p className="mb-4 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">{error}</p> : null}
 
       <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
-        <div className="space-y-4 rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
-          <h2 className="text-sm font-semibold uppercase tracking-wide text-slate-500">Redigering</h2>
+        <div className="space-y-4 rounded-2xl border border-sky-100 bg-white p-6 shadow-sm">
+          <h2 className="text-sm font-semibold uppercase tracking-wide text-[#7AAEC8]">Redigering</h2>
           <label className="block">
-            <span className="text-sm font-medium text-slate-800">Sammenfatning</span>
+            <span className="text-sm font-medium text-[#0D1F2D]">Sammenfatning</span>
             <textarea
               value={summary}
               onChange={(e) => setSummary(e.target.value)}
               disabled={row.status === "sent"}
               rows={10}
-              className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm text-slate-900 disabled:bg-slate-50"
+              className="mt-1 w-full rounded-xl border border-[#D0E8F5] px-3 py-2 text-sm text-[#0D1F2D] disabled:bg-slate-50"
             />
           </label>
           <label className="block">
-            <span className="text-sm font-medium text-slate-800">Anbefalinger</span>
+            <span className="text-sm font-medium text-[#0D1F2D]">Anbefalinger</span>
             <textarea
               value={recommendations}
               onChange={(e) => setRecommendations(e.target.value)}
               disabled={row.status === "sent"}
               rows={8}
-              className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm text-slate-900 disabled:bg-slate-50"
+              className="mt-1 w-full rounded-xl border border-[#D0E8F5] px-3 py-2 text-sm text-[#0D1F2D] disabled:bg-slate-50"
               placeholder="- Første anbefaling&#10;- Anden anbefaling"
             />
           </label>
@@ -246,7 +241,7 @@ export default function ItReportDetailClient() {
               type="button"
               disabled={saving}
               onClick={() => void save()}
-              className="rounded-lg bg-slate-900 px-4 py-2.5 text-sm font-semibold text-white hover:bg-slate-800 disabled:opacity-50"
+              className="rounded-full bg-[#062840] px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:opacity-95 disabled:opacity-50"
             >
               {saving ? "Gemmer…" : "Gem ændringer"}
             </button>
@@ -256,8 +251,8 @@ export default function ItReportDetailClient() {
         </div>
 
         <div>
-          <h2 className="mb-2 text-sm font-semibold uppercase tracking-wide text-slate-500">Forhåndsvisning</h2>
-          <div className="overflow-hidden rounded-xl border border-slate-200 bg-slate-100 shadow-inner">
+          <h2 className="mb-2 text-sm font-semibold uppercase tracking-wide text-[#7AAEC8]">Forhåndsvisning</h2>
+          <div className="overflow-hidden rounded-2xl border border-[#D0E8F5] bg-[#F5FAFD] shadow-inner">
             <iframe
               ref={iframeRef}
               title="Rapport forhåndsvisning"

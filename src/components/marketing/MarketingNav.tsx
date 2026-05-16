@@ -55,11 +55,7 @@ export function MarketingNav() {
       >
         <div className="relative mx-auto h-16 w-full max-w-[1200px] px-6">
           <div className="flex h-full items-center justify-between gap-4">
-            <SystemklarLogo
-              href="/"
-              variant="dark"
-              textClassName="text-sm font-bold tracking-tight text-white transition-colors"
-            />
+            <SystemklarLogo href="/" variant="dark" textClassName="text-sm font-bold tracking-tight" />
 
             <nav className="hidden min-w-0 flex-1 items-center justify-center gap-8 md:flex" aria-label="Hovednavigation">
               {NAV.map((item) => (
@@ -84,7 +80,9 @@ export function MarketingNav() {
                 type="button"
                 onClick={() => setShowModal(true)}
                 className={`rounded-full px-4 py-1.5 text-xs font-semibold transition-colors ${
-                  transparent ? "bg-white text-[#0A6EBD] hover:bg-white/90" : "bg-sky-500 text-white hover:bg-sky-400"
+                  transparent
+                    ? "bg-white text-[#0A6EBD] hover:bg-white/90"
+                    : "bg-[#0A6EBD] text-white hover:bg-[#0859A0]"
                 }`}
               >
                 Book demo
@@ -139,7 +137,7 @@ export function MarketingNav() {
                 setMobileOpen(false);
                 setShowModal(true);
               }}
-              className="block min-h-[44px] w-full rounded-full bg-sky-500 px-5 py-3 text-center text-sm font-semibold text-white hover:bg-sky-400"
+              className="block min-h-[44px] w-full rounded-full bg-[#0A6EBD] px-5 py-3 text-center text-sm font-semibold text-white transition-colors hover:bg-[#0859A0]"
             >
               Book demo
             </button>

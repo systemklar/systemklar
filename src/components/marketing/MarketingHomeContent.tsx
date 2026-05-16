@@ -205,7 +205,7 @@ const setupOptions = [
   {
     id: "konsulent",
     icon: UserCheck,
-    title: "Ekstern IT-konsulent",
+    title: "Ekstern IT-rådgivning",
     subtitle: "Vi ringer ved fejl",
     multiplier: 1.0,
   },
@@ -542,7 +542,7 @@ export function MarketingHomeContent() {
     selectedIndustry === "haandvaerk" && selectedFrequency === "dag"
       ? "For en håndværksvirksomhed med daglige IT-problemer er dette et konservativt estimat."
       : selectedSetup === "konsulent"
-        ? "Dertil kommer hvad I betaler jeres IT-konsulent – systemklar erstatter mange af disse opkald."
+        ? "Dertil kommer hvad I betaler for ekstern IT-support – systemklar erstatter mange af disse opkald."
         : null;
 
   const industryRecommendation =
@@ -724,7 +724,7 @@ export function MarketingHomeContent() {
                     <div style={{ height: "220px" }} className="p-1">
                       <div className="mb-2 text-xs font-bold text-[#0D1F2D]">Support &amp; sager</div>
                       <div className="flex flex-col gap-1.5">
-                        <div className="max-w-[80%] self-end rounded-2xl rounded-tr-sm bg-sky-600 px-2.5 py-1.5 text-[10px] text-white">
+                        <div className="max-w-[80%] self-end rounded-2xl rounded-tr-sm bg-[#0A6EBD] px-2.5 py-1.5 text-[10px] text-white">
                           Vores printer printer ikke – det haster lidt
                         </div>
                         <div className="max-w-[80%] self-start rounded-2xl rounded-tl-sm bg-[#F0F7FF] px-2.5 py-1.5 text-[10px] text-[#2C4A5E]">
@@ -807,7 +807,7 @@ export function MarketingHomeContent() {
                       i === calculatorStep
                         ? "h-2 w-6 bg-sky-400"
                         : i < calculatorStep
-                          ? "h-2 w-2 bg-sky-600"
+                          ? "h-2 w-2 bg-[#0A6EBD]"
                           : "h-2 w-2 bg-white/20"
                     }`}
                   />
@@ -1156,7 +1156,7 @@ export function MarketingHomeContent() {
                               <span className="text-white/70">Besparelsesprocent:</span>{" "}
                               {Math.round(savingsPct * 100)}% — konservativt estimat baseret på valgt IT-setup
                               ({selectedSetup === "ingen" ? "ingen fast løsning giver størst potentiale"
-                                : selectedSetup === "konsulent" ? "systemklar erstatter dele af konsulentbehovet"
+                                : selectedSetup === "konsulent" ? "systemklar erstatter dele af behovet for ekstern IT"
                                 : selectedSetup === "intern" ? "intern medarbejder frigøres delvist"
                                 : "blandet setup giver moderat potentiale"})
                             </span>
@@ -1233,7 +1233,7 @@ export function MarketingHomeContent() {
                           <li className="flex items-start gap-2 text-xs text-white/70">
                             <CheckCircle className="mt-0.5 h-3.5 w-3.5 shrink-0 text-green-400" />
                             <span>
-                              Reducér jeres IT-konsulent udgifter med ca. {formatNumber(resultConsultant)} kr/md
+                              Reducér jeres udgifter til ekstern IT-support med ca. {formatNumber(resultConsultant)} kr/md
                             </span>
                           </li>
                         ) : null}
@@ -1300,7 +1300,7 @@ export function MarketingHomeContent() {
             </div>
             <p className="mb-6 flex-1 text-lg leading-relaxed text-white/90">{`"${featuredTestimonial.quote}"`}</p>
             <div className="flex items-center gap-3 border-t border-white/10 pt-4">
-              <div className="flex h-9 w-9 items-center justify-center rounded-full bg-sky-600 text-xs font-bold text-white">
+              <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[#0A6EBD] text-xs font-bold text-white">
                 {featuredTestimonial.initials}
               </div>
               <div>
@@ -1358,7 +1358,7 @@ export function MarketingHomeContent() {
               onClick={() => setYearly(!yearly)}
               aria-label={yearly ? "Skift til månedlig" : "Skift til årlig"}
               className={`relative h-6 w-12 rounded-full transition-colors duration-200 ${
-                yearly ? "bg-sky-600" : "bg-slate-200"
+                yearly ? "bg-[#0A6EBD]" : "bg-slate-200"
               }`}
             >
               <div
@@ -1419,7 +1419,7 @@ export function MarketingHomeContent() {
                       href="/priser"
                       className={`mt-4 inline-flex w-full justify-center rounded-full px-5 py-2 text-sm font-semibold transition-colors ${
                         priceCard.highlight
-                          ? "bg-sky-600 text-white hover:bg-sky-700"
+                          ? "bg-[#0A6EBD] text-white hover:bg-[#0859A0]"
                           : "border border-sky-200 text-sky-700 hover:bg-sky-50"
                       }`}
                     >

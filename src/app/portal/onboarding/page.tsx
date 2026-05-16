@@ -23,7 +23,7 @@ function OnboardingProgress({ step }: { step: 1 | 2 | 3 }) {
           <div
             key={n}
             className={`h-1.5 flex-1 rounded-full transition-colors ${
-              step >= n ? "bg-sky-600" : "bg-sky-100"
+              step >= n ? "bg-[#0A6EBD]" : "bg-sky-100"
             }`}
           />
         ))}
@@ -98,7 +98,7 @@ function OnboardingContent({ profileId, fullName }: OnboardingContentProps) {
           <button
             type="button"
             onClick={() => setStep(2)}
-            className="mt-8 w-full rounded-full bg-sky-600 px-5 py-3 text-sm font-semibold text-white transition hover:bg-sky-700 sm:w-auto"
+            className="mt-8 w-full rounded-full bg-[#0A6EBD] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#0859A0] sm:w-auto"
           >
             Kom i gang →
           </button>
@@ -136,7 +136,7 @@ function OnboardingContent({ profileId, fullName }: OnboardingContentProps) {
                       >
                         <span
                           className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg ${
-                            isSelected ? "bg-sky-600 text-white" : "bg-sky-50 text-sky-600"
+                            isSelected ? "bg-[#0A6EBD] text-white" : "bg-sky-50 text-sky-600"
                           }`}
                         >
                           <Icon className="h-4 w-4" aria-hidden />
@@ -157,7 +157,7 @@ function OnboardingContent({ profileId, fullName }: OnboardingContentProps) {
             type="button"
             disabled={selected.size === 0}
             onClick={() => setStep(3)}
-            className="mt-8 w-full rounded-full bg-sky-600 px-5 py-3 text-sm font-semibold text-white transition hover:bg-sky-700 disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
+            className="mt-8 w-full rounded-full bg-[#0A6EBD] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#0859A0] disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
           >
             Fortsæt →
           </button>
@@ -178,7 +178,7 @@ function OnboardingContent({ profileId, fullName }: OnboardingContentProps) {
             type="button"
             disabled={saving}
             onClick={() => void completeOnboarding()}
-            className="mt-8 inline-flex w-full items-center justify-center gap-2 rounded-full bg-sky-600 px-5 py-3 text-sm font-semibold text-white transition hover:bg-sky-700 disabled:opacity-50 sm:w-auto"
+            className="mt-8 inline-flex w-full items-center justify-center gap-2 rounded-full bg-[#0A6EBD] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#0859A0] disabled:opacity-50 sm:w-auto"
           >
             {saving ? (
               <>

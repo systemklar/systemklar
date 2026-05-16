@@ -49,11 +49,11 @@ const FRIENDLY_SYSTEM_LABEL_DA: Record<string, string> = {
   "Have I Been Pwned (datalæk)": "Datalæk-tjek",
 };
 
-const CHART_OK = "#22c55e";
-const CHART_ADVARSEL = "#f59e0b";
-const CHART_FEJL = "#ef4444";
-const CHART_AFVENTER = "#94a3b8";
-const LINE_STATUS = "#3B9EDB";
+const CHART_OK = "#0A7C5C";
+const CHART_ADVARSEL = "#C47B0A";
+const CHART_FEJL = "#C42B2B";
+const CHART_AFVENTER = "#7AAEC8";
+const LINE_STATUS = "#0A6EBD";
 
 function friendlySystemLabel(technicalName: string): string {
   const t = technicalName.trim();
@@ -371,36 +371,36 @@ export function PortalSystemsDashboard({
   return (
     <div className="space-y-8 pb-8">
       {preview ? (
-        <p className="text-center text-xs text-slate-500">Forhåndsvisning af kundens portal-overblik</p>
+        <p className="text-center text-xs text-[#7AAEC8]">Forhåndsvisning af kundens portal-overblik</p>
       ) : null}
 
       {!hasSystems ? (
-        <div className="rounded-lg border border-slate-200 bg-white px-6 py-12 text-center text-sm text-slate-600">
+        <div className="rounded-2xl border border-sky-100 bg-white px-6 py-12 text-center text-sm text-[#2C4A5E] shadow-sm">
           Dine systemer er ved at blive sat op. Vi vender tilbage inden for 24 timer.
         </div>
       ) : (
         <>
           <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
             <div className="grid flex-1 grid-cols-1 gap-3 sm:grid-cols-3">
-              <div className="rounded-lg border border-slate-200 border-t-4 border-t-emerald-500 bg-white px-4 pb-4 pt-3">
-                <p className="text-xs font-medium uppercase tracking-wide text-slate-500">Systemer OK</p>
-                <p className="mt-1 text-[28px] font-bold leading-none tracking-tight text-slate-900">
+              <div className="rounded-2xl border border-sky-100 border-t-4 border-t-[#0A7C5C] bg-white px-4 pb-4 pt-3 shadow-sm">
+                <p className="text-xs font-medium uppercase tracking-wide text-[#7AAEC8]">Systemer OK</p>
+                <p className="mt-1 text-[28px] font-bold leading-none tracking-tight text-[#0D1F2D]">
                   {counts.ok}
                 </p>
               </div>
-              <div className="rounded-lg border border-slate-200 border-t-4 border-t-amber-500 bg-white px-4 pb-4 pt-3">
-                <p className="text-xs font-medium uppercase tracking-wide text-slate-500">
+              <div className="rounded-2xl border border-sky-100 border-t-4 border-t-[#C47B0A] bg-white px-4 pb-4 pt-3 shadow-sm">
+                <p className="text-xs font-medium uppercase tracking-wide text-[#7AAEC8]">
                   Kræver opmærksomhed
                 </p>
-                <p className="mt-1 text-[28px] font-bold leading-none tracking-tight text-slate-900">
+                <p className="mt-1 text-[28px] font-bold leading-none tracking-tight text-[#0D1F2D]">
                   {counts.needsAttention}
                 </p>
               </div>
-              <div className="rounded-lg border border-slate-200 border-t-4 border-t-slate-300 bg-white px-4 pb-4 pt-3">
-                <p className="text-xs font-medium uppercase tracking-wide text-slate-500">
+              <div className="rounded-2xl border border-sky-100 border-t-4 border-t-[#7AAEC8] bg-white px-4 pb-4 pt-3 shadow-sm">
+                <p className="text-xs font-medium uppercase tracking-wide text-[#7AAEC8]">
                   Afventer opsætning
                 </p>
-                <p className="mt-1 text-[28px] font-bold leading-none tracking-tight text-slate-900">
+                <p className="mt-1 text-[28px] font-bold leading-none tracking-tight text-[#0D1F2D]">
                   {counts.afventer}
                 </p>
               </div>
@@ -409,7 +409,7 @@ export function PortalSystemsDashboard({
               <div className="shrink-0 lg:pt-0">
                 <Link
                   href="/portal/support"
-                  className="inline-flex w-full items-center justify-center rounded-lg border border-sky-600 bg-sky-600 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-sky-700 lg:w-auto"
+                  className="inline-flex w-full items-center justify-center rounded-full border border-[#0A6EBD] bg-[#0A6EBD] px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-[#0859A0] lg:w-auto"
                 >
                   Opret IT-sag
                 </Link>
@@ -417,8 +417,8 @@ export function PortalSystemsDashboard({
             ) : null}
           </div>
 
-          <div className="rounded-lg border border-slate-200 bg-white px-6 py-6">
-            <h2 className="mb-4 text-xs font-semibold uppercase tracking-wide text-slate-500">Statusfordeling</h2>
+          <div className="rounded-2xl border border-sky-100 bg-white px-6 py-6 shadow-sm">
+            <h2 className="mb-4 text-xs font-semibold uppercase tracking-wide text-[#7AAEC8]">Statusfordeling</h2>
             <div className="flex flex-wrap items-center gap-8 lg:gap-12">
               <div className="h-[180px] w-[180px] shrink-0">
                 {pieSlices.length > 0 ? (
@@ -442,10 +442,10 @@ export function PortalSystemsDashboard({
                     </PieChart>
                   </ResponsiveContainer>
                 ) : (
-                  <div className="flex h-full items-center justify-center text-xs text-slate-400">Ingen data</div>
+                  <div className="flex h-full items-center justify-center text-xs text-[#7AAEC8]">Ingen data</div>
                 )}
               </div>
-              <ul className="flex min-w-[10rem] flex-col gap-2.5 text-sm text-slate-600">
+              <ul className="flex min-w-[10rem] flex-col gap-2.5 text-sm text-[#2C4A5E]">
                 <li className="flex items-center gap-2">
                   <span className="h-2.5 w-2.5 shrink-0 rounded-full" style={{ backgroundColor: CHART_OK }} />
                   OK
@@ -473,35 +473,35 @@ export function PortalSystemsDashboard({
           </div>
 
           {showHistorySection ? (
-            <div className="rounded-lg border border-slate-200 bg-white px-6 py-6">
-              <h2 className="mb-4 text-xs font-semibold uppercase tracking-wide text-slate-500">
+            <div className="rounded-2xl border border-sky-100 bg-white px-6 py-6 shadow-sm">
+              <h2 className="mb-4 text-xs font-semibold uppercase tracking-wide text-[#7AAEC8]">
                 Systemstatus de seneste 30 dage
               </h2>
               {historyLoading ? (
-                <p className="text-sm text-slate-500">Indlæser historik…</p>
+                <p className="text-sm text-[#7AAEC8]">Indlæser historik…</p>
               ) : showHistoryChart ? (
                 <div className="h-56 w-full max-w-3xl">
                   <ResponsiveContainer width="100%" height="100%">
                     <LineChart data={lineChartData} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
-                      <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" vertical={false} />
+                      <CartesianGrid strokeDasharray="3 3" stroke="#D0E8F5" vertical={false} />
                       <XAxis
                         dataKey="label"
-                        tick={{ fontSize: 11, fill: "#64748b" }}
-                        axisLine={{ stroke: "#e2e8f0" }}
+                        tick={{ fontSize: 11, fill: "#7AAEC8" }}
+                        axisLine={{ stroke: "#D0E8F5" }}
                       />
                       <YAxis
                         domain={[0, 100]}
                         tickFormatter={(v) => `${v}%`}
                         width={44}
-                        tick={{ fontSize: 11, fill: "#64748b" }}
-                        axisLine={{ stroke: "#e2e8f0" }}
+                        tick={{ fontSize: 11, fill: "#7AAEC8" }}
+                        axisLine={{ stroke: "#D0E8F5" }}
                       />
                       <Tooltip
                         formatter={(value) => [
                           `${typeof value === "number" ? value : Number(value) || 0}%`,
                           "Andel OK",
                         ]}
-                        contentStyle={{ border: "1px solid #e2e8f0", borderRadius: "6px" }}
+                        contentStyle={{ border: "1px solid #D0E8F5", borderRadius: "12px" }}
                       />
                       <Line
                         type="monotone"
@@ -515,16 +515,16 @@ export function PortalSystemsDashboard({
                   </ResponsiveContainer>
                 </div>
               ) : showHistoryFallback ? (
-                <p className="text-sm leading-relaxed text-slate-600">
+                <p className="text-sm leading-relaxed text-[#2C4A5E]">
                   Ikke nok data endnu — grafen vises efter første overvågningsuge
                 </p>
               ) : null}
             </div>
           ) : null}
 
-          <div className="rounded-lg border border-slate-200 bg-white">
+          <div className="overflow-hidden rounded-2xl border border-sky-100 bg-white shadow-sm">
             <nav
-              className="flex flex-wrap gap-x-6 gap-y-1 border-b border-slate-200 px-4 pt-1 sm:px-6"
+              className="flex flex-wrap gap-x-6 gap-y-1 border-b border-[#D0E8F5] px-4 pt-1 sm:px-6"
               aria-label="Systemkategorier"
             >
               {groups.map((g) => {
@@ -536,8 +536,8 @@ export function PortalSystemsDashboard({
                     onClick={() => setActiveTab(g.shortLabel)}
                     className={`-mb-px border-b-2 pb-3 pt-2 text-sm font-medium transition-colors ${
                       isActive
-                        ? "border-sky-600 text-slate-900"
-                        : "border-transparent text-slate-500 hover:border-slate-300 hover:text-slate-800"
+                        ? "border-[#0A6EBD] text-[#0D1F2D]"
+                        : "border-transparent text-[#7AAEC8] hover:border-[#D0E8F5] hover:text-[#2C4A5E]"
                     }`}
                   >
                     {g.shortLabel}
@@ -546,7 +546,7 @@ export function PortalSystemsDashboard({
               })}
             </nav>
 
-            <div className="divide-y divide-slate-100">
+            <div className="divide-y divide-[#D0E8F5]/80">
               {activeGroup?.items.map((entry, idx) => {
                 const technical = entry.kind === "known" ? entry.system.name : entry.name;
                 const key =
@@ -572,7 +572,7 @@ export function PortalSystemsDashboard({
                     key={key}
                     type="button"
                     onClick={() => setDetail({ technical, friendly, row: rowForDetail })}
-                    className="flex w-full items-center gap-3 px-4 py-3.5 text-left transition-colors hover:bg-slate-50 sm:px-6"
+                    className="flex w-full items-center gap-3 px-4 py-3.5 text-left transition-colors hover:bg-[#F5FAFD] sm:px-6"
                   >
                     <span
                       className="h-2.5 w-2.5 shrink-0 rounded-full"
@@ -580,11 +580,11 @@ export function PortalSystemsDashboard({
                       aria-hidden
                     />
                     <div className="min-w-0 flex-1">
-                      <p className="text-sm font-medium text-slate-900">{friendly}</p>
-                      <p className="text-xs text-slate-500">{rowStatusText(status)}</p>
+                      <p className="text-sm font-medium text-[#0D1F2D]">{friendly}</p>
+                      <p className="text-xs text-[#7AAEC8]">{rowStatusText(status)}</p>
                     </div>
                     {checked ? (
-                      <span className="shrink-0 text-right text-[10px] leading-tight text-slate-400">{checked}</span>
+                      <span className="shrink-0 text-right text-[10px] leading-tight text-[#7AAEC8]">{checked}</span>
                     ) : null}
                   </button>
                 );
@@ -653,7 +653,7 @@ export function PortalSystemsDashboard({
                     <div className="border-t border-slate-100 pt-4">
                       <Link
                         href={supportHref}
-                        className="inline-flex w-full items-center justify-center rounded-lg border border-sky-600 bg-sky-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-sky-700"
+                        className="inline-flex w-full items-center justify-center rounded-full border border-[#0A6EBD] bg-[#0A6EBD] px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-[#0859A0]"
                       >
                         Opret en sag om dette
                       </Link>

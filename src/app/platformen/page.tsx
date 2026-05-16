@@ -163,7 +163,7 @@ function SupportMockup() {
               key={i}
               className={`max-w-xs rounded-2xl px-3 py-2 text-xs ${
                 m.from === "user"
-                  ? "self-end rounded-tr-sm bg-sky-600 text-white"
+                  ? "self-end rounded-tr-sm bg-[#0A6EBD] text-white"
                   : "self-start rounded-tl-sm bg-[#F0F7FF] text-[#2C4A5E]"
               }`}
               style={{ animation: `mockupFadeIn 0.4s ease-out ${i * 0.15}s both` }}
@@ -176,7 +176,7 @@ function SupportMockup() {
           <div className="flex items-center gap-2 rounded-full border border-sky-100 bg-[#F8FCFF] px-3 py-1.5">
             <Paperclip className="h-3.5 w-3.5 text-[#4A8CB5]" />
             <span className="flex-1 text-xs text-[#4A8CB5]">Skriv en besked …</span>
-            <span className="flex h-6 w-6 items-center justify-center rounded-full bg-sky-600">
+            <span className="flex h-6 w-6 items-center justify-center rounded-full bg-[#0A6EBD]">
               <Send className="h-3 w-3 text-white" />
             </span>
           </div>
@@ -337,7 +337,7 @@ function SystemsMockup() {
 }
 
 const teamMembers: Array<{ name: string; role: string; initials: string; cls: string }> = [
-  { name: "Benjamin Sørensen", role: "Administrator", initials: "BS", cls: "bg-sky-600 text-white" },
+  { name: "Benjamin Sørensen", role: "Administrator", initials: "BS", cls: "bg-[#0A6EBD] text-white" },
   { name: "Maria Larsen", role: "Medlem", initials: "ML", cls: "bg-sky-100 text-sky-700" },
   { name: "Jens Kristensen", role: "Medlem", initials: "JK", cls: "bg-sky-100 text-sky-700" },
 ];

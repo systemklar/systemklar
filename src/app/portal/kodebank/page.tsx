@@ -229,7 +229,7 @@ export default function PortalKodebankPage() {
           <button
             type="button"
             onClick={openCreate}
-            className="rounded-full bg-sky-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-sky-700"
+            className="rounded-full bg-[#0A6EBD] px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-[#0859A0]"
           >
             Tilføj login
           </button>
@@ -471,7 +471,7 @@ export default function PortalKodebankPage() {
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="rounded-full bg-sky-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-sky-700 disabled:opacity-50"
+                  className="rounded-full bg-[#0A6EBD] px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-[#0859A0] disabled:opacity-50"
                 >
                   {submitting ? "Gemmer..." : editingId ? "Gem ændringer" : "Opret login"}
                 </button>

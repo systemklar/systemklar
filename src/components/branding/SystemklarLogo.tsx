@@ -5,46 +5,36 @@ export type SystemklarLogoVariant = "light" | "dark";
 
 type SystemklarLogoProps = {
   href?: string;
+  /** @deprecated Bruges ikke — wordmark er altid «systemklar». */
   label?: ReactNode;
+  /** Ekstra Tailwind-klasser på wordmark (fx størrelse). */
   textClassName?: string;
   className?: string;
-  iconClassName?: string;
   variant?: SystemklarLogoVariant;
 };
 
-// Tailwind kan kun ramme #0A6EBD via vilkårlige `[filter:...]`-klasser, så
-// den lyse variant nedenfor er en hex-eksakt blå filtrering af et sort PNG.
-const LIGHT_ICON_CLASS =
-  "brightness-0 saturate-100 [filter:invert(29%)_sepia(98%)_saturate(1000%)_hue-rotate(185deg)_brightness(89%)_contrast(101%)]";
-const DARK_ICON_CLASS = "brightness-0 invert";
-
-function LogoGlyph({ className = LIGHT_ICON_CLASS }: { className?: string }) {
-  return (
-    // eslint-disable-next-line @next/next/no-img-element
-    <img
-      src="/logo.png"
-      alt=""
-      className={`h-5 w-5 shrink-0 object-contain ${className}`.trim()}
-      aria-hidden
-    />
-  );
+function LogoDot({ className }: { className: string }) {
+  return <span className={`inline-block h-2 w-2 shrink-0 rounded-full ${className}`} aria-hidden />;
 }
 
+/**
+ * Tekst-wordmark: altid lowercase «systemklar», Inter bold.
+ * Lys baggrund: #0A6EBD · Mørk/navy: hvid.
+ */
 export function SystemklarLogo({
   href,
-  label = "systemklar",
-  textClassName = "text-sm font-bold tracking-tight text-sky-700",
+  textClassName = "",
   className = "inline-flex items-center gap-2",
-  iconClassName,
   variant = "light",
 }: SystemklarLogoProps) {
-  const resolvedIconClassName =
-    iconClassName ?? (variant === "dark" ? DARK_ICON_CLASS : LIGHT_ICON_CLASS);
+  const isDark = variant === "dark";
+  const textColor = isDark ? "text-white" : "text-[#0A6EBD]";
+  const dotColor = isDark ? "bg-white" : "bg-[#0A6EBD]";
 
   const inner = (
-    <span className={className}>
-      <LogoGlyph className={resolvedIconClassName} />
-      <span className={textClassName}>{label}</span>
+    <span className={`${className} font-bold lowercase tracking-tight`.trim()}>
+      <LogoDot className={dotColor} />
+      <span className={`${textColor} ${textClassName}`.trim()}>systemklar</span>
     </span>
   );
 

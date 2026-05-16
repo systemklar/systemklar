@@ -55,10 +55,10 @@ export function normalizeMonitoringStatusForDisplay(raw: string): string {
 
 export function statusColorClass(raw: string): string {
   const s = (raw ?? "").toLowerCase();
-  if (s === "ok") return "text-emerald-700";
-  if (s === "advarsel") return "text-amber-700";
-  if (s === "fejl") return "text-red-700";
-  return "text-slate-600";
+  if (s === "ok") return "text-[#0A7C5C]";
+  if (s === "advarsel") return "text-[#C47B0A]";
+  if (s === "fejl") return "text-[#C42B2B]";
+  return "text-[#2C4A5E]";
 }
 
 type MonRow = { system_name: string; status: string; checked_at: string };
@@ -157,27 +157,29 @@ export type ItReportHtmlInput = {
   content: ITReportContentV1;
   /** When true, include print @page rules for browser PDF. */
   forPrint: boolean;
-  /**
-   * Origin for static assets (no trailing slash), e.g. https://systemklar.dk.
-   * Use in PDF downloads and iframe srcdoc so `/logo.png` resolves correctly.
-   */
-  assetBaseUrl?: string | null;
 };
 
-/** Absolute or root-relative URL to `public/logo.png`. */
-export function itReportLogoUrl(assetBaseUrl?: string | null): string {
-  const b = (assetBaseUrl ?? "").trim().replace(/\/$/, "");
-  return b ? `${b}/logo.png` : "/logo.png";
-}
+const DS = {
+  accent: "#0A6EBD",
+  navy: "#062840",
+  pageBg: "#F5FAFD",
+  card: "#FFFFFF",
+  text: "#0D1F2D",
+  textSecondary: "#2C4A5E",
+  helper: "#7AAEC8",
+  border: "#D0E8F5",
+  ok: "#0A7C5C",
+  warn: "#C47B0A",
+  err: "#C42B2B",
+} as const;
 
 const SIGNOFF_CHECK_SVG = `<svg width="44" height="44" viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" style="flex-shrink:0">
-  <circle cx="22" cy="22" r="20" fill="#dcfce7" stroke="#22c55e" stroke-width="2"/>
-  <path d="M13 22.5l6 6 12-16" stroke="#166534" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+  <circle cx="22" cy="22" r="20" fill="#E8F7F0" stroke="${DS.ok}" stroke-width="2"/>
+  <path d="M13 22.5l6 6 12-16" stroke="${DS.ok}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
 </svg>`;
 
 export function buildItReportHtmlDocument(input: ItReportHtmlInput): string {
-  const { organisationName, periodLabel, aiSummary, aiRecommendations, content, forPrint, assetBaseUrl } = input;
-  const logoSrc = itReportLogoUrl(assetBaseUrl);
+  const { organisationName, periodLabel, aiSummary, aiRecommendations, content, forPrint } = input;
   const bullets = recommendationsToBullets(aiRecommendations);
   const t = content.tickets;
 
@@ -185,33 +187,34 @@ export function buildItReportHtmlDocument(input: ItReportHtmlInput): string {
     .map((row) => {
       const st = (row.status || "").toLowerCase();
       const stLabel = st === "resolved" ? "Løst" : "Åben";
-      const stBg = st === "resolved" ? "#dcfce7" : "#e0f2fe";
-      const stCol = st === "resolved" ? "#166534" : "#0369a1";
+      const stBg = st === "resolved" ? "#E8F7F0" : "#E8F2FC";
+      const stCol = st === "resolved" ? DS.ok : DS.accent;
       return `<tr>
-        <td style="padding:10px 12px;border-bottom:1px solid #e2e8f0;">${escapeHtml(row.title)}</td>
-        <td style="padding:10px 12px;border-bottom:1px solid #e2e8f0;"><span style="display:inline-block;padding:2px 8px;border-radius:999px;font-size:11px;font-weight:600;background:${stBg};color:${stCol};">${stLabel}</span></td>
-        <td style="padding:10px 12px;border-bottom:1px solid #e2e8f0;font-size:12px;color:#475569;">${escapeHtml(formatDaDateTime(row.created_at))}</td>
+        <td style="padding:10px 12px;border-bottom:1px solid ${DS.border};color:${DS.text};">${escapeHtml(row.title)}</td>
+        <td style="padding:10px 12px;border-bottom:1px solid ${DS.border};"><span style="display:inline-block;padding:2px 8px;border-radius:999px;font-size:11px;font-weight:600;background:${stBg};color:${stCol};">${stLabel}</span></td>
+        <td style="padding:10px 12px;border-bottom:1px solid ${DS.border};font-size:12px;color:${DS.textSecondary};">${escapeHtml(formatDaDateTime(row.created_at))}</td>
       </tr>`;
     })
     .join("");
 
   const sysRows = content.monitoring.bySystem
     .map((row) => {
+      const raw = (row.lastStatus || "").toLowerCase();
       const st = normalizeMonitoringStatusForDisplay(row.lastStatus);
       const col =
-        (row.lastStatus || "").toLowerCase() === "ok"
-          ? "#166534"
-          : (row.lastStatus || "").toLowerCase() === "advarsel"
-            ? "#b45309"
-            : (row.lastStatus || "").toLowerCase() === "fejl"
-              ? "#b91c1c"
-              : "#475569";
+        raw === "ok"
+          ? DS.ok
+          : raw === "advarsel"
+            ? DS.warn
+            : raw === "fejl"
+              ? DS.err
+              : DS.helper;
       const last = row.lastChecked ? formatDaDateTime(row.lastChecked) : "—";
-      return `<tr style="background:#fff;">
-        <td style="padding:10px 12px;border-bottom:1px solid #e2e8f0;font-weight:500;">${escapeHtml(row.friendlyName)}</td>
-        <td style="padding:10px 12px;border-bottom:1px solid #e2e8f0;color:${col};font-weight:600;">${escapeHtml(st)}</td>
-        <td style="padding:10px 12px;border-bottom:1px solid #e2e8f0;">${row.uptimePercent}%</td>
-        <td style="padding:10px 12px;border-bottom:1px solid #e2e8f0;font-size:12px;color:#64748b;">${escapeHtml(last)}</td>
+      return `<tr>
+        <td style="padding:10px 12px;border-bottom:1px solid ${DS.border};font-weight:600;color:${DS.text};">${escapeHtml(row.friendlyName)}</td>
+        <td style="padding:10px 12px;border-bottom:1px solid ${DS.border};color:${col};font-weight:600;">${escapeHtml(st)}</td>
+        <td style="padding:10px 12px;border-bottom:1px solid ${DS.border};color:${DS.textSecondary};">${row.uptimePercent}%</td>
+        <td style="padding:10px 12px;border-bottom:1px solid ${DS.border};font-size:12px;color:${DS.helper};">${escapeHtml(last)}</td>
       </tr>`;
     })
     .join("");
@@ -229,8 +232,8 @@ export function buildItReportHtmlDocument(input: ItReportHtmlInput): string {
 
   const bulletsHtml =
     bullets.length > 0
-      ? `<ul style="margin:0;padding-left:1.1rem;color:#334155;line-height:1.55;">${bullets.map((b) => `<li style="margin-bottom:6px;">${escapeHtml(b)}</li>`).join("")}</ul>`
-      : `<p style="color:#64748b;">—</p>`;
+      ? `<ul style="margin:0;padding-left:1.1rem;color:${DS.textSecondary};line-height:1.6;">${bullets.map((b) => `<li style="margin-bottom:6px;">${escapeHtml(b)}</li>`).join("")}</ul>`
+      : `<p style="color:${DS.helper};">—</p>`;
 
   return `<!DOCTYPE html>
 <html lang="da">
@@ -238,40 +241,45 @@ export function buildItReportHtmlDocument(input: ItReportHtmlInput): string {
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>${escapeHtml(organisationName)} — IT-statusrapport</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet" />
   <style>
     ${printCss}
     * { box-sizing: border-box; }
-    body { font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; margin: 0; color: #0f172a; background: #fff; }
-    .wrap { max-width: 720px; margin: 0 auto; padding: 24px 20px 48px; }
-    .header { background: #062840; color: #fff; padding: 14px 20px; display: flex; align-items: center; justify-content: space-between; gap: 16px; }
-    .header-brand { display: flex; align-items: center; gap: 12px; flex-shrink: 0; }
-    .header-brand img { height: 40px; width: auto; max-width: 200px; object-fit: contain; display: block; }
-    .header h1 { margin: 0; flex: 1; text-align: right; font-size: 13px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: #fff; }
-    .sub { padding: 16px 20px; border-bottom: 1px solid #e2e8f0; }
-    .sub h2 { margin: 0 0 4px; font-size: 20px; color: #062840; }
-    .sub p { margin: 0; color: #64748b; font-size: 14px; }
-    section { padding: 20px; border-bottom: 1px solid #e2e8f0; }
-    section h3 { margin: 0 0 12px; font-size: 14px; text-transform: uppercase; letter-spacing: 0.06em; color: #062840; }
-    .prose { font-size: 14px; line-height: 1.65; color: #334155; }
-    table { width: 100%; border-collapse: collapse; font-size: 13px; }
-    thead th { text-align: left; padding: 8px 12px; background: #f1f5f9; color: #062840; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; border-bottom: 1px solid #e2e8f0; }
-    tbody tr:nth-child(even) { background: #f8fafc; }
-    .signoff-wrap { max-width: 720px; margin: 32px auto 0; padding: 0 20px 24px; }
-    .signoff { border: 1px solid #062840; border-radius: 10px; padding: 20px 22px; display: flex; flex-wrap: wrap; align-items: flex-start; justify-content: space-between; gap: 20px 28px; page-break-inside: avoid; background: #fff; }
-    .signoff-left { flex: 1; min-width: 200px; display: flex; gap: 16px; align-items: flex-start; }
-    .signoff-left h4 { margin: 0 0 8px; font-size: 15px; font-weight: 700; color: #062840; line-height: 1.35; }
-    .signoff-left p { margin: 0; font-size: 12px; line-height: 1.55; color: #64748b; max-width: 36rem; }
+    body { font-family: Inter, ui-sans-serif, system-ui, sans-serif; margin: 0; color: ${DS.text}; background: ${DS.pageBg}; }
+    .header { background: ${DS.navy}; color: #fff; padding: 18px 24px; display: flex; align-items: center; justify-content: space-between; gap: 20px; }
+    .wordmark { font-size: 20px; font-weight: 700; letter-spacing: -0.02em; color: #fff; text-transform: lowercase; }
+    .wordmark::before { content: ""; display: inline-block; width: 8px; height: 8px; border-radius: 999px; background: #fff; margin-right: 10px; vertical-align: middle; }
+    .header h1 { margin: 0; font-size: 15px; font-weight: 300; letter-spacing: 0.14em; text-transform: none; color: #fff; text-align: right; }
+    .sub { padding: 20px 24px 22px; border-bottom: 1px solid ${DS.border}; background: ${DS.card}; }
+    .sub h2 { margin: 0 0 6px; font-size: 22px; font-weight: 700; color: ${DS.text}; letter-spacing: -0.02em; }
+    .sub p { margin: 0; font-size: 15px; color: ${DS.textSecondary}; line-height: 1.45; }
+    .wrap { max-width: 720px; margin: 0 auto; padding: 0 20px 32px; background: ${DS.pageBg}; }
+    section { padding: 22px 0; border-bottom: 1px solid ${DS.border}; background: transparent; }
+    section h3 { margin: 0 0 14px; padding-left: 12px; border-left: 2px solid ${DS.accent}; font-size: 18px; font-weight: 600; color: ${DS.text}; letter-spacing: -0.01em; }
+    .prose { font-size: 15px; line-height: 1.65; color: ${DS.textSecondary}; }
+    table { width: 100%; border-collapse: collapse; font-size: 13px; border: 1px solid ${DS.border}; border-radius: 8px; overflow: hidden; }
+    thead th { text-align: left; padding: 10px 12px; background: ${DS.navy}; color: #fff; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; }
+    tbody tr:nth-child(odd) { background: ${DS.card}; }
+    tbody tr:nth-child(even) { background: ${DS.pageBg}; }
+    tbody td { border-bottom: 1px solid ${DS.border}; }
+    tbody tr:last-child td { border-bottom: none; }
+    .signoff-wrap { max-width: 720px; margin: 0 auto; padding: 8px 20px 28px; background: ${DS.pageBg}; }
+    .signoff { border: 1px solid ${DS.navy}; border-radius: 16px; padding: 24px; display: flex; flex-wrap: wrap; align-items: flex-start; justify-content: space-between; gap: 24px 32px; page-break-inside: avoid; background: ${DS.card}; }
+    .signoff-left { flex: 1; min-width: 220px; display: flex; gap: 16px; align-items: flex-start; }
+    .signoff-left h4 { margin: 0 0 8px; font-size: 16px; font-weight: 700; color: ${DS.text}; line-height: 1.35; }
+    .signoff-left p { margin: 0; font-size: 13px; line-height: 1.55; color: ${DS.textSecondary}; max-width: 38rem; }
     .signoff-right { flex-shrink: 0; display: flex; flex-direction: column; align-items: flex-end; text-align: right; gap: 6px; }
-    .signoff-right img { width: 80px; height: auto; object-fit: contain; display: block; }
-    .signoff-right .domain { font-size: 12px; color: #94a3b8; font-weight: 500; }
-    .footer { text-align: center; font-size: 11px; color: #94a3b8; padding: 16px; border-top: 1px solid #e2e8f0; }
+    .signoff-wordmark { font-size: 20px; font-weight: 700; color: ${DS.accent}; letter-spacing: -0.02em; text-transform: lowercase; }
+    .signoff-wordmark::before { content: ""; display: inline-block; width: 8px; height: 8px; border-radius: 999px; background: ${DS.accent}; margin-right: 8px; vertical-align: middle; }
+    .signoff-right .domain { font-size: 12px; color: ${DS.helper}; font-weight: 500; }
+    .footer { text-align: center; font-size: 12px; color: ${DS.helper}; padding: 18px 16px 28px; border-top: 1px solid ${DS.border}; background: ${DS.pageBg}; text-transform: lowercase; }
   </style>
 </head>
 <body>
   <div class="header">
-    <div class="header-brand">
-      <img src="${escapeHtml(logoSrc)}" alt="Systemklar" width="200" height="40" />
-    </div>
+    <span class="wordmark">systemklar</span>
     <h1>IT-statusrapport</h1>
   </div>
   <div class="sub">
@@ -287,17 +295,17 @@ export function buildItReportHtmlDocument(input: ItReportHtmlInput): string {
       <h3>Systemstatus</h3>
       <table>
         <thead><tr><th>System</th><th>Status</th><th>Oppetid denne måned</th><th>Senest tjekket</th></tr></thead>
-        <tbody>${sysRows || `<tr><td colspan="4" style="padding:12px;color:#64748b;">Ingen overvågningsdata i perioden.</td></tr>`}</tbody>
+        <tbody>${sysRows || `<tr><td colspan="4" style="padding:14px;color:${DS.helper};">Ingen overvågningsdata i perioden.</td></tr>`}</tbody>
       </table>
     </section>
     <section>
       <h3>Support &amp; sager</h3>
-      <p style="margin:0 0 12px;font-size:14px;color:#334155;">
-        <strong>${t.totalCreated}</strong> sager oprettet · <strong>${t.resolved}</strong> løst · <strong>${t.open}</strong> åbne
+      <p style="margin:0 0 14px;font-size:15px;color:${DS.textSecondary};">
+        <strong style="color:${DS.text};">${t.totalCreated}</strong> sager oprettet · <strong style="color:${DS.text};">${t.resolved}</strong> løst · <strong style="color:${DS.text};">${t.open}</strong> åbne
       </p>
       <table>
         <thead><tr><th>Titel</th><th>Status</th><th>Oprettet</th></tr></thead>
-        <tbody>${ticketRows || `<tr><td colspan="3" style="padding:12px;color:#64748b;">Ingen sager i perioden.</td></tr>`}</tbody>
+        <tbody>${ticketRows || `<tr><td colspan="3" style="padding:14px;color:${DS.helper};">Ingen sager i perioden.</td></tr>`}</tbody>
       </table>
     </section>
     <section>
@@ -311,16 +319,16 @@ export function buildItReportHtmlDocument(input: ItReportHtmlInput): string {
         ${SIGNOFF_CHECK_SVG}
         <div>
           <h4>Personligt gennemgået af Systemklar</h4>
-          <p>Denne rapport er udarbejdet på baggrund af data fra dit IT-miljø og er gennemgået og godkendt af en IT-konsulent hos Systemklar inden udsendelse. Vi står til rådighed hvis du har spørgsmål.</p>
+          <p>Denne rapport er udarbejdet på baggrund af data fra dit IT-miljø og er gennemgået og godkendt af Systemklar inden udsendelse. Vi står altid klar til at hjælpe hvis du har spørgsmål.</p>
         </div>
       </div>
       <div class="signoff-right">
-        <img src="${escapeHtml(logoSrc)}" alt="" width="80" height="32" />
+        <span class="signoff-wordmark">systemklar</span>
         <span class="domain">systemklar.dk</span>
       </div>
     </div>
   </div>
-  <div class="footer">Systemklar · systemklar.dk · Udarbejdet og kvalitetssikret af Systemklar IT</div>
+  <div class="footer">systemklar · systemklar.dk · kontakt@systemklar.dk</div>
 </body>
 </html>`;
 }

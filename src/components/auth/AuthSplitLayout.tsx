@@ -29,11 +29,7 @@ export function AuthSplitLayout({
             aria-hidden
           />
           <AnimatedSection direction="left" delay={100} className="relative z-10 mx-auto w-full max-w-md">
-            <SystemklarLogo
-              href="/"
-              variant="dark"
-              textClassName="text-sm font-bold tracking-tight text-white"
-            />
+            <SystemklarLogo href="/" variant="dark" textClassName="text-sm font-bold tracking-tight" />
             <h2 className="mt-10 max-w-md text-4xl font-bold tracking-tight text-white">{sideTitle}</h2>
             {sideBullets ? (
               <ul className="mt-8 space-y-4 text-sky-100">
@@ -50,13 +46,9 @@ export function AuthSplitLayout({
           </AnimatedSection>
         </aside>
         <section className="flex items-center justify-center bg-[#F5FAFD] px-6 py-12 md:px-10">
-          <AnimatedSection direction="right" delay={0} className="w-full max-w-md rounded-2xl border border-sky-100 bg-white p-8 shadow-sm">
+          <AnimatedSection direction="right" delay={0} className="w-full max-w-md rounded-2xl border border-[#D0E8F5] bg-white p-8 shadow-sm">
             <div className="mb-5 flex justify-center">
-              <SystemklarLogo
-                href="/"
-                variant="light"
-                textClassName="text-xs font-bold tracking-tight text-sky-700"
-              />
+              <SystemklarLogo href="/" variant="light" textClassName="text-xs font-bold tracking-tight" />
             </div>
             <h1 className="text-3xl font-bold tracking-tight text-[#0D1F2D]">{title}</h1>
             <p className="mt-3 text-sm text-[#4A8CB5]">{subtitle}</p>

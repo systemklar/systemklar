@@ -210,7 +210,7 @@ export default function AdminCustomersClient() {
         <button
           type="button"
           onClick={() => setModalOpen(true)}
-          className="rounded-full bg-sky-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-sky-700"
+          className="rounded-full bg-[#0A6EBD] px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-[#0859A0]"
         >
           Ny kunde
         </button>
@@ -373,7 +373,7 @@ export default function AdminCustomersClient() {
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="rounded-full bg-sky-600 px-5 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-sky-700 disabled:opacity-50"
+                  className="rounded-full bg-[#0A6EBD] px-5 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-[#0859A0] disabled:opacity-50"
                 >
                   {submitting ? "Opretter..." : "Opret"}
                 </button>

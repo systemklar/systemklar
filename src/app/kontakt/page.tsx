@@ -138,7 +138,7 @@ export default function KontaktPage() {
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="min-h-[44px] w-full rounded-full bg-sky-600 px-6 py-3 font-semibold text-white transition hover:bg-sky-700 disabled:opacity-60"
+                  className="min-h-[44px] w-full rounded-full bg-[#0A6EBD] px-6 py-3 font-semibold text-white transition hover:bg-[#0859A0] disabled:opacity-60"
                 >
                   {submitting ? "Sender..." : "Send besked"}
                 </button>
@@ -158,7 +158,7 @@ export default function KontaktPage() {
                   <button
                     type="button"
                     onClick={() => setShowDemoModal(true)}
-                    className="mt-4 inline-flex rounded-full bg-sky-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-sky-700"
+                    className="mt-4 inline-flex rounded-full bg-[#0A6EBD] px-5 py-2.5 text-sm font-semibold text-white hover:bg-[#0859A0]"
                   >
                     Book demo
                   </button>
@@ -191,7 +191,7 @@ export default function KontaktPage() {
 
               <div className="rounded-2xl border border-sky-100 bg-[#F0F7FF] p-6">
                 <div className="mb-4 flex items-center gap-4">
-                  <div className="flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-full bg-sky-600 text-xl font-bold text-white">
+                  <div className="flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-full bg-[#0A6EBD] text-xl font-bold text-white">
                     BS
                   </div>
                   <div>

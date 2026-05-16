@@ -67,17 +67,14 @@ export function AdminSidebar({ activeNav, open = false, onClose }: AdminSidebarP
 
   return (
     <aside
-      className={`fixed inset-y-0 left-0 z-30 flex h-screen w-64 shrink-0 flex-col border-r border-sky-100 bg-white p-4 transition-transform duration-300 md:static md:h-auto md:min-h-screen md:translate-x-0 ${
+      className={`fixed inset-y-0 left-0 z-30 flex h-screen w-64 shrink-0 flex-col border-r border-[#D0E8F5] bg-white p-4 transition-transform duration-300 md:static md:h-auto md:min-h-screen md:translate-x-0 ${
         open ? "translate-x-0" : "-translate-x-full"
       }`}
     >
       <div className="flex min-h-0 flex-1 flex-col">
         <div className="mb-4 flex items-center justify-between border-b border-sky-50 pb-4">
           <Link href="/admin/dashboard" className="block">
-            <SystemklarLogo
-              variant="light"
-              textClassName="text-sm font-bold tracking-tight text-sky-700"
-            />
+            <SystemklarLogo variant="light" textClassName="text-sm font-bold tracking-tight" />
             <p className="mt-0.5 text-xs font-medium text-[#4A8CB5]">Admin</p>
           </Link>
           <button
@@ -104,10 +101,10 @@ export function AdminSidebar({ activeNav, open = false, onClose }: AdminSidebarP
                     <Link
                       key={item.key}
                       href={item.href}
-                      className={`flex cursor-pointer items-center gap-3 rounded-xl px-3 py-2.5 text-sm transition-all ${
+                      className={`flex cursor-pointer items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition-colors ${
                         isActive
-                          ? "border border-sky-100 bg-sky-50 font-semibold text-sky-700"
-                          : "text-[#2C4A5E] hover:bg-[#F0F7FF] hover:text-sky-700"
+                          ? "border border-[#D0E8F5] bg-sky-50 font-semibold text-sky-800"
+                          : "text-[#2C4A5E] hover:bg-[#F5FAFD] hover:text-[#0A6EBD]"
                       }`}
                     >
                       {item.icon}

@@ -217,7 +217,7 @@ function TemplateEditor({ row, variableKeys, supabase, onApplied }: EditorProps)
           type="button"
           disabled={saving}
           onClick={() => void handleSave()}
-          className="rounded-full bg-sky-600 px-6 py-2 text-sm font-semibold text-white transition hover:bg-sky-700 disabled:opacity-50"
+          className="rounded-full bg-[#0A6EBD] px-6 py-2 text-sm font-semibold text-white transition hover:bg-[#0859A0] disabled:opacity-50"
         >
           {saving ? "Gemmer..." : "Gem ændringer"}
         </button>

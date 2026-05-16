@@ -1,8 +1,11 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
+  --background: #f5fafd;
   --foreground: #0d1f2d;
+  --sk-accent: #0a6ebd;
+  --sk-navy: #062840;
+  --sk-border: #d0e8f5;
 }
 
 @theme inline {
@@ -142,7 +145,7 @@ html {
 }
 
 .app-rhythm .rounded-2xl.border.bg-white {
-  border-color: #dbe8f3;
+  border-color: #d0e8f5;
 }
 
 .app-rhythm table thead {
@@ -168,14 +171,14 @@ button {
 }
 
 .btn-primary {
-  background-color: #2563eb;
+  background-color: #0a6ebd;
   color: #fff;
   border-radius: 9999px;
   transition: transform 0.1s ease, background-color 0.2s ease;
 }
 
 .btn-primary:hover {
-  background-color: #1d4ed8;
+  background-color: #0859a0;
 }
 
 .btn-primary:active {
@@ -183,18 +186,19 @@ button {
 }
 
 .btn-primary:focus-visible {
-  outline: 2px solid rgba(37, 99, 235, 0.45);
+  outline: 2px solid rgba(10, 110, 189, 0.45);
   outline-offset: 2px;
 }
 
 .btn-danger {
-  background-color: #dc2626;
-  color: #fff;
-  border-radius: 0.5rem;
+  background-color: #fef2f2;
+  color: #b91c1c;
+  border: 1px solid #fecaca;
+  border-radius: 9999px;
 }
 
 .btn-danger:hover {
-  background-color: #b91c1c;
+  background-color: #fee2e2;
 }
 
 /* TicketMessageThread: bouncing typing dots */

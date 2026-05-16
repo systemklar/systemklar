@@ -108,7 +108,7 @@ export default function PortalRapportPage() {
               </div>
               <a
                 href={`/api/portal/reports/${r.id}/pdf`}
-                className="inline-flex shrink-0 items-center justify-center gap-2 rounded-xl bg-sky-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-sky-700"
+                className="inline-flex shrink-0 items-center justify-center gap-2 rounded-xl bg-[#0A6EBD] px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-[#0859A0]"
               >
                 <FileDown className="h-4 w-4" aria-hidden />
                 Download rapport

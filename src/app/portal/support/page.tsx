@@ -377,7 +377,7 @@ function PortalSupportPageInner() {
                 setErrorMessage(null);
               }
             }}
-            className="rounded-full bg-sky-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-sky-700"
+            className="rounded-full bg-[#0A6EBD] px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-[#0859A0]"
           >
             Opret ny sag
           </button>
@@ -465,7 +465,7 @@ function PortalSupportPageInner() {
                   <button
                     type="submit"
                     disabled={submitting || uploadingFiles}
-                    className="rounded-full bg-sky-600 px-5 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-sky-700 disabled:opacity-60"
+                    className="rounded-full bg-[#0A6EBD] px-5 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-[#0859A0] disabled:opacity-60"
                   >
                     {submitting || uploadingFiles ? (
                       <span className="inline-flex items-center gap-2">
@@ -508,7 +508,7 @@ function PortalSupportPageInner() {
                   <button
                     type="button"
                     onClick={() => void finishCreation()}
-                    className="rounded-full bg-sky-600 px-5 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-sky-700"
+                    className="rounded-full bg-[#0A6EBD] px-5 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-[#0859A0]"
                   >
                     Færdig
                   </button>
@@ -545,7 +545,7 @@ function PortalSupportPageInner() {
               <button
                 type="button"
                 onClick={() => setShowForm(true)}
-                className="mt-5 rounded-full bg-sky-600 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-sky-700"
+                className="mt-5 rounded-full bg-[#0A6EBD] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[#0859A0]"
               >
                 Opret ny sag
               </button>

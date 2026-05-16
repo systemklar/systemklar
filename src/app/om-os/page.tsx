@@ -104,7 +104,7 @@ export default function OmOsPage() {
               <AnimatedSection direction="right">
                 <div className="flex justify-center">
                   <div className="flex h-64 w-64 flex-col items-center justify-center rounded-3xl border border-sky-100 bg-gradient-to-br from-sky-100 to-[#F0F7FF] shadow-sm">
-                    <div className="mb-3 flex h-20 w-20 items-center justify-center rounded-full bg-sky-600 text-3xl font-bold text-white">
+                    <div className="mb-3 flex h-20 w-20 items-center justify-center rounded-full bg-[#0A6EBD] text-3xl font-bold text-white">
                       BS
                     </div>
                     <p className="text-base font-semibold text-[#0D1F2D]">Benjamin Sørensen</p>
@@ -181,7 +181,7 @@ export default function OmOsPage() {
                 <div className="flex flex-col justify-center gap-3 sm:flex-row">
                   <a
                     href="mailto:benjamin@systemklar.dk"
-                    className="flex items-center justify-center gap-2 rounded-full bg-sky-600 px-6 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-sky-700"
+                    className="flex items-center justify-center gap-2 rounded-full bg-[#0A6EBD] px-6 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-[#0859A0]"
                   >
                     <Mail className="h-4 w-4" />
                     Send en email

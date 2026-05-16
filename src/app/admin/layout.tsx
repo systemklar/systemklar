@@ -82,7 +82,7 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
       <AdminSidebar activeNav={activeNav} open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
       <div className="min-w-0 flex-1 overflow-y-auto">
-        <div className="sticky top-0 z-10 flex items-center justify-between border-b border-sky-100 bg-white px-4 py-3 md:hidden">
+        <div className="sticky top-0 z-10 flex items-center justify-between border-b border-[#D0E8F5] bg-white px-4 py-3 md:hidden">
           <button
             type="button"
             onClick={() => setSidebarOpen(true)}
@@ -91,7 +91,7 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
           >
             <Menu className="h-5 w-5" />
           </button>
-          <span className="text-sm font-bold text-sky-600">Admin</span>
+          <span className="text-sm font-bold text-[#0A6EBD]">Admin</span>
           <span className="w-9" aria-hidden />
         </div>
 

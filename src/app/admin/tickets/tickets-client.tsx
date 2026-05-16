@@ -263,7 +263,7 @@ export default function AdminTicketsClient() {
               setSuccessMessage(null);
               setModalOpen(true);
             }}
-            className="rounded-full bg-sky-600 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-sky-700"
+            className="rounded-full bg-[#0A6EBD] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[#0859A0]"
           >
             Ny sag
           </button>
@@ -480,7 +480,7 @@ export default function AdminTicketsClient() {
                 <button
                   type="submit"
                   disabled={creatingTicket}
-                  className="rounded-full bg-sky-600 px-5 py-2 text-sm font-semibold text-white transition hover:bg-sky-700 disabled:opacity-60"
+                  className="rounded-full bg-[#0A6EBD] px-5 py-2 text-sm font-semibold text-white transition hover:bg-[#0859A0] disabled:opacity-60"
                 >
                   {creatingTicket ? "Opretter..." : "Opret sag"}
                 </button>

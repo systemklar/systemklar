@@ -160,7 +160,7 @@ export default function PriserPage() {
                 onClick={() => setYearly(!yearly)}
                 aria-label={yearly ? "Skift til månedlig" : "Skift til årlig"}
                 className={`relative h-6 w-12 rounded-full transition-colors duration-200 ${
-                  yearly ? "bg-sky-600" : "bg-slate-200"
+                  yearly ? "bg-[#0A6EBD]" : "bg-slate-200"
                 }`}
               >
                 <div
@@ -201,7 +201,7 @@ export default function PriserPage() {
                       }`}
                     >
                       {plan.highlight ? (
-                        <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-sky-600 px-3 py-1 text-xs font-semibold text-white shadow-sm">
+                        <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-[#0A6EBD] px-3 py-1 text-xs font-semibold text-white shadow-sm">
                           Mest populær
                         </span>
                       ) : null}
@@ -228,7 +228,7 @@ export default function PriserPage() {
                         onClick={() => setModalSubject(`${plan.name} – ${plan.monthly}`)}
                         className={`mt-8 inline-flex min-h-[44px] w-full justify-center rounded-full px-5 py-3 font-semibold transition-colors ${
                           plan.buttonStyle === "primary"
-                            ? "bg-sky-600 text-white hover:bg-sky-700"
+                            ? "bg-[#0A6EBD] text-white hover:bg-[#0859A0]"
                             : "border border-sky-200 text-sky-700 hover:bg-sky-50"
                         }`}
                       >
@@ -335,7 +335,7 @@ export default function PriserPage() {
               <button
                 type="button"
                 onClick={() => setModalSubject("Demo")}
-                className="mt-8 min-h-[44px] rounded-full bg-sky-600 px-7 py-3 font-semibold text-white transition-colors hover:bg-sky-700"
+                className="mt-8 min-h-[44px] rounded-full bg-[#0A6EBD] px-7 py-3 font-semibold text-white transition-colors hover:bg-[#0859A0]"
               >
                 Book en gratis snak
               </button>
