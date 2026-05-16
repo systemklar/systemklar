@@ -3,6 +3,7 @@ import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 import { isAdminEmail } from "@/lib/admin-email";
 import { sendTicketReplyEmail } from "@/lib/email";
+import { profileWantsTicketUpdatedEmails } from "@/lib/notification-preferences";
 
 export const dynamic = 'force-dynamic';
 
@@ -107,12 +108,21 @@ export async function POST(request: Request, context: { params: Promise<{ id: st
     try {
       const { data: recipients } = await supabase
         .from("profiles")
-        .select("email, full_name, notif_new_message")
-        .eq("organisation_id", ticket.organisation_id)
-        .eq("notif_new_message", true);
+        .select(
+          "email, full_name, notification_preferences, notif_new_message, notif_status_change",
+        )
+        .eq("organisation_id", ticket.organisation_id);
       const ticketTitle = (ticket.title as string | null)?.trim() || "Supportsag";
       const preview = content.length > 220 ? `${content.slice(0, 220)}...` : content;
       for (const recipient of recipients ?? []) {
+        const wantsEmail = profileWantsTicketUpdatedEmails(
+          recipient.notification_preferences,
+          {
+            notif_new_message: recipient.notif_new_message as boolean | null,
+            notif_status_change: recipient.notif_status_change as boolean | null,
+          },
+        );
+        if (!wantsEmail) continue;
         const email = (recipient.email as string | null)?.trim();
         if (!email) continue;
         await sendTicketReplyEmail(

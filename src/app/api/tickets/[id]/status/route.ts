@@ -4,6 +4,7 @@ import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 import { isAdminEmail } from "@/lib/admin-email";
 import { sendTicketClosedEmail } from "@/lib/email";
+import { profileWantsTicketUpdatedEmails } from "@/lib/notification-preferences";
 
 export const dynamic = 'force-dynamic';
 
@@ -113,11 +114,20 @@ export async function PATCH(
     try {
       const { data: recipients } = await admin
         .from("profiles")
-        .select("email, full_name, notif_status_change")
-        .eq("organisation_id", ownerOrgId)
-        .eq("notif_status_change", true);
+        .select(
+          "email, full_name, notification_preferences, notif_new_message, notif_status_change",
+        )
+        .eq("organisation_id", ownerOrgId);
       const title = ((ticketRow as { title?: string }).title ?? "Supportsag").trim() || "Supportsag";
       for (const recipient of recipients ?? []) {
+        const wantsEmail = profileWantsTicketUpdatedEmails(
+          recipient.notification_preferences,
+          {
+            notif_new_message: recipient.notif_new_message as boolean | null,
+            notif_status_change: recipient.notif_status_change as boolean | null,
+          },
+        );
+        if (!wantsEmail) continue;
         const email = (recipient.email as string | undefined)?.trim();
         if (!email) continue;
         await sendTicketClosedEmail(

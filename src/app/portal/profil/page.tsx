@@ -9,8 +9,20 @@ import {
   useRef,
   useState,
 } from "react";
+import Link from "next/link";
 import { Camera, Eye, EyeOff, Loader2 } from "lucide-react";
 import { ProfileAvatar } from "@/components/ProfileAvatar";
+import { ComingSoonBadge } from "@/components/portal/settings/ComingSoonBadge";
+import { SaveButton } from "@/components/portal/settings/SaveButton";
+import { SettingsRow } from "@/components/portal/settings/SettingsRow";
+import { SettingsSection } from "@/components/portal/settings/SettingsSection";
+import { SettingsToggle } from "@/components/portal/settings/SettingsToggle";
+import { Modal } from "@/components/ui/Modal";
+import {
+  profileNotificationPreferencesToJson,
+  resolveProfileNotificationPreferences,
+  type ProfileNotificationPreferences,
+} from "@/lib/notification-preferences";
 import { createClient } from "@/lib/supabase";
 import {
   notifyPortalProfileAvatarUpdated,
@@ -22,13 +34,13 @@ type ProfileRow = {
   id: string;
   full_name: string | null;
   email: string | null;
+  phone: string | null;
   avatar_initials: string | null;
   avatar_url: string | null;
-  role: string | null;
+  notification_preferences: unknown;
   notif_new_message: boolean | null;
   notif_status_change: boolean | null;
   notif_monthly_report: boolean | null;
-  organisations: { name: string } | { name: string }[] | null;
 };
 
 function buildInitials(name: string) {
@@ -41,29 +53,8 @@ function buildInitials(name: string) {
     .toUpperCase();
 }
 
-function Toggle({
-  value,
-  onChange,
-}: {
-  value: boolean;
-  onChange: (next: boolean) => void;
-}) {
-  return (
-    <button
-      type="button"
-      onClick={() => onChange(!value)}
-      className={`relative h-6 w-11 rounded-full transition-colors duration-200 ${
-        value ? "bg-[#0A6EBD]" : "bg-slate-200"
-      }`}
-    >
-      <div
-        className={`absolute top-1 h-4 w-4 rounded-full bg-white shadow transition-transform duration-200 ${
-          value ? "translate-x-6" : "translate-x-1"
-        }`}
-      />
-    </button>
-  );
-}
+const inputClass =
+  "w-full max-w-xs rounded-xl border border-sky-200 px-3 py-2 text-sm text-[#0D1F2D] outline-none focus:ring-2 focus:ring-[#0A6EBD] sm:text-right";
 
 export default function PortalProfilePage() {
   const supabase = useMemo(() => createClient(), []);
@@ -78,9 +69,11 @@ export default function PortalProfilePage() {
   const [uploadingAvatar, setUploadingAvatar] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const [editingName, setEditingName] = useState(false);
-  const [fullNameInput, setFullNameInput] = useState("");
-  const [savingName, setSavingName] = useState(false);
+  const [fullName, setFullName] = useState("");
+  const [phone, setPhone] = useState("");
+  const [savedFullName, setSavedFullName] = useState("");
+  const [savedPhone, setSavedPhone] = useState("");
+  const [savingProfile, setSavingProfile] = useState(false);
 
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
@@ -88,17 +81,29 @@ export default function PortalProfilePage() {
   const [showCurrentPassword, setShowCurrentPassword] = useState(false);
   const [savingPassword, setSavingPassword] = useState(false);
 
-  const [notifNewMessage, setNotifNewMessage] = useState(true);
-  const [notifStatusChange, setNotifStatusChange] = useState(true);
-  const [notifMonthlyReport, setNotifMonthlyReport] = useState(true);
+  const [notifPrefs, setNotifPrefs] = useState<ProfileNotificationPreferences>({
+    ticket_updated: true,
+    system_failure: true,
+    report_ready: true,
+    weekly_status: false,
+  });
+  const [savedNotifPrefs, setSavedNotifPrefs] = useState<ProfileNotificationPreferences>(notifPrefs);
   const [savingNotifications, setSavingNotifications] = useState(false);
+
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+
+  const profileDirty =
+    fullName.trim() !== savedFullName.trim() || phone.trim() !== savedPhone.trim();
+  const passwordDirty =
+    currentPassword.length > 0 || newPassword.length > 0 || confirmNewPassword.length > 0;
+  const notifDirty = JSON.stringify(notifPrefs) !== JSON.stringify(savedNotifPrefs);
 
   const refreshAvatarUrl = useCallback(
     (uid: string) => {
       const { data } = supabase.storage.from("avatars").getPublicUrl(uid);
       setAvatarUrl(withCacheBust(data.publicUrl));
     },
-    [supabase]
+    [supabase],
   );
 
   const loadProfile = useCallback(async () => {
@@ -106,78 +111,73 @@ export default function PortalProfilePage() {
     setError(null);
 
     const { data: authData, error: authError } = await supabase.auth.getUser();
-    if (authError) {
-      console.error("[portal/profil] auth.getUser fejlede", authError);
-      setError("Kunne ikke hente brugersession. Prøv at logge ud og ind igen.");
-      setProfile(null);
-      setLoading(false);
-      return;
-    }
-    if (!authData.user) {
-      console.error("[portal/profil] ingen authenticated user fundet");
+    if (authError || !authData.user) {
       setError("Du er ikke logget ind. Log venligst ind igen.");
       setProfile(null);
       setLoading(false);
       return;
     }
+
     const authUser = authData.user;
     setAuthUserId(authUser.id);
     setAuthEmail(authUser.email ?? null);
 
-    const profileColumns =
-      "id,full_name,email,avatar_initials,avatar_url,role,notif_new_message,notif_status_change,notif_monthly_report,organisations(name)";
+    const columns =
+      "id,full_name,email,phone,avatar_initials,avatar_url,notification_preferences,notif_new_message,notif_status_change,notif_monthly_report";
 
     const { data: byIdData, error: profileError } = await supabase
       .from("profiles")
-      .select(profileColumns)
+      .select(columns)
       .eq("id", authUser.id)
       .maybeSingle();
 
     if (profileError) {
-      console.error("[portal/profil] profiles.select fejlede", profileError);
       setError(`Kunne ikke hente profil: ${profileError.message}`);
-      setProfile(null);
       setLoading(false);
       return;
     }
 
-    let profileRow = (Array.isArray(byIdData) ? byIdData[0] : byIdData) as ProfileRow | null | undefined;
+    let profileRow = (Array.isArray(byIdData) ? byIdData[0] : byIdData) as ProfileRow | null;
 
     if (!profileRow) {
-      const { data: byUserIdData, error: byUserIdError } = await supabase
+      const { data: byUserIdData } = await supabase
         .from("profiles")
-        .select(profileColumns)
+        .select(columns)
         .eq("user_id", authUser.id)
         .maybeSingle();
-      if (byUserIdError && byUserIdError.code !== "42703") {
-        console.error("[portal/profil] user_id-fallback fejlede", byUserIdError);
-      } else if (byUserIdData) {
-        console.warn("[portal/profil] fandt profil via user_id-fallback for", authUser.id);
-        profileRow = (Array.isArray(byUserIdData) ? byUserIdData[0] : byUserIdData) as ProfileRow;
-      }
+      profileRow = (Array.isArray(byUserIdData) ? byUserIdData[0] : byUserIdData) as ProfileRow | null;
     }
 
     if (!profileRow) {
-      console.error("[portal/profil] profil ikke fundet for user", authUser.id);
-      setError(
-        "Din profil blev ikke fundet i databasen. Kontakt support på kontakt@systemklar.dk."
-      );
-      setProfile(null);
+      setError("Din profil blev ikke fundet. Kontakt support på kontakt@systemklar.dk.");
       setLoading(false);
       return;
     }
 
+    const prefs = resolveProfileNotificationPreferences(profileRow.notification_preferences, {
+      notif_new_message: profileRow.notif_new_message,
+      notif_status_change: profileRow.notif_status_change,
+      notif_monthly_report: profileRow.notif_monthly_report,
+    });
+
+    const name = profileRow.full_name ?? "";
+    const phoneVal = profileRow.phone ?? "";
+
     setProfile(profileRow);
-    setFullNameInput(profileRow.full_name ?? "");
-    setNotifNewMessage(profileRow.notif_new_message ?? true);
-    setNotifStatusChange(profileRow.notif_status_change ?? true);
-    setNotifMonthlyReport(profileRow.notif_monthly_report ?? true);
+    setFullName(name);
+    setSavedFullName(name);
+    setPhone(phoneVal);
+    setSavedPhone(phoneVal);
+    setNotifPrefs(prefs);
+    setSavedNotifPrefs(prefs);
+
     const storedAvatar = profileRow.avatar_url?.trim();
     if (storedAvatar) {
       setAvatarUrl(withCacheBust(storedAvatar));
     } else {
       refreshAvatarUrl(authUser.id);
     }
+
     setLoading(false);
   }, [supabase, refreshAvatarUrl]);
 
@@ -199,14 +199,10 @@ export default function PortalProfilePage() {
 
     const { error: upErr } = await supabase.storage
       .from("avatars")
-      .upload(authUserId, file, {
-        upsert: true,
-        contentType: file.type || "image/png",
-      });
+      .upload(authUserId, file, { upsert: true, contentType: file.type || "image/png" });
 
+    setUploadingAvatar(false);
     if (upErr) {
-      setUploadingAvatar(false);
-      console.error("[portal/profil] avatar upload fejlede", upErr);
       setError(`Kunne ikke uploade billede: ${upErr.message}`);
       event.target.value = "";
       return;
@@ -218,11 +214,8 @@ export default function PortalProfilePage() {
       .update({ avatar_url: publicUrl })
       .eq("id", authUserId);
 
-    setUploadingAvatar(false);
-
     if (avatarColErr) {
-      console.error("[portal/profil] avatar_url update fejlede", avatarColErr);
-      setError(`Billedet blev uploadet, men kunne ikke gemmes på profilen: ${avatarColErr.message}`);
+      setError(`Billedet blev uploadet, men kunne ikke gemmes: ${avatarColErr.message}`);
       event.target.value = "";
       return;
     }
@@ -234,33 +227,34 @@ export default function PortalProfilePage() {
     event.target.value = "";
   };
 
-  const saveName = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
+  const saveProfileFields = async () => {
     if (!profile) return;
-    const trimmed = fullNameInput.trim();
+    const trimmed = fullName.trim();
     if (trimmed.length < 2) {
       setError("Navn skal være mindst 2 tegn.");
-      setSuccess(null);
       return;
     }
-    setSavingName(true);
+    setSavingProfile(true);
     setError(null);
     setSuccess(null);
-    const initials = buildInitials(trimmed);
 
     const { error: updateError } = await supabase
       .from("profiles")
-      .update({ full_name: trimmed, avatar_initials: initials })
+      .update({
+        full_name: trimmed,
+        avatar_initials: buildInitials(trimmed),
+        phone: phone.trim() || null,
+      })
       .eq("id", profile.id);
 
-    setSavingName(false);
+    setSavingProfile(false);
     if (updateError) {
-      console.error("[portal/profil] name update fejlede", updateError);
       setError(updateError.message);
       return;
     }
-    setEditingName(false);
-    setSuccess("Navn er opdateret.");
+    setSavedFullName(trimmed);
+    setSavedPhone(phone.trim());
+    setSuccess("Profil er opdateret.");
     await loadProfile();
   };
 
@@ -282,12 +276,9 @@ export default function PortalProfilePage() {
     }
 
     setSavingPassword(true);
-    const { error: updateError } = await supabase.auth.updateUser({
-      password: newPassword,
-    });
+    const { error: updateError } = await supabase.auth.updateUser({ password: newPassword });
     setSavingPassword(false);
     if (updateError) {
-      console.error("[portal/profil] password update fejlede", updateError);
       setError(updateError.message);
       return;
     }
@@ -302,278 +293,279 @@ export default function PortalProfilePage() {
     setSavingNotifications(true);
     setError(null);
     setSuccess(null);
+
     const { error: updateError } = await supabase
       .from("profiles")
       .update({
-        notif_new_message: notifNewMessage,
-        notif_status_change: notifStatusChange,
-        notif_monthly_report: notifMonthlyReport,
+        notification_preferences: profileNotificationPreferencesToJson(notifPrefs),
       })
       .eq("id", profile.id);
+
     setSavingNotifications(false);
     if (updateError) {
-      console.error("[portal/profil] notifications update fejlede", updateError);
       setError(updateError.message);
       return;
     }
+    setSavedNotifPrefs(notifPrefs);
     setSuccess("Notifikationsindstillinger er gemt.");
-    await loadProfile();
   };
 
-  const roleLabel = profile?.role === "org_admin" ? "Administrator" : "Medlem";
-  const organisationName = Array.isArray(profile?.organisations)
-    ? profile.organisations[0]?.name ?? "Ukendt organisation"
-    : profile?.organisations?.name ?? "Ukendt organisation";
-  const avatarText = profile?.avatar_initials || buildInitials(profile?.full_name ?? "") || "??";
+  const avatarText =
+    profile?.avatar_initials || buildInitials(profile?.full_name ?? "") || "??";
+  const displayEmail = profile?.email || authEmail || "—";
 
   if (!profile && !loading) {
     return (
-        <div className="mx-auto max-w-xl p-8 text-center">
-          <h1 className="mb-3 text-xl font-bold text-[#0D1F2D]">Kunne ikke hente profil</h1>
-          <p className="rounded-lg bg-red-50 px-4 py-3 text-sm text-red-700">
-            {error ?? "Der opstod en ukendt fejl. Prøv at logge ud og ind igen."}
-          </p>
-        </div>
+      <div className="mx-auto max-w-xl p-8 text-center">
+        <h1 className="mb-3 text-xl font-bold text-[#0D1F2D]">Kunne ikke hente profil</h1>
+        <p className="rounded-lg bg-red-50 px-4 py-3 text-sm text-red-700">
+          {error ?? "Der opstod en ukendt fejl."}
+        </p>
+      </div>
     );
   }
 
   return (
-      <div className="space-y-6">
+    <div className="mx-auto max-w-2xl space-y-6">
+      <div>
         <h1 className="text-2xl font-bold text-[#0D1F2D]">Profil</h1>
+        <p className="mt-1 text-sm text-[#7AAEC8]">Personlige indstillinger og sikkerhed</p>
+      </div>
 
-        {error ? (
-          <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">{error}</p>
-        ) : null}
-        {success ? (
-          <p className="rounded-lg bg-green-50 px-3 py-2 text-sm text-green-700">{success}</p>
-        ) : null}
+      {error ? (
+        <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">{error}</p>
+      ) : null}
+      {success ? (
+        <p className="rounded-lg bg-green-50 px-3 py-2 text-sm text-green-700">{success}</p>
+      ) : null}
 
-        {loading || !profile ? (
-          <p className="text-sm text-[#4A8CB5]">Indlæser profil…</p>
-        ) : (
-          <>
-            <section className="rounded-2xl border border-sky-100 bg-white p-6 shadow-sm">
-              <h2 className="mb-4 border-b border-sky-50 pb-3 text-base font-semibold text-[#0D1F2D]">
-                Min profil
-              </h2>
-              <div className="mt-5 flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
-                <div className="flex items-start gap-4">
-                  <button
-                    type="button"
-                    onClick={onAvatarPick}
-                    disabled={uploadingAvatar}
-                    aria-label="Skift profilbillede"
-                    className="group relative h-20 w-20 flex-shrink-0 overflow-hidden rounded-full p-0 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 disabled:cursor-not-allowed"
-                  >
-                    <ProfileAvatar
-                      avatarUrl={avatarUrl ?? profile.avatar_url}
-                      initials={avatarText}
-                      className="h-full w-full text-2xl"
-                      variant="brand"
-                    />
-                    <span
-                      className={`absolute inset-0 flex items-center justify-center bg-black/40 transition ${
-                        uploadingAvatar ? "opacity-100" : "opacity-0 group-hover:opacity-100"
-                      }`}
-                    >
-                      {uploadingAvatar ? (
-                        <Loader2 className="h-5 w-5 animate-spin text-white" />
-                      ) : (
-                        <Camera className="h-5 w-5 text-white" />
-                      )}
-                    </span>
-                  </button>
-                  <input
-                    ref={fileInputRef}
-                    type="file"
-                    accept="image/*"
-                    className="hidden"
-                    onChange={(e) => void onAvatarFileChange(e)}
-                  />
-                  <div>
-                    <p className="text-2xl font-bold text-[#0D1F2D]">
-                      {profile.full_name || "Ukendt navn"}
-                    </p>
-                    <p className="text-sm text-[#4A8CB5]">
-                      {profile.email || authEmail || "—"}
-                    </p>
-                    <div className="mt-2 flex flex-wrap items-center gap-2">
-                      <span
-                        className={`rounded-full px-2 py-0.5 text-xs ${
-                          profile.role === "org_admin"
-                            ? "bg-sky-100 text-sky-700"
-                            : "bg-stone-100 text-stone-600"
-                        }`}
-                      >
-                        {roleLabel}
-                      </span>
-                      <span className="text-sm text-[#2C4A5E]">{organisationName}</span>
-                    </div>
-                  </div>
-                </div>
-
-                {!editingName ? (
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setFullNameInput(profile.full_name ?? "");
-                      setEditingName(true);
-                    }}
-                    className="rounded-full border border-sky-200 px-4 py-2 text-sm font-semibold text-sky-700 hover:bg-sky-50"
-                  >
-                    Rediger navn
-                  </button>
-                ) : null}
-              </div>
-
-              {editingName ? (
-                <form
-                  className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-end"
-                  onSubmit={(e) => void saveName(e)}
-                >
-                  <div className="w-full sm:max-w-md">
-                    <label
-                      htmlFor="full_name"
-                      className="mb-1 block text-sm font-medium text-[#0D1F2D]"
-                    >
-                      Fuldt navn
-                    </label>
-                    <input
-                      id="full_name"
-                      type="text"
-                      required
-                      value={fullNameInput}
-                      onChange={(e) => setFullNameInput(e.target.value)}
-                      className="w-full rounded-xl border border-sky-200 px-4 py-3 text-base outline-none focus:ring-2 focus:ring-sky-500 md:text-sm"
-                    />
-                  </div>
-                  <div className="flex gap-2">
-                    <button
-                      type="button"
-                      onClick={() => setEditingName(false)}
-                      className="rounded-full border border-sky-200 px-4 py-2 text-sm font-semibold text-sky-700 hover:bg-sky-50"
-                    >
-                      Annuller
-                    </button>
-                    <button
-                      type="submit"
-                      disabled={savingName}
-                      className="rounded-full bg-[#0A6EBD] px-5 py-2 text-sm font-semibold text-white hover:bg-[#0859A0] disabled:opacity-60"
-                    >
-                      {savingName ? "Gemmer…" : "Gem"}
-                    </button>
-                  </div>
-                </form>
-              ) : null}
-            </section>
-
-            <section className="rounded-2xl border border-sky-100 bg-white p-6 shadow-sm">
-              <h2 className="mb-4 border-b border-sky-50 pb-3 text-base font-semibold text-[#0D1F2D]">
-                Skift adgangskode
-              </h2>
-              <form
-                className="mt-4 grid grid-cols-1 gap-4 md:max-w-xl"
-                onSubmit={(e) => void savePassword(e)}
+      {loading || !profile ? (
+        <p className="text-sm text-[#7AAEC8]">Indlæser profil…</p>
+      ) : (
+        <>
+          <SettingsSection
+            title="Min profil"
+            footer={
+              <SaveButton
+                visible={profileDirty}
+                saving={savingProfile}
+                onClick={() => void saveProfileFields()}
+              />
+            }
+          >
+            <div className="mb-4 flex items-center gap-4 border-b border-sky-50 pb-4">
+              <button
+                type="button"
+                onClick={onAvatarPick}
+                disabled={uploadingAvatar}
+                aria-label="Skift profilbillede"
+                className="group relative h-16 w-16 shrink-0 overflow-hidden rounded-full focus:outline-none focus-visible:ring-2 focus-visible:ring-[#0A6EBD]"
               >
-                <div>
-                  <label
-                    htmlFor="current_password"
-                    className="mb-1 block text-sm font-medium text-[#0D1F2D]"
-                  >
-                    Nuværende adgangskode
-                  </label>
-                  <div className="relative">
-                    <input
-                      id="current_password"
-                      type={showCurrentPassword ? "text" : "password"}
-                      value={currentPassword}
-                      onChange={(e) => setCurrentPassword(e.target.value)}
-                      className="w-full rounded-xl border border-sky-200 px-4 py-3 text-base outline-none focus:ring-2 focus:ring-sky-500 md:text-sm"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setShowCurrentPassword(!showCurrentPassword)}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
-                    >
-                      {showCurrentPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                    </button>
-                  </div>
-                </div>
-                <div>
-                  <label
-                    htmlFor="new_password"
-                    className="mb-1 block text-sm font-medium text-[#0D1F2D]"
-                  >
-                    Ny adgangskode
-                  </label>
+                <ProfileAvatar
+                  avatarUrl={avatarUrl ?? profile.avatar_url}
+                  initials={avatarText}
+                  className="h-full w-full text-xl"
+                  variant="brand"
+                />
+                <span
+                  className={`absolute inset-0 flex items-center justify-center bg-black/40 transition ${
+                    uploadingAvatar ? "opacity-100" : "opacity-0 group-hover:opacity-100"
+                  }`}
+                >
+                  {uploadingAvatar ? (
+                    <Loader2 className="h-5 w-5 animate-spin text-white" />
+                  ) : (
+                    <Camera className="h-5 w-5 text-white" />
+                  )}
+                </span>
+              </button>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={(e) => void onAvatarFileChange(e)}
+              />
+              <p className="text-sm text-[#7AAEC8]">Klik på billedet for at uploade et nyt profilbillede</p>
+            </div>
+
+            <SettingsRow label="Fuldt navn">
+              <input
+                type="text"
+                value={fullName}
+                onChange={(e) => setFullName(e.target.value)}
+                className={inputClass}
+                placeholder="Dit navn"
+              />
+            </SettingsRow>
+
+            <SettingsRow
+              label="Email"
+              description="Kontakt os for at ændre din email"
+            >
+              <span className="text-sm text-[#2C4A5E]">{displayEmail}</span>
+            </SettingsRow>
+
+            <SettingsRow label="Telefonnummer" last>
+              <input
+                type="tel"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+                className={inputClass}
+                placeholder="Valgfrit"
+              />
+            </SettingsRow>
+          </SettingsSection>
+
+          <SettingsSection title="Sikkerhed">
+            <form onSubmit={(e) => void savePassword(e)}>
+              <SettingsRow label="Nuværende adgangskode">
+                <div className="relative w-full max-w-xs">
                   <input
-                    id="new_password"
-                    type="password"
-                    minLength={8}
-                    value={newPassword}
-                    onChange={(e) => setNewPassword(e.target.value)}
-                    className="w-full rounded-xl border border-sky-200 px-4 py-3 text-base outline-none focus:ring-2 focus:ring-sky-500 md:text-sm"
+                    type={showCurrentPassword ? "text" : "password"}
+                    value={currentPassword}
+                    onChange={(e) => setCurrentPassword(e.target.value)}
+                    className={`${inputClass} pr-10 sm:text-right`}
+                    autoComplete="current-password"
                   />
-                </div>
-                <div>
-                  <label
-                    htmlFor="confirm_new_password"
-                    className="mb-1 block text-sm font-medium text-[#0D1F2D]"
+                  <button
+                    type="button"
+                    onClick={() => setShowCurrentPassword(!showCurrentPassword)}
+                    className="absolute top-1/2 right-3 -translate-y-1/2 text-[#7AAEC8]"
                   >
-                    Bekræft ny adgangskode
-                  </label>
-                  <input
-                    id="confirm_new_password"
-                    type="password"
-                    minLength={8}
-                    value={confirmNewPassword}
-                    onChange={(e) => setConfirmNewPassword(e.target.value)}
-                    className="w-full rounded-xl border border-sky-200 px-4 py-3 text-base outline-none focus:ring-2 focus:ring-sky-500 md:text-sm"
-                  />
+                    {showCurrentPassword ? (
+                      <EyeOff className="h-4 w-4" />
+                    ) : (
+                      <Eye className="h-4 w-4" />
+                    )}
+                  </button>
                 </div>
-                <div>
+              </SettingsRow>
+              <SettingsRow label="Ny adgangskode">
+                <input
+                  type="password"
+                  minLength={8}
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                  className={inputClass}
+                  autoComplete="new-password"
+                />
+              </SettingsRow>
+              <SettingsRow label="Bekræft ny adgangskode" last>
+                <input
+                  type="password"
+                  minLength={8}
+                  value={confirmNewPassword}
+                  onChange={(e) => setConfirmNewPassword(e.target.value)}
+                  className={inputClass}
+                  autoComplete="new-password"
+                />
+              </SettingsRow>
+              {passwordDirty ? (
+                <div className="mt-4 flex justify-end border-t border-sky-50 pt-4">
                   <button
                     type="submit"
                     disabled={savingPassword}
                     className="rounded-full bg-[#0A6EBD] px-5 py-2 text-sm font-semibold text-white hover:bg-[#0859A0] disabled:opacity-60"
                   >
-                    {savingPassword ? "Gemmer…" : "Gem"}
+                    {savingPassword ? "Gemmer…" : "Gem adgangskode"}
                   </button>
                 </div>
-              </form>
-            </section>
+              ) : null}
+            </form>
 
-            <section className="rounded-2xl border border-sky-100 bg-white p-6 shadow-sm">
-              <h2 className="mb-4 border-b border-sky-50 pb-3 text-base font-semibold text-[#0D1F2D]">
-                Notifikationer
-              </h2>
-              <div className="mt-4 space-y-4">
-                <div className="flex items-center justify-between gap-4">
-                  <p className="text-sm text-[#2C4A5E]">Email ved ny besked i supportsag</p>
-                  <Toggle value={notifNewMessage} onChange={setNotifNewMessage} />
-                </div>
-                <div className="flex items-center justify-between gap-4">
-                  <p className="text-sm text-[#2C4A5E]">Email når sag skifter status</p>
-                  <Toggle value={notifStatusChange} onChange={setNotifStatusChange} />
-                </div>
-                <div className="flex items-center justify-between gap-4">
-                  <p className="text-sm text-[#2C4A5E]">Månedlig IT-rapport notifikation</p>
-                  <Toggle value={notifMonthlyReport} onChange={setNotifMonthlyReport} />
-                </div>
-                <div>
-                  <button
-                    type="button"
-                    disabled={savingNotifications}
-                    onClick={() => void saveNotifications()}
-                    className="rounded-full bg-[#0A6EBD] px-5 py-2 text-sm font-semibold text-white hover:bg-[#0859A0] disabled:opacity-60"
-                  >
-                    {savingNotifications ? "Gemmer…" : "Gem notifikationer"}
-                  </button>
+            <div className="mt-4 flex items-center justify-between gap-4 border-t border-sky-50 pt-4">
+              <div>
+                <p className="text-sm font-medium text-[#0D1F2D]">To-faktor godkendelse</p>
+                <div className="mt-1 flex items-center gap-2">
+                  <ComingSoonBadge />
                 </div>
               </div>
-            </section>
-          </>
-        )}
-      </div>
+              <SettingsToggle checked={false} onChange={() => {}} disabled />
+            </div>
+          </SettingsSection>
+
+          <SettingsSection
+            title="Notifikationer"
+            footer={
+              <SaveButton
+                visible={notifDirty}
+                saving={savingNotifications}
+                onClick={() => void saveNotifications()}
+              />
+            }
+          >
+            <SettingsRow label="Send mig email når en IT-sag opdateres">
+              <SettingsToggle
+                checked={notifPrefs.ticket_updated}
+                onChange={(v) => setNotifPrefs((p) => ({ ...p, ticket_updated: v }))}
+              />
+            </SettingsRow>
+            <SettingsRow label="Send mig email når et system fejler">
+              <SettingsToggle
+                checked={notifPrefs.system_failure}
+                onChange={(v) => setNotifPrefs((p) => ({ ...p, system_failure: v }))}
+              />
+            </SettingsRow>
+            <SettingsRow label="Send mig email når en IT-rapport er klar">
+              <SettingsToggle
+                checked={notifPrefs.report_ready}
+                onChange={(v) => setNotifPrefs((p) => ({ ...p, report_ready: v }))}
+              />
+            </SettingsRow>
+            <SettingsRow label="Send mig ugentligt overblik over systemstatus" last>
+              <SettingsToggle
+                checked={notifPrefs.weekly_status}
+                onChange={(v) => setNotifPrefs((p) => ({ ...p, weekly_status: v }))}
+              />
+            </SettingsRow>
+          </SettingsSection>
+
+          <SettingsSection title="Privatliv & data">
+            <SettingsRow label="Download mine data">
+              <button
+                type="button"
+                disabled
+                className="rounded-full border border-sky-100 px-4 py-2 text-sm font-medium text-[#7AAEC8] opacity-60"
+              >
+                Download mine data
+              </button>
+            </SettingsRow>
+            <SettingsRow label="Slet min konto" last>
+              <button
+                type="button"
+                onClick={() => setDeleteModalOpen(true)}
+                className="text-sm font-semibold text-red-600 hover:text-red-700"
+              >
+                Slet min konto
+              </button>
+            </SettingsRow>
+          </SettingsSection>
+        </>
+      )}
+
+      <Modal open={deleteModalOpen} onClose={() => setDeleteModalOpen(false)} titleId="delete-account-title">
+        <h3 id="delete-account-title" className="text-lg font-semibold text-[#0D1F2D]">
+          Slet min konto?
+        </h3>
+        <p className="mt-3 text-sm leading-relaxed text-[#2C4A5E]">
+          Dette vil permanent fjerne din adgang til portalen og alle tilknyttede data. Handlingen kan
+          ikke fortrydes. Kontakt os på{" "}
+          <Link href="mailto:kontakt@systemklar.dk" className="text-[#0A6EBD] hover:underline">
+            kontakt@systemklar.dk
+          </Link>{" "}
+          hvis du ønsker at slette din konto.
+        </p>
+        <div className="mt-6 flex justify-end gap-2">
+          <button
+            type="button"
+            onClick={() => setDeleteModalOpen(false)}
+            className="rounded-full px-4 py-2 text-sm font-medium text-[#2C4A5E] hover:bg-sky-50"
+          >
+            Luk
+          </button>
+        </div>
+      </Modal>
+    </div>
   );
 }

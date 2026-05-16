@@ -1,5 +1,9 @@
 import { NextResponse } from "next/server";
 import { sendMonthlyReportEmail } from "@/lib/email";
+import {
+  organisationWantsNotifyAllMonthlyReport,
+  profileWantsReportReadyEmails,
+} from "@/lib/notification-preferences";
 import { requireAdminSession } from "@/lib/require-admin-api";
 import { createServiceRoleClient } from "@/lib/supabase-service-role";
 
@@ -81,23 +85,44 @@ export async function POST(request: Request) {
     const orgId = (ownerProfile?.organisation_id as string | undefined) ?? null;
     const orgName = (ownerProfile?.company_name as string | undefined)?.trim() || "din organisation";
     if (orgId) {
+      const { data: orgRow } = await admin
+        .from("organisations")
+        .select("notification_preferences")
+        .eq("id", orgId)
+        .maybeSingle();
+
+      const orgAllowsMonthly = organisationWantsNotifyAllMonthlyReport(
+        orgRow?.notification_preferences,
+      );
+
       const { data: recipients } = await admin
         .from("profiles")
-        .select("email, full_name, notif_monthly_report")
-        .eq("organisation_id", orgId)
-        .eq("notif_monthly_report", true);
-      for (const recipient of recipients ?? []) {
-        const email = (recipient.email as string | undefined)?.trim();
-        if (!email) continue;
-        await sendMonthlyReportEmail(
-          email,
-          ((recipient.full_name as string | undefined)?.trim() || "der"),
-          orgName,
-          inserted.id as string,
-          period
-        );
+        .select("email, full_name, notification_preferences, notif_monthly_report")
+        .eq("organisation_id", orgId);
+
+      if (orgAllowsMonthly) {
+        for (const recipient of recipients ?? []) {
+          const wantsEmail = profileWantsReportReadyEmails(recipient.notification_preferences, {
+            notif_monthly_report: recipient.notif_monthly_report as boolean | null,
+          });
+          if (!wantsEmail) continue;
+          const email = (recipient.email as string | undefined)?.trim();
+          if (!email) continue;
+          await sendMonthlyReportEmail(
+            email,
+            ((recipient.full_name as string | undefined)?.trim() || "der"),
+            orgName,
+            inserted.id as string,
+            period
+          );
+        }
       }
-    } else if (ownerProfile?.email && ownerProfile.notif_monthly_report !== false) {
+    } else if (
+      ownerProfile?.email &&
+      profileWantsReportReadyEmails(null, {
+        notif_monthly_report: ownerProfile.notif_monthly_report as boolean | null,
+      })
+    ) {
       await sendMonthlyReportEmail(
         ownerProfile.email as string,
         (ownerProfile.full_name as string | undefined)?.trim() || "der",
