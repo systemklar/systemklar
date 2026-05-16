@@ -1,9 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { Info, Package, X } from "lucide-react";
+import { Info, Package, Plus, X } from "lucide-react";
 import type { ReactNode } from "react";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { usePortalSession } from "@/components/portal/PortalLayout";
 import {
   formatCheckedAgoDa,
@@ -93,15 +93,13 @@ function entryMeta(entry: ResolvedOnboardingEntry): {
   };
 }
 
-function SystemCard({
-  muted,
+function SystemRow({
   storedName,
   friendlyName,
   Icon,
   status,
   checkedAgo,
   onStartSetup,
-  extraAction,
   showRemove,
   removeBlocked,
   removeConfirmOpen,
@@ -110,14 +108,12 @@ function SystemCard({
   onRemoveCancel,
   removeBusy,
 }: {
-  muted?: boolean;
   storedName: string;
   friendlyName: string;
   Icon: OnboardingSystem["icon"];
   status: MonitoringStatusKey;
   checkedAgo: string | null;
   onStartSetup?: () => void;
-  extraAction?: ReactNode;
   showRemove?: boolean;
   removeBlocked?: boolean;
   removeConfirmOpen?: boolean;
@@ -127,54 +123,55 @@ function SystemCard({
   removeBusy?: boolean;
 }) {
   return (
-    <article
-      className={`flex flex-col gap-4 rounded-2xl border border-sky-100 bg-white p-6 shadow-sm ${
-        muted ? "opacity-75" : ""
-      }`}
-    >
-      <div className="flex items-start gap-3">
-        <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-[#F5FAFD] text-[#0A6EBD]">
-          <Icon className="h-6 w-6" aria-hidden />
+    <div className="border-b border-[#D0E8F5]/80 last:border-b-0">
+      <div className="flex flex-wrap items-center gap-x-3 gap-y-2 py-2.5 sm:flex-nowrap">
+        <span className="flex h-5 w-5 shrink-0 items-center justify-center text-[#0A6EBD]">
+          <Icon className="h-5 w-5" aria-hidden />
         </span>
-        <div className="min-w-0 flex-1">
-          <h3 className="text-base font-semibold text-[#0D1F2D]">{friendlyName}</h3>
-          {storedName !== friendlyName ? (
-            <p className="mt-0.5 text-xs text-[#7AAEC8]">{storedName}</p>
-          ) : null}
-        </div>
-        <div className="flex shrink-0 flex-col items-end gap-2">
-          {showRemove ? (
-            removeBlocked ? (
-              <span title={REMOVE_BLOCKED_TOOLTIP} className="inline-flex">
-                <button
-                  type="button"
-                  disabled
-                  className="cursor-not-allowed text-xs font-medium text-[#7AAEC8]/50"
-                  aria-label={REMOVE_BLOCKED_TOOLTIP}
-                >
-                  Fjern
-                </button>
-              </span>
-            ) : (
+        <span className="min-w-0 flex-1 text-sm font-medium text-[#0D1F2D]">{friendlyName}</span>
+        <span
+          className={`shrink-0 rounded-full px-2.5 py-0.5 text-xs font-semibold ${statusPillClass(status)}`}
+        >
+          {customerStatusLabel(status)}
+        </span>
+        <span className="hidden shrink-0 text-xs text-[#7AAEC8] sm:inline sm:w-36 sm:text-right">
+          {checkedAgo ?? "Ingen seneste tjek"}
+        </span>
+        {status === "afventer" && onStartSetup ? (
+          <button
+            type="button"
+            onClick={onStartSetup}
+            className="shrink-0 rounded-full bg-[#0A6EBD] px-3 py-1 text-xs font-semibold text-white transition-colors hover:bg-[#0859A0]"
+          >
+            Start opsætning
+          </button>
+        ) : null}
+        {showRemove ? (
+          removeBlocked ? (
+            <span title={REMOVE_BLOCKED_TOOLTIP} className="inline-flex shrink-0">
               <button
                 type="button"
-                onClick={onRemoveClick}
-                disabled={Boolean(removeConfirmOpen)}
-                className="text-xs font-medium text-[#7AAEC8] transition-colors hover:text-red-600 disabled:opacity-60"
+                disabled
+                className="cursor-not-allowed text-xs font-medium text-[#7AAEC8]/50"
+                aria-label={REMOVE_BLOCKED_TOOLTIP}
               >
                 Fjern
               </button>
-            )
-          ) : null}
-          <span
-            className={`rounded-full px-3 py-1 text-xs font-semibold ${statusPillClass(status)}`}
-          >
-            {customerStatusLabel(status)}
-          </span>
-        </div>
+            </span>
+          ) : (
+            <button
+              type="button"
+              onClick={onRemoveClick}
+              disabled={Boolean(removeConfirmOpen)}
+              className="shrink-0 text-xs font-medium text-[#7AAEC8] transition-colors hover:text-red-600 disabled:opacity-60"
+            >
+              Fjern
+            </button>
+          )
+        ) : null}
       </div>
       {removeConfirmOpen ? (
-        <div className="rounded-xl border border-[#D0E8F5] bg-[#F5FAFD] px-3 py-2.5 text-sm text-[#2C4A5E]">
+        <div className="pb-2.5 pl-8 text-sm text-[#2C4A5E]">
           Fjern dette system?{" "}
           <button
             type="button"
@@ -195,43 +192,29 @@ function SystemCard({
           </button>
         </div>
       ) : null}
-      <div className="flex flex-wrap items-center justify-between gap-3 border-t border-[#D0E8F5]/80 pt-4">
-        <div className="text-sm text-[#7AAEC8]">
-          {checkedAgo ? <span>{checkedAgo}</span> : <span>Ingen seneste tjek endnu</span>}
-        </div>
-        <div className="flex flex-wrap items-center gap-2">
-          {extraAction}
-          {status === "afventer" && onStartSetup ? (
-            <button
-              type="button"
-              onClick={onStartSetup}
-              className="rounded-full bg-[#0A6EBD] px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-[#0859A0]"
-            >
-              Start opsætning
-            </button>
-          ) : null}
-        </div>
-      </div>
-    </article>
+    </div>
   );
 }
 
-function groupSection(
-  title: string,
-  groups: OnboardingDashboardGroup[],
-  renderCard: (entry: ResolvedOnboardingEntry) => ReactNode,
-): ReactNode {
+function SystemsListSection({
+  groups,
+  renderRow,
+}: {
+  groups: OnboardingDashboardGroup[];
+  renderRow: (entry: ResolvedOnboardingEntry) => ReactNode;
+}) {
   if (!groups.length) return null;
   return (
-    <section className="space-y-8">
-      <h2 className="text-lg font-semibold text-[#0D1F2D]">{title}</h2>
+    <div className="overflow-hidden rounded-xl border border-sky-100 bg-white shadow-sm">
       {groups.map((group) => (
-        <div key={group.shortLabel} className="space-y-4">
-          <h3 className="text-xs font-semibold uppercase tracking-wide text-[#7AAEC8]">{group.groupLabel}</h3>
-          <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">{group.items.map((e) => renderCard(e))}</div>
-        </div>
+        <section key={group.shortLabel}>
+          <h3 className="border-b border-[#D0E8F5] bg-[#F5FAFD] px-4 py-2 text-xs font-semibold uppercase tracking-wide text-[#7AAEC8]">
+            {group.groupLabel}
+          </h3>
+          <div className="px-4">{group.items.map((e) => renderRow(e))}</div>
+        </section>
       ))}
-    </section>
+    </div>
   );
 }
 
@@ -245,6 +228,8 @@ export function PortalSystemsOverviewPage() {
   const [modal, setModal] = useState<SetupModal | null>(null);
   const [addingName, setAddingName] = useState<string | null>(null);
   const [addError, setAddError] = useState<string | null>(null);
+  const [addOpen, setAddOpen] = useState(false);
+  const addMenuRef = useRef<HTMLDivElement>(null);
   const [removeConfirmFor, setRemoveConfirmFor] = useState<string | null>(null);
   const [removeBusy, setRemoveBusy] = useState(false);
   const [removeError, setRemoveError] = useState<string | null>(null);
@@ -323,8 +308,18 @@ export function PortalSystemsOverviewPage() {
     };
   }, [orgId]);
 
-  const unionSet = useMemo(() => new Set(unionNames), [unionNames]);
+  useEffect(() => {
+    if (!addOpen) return;
+    const onDoc = (e: MouseEvent) => {
+      if (addMenuRef.current && !addMenuRef.current.contains(e.target as Node)) {
+        setAddOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", onDoc);
+    return () => document.removeEventListener("mousedown", onDoc);
+  }, [addOpen]);
 
+  const unionSet = useMemo(() => new Set(unionNames), [unionNames]);
   const activeGroups = useMemo(() => buildOnboardingDashboardGroups(unionNames), [unionNames]);
 
   const availableGroups = useMemo(
@@ -344,6 +339,23 @@ export function PortalSystemsOverviewPage() {
     }
   };
 
+  const refreshMonitoring = useCallback(async () => {
+    const oid = orgId?.trim();
+    if (!oid) {
+      setMonitoringByName(new Map());
+      return;
+    }
+    try {
+      const mon = await fetch(`/api/monitoring/${encodeURIComponent(oid)}`, { credentials: "include" });
+      if (mon.ok) {
+        const data = (await mon.json()) as { results?: MonitoringResultRow[] };
+        setMonitoringByName(monitoringResultsBySystemName(data.results ?? []));
+      }
+    } catch {
+      /* ignore */
+    }
+  }, [orgId]);
+
   const handleAdd = async (system: OnboardingSystem) => {
     setAddError(null);
     setRemoveError(null);
@@ -361,9 +373,8 @@ export function PortalSystemsOverviewPage() {
         return;
       }
       await reloadUnion();
-      if (orgId) {
-        await refreshMonitoring();
-      }
+      if (orgId) await refreshMonitoring();
+      setAddOpen(false);
     } catch {
       setAddError("Netværksfejl. Prøv igen.");
     } finally {
@@ -375,23 +386,6 @@ export function PortalSystemsOverviewPage() {
     const subject = `Opsætning af ${storedName}`;
     return `/portal/support/new?${new URLSearchParams({ subject }).toString()}`;
   };
-
-  const refreshMonitoring = useCallback(async () => {
-    const oid = orgId?.trim();
-    if (!oid) {
-      setMonitoringByName(new Map());
-      return;
-    }
-    try {
-      const mon = await fetch(`/api/monitoring/${encodeURIComponent(oid)}`, { credentials: "include" });
-      if (mon.ok) {
-        const data = (await mon.json()) as { results?: MonitoringResultRow[] };
-        setMonitoringByName(monitoringResultsBySystemName(data.results ?? []));
-      }
-    } catch {
-      /* ignore */
-    }
-  }, [orgId]);
 
   const handleRemoveConfirm = useCallback(
     async (storedName: string) => {
@@ -421,11 +415,7 @@ export function PortalSystemsOverviewPage() {
     [reloadUnion, refreshMonitoring],
   );
 
-  if (loading) {
-    return <p className="text-sm text-[#7AAEC8]">Indlæser systemer…</p>;
-  }
-
-  const activeSection = groupSection("Dine systemer", activeGroups, (entry) => {
+  const renderRow = (entry: ResolvedOnboardingEntry) => {
     const { storedName, friendlyName, Icon } = entryMeta(entry);
     const row = monitoringByName.get(storedName);
     const status = normalizeMonitoringStatus(row?.status);
@@ -436,7 +426,7 @@ export function PortalSystemsOverviewPage() {
     const key = entry.kind === "known" ? entry.system.id : `u-${storedName}`;
     const blocked = monitoringBlocksRemove(status);
     return (
-      <SystemCard
+      <SystemRow
         key={key}
         storedName={storedName}
         friendlyName={friendlyName}
@@ -456,15 +446,72 @@ export function PortalSystemsOverviewPage() {
         removeBusy={removeBusy}
       />
     );
-  });
+  };
+
+  if (loading) {
+    return <p className="text-sm text-[#7AAEC8]">Indlæser systemer…</p>;
+  }
 
   return (
-    <div className="space-y-12 pb-8">
-      <header>
-        <h1 className="text-2xl font-bold tracking-tight text-[#0D1F2D] md:text-3xl">Dine IT-systemer</h1>
-        <p className="mt-2 max-w-2xl text-sm leading-relaxed text-[#2C4A5E]">
-          Få overblik over overvågning og status for de systemer, I bruger. Tilføj flere når som helst.
-        </p>
+    <div className="space-y-6 pb-8">
+      <header className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight text-[#0D1F2D] md:text-3xl">Dine IT-systemer</h1>
+          <p className="mt-2 max-w-2xl text-sm leading-relaxed text-[#2C4A5E]">
+            Overblik over overvågning og status for de systemer, I bruger.
+          </p>
+        </div>
+        {availableGroups.length > 0 ? (
+          <div ref={addMenuRef} className="relative shrink-0">
+            <button
+              type="button"
+              onClick={() => setAddOpen((o) => !o)}
+              className="inline-flex items-center gap-2 rounded-full border border-sky-200 bg-white px-4 py-2 text-sm font-semibold text-[#0A6EBD] shadow-sm transition hover:bg-[#F5FAFD]"
+              aria-expanded={addOpen}
+              aria-haspopup="true"
+            >
+              <Plus className="h-4 w-4" aria-hidden />
+              Tilføj system
+            </button>
+            {addOpen ? (
+              <div
+                className="absolute right-0 z-40 mt-2 max-h-[min(24rem,70vh)] w-[min(100vw-2rem,22rem)] overflow-y-auto rounded-xl border border-sky-100 bg-white py-2 shadow-lg"
+                role="menu"
+              >
+                {availableGroups.map((group) => (
+                  <div key={group.label} className="px-2 py-1">
+                    <p className="px-2 py-1.5 text-xs font-semibold uppercase tracking-wide text-[#7AAEC8]">
+                      {group.label}
+                    </p>
+                    <ul className="space-y-0.5">
+                      {group.systems.map((system) => {
+                        const busy = addingName === system.name;
+                        return (
+                          <li
+                            key={system.id}
+                            className="flex items-center justify-between gap-2 rounded-lg px-2 py-1.5 hover:bg-[#F5FAFD]"
+                          >
+                            <span className="min-w-0 flex-1 text-sm text-[#0D1F2D]">
+                              {friendlyLabel(system.name)}
+                            </span>
+                            <button
+                              type="button"
+                              disabled={busy}
+                              onClick={() => void handleAdd(system)}
+                              className="shrink-0 rounded-full border border-[#0A6EBD]/30 px-2.5 py-0.5 text-xs font-semibold text-[#0A6EBD] transition hover:bg-[#F5FAFD] disabled:opacity-50"
+                            >
+                              {busy ? "…" : "Tilføj"}
+                            </button>
+                          </li>
+                        );
+                      })}
+                    </ul>
+                  </div>
+                ))}
+              </div>
+            ) : null}
+          </div>
+        ) : null}
       </header>
 
       {addError ? (
@@ -474,59 +521,13 @@ export function PortalSystemsOverviewPage() {
         <p className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">{removeError}</p>
       ) : null}
 
-      {activeSection ?? (
-        <section>
-          <h2 className="text-lg font-semibold text-[#0D1F2D]">Dine systemer</h2>
-          <p className="mt-3 text-sm text-[#2C4A5E]">
-            Ingen systemer endnu. Tilføj dem du bruger, i sektionen nedenfor.
-          </p>
-        </section>
+      {activeGroups.length > 0 ? (
+        <SystemsListSection groups={activeGroups} renderRow={renderRow} />
+      ) : (
+        <p className="rounded-xl border border-sky-100 bg-white px-5 py-8 text-center text-sm text-[#2C4A5E] shadow-sm">
+          Ingen systemer endnu. Brug <strong className="text-[#0A6EBD]">+ Tilføj system</strong> for at komme i gang.
+        </p>
       )}
-
-      <section className="space-y-8 border-t border-[#D0E8F5] pt-12">
-        <div>
-          <h2 className="text-lg font-semibold text-[#0D1F2D]">Tilføj flere systemer</h2>
-          <p className="mt-2 text-sm text-[#2C4A5E]">
-            Vælg flere platforme vi skal holde øje med. De vises derefter med status som de øvrige.
-          </p>
-        </div>
-        {availableGroups.length === 0 ? (
-          <p className="text-sm text-[#7AAEC8]">Alle kendte systemer er allerede på listen.</p>
-        ) : (
-          availableGroups.map((group) => (
-            <div key={group.label} className="space-y-4">
-              <h3 className="text-xs font-semibold uppercase tracking-wide text-[#7AAEC8]">{group.label}</h3>
-              <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-                {group.systems.map((system) => {
-                  const Icon = system.icon;
-                  const busy = addingName === system.name;
-                  return (
-                    <SystemCard
-                      key={system.id}
-                      muted
-                      storedName={system.name}
-                      friendlyName={friendlyLabel(system.name)}
-                      Icon={Icon}
-                      status="afventer"
-                      checkedAgo={null}
-                      extraAction={
-                        <button
-                          type="button"
-                          disabled={busy}
-                          onClick={() => void handleAdd(system)}
-                          className="rounded-full border border-sky-200 px-4 py-2 text-sm font-semibold text-sky-900 transition-colors hover:bg-sky-50 disabled:opacity-50"
-                        >
-                          {busy ? "Tilføjer…" : "Tilføj"}
-                        </button>
-                      }
-                    />
-                  );
-                })}
-              </div>
-            </div>
-          ))
-        )}
-      </section>
 
       {modal ? (
         <div

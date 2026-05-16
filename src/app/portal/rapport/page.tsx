@@ -1,7 +1,8 @@
 "use client";
 
+import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { FileDown } from "lucide-react";
+import { ChevronRight } from "lucide-react";
 import { createClient } from "@/lib/supabase";
 import { logSupabaseError } from "@/lib/supabase-error";
 
@@ -83,7 +84,7 @@ export default function PortalRapportPage() {
     <div className="mx-auto max-w-3xl">
       <h1 className="text-2xl font-bold text-[#0D1F2D]">IT-rapport</h1>
       <p className="mt-2 text-sm text-[#4A8CB5]">
-        Dine månedlige IT-statusrapporter — download som HTML og gem som PDF fra browseren.
+        Dine månedlige IT-statusrapporter — åbn og læs dem her i portalen.
       </p>
 
       {loading ? (
@@ -106,13 +107,13 @@ export default function PortalRapportPage() {
                 <p className="text-base font-semibold text-[#0D1F2D]">{r.title}</p>
                 <p className="mt-1 text-sm text-[#4A8CB5]">{periodLabel(r.period_start, r.period_end)}</p>
               </div>
-              <a
-                href={`/api/portal/reports/${r.id}/pdf`}
+              <Link
+                href={`/portal/rapport/${r.id}`}
                 className="inline-flex shrink-0 items-center justify-center gap-2 rounded-xl bg-[#0A6EBD] px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-[#0859A0]"
               >
-                <FileDown className="h-4 w-4" aria-hidden />
-                Download rapport
-              </a>
+                Se rapport
+                <ChevronRight className="h-4 w-4" aria-hidden />
+              </Link>
             </li>
           ))}
         </ul>

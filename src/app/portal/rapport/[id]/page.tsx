@@ -3,8 +3,8 @@
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { ReportDetailView } from "@/components/reports/ReportDetailView";
-import { fetchPortalReportDetail, type ReportDetailRow } from "@/lib/report-detail-fetch";
+import { ItReportInlineView } from "@/components/reports/ItReportInlineView";
+import { fetchPortalItReportDetail, type PortalItReportRow } from "@/lib/it-report-portal-fetch";
 import { createClient } from "@/lib/supabase";
 
 export default function PortalRapportDetailPage() {
@@ -13,16 +13,13 @@ export default function PortalRapportDetailPage() {
   const router = useRouter();
   const id = typeof params.id === "string" ? params.id : "";
 
-  const [payload, setPayload] = useState<{
-    report: ReportDetailRow;
-    company_name: string | null;
-  } | null>(null);
+  const [report, setReport] = useState<PortalItReportRow | null>(null);
   const [loading, setLoading] = useState(true);
 
   const load = useCallback(async () => {
     setLoading(true);
     if (!id) {
-      setPayload(null);
+      setReport(null);
       setLoading(false);
       return;
     }
@@ -33,13 +30,13 @@ export default function PortalRapportDetailPage() {
     const user = session?.user;
     if (!user) {
       router.replace("/login");
-      setPayload(null);
+      setReport(null);
       setLoading(false);
       return;
     }
 
-    const row = await fetchPortalReportDetail(supabase, id, user.id);
-    setPayload(row);
+    const row = await fetchPortalItReportDetail(supabase, id, user.id);
+    setReport(row);
     setLoading(false);
   }, [id, router, supabase]);
 
@@ -50,26 +47,26 @@ export default function PortalRapportDetailPage() {
   }, [load]);
 
   if (loading) {
-    return <p className="text-slate-600">Indlæser rapport...</p>;
+    return <p className="text-sm text-[#4A8CB5]">Indlæser rapport...</p>;
   }
 
-  if (!payload) {
+  if (!report) {
     return (
       <>
-        <Link href="/portal/rapport" className="text-sm font-semibold text-emerald-700 hover:underline">
+        <Link href="/portal/rapport" className="text-sm font-semibold text-[#0A6EBD] hover:underline">
           ← Tilbage til IT-rapport
         </Link>
-        <p className="mt-6 text-sm text-slate-600">Rapporten findes ikke.</p>
+        <p className="mt-6 text-sm text-[#4A8CB5]">Rapporten findes ikke.</p>
       </>
     );
   }
 
   return (
-    <ReportDetailView
-        report={payload.report}
-        companyName={payload.company_name}
-        backHref="/portal/rapport"
-        backLabel="← Tilbage til IT-rapport"
-      />
+    <ItReportInlineView
+      report={report}
+      backHref="/portal/rapport"
+      backLabel="← Tilbage til IT-rapport"
+      pdfHref={`/api/portal/reports/${report.id}/pdf`}
+    />
   );
 }
