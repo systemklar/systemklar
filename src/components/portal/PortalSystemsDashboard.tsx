@@ -81,6 +81,32 @@ function reportPeriodLabel(start: string, end: string): string {
   return `${a.toLocaleDateString("da-DK", { day: "numeric", month: "long", year: "numeric" })} – ${b.toLocaleDateString("da-DK", { day: "numeric", month: "long", year: "numeric" })}`;
 }
 
+type HealthSparklinePoint = { date: string; pctOk: number; label: string };
+
+function healthSparklineAxisLabel(dateKey: string): string {
+  const [, m, day] = dateKey.split("-").map(Number);
+  return `${day}/${m}`;
+}
+
+function buildPlaceholderHealthSparkline(): HealthSparklinePoint[] {
+  const out: HealthSparklinePoint[] = [];
+  const today = new Date();
+  for (let i = 6; i >= 0; i -= 1) {
+    const d = new Date(today.getFullYear(), today.getMonth(), today.getDate() - i);
+    const dateKey = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+    out.push({ date: dateKey, pctOk: 100, label: healthSparklineAxisLabel(dateKey) });
+  }
+  return out;
+}
+
+function buildHealthSparklineFromDaily(daily: DailyPctOkPoint[]): HealthSparklinePoint[] {
+  return daily.slice(-7).map((d) => ({
+    date: d.date,
+    pctOk: d.pctOk,
+    label: healthSparklineAxisLabel(d.date),
+  }));
+}
+
 const ghostLinkClass =
   "text-sm font-medium text-[#0A6EBD] transition-colors hover:text-[#0859A0] hover:underline";
 const dashboardCardClass =
@@ -702,6 +728,23 @@ export function PortalSystemsDashboard({
     [historyDaily],
   );
 
+  const hasEnoughHealthData =
+    !historyLoading &&
+    historyDistinctDayCount !== null &&
+    historyDistinctDayCount >= 2 &&
+    historyDaily.length >= 2;
+
+  const healthSparklineData = useMemo(() => {
+    if (hasEnoughHealthData) return buildHealthSparklineFromDaily(historyDaily);
+    return buildPlaceholderHealthSparkline();
+  }, [hasEnoughHealthData, historyDaily]);
+
+  const averageUptimePct = useMemo(() => {
+    if (!hasEnoughHealthData || historyDaily.length === 0) return null;
+    const sum = historyDaily.reduce((acc, d) => acc + d.pctOk, 0);
+    return Math.round((sum / historyDaily.length) * 10) / 10;
+  }, [hasEnoughHealthData, historyDaily]);
+
   const hasSystems = systemRows.length > 0;
   const statsReady = hasSystems && !monitoringLoading;
   const displayOk = useCountUp(counts.ok, statsReady);
@@ -1023,8 +1066,9 @@ export function PortalSystemsDashboard({
           ) : null}
 
           {!preview ? (
-            <article className={dashboardCardClass}>
-              <h2 className="text-sm font-semibold text-[#0D1F2D]">Seneste rapport</h2>
+            <div className="grid grid-cols-1 gap-6 lg:col-span-3 lg:grid-cols-2">
+              <article className={dashboardCardClass}>
+                <h2 className="text-sm font-semibold text-[#0D1F2D]">Seneste rapport</h2>
               <div className="mt-4 min-h-0 flex-1">
                 {reportsLoading ? (
                   <div className="space-y-2 py-2" aria-hidden>
@@ -1058,7 +1102,76 @@ export function PortalSystemsDashboard({
                   Se alle rapporter →
                 </Link>
               </div>
-            </article>
+              </article>
+
+              <article className={dashboardCardClass}>
+                <h2 className="text-sm font-semibold uppercase tracking-wide text-[#7AAEC8]">
+                  Systemsundhed
+                </h2>
+                <p className="mt-0.5 text-xs text-[#7AAEC8]">denne måned</p>
+                <div className="mt-4 min-h-0 flex-1">
+                  {historyLoading ? (
+                    <div className="space-y-3" aria-hidden>
+                      <div className="h-24 w-full animate-pulse rounded-lg bg-sky-50" />
+                      <div className="h-4 w-48 animate-pulse rounded bg-sky-100" />
+                    </div>
+                  ) : (
+                    <>
+                      <div className="h-24 w-full">
+                        <ResponsiveContainer width="100%" height="100%">
+                          <AreaChart
+                            data={healthSparklineData}
+                            margin={{ top: 4, right: 4, left: 0, bottom: 0 }}
+                          >
+                            <defs>
+                              <linearGradient id="portalHealthSparkFill" x1="0" y1="0" x2="0" y2="1">
+                                <stop offset="0%" stopColor={LINE_STATUS} stopOpacity={0.15} />
+                                <stop offset="100%" stopColor={LINE_STATUS} stopOpacity={0} />
+                              </linearGradient>
+                            </defs>
+                            <XAxis
+                              dataKey="label"
+                              tick={{ fontSize: 10, fill: "#7AAEC8" }}
+                              axisLine={false}
+                              tickLine={false}
+                              dy={4}
+                              interval="preserveStartEnd"
+                            />
+                            <YAxis domain={[0, 100]} hide width={0} />
+                            <Area
+                              type="monotone"
+                              dataKey="pctOk"
+                              stroke={LINE_STATUS}
+                              strokeWidth={2}
+                              fill="url(#portalHealthSparkFill)"
+                              dot={false}
+                              isAnimationActive={hasEnoughHealthData}
+                            />
+                          </AreaChart>
+                        </ResponsiveContainer>
+                      </div>
+                      {!hasEnoughHealthData ? (
+                        <p className="mt-2 text-center text-xs text-[#7AAEC8]">
+                          Data indsamles — grafen vises snart
+                        </p>
+                      ) : null}
+                    </>
+                  )}
+                </div>
+                <div className="mt-auto pt-4">
+                  {historyLoading ? (
+                    <div className="h-4 w-44 animate-pulse rounded bg-sky-100" aria-hidden />
+                  ) : averageUptimePct !== null ? (
+                    <p className="text-sm text-[#2C4A5E]">
+                      Gennemsnitlig oppetid:{" "}
+                      <span className="font-bold text-[#0D1F2D]">{averageUptimePct}%</span>
+                    </p>
+                  ) : (
+                    <p className="text-sm font-medium text-[#2C4A5E]">Ikke nok data endnu</p>
+                  )}
+                </div>
+              </article>
+            </div>
           ) : null}
         </div>
 
