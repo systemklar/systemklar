@@ -2,22 +2,22 @@
 
 export function PortalDashboardHeroSkeleton() {
   return (
-    <section
-      className="flex max-h-[160px] items-center gap-4 rounded-2xl border border-sky-100 bg-white px-5 py-6 shadow-sm"
+    <div
+      className="flex max-h-[120px] items-center gap-3 rounded-xl border border-sky-100 bg-sky-50/50 px-4 py-3"
       aria-hidden
     >
-      <div className="h-10 w-10 shrink-0 animate-pulse rounded-full bg-sky-100" />
-      <div className="min-w-0 flex-1 space-y-2">
-        <div className="h-6 w-48 max-w-full animate-pulse rounded-lg bg-sky-100" />
-        <div className="h-3.5 w-36 max-w-[80%] animate-pulse rounded bg-sky-100/90" />
+      <div className="h-6 w-6 shrink-0 animate-pulse rounded-full bg-sky-100" />
+      <div className="min-w-0 flex-1 space-y-1.5">
+        <div className="h-5 w-40 max-w-full animate-pulse rounded bg-sky-100" />
+        <div className="h-3 w-28 animate-pulse rounded bg-sky-100/90" />
       </div>
-    </section>
+    </div>
   );
 }
 
 export function PortalDashboardTicketRowSkeleton() {
   return (
-    <li className="flex flex-wrap items-center gap-x-3 gap-y-2 border-b border-sky-50 px-4 py-3 last:border-b-0 sm:flex-nowrap">
+    <li className="flex flex-wrap items-center gap-x-3 gap-y-2 border-b border-sky-50 py-3 last:border-b-0 sm:flex-nowrap">
       <div className="h-4 min-w-0 flex-1 max-w-[12rem] animate-pulse rounded bg-sky-100" />
       <div className="h-3 w-20 animate-pulse rounded bg-sky-100/90" />
       <div className="h-6 w-14 animate-pulse rounded-full bg-sky-100" />

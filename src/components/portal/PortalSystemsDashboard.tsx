@@ -29,7 +29,6 @@ import {
   type MonitoringResultRow,
 } from "@/components/monitoring/MonitoringStatusBlock";
 import {
-  PortalDashboardHeroSkeleton,
   PortalDashboardSystemRowSkeleton,
   PortalDashboardTicketRowSkeleton,
 } from "@/components/portal/PortalMonitoringSkeletons";
@@ -67,6 +66,25 @@ const TAB_ROTATE_MS = 8000;
 const MAX_DASHBOARD_TICKETS = 3;
 
 const ticketDateFmt = new Intl.DateTimeFormat("da-DK", { dateStyle: "medium" });
+
+type LatestReportRow = {
+  id: string;
+  title: string;
+  period_start: string;
+  period_end: string;
+};
+
+function reportPeriodLabel(start: string, end: string): string {
+  const a = new Date(start);
+  const b = new Date(end);
+  if (Number.isNaN(a.getTime()) || Number.isNaN(b.getTime())) return `${start} – ${end}`;
+  return `${a.toLocaleDateString("da-DK", { day: "numeric", month: "long", year: "numeric" })} – ${b.toLocaleDateString("da-DK", { day: "numeric", month: "long", year: "numeric" })}`;
+}
+
+const ghostLinkClass =
+  "text-sm font-medium text-[#0A6EBD] transition-colors hover:text-[#0859A0] hover:underline";
+const dashboardCardClass =
+  "flex h-full flex-col rounded-2xl border border-sky-100 bg-white p-6 shadow-sm";
 
 function easeOutCubic(t: number) {
   return 1 - (1 - t) ** 3;
@@ -262,7 +280,8 @@ export function PortalSystemsDashboard({
   const [activeTickets, setActiveTickets] = useState<TicketWithProfileRow[]>([]);
   const [activeTicketCount, setActiveTicketCount] = useState(0);
   const [ticketsLoading, setTicketsLoading] = useState(true);
-  const [hasSentReports, setHasSentReports] = useState(false);
+  const [latestReport, setLatestReport] = useState<LatestReportRow | null>(null);
+  const [reportsLoading, setReportsLoading] = useState(true);
 
   const orgIdForMonitoring = preview
     ? (organisationIdProp?.trim() || null)
@@ -440,13 +459,15 @@ export function PortalSystemsDashboard({
     if (preview || !orgIdForMonitoring) {
       setActiveTickets([]);
       setActiveTicketCount(0);
-      setHasSentReports(false);
+      setLatestReport(null);
       setTicketsLoading(false);
+      setReportsLoading(false);
       return;
     }
 
     let cancelled = false;
     setTicketsLoading(true);
+    setReportsLoading(true);
 
     void (async () => {
       const orgId = orgIdForMonitoring;
@@ -466,9 +487,12 @@ export function PortalSystemsDashboard({
           .neq("status", "resolved"),
         supabase
           .from("it_reports")
-          .select("id", { count: "exact", head: true })
+          .select("id, title, period_start, period_end")
           .eq("organisation_id", orgId)
-          .eq("status", "sent"),
+          .eq("status", "sent")
+          .order("created_at", { ascending: false })
+          .limit(1)
+          .maybeSingle(),
       ]);
 
       if (cancelled) return;
@@ -492,12 +516,21 @@ export function PortalSystemsDashboard({
 
       if (reportsRes.error) {
         logSupabaseError("[PortalSystemsDashboard] it_reports", reportsRes.error);
-        setHasSentReports(false);
+        setLatestReport(null);
+      } else if (reportsRes.data) {
+        const r = reportsRes.data as LatestReportRow;
+        setLatestReport({
+          id: r.id,
+          title: r.title,
+          period_start: r.period_start,
+          period_end: r.period_end,
+        });
       } else {
-        setHasSentReports((reportsRes.count ?? 0) > 0);
+        setLatestReport(null);
       }
 
       setTicketsLoading(false);
+      setReportsLoading(false);
     })();
 
     return () => {
@@ -684,13 +717,86 @@ export function PortalSystemsDashboard({
     lineChartData.length >= 2;
 
   const displayedTickets = activeTickets.slice(0, MAX_DASHBOARD_TICKETS);
-  const showAllTicketsLink = activeTicketCount > MAX_DASHBOARD_TICKETS;
 
   const heroSurfaceClass = heroAllOk
     ? "border border-emerald-100/80 bg-[#EDFAF5]"
     : heroHasFejl
       ? "border border-red-100/80 bg-gradient-to-r from-[#FEF2F2] to-[#FFFBFB]"
       : "border border-amber-100/80 bg-gradient-to-r from-[#FFFBEB] to-[#FFFEF7]";
+
+  const renderMiniHero = () => {
+    if (monitoringLoading) {
+      return (
+        <div
+          className="flex max-h-[120px] items-center gap-3 rounded-xl border border-sky-100 bg-sky-50/50 px-4 py-3"
+          aria-hidden
+        >
+          <div className="h-6 w-6 shrink-0 animate-pulse rounded-full bg-sky-100" />
+          <div className="min-w-0 flex-1 space-y-1.5">
+            <div className="h-5 w-40 max-w-full animate-pulse rounded bg-sky-100" />
+            <div className="h-3 w-28 animate-pulse rounded bg-sky-100/90" />
+          </div>
+        </div>
+      );
+    }
+
+    return (
+      <div
+        className={`portal-hero-enter flex max-h-[120px] flex-col justify-center overflow-hidden rounded-xl px-4 py-3 ${heroSurfaceClass}`}
+      >
+        <div className="flex items-center gap-3">
+          <div className="portal-hero-icon-fade-in shrink-0" aria-hidden>
+            <div
+              className={`flex h-6 w-6 items-center justify-center rounded-full bg-white/90 ${
+                heroAllOk ? "" : "portal-hero-warning-icon-glow"
+              }`}
+            >
+              {heroAllOk ? (
+                <Check className="h-6 w-6 text-[#0A7C5C]" strokeWidth={2.5} />
+              ) : (
+                <AlertTriangle
+                  className={`h-6 w-6 ${heroHasFejl ? "text-[#C42B2B]" : "text-[#C47B0A]"}`}
+                  strokeWidth={2}
+                />
+              )}
+            </div>
+          </div>
+          <div className="min-w-0 flex-1 text-left">
+            <h1
+              className={`text-xl font-semibold leading-snug tracking-tight ${
+                heroAllOk ? "text-[#0D1F2D]" : "portal-hero-warning-shimmer"
+              }`}
+            >
+              {heroAllOk
+                ? "Alt fungerer"
+                : counts.needsAttention === 1
+                  ? "1 system kræver opmærksomhed"
+                  : `${counts.needsAttention} systemer kræver opmærksomhed`}
+            </h1>
+            <p className="mt-0.5 text-[11px] text-[#7AAEC8]">Senest tjekket {latestCheckSubtext}</p>
+          </div>
+        </div>
+        {!heroAllOk && attentionRows.length > 0 ? (
+          <div className="mt-1.5 flex gap-1 overflow-x-auto [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+            {attentionRows.map((row) => (
+              <button
+                key={row.key}
+                type="button"
+                onClick={() => openDetail(row)}
+                className={`shrink-0 rounded-full border px-1.5 py-px text-[10px] font-medium ${
+                  row.status === "fejl"
+                    ? "border-red-200 bg-white/90 text-[#C42B2B]"
+                    : "border-amber-200 bg-white/90 text-[#C47B0A]"
+                }`}
+              >
+                {row.friendly}
+              </button>
+            ))}
+          </div>
+        ) : null}
+      </div>
+    );
+  };
 
   const renderSystemRow = (row: SystemRowModel, tabKey: string, index: number, animate: boolean) => (
     <li
@@ -744,351 +850,291 @@ export function PortalSystemsDashboard({
           Dine systemer er ved at blive sat op. Vi vender tilbage inden for 24 timer.
         </div>
       ) : (
-        <div className="flex flex-col gap-4">
-          {/* 1. Hero status (compact) */}
-          {monitoringLoading ? (
-            <PortalDashboardHeroSkeleton />
-          ) : (
-            <section
-              className={`portal-hero-enter flex max-h-[160px] flex-col justify-center overflow-hidden rounded-2xl px-5 py-6 shadow-sm ${heroSurfaceClass}`}
-            >
-              <div className="flex items-center gap-3 sm:gap-4">
-                <div className="portal-hero-icon-fade-in shrink-0" aria-hidden>
-                  <div
-                    className={`flex h-10 w-10 items-center justify-center rounded-full bg-white/90 shadow-sm ${
-                      heroAllOk ? "" : "portal-hero-warning-icon-glow"
-                    }`}
-                  >
-                    {heroAllOk ? (
-                      <Check className="h-8 w-8 text-[#0A7C5C]" strokeWidth={2.5} />
-                    ) : (
-                      <AlertTriangle
-                        className={`h-8 w-8 ${heroHasFejl ? "text-[#C42B2B]" : "text-[#C47B0A]"}`}
-                        strokeWidth={2}
-                      />
-                    )}
-                  </div>
-                </div>
-                <div className="min-w-0 flex-1 text-left">
-                  <h1
-                    className={`text-2xl font-semibold leading-tight tracking-tight ${
-                      heroAllOk ? "text-[#0D1F2D]" : "portal-hero-warning-shimmer"
-                    }`}
-                  >
-                    {heroAllOk
-                      ? "Alt fungerer"
-                      : counts.needsAttention === 1
-                        ? "1 system kræver opmærksomhed"
-                        : `${counts.needsAttention} systemer kræver opmærksomhed`}
-                  </h1>
-                  <p className="mt-0.5 text-xs text-[#7AAEC8]">
-                    Senest tjekket {latestCheckSubtext}
-                  </p>
-                </div>
-              </div>
-              {!heroAllOk && attentionRows.length > 0 ? (
-                <div className="mt-2 flex gap-1.5 overflow-x-auto pb-0.5 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-                  {attentionRows.map((row) => (
-                    <button
-                      key={row.key}
-                      type="button"
-                      onClick={() => openDetail(row)}
-                      className={`shrink-0 rounded-full border px-2 py-0.5 text-[11px] font-medium transition hover:shadow-sm ${
-                        row.status === "fejl"
-                          ? "border-red-200 bg-white/90 text-[#C42B2B] hover:bg-red-50"
-                          : "border-amber-200 bg-white/90 text-[#C47B0A] hover:bg-amber-50"
-                      }`}
-                    >
-                      {row.friendly}
-                    </button>
-                  ))}
-                </div>
+        <>
+        <div className="grid grid-cols-1 items-stretch gap-6 lg:grid-cols-3">
+          <article className={`${dashboardCardClass} lg:col-span-2`}>
+            <h2 className="text-sm font-semibold uppercase tracking-wide text-[#7AAEC8]">
+              Systemstatus
+            </h2>
+            <div className="mt-4 flex min-h-0 flex-1 flex-col space-y-4">
+              {renderMiniHero()}
+              {!monitoringLoading ? (
+                <p className="text-sm text-[#2C4A5E]">
+                  <span className="inline-flex items-center gap-1">
+                    <span className="text-[10px]" aria-hidden>🟢</span>
+                    <span className="font-semibold tabular-nums text-[#0D1F2D]">{displayOk}</span> OK
+                  </span>
+                  <span className="mx-2 text-[#D0E8F5]">·</span>
+                  <span className="inline-flex items-center gap-1">
+                    <span className="text-[10px]" aria-hidden>🟡</span>
+                    <span className="font-semibold tabular-nums text-[#0D1F2D]">{displayAdvarsel}</span> Advarsel
+                  </span>
+                  <span className="mx-2 text-[#D0E8F5]">·</span>
+                  <span className="inline-flex items-center gap-1">
+                    <span className="text-[10px]" aria-hidden>⚪</span>
+                    <span className="font-semibold tabular-nums text-[#0D1F2D]">{displayAfventer}</span> Afventer
+                  </span>
+                </p>
               ) : null}
-            </section>
-          )}
-
-          {/* 2. Quick actions */}
-          {!preview ? (
-            <div className="flex flex-wrap items-center gap-2">
-              <Link
-                href="/portal/support/new"
-                className="inline-flex items-center justify-center rounded-full bg-[#0A6EBD] px-4 py-2 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-[#0859A0]"
-              >
-                Opret IT-sag
-              </Link>
-              <Link
-                href="/portal/systemer"
-                className="inline-flex items-center justify-center rounded-full border border-sky-200 bg-white px-4 py-2 text-sm font-medium text-[#2C4A5E] transition-colors hover:border-sky-300 hover:bg-sky-50"
-              >
-                Se alle systemer →
-              </Link>
-              {hasSentReports ? (
-                <Link
-                  href="/portal/rapport"
-                  className="inline-flex items-center justify-center rounded-full border border-sky-200 bg-white px-4 py-2 text-sm font-medium text-[#2C4A5E] transition-colors hover:border-sky-300 hover:bg-sky-50"
-                >
-                  Download IT-rapport →
-                </Link>
-              ) : null}
-            </div>
-          ) : null}
-
-          {/* 3. Stat pills */}
-          {!monitoringLoading ? (
-          <p className="text-center text-sm text-[#2C4A5E]">
-            <span className="inline-flex items-center gap-1">
-              <span className="text-[10px]" aria-hidden>
-                🟢
-              </span>
-              <span className="font-semibold tabular-nums text-[#0D1F2D]">{displayOk}</span> OK
-            </span>
-            <span className="mx-2 text-[#D0E8F5]">·</span>
-            <span className="inline-flex items-center gap-1">
-              <span className="text-[10px]" aria-hidden>
-                🟡
-              </span>
-              <span className="font-semibold tabular-nums text-[#0D1F2D]">
-                {displayAdvarsel}
-              </span>{" "}
-              Advarsel
-            </span>
-            <span className="mx-2 text-[#D0E8F5]">·</span>
-            <span className="inline-flex items-center gap-1">
-              <span className="text-[10px]" aria-hidden>
-                ⚪
-              </span>
-              <span className="font-semibold tabular-nums text-[#0D1F2D]">{displayAfventer}</span>{" "}
-              Afventer
-            </span>
-          </p>
-          ) : null}
-
-          {/* 4. Tabbed system list */}
-          <section className="overflow-hidden rounded-2xl border border-sky-100 bg-white shadow-sm">
-            <div ref={tabNavRef} className="relative border-b border-sky-100">
-              <nav
-                className="flex gap-0 overflow-x-auto"
-                aria-label="Systemkategorier"
+              <div
+                className="-mx-2 flex min-h-[240px] flex-1 flex-col overflow-hidden rounded-xl border border-sky-100"
                 onMouseEnter={() => setTabsHovered(true)}
                 onMouseLeave={() => setTabsHovered(false)}
               >
-                {tabsWithSystems.map((g) => {
-                  const tabRows = rowsByGroup.get(g.shortLabel) ?? [];
-                  const issueCount =
-                    monitoringLoading
-                      ? 0
-                      : tabRows.filter((r) => r.status === "fejl" || r.status === "advarsel").length;
-                  const isActive = g.shortLabel === activeTabKey;
-                  return (
-                    <button
-                      key={g.shortLabel}
-                      ref={(el) => {
-                        if (el) tabButtonRefs.current.set(g.shortLabel, el);
-                        else tabButtonRefs.current.delete(g.shortLabel);
-                      }}
-                      type="button"
-                      onClick={() => goToTab(g.shortLabel, true)}
-                      disabled={monitoringLoading}
-                      className={`relative shrink-0 overflow-hidden px-4 py-3.5 text-sm font-medium transition-colors duration-150 ${
-                        isActive ? "text-[#0D1F2D]" : "text-[#7AAEC8] hover:text-[#2C4A5E]"
-                      }`}
-                    >
-                      {g.shortLabel}
-                      {!monitoringLoading && issueCount > 0 ? (
-                        <span
-                          className={`ml-1.5 inline-flex min-w-[1.25rem] justify-center rounded-full px-1 text-[10px] font-semibold ${
-                            isActive ? "bg-[#0A6EBD] text-white" : "bg-amber-100 text-amber-800"
+                <div ref={tabNavRef} className="relative border-b border-sky-100">
+                  <nav className="flex gap-0 overflow-x-auto" aria-label="Systemkategorier">
+                    {tabsWithSystems.map((g) => {
+                      const tabRows = rowsByGroup.get(g.shortLabel) ?? [];
+                      const issueCount =
+                        monitoringLoading
+                          ? 0
+                          : tabRows.filter(
+                              (r) => r.status === "fejl" || r.status === "advarsel",
+                            ).length;
+                      const isActive = g.shortLabel === activeTabKey;
+                      return (
+                        <button
+                          key={g.shortLabel}
+                          ref={(el) => {
+                            if (el) tabButtonRefs.current.set(g.shortLabel, el);
+                            else tabButtonRefs.current.delete(g.shortLabel);
+                          }}
+                          type="button"
+                          onClick={() => goToTab(g.shortLabel, true)}
+                          disabled={monitoringLoading}
+                          className={`relative shrink-0 overflow-hidden px-4 py-3 text-sm font-medium transition-colors duration-150 ${
+                            isActive ? "text-[#0D1F2D]" : "text-[#7AAEC8] hover:text-[#2C4A5E]"
                           }`}
                         >
-                          {issueCount}
-                        </span>
-                      ) : null}
-                    </button>
-                  );
-                })}
-              </nav>
-
-              <span
-                className="pointer-events-none absolute bottom-0 left-0 h-[2px] overflow-hidden bg-sky-100/80 transition-[transform,width] duration-300 ease-out"
-                style={{
-                  transform: `translateX(${tabIndicator.left}px)`,
-                  width: tabIndicator.width,
-                }}
-                aria-hidden
-              >
-                {!monitoringLoading && !preview && tabsWithSystems.length > 1 ? (
+                          {g.shortLabel}
+                          {!monitoringLoading && issueCount > 0 ? (
+                            <span
+                              className={`ml-1.5 inline-flex min-w-[1.25rem] justify-center rounded-full px-1 text-[10px] font-semibold ${
+                                isActive
+                                  ? "bg-[#0A6EBD] text-white"
+                                  : "bg-amber-100 text-amber-800"
+                              }`}
+                            >
+                              {issueCount}
+                            </span>
+                          ) : null}
+                        </button>
+                      );
+                    })}
+                  </nav>
                   <span
-                    key={tabProgressKey}
-                    className={`portal-tab-progress block h-full bg-[#0A6EBD] ${
-                      tabsHovered ? "portal-tab-progress-paused" : ""
-                    }`}
-                  />
-                ) : null}
-              </span>
-            </div>
-
-            <div className="min-h-[280px] overflow-hidden" aria-busy={monitoringLoading}>
-              {tabsWithSystems.map((g) => {
-                const tabKey = g.shortLabel;
-                const tabRows = rowsByGroup.get(tabKey) ?? [];
-                const isActive = tabKey === activeTabKey;
-                return (
-                  <ul
-                    key={tabKey}
-                    className={`divide-y divide-sky-50 ${isActive ? "block" : "hidden"}`}
-                    aria-hidden={!isActive}
+                    className="pointer-events-none absolute bottom-0 left-0 h-[2px] overflow-hidden bg-sky-100/80 transition-[transform,width] duration-300 ease-out"
+                    style={{
+                      transform: `translateX(${tabIndicator.left}px)`,
+                      width: tabIndicator.width,
+                    }}
+                    aria-hidden
                   >
-                    {monitoringLoading
-                      ? tabRows.map((row) => (
-                          <PortalDashboardSystemRowSkeleton key={row.key} />
-                        ))
-                      : tabRows.map((row, index) =>
-                          renderSystemRow(row, tabKey, index, isActive),
-                        )}
-                  </ul>
-                );
-              })}
-            </div>
-          </section>
-
-          {/* 5. Aktive sager */}
-          {!preview ? (
-            <section className="overflow-hidden rounded-2xl border border-sky-100 bg-white shadow-sm">
-              <div className="flex items-center justify-between gap-3 border-b border-sky-50 px-4 py-3">
-                <div className="flex items-center gap-2">
-                  <h2 className="text-sm font-semibold text-[#0D1F2D]">Aktive sager</h2>
-                  {!ticketsLoading ? (
-                    <span className="rounded-full bg-sky-100 px-2 py-0.5 text-xs font-semibold tabular-nums text-sky-800">
-                      {activeTicketCount}
-                    </span>
-                  ) : null}
+                    {!monitoringLoading && !preview && tabsWithSystems.length > 1 ? (
+                      <span
+                        key={tabProgressKey}
+                        className={`portal-tab-progress block h-full bg-[#0A6EBD] ${
+                          tabsHovered ? "portal-tab-progress-paused" : ""
+                        }`}
+                      />
+                    ) : null}
+                  </span>
+                </div>
+                <div className="min-h-0 flex-1 overflow-hidden" aria-busy={monitoringLoading}>
+                  {tabsWithSystems.map((g) => {
+                    const tabKey = g.shortLabel;
+                    const tabRows = rowsByGroup.get(tabKey) ?? [];
+                    const isActive = tabKey === activeTabKey;
+                    return (
+                      <ul
+                        key={tabKey}
+                        className={`divide-y divide-sky-50 ${isActive ? "block" : "hidden"}`}
+                        aria-hidden={!isActive}
+                      >
+                        {monitoringLoading
+                          ? tabRows.map((row) => (
+                              <PortalDashboardSystemRowSkeleton key={row.key} />
+                            ))
+                          : tabRows.map((row, index) =>
+                              renderSystemRow(row, tabKey, index, isActive),
+                            )}
+                      </ul>
+                    );
+                  })}
                 </div>
               </div>
-              {ticketsLoading ? (
-                <ul className="divide-y divide-sky-50" aria-busy>
-                  {[0, 1, 2].map((i) => (
-                    <PortalDashboardTicketRowSkeleton key={i} />
-                  ))}
-                </ul>
-              ) : displayedTickets.length === 0 ? (
-                <p className="px-4 py-8 text-center text-sm text-[#7AAEC8]">
-                  Ingen aktive sager — alt kører problemfrit 🎉
-                </p>
-              ) : (
-                <>
+            </div>
+            <div className="mt-auto pt-5">
+              <Link href="/portal/systemer" className={ghostLinkClass}>
+                Se alle systemer →
+              </Link>
+            </div>
+          </article>
+
+          {!preview ? (
+            <article className={dashboardCardClass}>
+              <div className="flex items-center gap-2">
+                <h2 className="text-sm font-semibold text-[#0D1F2D]">Aktive sager</h2>
+                {!ticketsLoading ? (
+                  <span className="rounded-full bg-sky-100 px-2 py-0.5 text-xs font-semibold tabular-nums text-sky-800">
+                    {activeTicketCount}
+                  </span>
+                ) : null}
+              </div>
+              <div className="mt-4 min-h-0 flex-1">
+                {ticketsLoading ? (
+                  <ul className="divide-y divide-sky-50" aria-busy>
+                    {[0, 1, 2].map((i) => (
+                      <PortalDashboardTicketRowSkeleton key={i} />
+                    ))}
+                  </ul>
+                ) : displayedTickets.length === 0 ? (
+                  <p className="py-6 text-center text-sm text-[#7AAEC8]">Ingen aktive sager 🎉</p>
+                ) : (
                   <ul className="divide-y divide-sky-50">
                     {displayedTickets.map((ticket) => (
-                      <li key={ticket.id}>
-                        <div className="flex flex-wrap items-center gap-x-3 gap-y-2 px-4 py-3 sm:flex-nowrap">
-                          <p className="min-w-0 flex-1 truncate text-sm font-semibold text-[#0D1F2D]">
-                            {ticket.title}
-                          </p>
-                          <p className="shrink-0 text-xs text-[#7AAEC8]">
+                      <li key={ticket.id} className="py-3 first:pt-0">
+                        <p className="truncate text-sm font-semibold text-[#0D1F2D]">{ticket.title}</p>
+                        <div className="mt-1.5 flex flex-wrap items-center gap-2">
+                          <p className="text-xs text-[#7AAEC8]">
                             {ticket.created_at
                               ? ticketDateFmt.format(new Date(ticket.created_at))
                               : "—"}
                           </p>
                           <StatusBadge status={ticket.status} />
-                          <Link
-                            href={`/portal/support/${ticket.id}`}
-                            className="shrink-0 text-xs font-semibold text-[#0A6EBD] hover:underline"
-                          >
-                            Åbn →
-                          </Link>
                         </div>
                       </li>
                     ))}
                   </ul>
-                  {showAllTicketsLink ? (
-                    <div className="border-t border-sky-50 px-4 py-3">
-                      <Link
-                        href="/portal/support"
-                        className="inline-flex items-center gap-0.5 text-sm font-semibold text-[#0A6EBD] hover:underline"
-                      >
-                        Se alle sager
-                        <ChevronRight className="h-4 w-4" aria-hidden />
-                      </Link>
-                    </div>
-                  ) : null}
-                </>
-              )}
-            </section>
+                )}
+              </div>
+              <div className="mt-auto space-y-3 pt-5">
+                <Link
+                  href="/portal/support/new"
+                  className="inline-flex w-full items-center justify-center rounded-full bg-[#0A6EBD] px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-[#0859A0]"
+                >
+                  Opret IT-sag
+                </Link>
+                <Link href="/portal/support" className={`block text-center ${ghostLinkClass}`}>
+                  Se alle sager →
+                </Link>
+              </div>
+            </article>
           ) : null}
 
-          {/* 6. Uptime chart (collapsed by default) */}
-          {showUptimeChart ? (
-            <section className="overflow-hidden rounded-2xl border border-sky-100 bg-white shadow-sm">
-              <button
-                type="button"
-                onClick={() => setChartOpen((open) => !open)}
-                className="flex w-full items-center justify-between gap-3 px-4 py-3.5 text-left transition-colors hover:bg-sky-50/60"
-                aria-expanded={chartOpen}
-              >
-                <h2 className="text-sm font-semibold text-[#0D1F2D]">Oppetid de seneste 30 dage</h2>
-                <ChevronDown
-                  className={`h-4 w-4 shrink-0 text-[#7AAEC8] transition-transform duration-200 ${
-                    chartOpen ? "rotate-180" : ""
-                  }`}
-                  aria-hidden
-                />
-              </button>
-              {chartOpen ? (
-              <div className="border-t border-sky-50 px-4 pb-5 pt-1">
-              <div className="h-48 w-full">
-                      <ResponsiveContainer width="100%" height="100%">
-                        <AreaChart
-                          data={lineChartData}
-                          margin={{ top: 8, right: 8, left: -8, bottom: 0 }}
-                        >
-                          <defs>
-                            <linearGradient id="portalUptimeFill" x1="0" y1="0" x2="0" y2="1">
-                              <stop offset="0%" stopColor={LINE_STATUS} stopOpacity={0.22} />
-                              <stop offset="100%" stopColor={LINE_STATUS} stopOpacity={0} />
-                            </linearGradient>
-                          </defs>
-                          <XAxis
-                            dataKey="label"
-                            tick={{ fontSize: 11, fill: "#7AAEC8" }}
-                            axisLine={false}
-                            tickLine={false}
-                            dy={8}
-                          />
-                          <YAxis
-                            domain={[0, 100]}
-                            tickFormatter={(v) => `${v}%`}
-                            width={40}
-                            tick={{ fontSize: 11, fill: "#7AAEC8" }}
-                            axisLine={false}
-                            tickLine={false}
-                          />
-                          <Tooltip
-                            formatter={(value) => [
-                              `${typeof value === "number" ? value : Number(value) || 0}%`,
-                              "Andel OK",
-                            ]}
-                            contentStyle={{
-                              border: "1px solid #D0E8F5",
-                              borderRadius: "12px",
-                              fontSize: "13px",
-                            }}
-                          />
-                          <Area
-                            type="monotone"
-                            dataKey="pctOk"
-                            stroke={LINE_STATUS}
-                            strokeWidth={2.5}
-                            fill="url(#portalUptimeFill)"
-                            dot={false}
-                            activeDot={{ r: 4, fill: LINE_STATUS, strokeWidth: 0 }}
-                          />
-                        </AreaChart>
-                      </ResponsiveContainer>
+          {!preview ? (
+            <article className={dashboardCardClass}>
+              <h2 className="text-sm font-semibold text-[#0D1F2D]">Seneste rapport</h2>
+              <div className="mt-4 min-h-0 flex-1">
+                {reportsLoading ? (
+                  <div className="space-y-2 py-2" aria-hidden>
+                    <div className="h-4 w-3/4 max-w-xs animate-pulse rounded bg-sky-100" />
+                    <div className="h-3 w-1/2 max-w-[10rem] animate-pulse rounded bg-sky-100/90" />
+                  </div>
+                ) : latestReport ? (
+                  <div className="space-y-2">
+                    <p className="text-sm font-semibold text-[#0D1F2D]">{latestReport.title}</p>
+                    <p className="text-xs text-[#7AAEC8]">
+                      {reportPeriodLabel(latestReport.period_start, latestReport.period_end)}
+                    </p>
+                    <Link
+                      href={`/portal/rapport/${latestReport.id}`}
+                      className={`inline-flex items-center gap-0.5 ${ghostLinkClass}`}
+                    >
+                      Se rapport →
+                    </Link>
+                  </div>
+                ) : (
+                  <div className="py-4">
+                    <p className="text-sm font-medium text-[#2C4A5E]">Ingen rapporter endnu</p>
+                    <p className="mt-1 text-xs text-[#7AAEC8]">
+                      Din første rapport genereres af Systemklar
+                    </p>
+                  </div>
+                )}
               </div>
+              <div className="mt-auto pt-5">
+                <Link href="/portal/rapport" className={ghostLinkClass}>
+                  Se alle rapporter →
+                </Link>
               </div>
-              ) : null}
-            </section>
+            </article>
           ) : null}
         </div>
+
+        {showUptimeChart ? (
+          <section className="mt-6 overflow-hidden rounded-2xl border border-sky-100 bg-white shadow-sm">
+            <button
+              type="button"
+              onClick={() => setChartOpen((open) => !open)}
+              className="flex w-full items-center justify-between gap-3 px-4 py-3.5 text-left transition-colors hover:bg-sky-50/60"
+              aria-expanded={chartOpen}
+            >
+              <h2 className="text-sm font-semibold text-[#0D1F2D]">Oppetid de seneste 30 dage</h2>
+              <ChevronDown
+                className={`h-4 w-4 shrink-0 text-[#7AAEC8] transition-transform duration-200 ${
+                  chartOpen ? "rotate-180" : ""
+                }`}
+                aria-hidden
+              />
+            </button>
+            {chartOpen ? (
+              <div className="border-t border-sky-50 px-4 pb-5 pt-1">
+                <div className="h-48 w-full">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <AreaChart
+                      data={lineChartData}
+                      margin={{ top: 8, right: 8, left: -8, bottom: 0 }}
+                    >
+                      <defs>
+                        <linearGradient id="portalUptimeFill" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="0%" stopColor={LINE_STATUS} stopOpacity={0.22} />
+                          <stop offset="100%" stopColor={LINE_STATUS} stopOpacity={0} />
+                        </linearGradient>
+                      </defs>
+                      <XAxis
+                        dataKey="label"
+                        tick={{ fontSize: 11, fill: "#7AAEC8" }}
+                        axisLine={false}
+                        tickLine={false}
+                        dy={8}
+                      />
+                      <YAxis
+                        domain={[0, 100]}
+                        tickFormatter={(v) => `${v}%`}
+                        width={40}
+                        tick={{ fontSize: 11, fill: "#7AAEC8" }}
+                        axisLine={false}
+                        tickLine={false}
+                      />
+                      <Tooltip
+                        formatter={(value) => [
+                          `${typeof value === "number" ? value : Number(value) || 0}%`,
+                          "Andel OK",
+                        ]}
+                        contentStyle={{
+                          border: "1px solid #D0E8F5",
+                          borderRadius: "12px",
+                          fontSize: "13px",
+                        }}
+                      />
+                      <Area
+                        type="monotone"
+                        dataKey="pctOk"
+                        stroke={LINE_STATUS}
+                        strokeWidth={2.5}
+                        fill="url(#portalUptimeFill)"
+                        dot={false}
+                        activeDot={{ r: 4, fill: LINE_STATUS, strokeWidth: 0 }}
+                      />
+                    </AreaChart>
+                  </ResponsiveContainer>
+                </div>
+              </div>
+            ) : null}
+          </section>
+        ) : null}
+        </>
       )}
 
       {detail ? (
