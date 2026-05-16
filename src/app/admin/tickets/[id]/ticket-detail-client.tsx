@@ -1,13 +1,9 @@
 "use client";
 
-import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
+import { TicketDetailLayout } from "@/components/tickets/TicketDetailLayout";
 import { companyFromTicketRow, type TicketWithProfileRow } from "@/lib/tickets-with-profile";
-import { TicketDetailHeader } from "@/components/tickets/TicketDetailHeader";
-import { TicketStatusToggle } from "@/components/tickets/TicketStatusToggle";
-import { TicketAttachmentsPanel } from "@/components/tickets/TicketAttachmentsPanel";
-import { TicketMessageThread } from "@/components/tickets/TicketMessageThread";
 import { setTicketLastViewedToNow } from "@/lib/ticket-last-viewed";
 
 export default function AdminTicketDetailClient() {
@@ -50,78 +46,28 @@ export default function AdminTicketDetailClient() {
   }, [ticket?.id]);
 
   if (ticketLoading) {
-    return (
-      <div>
-        <p className="text-sm text-slate-600">Indlæser sag...</p>
-      </div>
-    );
+    return <p className="text-sm text-[#4A8CB5]">Indlæser sag…</p>;
   }
 
   if (!ticket) {
     return (
       <div>
-        <Link href="/admin/tickets" className="text-sm font-semibold text-blue-600 hover:underline">
-          ← Tilbage til Support & sager
-        </Link>
-        <p className="mt-6 text-sm text-slate-600">Sag ikke fundet.</p>
+        <p className="text-sm text-[#4A8CB5]">Sag ikke fundet.</p>
       </div>
     );
   }
 
-  const emailDisplay = ticket.profiles?.email?.trim();
+  const customerName = companyFromTicketRow(ticket);
 
   return (
-    <div>
-      <Link href="/admin/tickets" className="text-sm font-semibold text-blue-600 hover:underline">
-        ← Tilbage til Support & sager
-      </Link>
-
-      <div className="mt-6 flex min-h-0 flex-1 flex-col gap-5 lg:grid lg:grid-cols-3">
-        <div className="min-h-[60vh] lg:col-span-2">
-          <TicketMessageThread
-            ticketId={ticket.id}
-            organisationId={ticket.organisation_id}
-            sendAsAdmin={true}
-            customerCompanyLabel={companyFromTicketRow(ticket)}
-            fullHeight
-          />
-        </div>
-
-        <aside className="space-y-4">
-          <section className="rounded-2xl border border-sky-100 bg-white p-5 shadow-sm">
-            <TicketDetailHeader
-              ticket={ticket}
-              subtitle={`${companyFromTicketRow(ticket)}${emailDisplay ? ` · ${emailDisplay}` : ""}`}
-            />
-            <div className="mt-3">
-              <TicketStatusToggle
-                ticketId={ticket.id}
-                status={ticket.status}
-                onUpdated={(next) =>
-                  setTicket((t) => (t ? { ...t, status: next } : null))
-                }
-              />
-            </div>
-          </section>
-
-          <section className="rounded-2xl border border-sky-100 bg-white p-5 shadow-sm">
-            <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-[#4A8CB5]">
-              Beskrivelse
-            </p>
-            {ticket.description ? (
-              <p className="whitespace-pre-wrap text-sm text-[#2C4A5E]">{ticket.description}</p>
-            ) : (
-              <p className="text-sm text-[#4A8CB5]">Ingen beskrivelse.</p>
-            )}
-          </section>
-
-          <TicketAttachmentsPanel
-            ticketId={ticket.id}
-            organisationId={ticket.organisation_id}
-            useAdminApi
-          />
-        </aside>
-      </div>
-    </div>
+    <TicketDetailLayout
+      ticket={ticket}
+      backHref="/admin/tickets"
+      customerName={customerName}
+      customerProfileHref={`/admin/customers/${ticket.organisation_id}`}
+      sendAsAdmin
+      useAdminAttachmentsApi
+      onStatusChange={(next) => setTicket((t) => (t ? { ...t, status: next } : null))}
+    />
   );
 }

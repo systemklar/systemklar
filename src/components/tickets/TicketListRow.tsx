@@ -1,6 +1,6 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
-import { formatDanishDateTime, StatusBadge } from "@/components/tickets/StatusBadge";
+import { StatusBadge } from "@/components/tickets/StatusBadge";
 import { TicketNumberBadge } from "@/components/tickets/TicketNumberBadge";
 import { TicketPriorityDot } from "@/components/tickets/TicketPriorityDot";
 import { TicketUnreadDot } from "@/components/tickets/TicketUnreadDot";
@@ -12,8 +12,8 @@ type TicketListRowProps = {
   href: string;
   lastMessageAt?: string | null;
   unreadCount?: number;
-  showCompany?: boolean;
-  companyName?: string | null;
+  /** Admin: organisation name shown between nummer and titel */
+  customerName?: string | null;
   trailing?: ReactNode;
 };
 
@@ -22,78 +22,65 @@ export function TicketListRow({
   href,
   lastMessageAt,
   unreadCount = 0,
-  showCompany = false,
-  companyName,
+  customerName,
   trailing,
 }: TicketListRowProps) {
   const hasUnread = unreadCount > 0;
 
   return (
-    <li>
+    <li className="flex items-stretch gap-2 rounded-2xl border border-sky-100 bg-white shadow-sm transition-all hover:border-sky-200 hover:shadow-md">
       <Link
         href={href}
-        className="flex cursor-pointer flex-col gap-3 rounded-2xl border border-sky-100 bg-white p-4 shadow-sm transition-all hover:border-sky-200 hover:shadow-md md:flex-row md:items-center md:gap-4 md:p-5"
+        className="min-w-0 flex-1 p-4 md:p-5"
       >
-        <div className="flex min-w-0 flex-1 items-start gap-3">
-          <TicketNumberBadge ticketNumber={ticket.ticket_number} />
-          <div className="min-w-0 flex-1">
+        <div className="flex flex-col gap-3 md:grid md:grid-cols-[auto_minmax(0,1fr)_auto] md:items-center md:gap-4 lg:grid-cols-[auto_auto_minmax(0,1fr)_auto]">
+          <div className="flex items-center gap-2">
+            <TicketNumberBadge ticketNumber={ticket.ticket_number} />
+            <TicketUnreadDot hasUnread={hasUnread} />
+            <span className="md:hidden">
+              <StatusBadge status={ticket.status} />
+            </span>
+          </div>
+
+          {customerName ? (
+            <p className="text-sm font-medium text-[#4A8CB5] md:max-w-[10rem] md:truncate lg:max-w-[12rem]">
+              {customerName}
+            </p>
+          ) : (
+            <span className="hidden lg:block" aria-hidden />
+          )}
+
+          <div className="min-w-0">
             <div className="flex flex-wrap items-center gap-2">
               <p className="text-base font-semibold text-[#0D1F2D]">{ticket.title}</p>
-              <TicketUnreadDot hasUnread={hasUnread} />
               <TicketPriorityDot priority={ticket.priority} />
             </div>
-            {showCompany && companyName ? (
-              <p className="mt-0.5 text-xs text-[#4A8CB5]">{companyName}</p>
-            ) : null}
-            <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-xs text-[#4A8CB5]">
+            <div className="mt-1.5 flex flex-wrap gap-x-4 gap-y-0.5 text-xs text-[#4A8CB5]">
               <span>Oprettet {formatTicketListDate(ticket.created_at)}</span>
               {lastMessageAt ? (
                 <span>Seneste besked {formatTicketListDate(lastMessageAt)}</span>
-              ) : null}
+              ) : (
+                <span className="text-[#94a3b8]">Ingen beskeder endnu</span>
+              )}
             </div>
           </div>
-        </div>
-        <div className="flex shrink-0 flex-wrap items-center gap-2 md:flex-col md:items-end">
-          <StatusBadge status={ticket.status} />
-          {trailing}
+
+          <span className="hidden md:inline-flex">
+            <StatusBadge status={ticket.status} />
+          </span>
         </div>
       </Link>
+
+      {trailing ? (
+        <div className="flex shrink-0 items-center border-l border-sky-50 px-3 md:px-4">
+          {trailing}
+        </div>
+      ) : null}
     </li>
   );
 }
 
-/** Kompakt række til admin grupperede lister. */
-export function TicketListRowCompact({
-  ticket,
-  href,
-  lastMessageAt,
-  unreadCount = 0,
-  trailing,
-}: Omit<TicketListRowProps, "showCompany" | "companyName">) {
-  const hasUnread = unreadCount > 0;
-
-  return (
-    <li className="border-b border-slate-100 last:border-0">
-      <div className="flex flex-col gap-3 px-4 py-4 sm:flex-row sm:items-center sm:justify-between md:px-5">
-        <Link href={href} className="min-w-0 flex-1 transition hover:opacity-90">
-          <div className="flex flex-wrap items-center gap-2">
-            <TicketNumberBadge ticketNumber={ticket.ticket_number} />
-            <p className="font-semibold text-[#0D1F2D]">{ticket.title}</p>
-            <TicketUnreadDot hasUnread={hasUnread} />
-            <TicketPriorityDot priority={ticket.priority} />
-          </div>
-          <div className="mt-1.5 flex flex-wrap gap-x-3 gap-y-0.5 text-xs text-[#4A8CB5]">
-            <span>Oprettet {formatDanishDateTime(ticket.created_at)}</span>
-            {lastMessageAt ? (
-              <span>Seneste besked {formatTicketListDate(lastMessageAt)}</span>
-            ) : null}
-          </div>
-        </Link>
-        <div className="flex shrink-0 flex-wrap items-center gap-2">
-          <StatusBadge status={ticket.status} />
-          {trailing}
-        </div>
-      </div>
-    </li>
-  );
+/** @deprecated Use TicketListRow */
+export function TicketListRowCompact(props: TicketListRowProps) {
+  return <TicketListRow {...props} />;
 }

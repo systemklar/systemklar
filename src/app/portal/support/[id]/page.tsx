@@ -1,16 +1,12 @@
 "use client";
 
-import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { TicketDetailLayout } from "@/components/tickets/TicketDetailLayout";
 import {
   fetchTicketWithProfileForUser,
   type TicketWithProfileRow,
 } from "@/lib/tickets-with-profile";
-import { TicketDetailHeader } from "@/components/tickets/TicketDetailHeader";
-import { TicketStatusToggle } from "@/components/tickets/TicketStatusToggle";
-import { TicketMessageThread } from "@/components/tickets/TicketMessageThread";
-import { TicketAttachmentsPanel } from "@/components/tickets/TicketAttachmentsPanel";
 import { fetchCurrentProfile } from "@/lib/current-profile";
 import { setTicketLastViewedToNow } from "@/lib/ticket-last-viewed";
 import { createClient } from "@/lib/supabase";
@@ -24,10 +20,9 @@ export default function PortalSupportTicketPage() {
   const [ticket, setTicket] = useState<TicketWithProfileRow | null>(null);
   const [loading, setLoading] = useState(true);
   const [deleting, setDeleting] = useState(false);
-  const [companyName, setCompanyName] = useState<string | null>(null);
+  const [companyName, setCompanyName] = useState<string>("Kunde");
 
   const loadTicket = useCallback(async () => {
-    await Promise.resolve();
     setLoading(true);
     if (!id) {
       setLoading(false);
@@ -50,10 +45,9 @@ export default function PortalSupportTicketPage() {
       return;
     }
     const row = await fetchTicketWithProfileForUser(supabase, id, profile.organisation_id);
-    setCompanyName(profile.company_name ?? null);
+    setCompanyName(profile.company_name?.trim() || "Kunde");
 
     if (!row) {
-      console.error("[ticket] load failed");
       router.replace("/portal/support");
       setLoading(false);
       return;
@@ -102,70 +96,33 @@ export default function PortalSupportTicketPage() {
   };
 
   if (loading || !ticket) {
-    return <p className="text-sm text-[#4A8CB5]">Indlæser sag...</p>;
+    return (
+      <div className="p-6 md:p-8">
+        <p className="text-sm text-[#4A8CB5]">Indlæser sag…</p>
+      </div>
+    );
   }
 
   return (
-    <div className="flex min-h-0 w-full flex-1 flex-col p-6 md:p-8">
-        <Link href="/portal/support" className="text-sm font-semibold text-sky-600 hover:underline">
-          ← Tilbage til Support & sager
-        </Link>
-
-        <div className="mt-4 flex min-h-0 flex-1 flex-col gap-5 lg:grid lg:grid-cols-3">
-          <div className="min-h-[60vh] lg:col-span-2">
-            <TicketMessageThread
-              ticketId={ticket.id}
-              organisationId={ticket.organisation_id}
-              sendAsAdmin={false}
-              customerCompanyLabel={companyName ?? "Kunde"}
-              fullHeight
-            />
-          </div>
-
-          <aside className="space-y-4">
-            <section className="rounded-2xl border border-sky-100 bg-white p-5 shadow-sm">
-              <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-[#4A8CB5]">Sag-info</p>
-              <TicketDetailHeader
-                ticket={ticket}
-                subtitle={companyName ?? undefined}
-                showExpectedResponse
-              />
-              <div className="mt-4 border-t border-sky-50 pt-4">
-                <p className="mb-2 text-xs text-[#4A8CB5]">Status</p>
-                <TicketStatusToggle
-                  ticketId={ticket.id}
-                  status={ticket.status}
-                  onUpdated={(next) =>
-                    setTicket((t) => (t ? { ...t, status: next } : null))
-                  }
-                />
-              </div>
-            </section>
-
-            <section className="rounded-2xl border border-sky-100 bg-white p-5 shadow-sm">
-              <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-[#4A8CB5]">Beskrivelse</p>
-          {ticket.description ? (
-                <p className="whitespace-pre-wrap text-sm text-[#2C4A5E]">{ticket.description}</p>
-          ) : (
-                <p className="text-sm text-[#4A8CB5]">Ingen beskrivelse.</p>
-          )}
-            </section>
-
-            <TicketAttachmentsPanel
-              ticketId={ticket.id}
-              organisationId={ticket.organisation_id}
-            />
-
+    <div className="p-6 md:p-8">
+      <TicketDetailLayout
+        ticket={ticket}
+        backHref="/portal/support"
+        customerName={companyName}
+        sendAsAdmin={false}
+        showExpectedResponse
+        onStatusChange={(next) => setTicket((t) => (t ? { ...t, status: next } : null))}
+        sidebarFooter={
           <button
             type="button"
             disabled={deleting}
             onClick={() => void handleDelete()}
-            className="rounded-full border border-red-200 bg-red-50 px-5 py-2.5 text-sm font-semibold text-red-600 transition hover:bg-red-100 disabled:opacity-50"
+            className="w-full rounded-full border border-red-200 bg-red-50 px-5 py-2.5 text-sm font-semibold text-red-600 transition hover:bg-red-100 disabled:opacity-50"
           >
-            {deleting ? "Sletter..." : "Slet sag"}
+            {deleting ? "Sletter…" : "Slet sag"}
           </button>
-          </aside>
-        </div>
-      </div>
+        }
+      />
+    </div>
   );
 }

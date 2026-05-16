@@ -71,9 +71,6 @@ export async function POST(request: Request) {
   if (!title) {
     return NextResponse.json({ error: "Titel er påkrævet." }, { status: 400 });
   }
-  if (!description) {
-    return NextResponse.json({ error: "Beskrivelse er påkrævet." }, { status: 400 });
-  }
 
   const { data: organisation, error: organisationError } = await admin
     .from("organisations")
@@ -93,7 +90,7 @@ export async function POST(request: Request) {
     .from("tickets")
     .insert({
       title,
-      description,
+      description: description || "",
       priority,
       status: "active",
       user_id: auth.user.id,
