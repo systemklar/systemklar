@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
-import { AlertTriangle, Check, ChevronDown, ChevronUp, Plus, X } from "lucide-react";
+import { AlertTriangle, Check, Plus, X } from "lucide-react";
 import {
   Area,
   AreaChart,
@@ -50,7 +50,7 @@ const CHART_ADVARSEL = "#C47B0A";
 const CHART_FEJL = "#C42B2B";
 const CHART_AFVENTER = "#94A3B8";
 const LINE_STATUS = "#0A6EBD";
-const TAB_ROTATE_MS = 4000;
+const TAB_ROTATE_MS = 5000;
 
 function friendlySystemLabel(technicalName: string): string {
   const t = technicalName.trim();
@@ -77,31 +77,7 @@ function rowStatusLabel(status: "ok" | "advarsel" | "fejl" | "afventer"): string
 function dotClassName(status: "ok" | "advarsel" | "fejl" | "afventer"): string {
   const base = "h-2 w-2 shrink-0 rounded-full";
   if (status === "fejl") return `${base} portal-status-dot-fejl`;
-  if (status === "advarsel") return `${base} portal-status-dot-advarsel`;
   return base;
-}
-
-function AnimatedCount({ value, duration = 300 }: { value: number; duration?: number }) {
-  const [display, setDisplay] = useState(0);
-
-  useEffect(() => {
-    if (value <= 0) {
-      setDisplay(0);
-      return;
-    }
-    const start = performance.now();
-    let frame = 0;
-    const tick = (now: number) => {
-      const t = Math.min(1, (now - start) / duration);
-      const eased = 1 - (1 - t) ** 2;
-      setDisplay(Math.round(value * eased));
-      if (t < 1) frame = requestAnimationFrame(tick);
-    };
-    frame = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(frame);
-  }, [value, duration]);
-
-  return <>{display}</>;
 }
 
 function dotStyle(status: "ok" | "advarsel" | "fejl" | "afventer"): { backgroundColor: string } {
@@ -220,19 +196,16 @@ export function PortalSystemsDashboard({
   const [historyDaily, setHistoryDaily] = useState<DailyPctOkPoint[]>([]);
   const [historyDistinctDayCount, setHistoryDistinctDayCount] = useState<number | null>(null);
   const [historyLoading, setHistoryLoading] = useState(false);
-  const [historyExpanded, setHistoryExpanded] = useState(false);
   const [activeTab, setActiveTab] = useState<string>("");
-  const [displayTabKey, setDisplayTabKey] = useState<string>("");
-  const [rowListPhase, setRowListPhase] = useState<"in" | "out">("in");
   const [autoRotateEnabled, setAutoRotateEnabled] = useState(true);
   const [tabsHovered, setTabsHovered] = useState(false);
-  const [tabProgressEpoch, setTabProgressEpoch] = useState(0);
+  const [tabListVisible, setTabListVisible] = useState(true);
   const [detail, setDetail] = useState<DetailSelection | null>(null);
 
   const tabNavRef = useRef<HTMLDivElement>(null);
   const tabButtonRefs = useRef<Map<string, HTMLButtonElement>>(new Map());
   const [tabIndicator, setTabIndicator] = useState({ left: 0, width: 0 });
-  const switchTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const tabSwitchTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const orgIdForMonitoring = preview
     ? (organisationIdProp?.trim() || null)
@@ -440,8 +413,7 @@ export function PortalSystemsDashboard({
     return defaultTabKey;
   }, [activeTab, defaultTabKey, tabsWithSystems]);
 
-  const displayedTabKey = displayTabKey || activeTabKey;
-  const displayedTabRows = rowsByGroup.get(displayedTabKey) ?? [];
+  const activeTabRows = rowsByGroup.get(activeTabKey) ?? [];
 
   const updateTabIndicator = useCallback(() => {
     const nav = tabNavRef.current;
@@ -476,16 +448,14 @@ export function PortalSystemsDashboard({
       if (manual) setAutoRotateEnabled(false);
       if (key === activeTabKey) return;
 
-      if (switchTimeoutRef.current) clearTimeout(switchTimeoutRef.current);
+      if (tabSwitchTimeoutRef.current) clearTimeout(tabSwitchTimeoutRef.current);
 
-      setRowListPhase("out");
-      switchTimeoutRef.current = setTimeout(() => {
+      setTabListVisible(false);
+      tabSwitchTimeoutRef.current = setTimeout(() => {
         setActiveTab(key);
-        setDisplayTabKey(key);
-        setTabProgressEpoch((e) => e + 1);
-        setRowListPhase("in");
-        switchTimeoutRef.current = null;
-      }, 100);
+        setTabListVisible(true);
+        tabSwitchTimeoutRef.current = null;
+      }, 150);
     },
     [activeTabKey],
   );
@@ -493,13 +463,12 @@ export function PortalSystemsDashboard({
   useEffect(() => {
     if (!activeTab && defaultTabKey) {
       setActiveTab(defaultTabKey);
-      setDisplayTabKey(defaultTabKey);
     }
   }, [activeTab, defaultTabKey]);
 
   useEffect(() => {
     return () => {
-      if (switchTimeoutRef.current) clearTimeout(switchTimeoutRef.current);
+      if (tabSwitchTimeoutRef.current) clearTimeout(tabSwitchTimeoutRef.current);
     };
   }, []);
 
@@ -516,15 +485,7 @@ export function PortalSystemsDashboard({
     }, TAB_ROTATE_MS);
 
     return () => window.clearInterval(id);
-  }, [
-    activeTabKey,
-    autoRotateEnabled,
-    goToTab,
-    preview,
-    tabProgressEpoch,
-    tabsHovered,
-    tabsWithSystems,
-  ]);
+  }, [activeTabKey, autoRotateEnabled, goToTab, preview, tabsHovered, tabsWithSystems]);
 
   const counts = useMemo(() => {
     let ok = 0;
@@ -548,7 +509,6 @@ export function PortalSystemsDashboard({
   const heroAllOk = counts.needsAttention === 0 && systemRows.length > 0;
   const heroHasFejl = counts.fejl > 0;
   const latestCheckSubtext = shortCheckedAgo(mostRecentCheckIso(monitoringByName));
-  const hasActiveErrors = counts.needsAttention > 0;
 
   const lineChartData = useMemo(
     () =>
@@ -564,14 +524,14 @@ export function PortalSystemsDashboard({
   );
 
   const hasSystems = systemRows.length > 0;
-  const showHistorySection = !preview && hasSystems && Boolean(orgIdForMonitoring);
-  const showHistoryChart =
+  const showUptimeChart =
+    !preview &&
+    hasSystems &&
+    Boolean(orgIdForMonitoring) &&
     !historyLoading &&
     historyDistinctDayCount !== null &&
     historyDistinctDayCount >= 2 &&
     lineChartData.length >= 2;
-  const showHistoryFallback =
-    !historyLoading && historyDistinctDayCount !== null && historyDistinctDayCount < 2;
 
   if (loading) {
     return <p className="text-sm text-[#7AAEC8]">Indlæser overblik...</p>;
@@ -593,7 +553,7 @@ export function PortalSystemsDashboard({
         <div className="flex flex-col gap-4">
           {/* 1. Hero status */}
           <section
-            className={`flex min-h-[220px] flex-col items-center justify-center rounded-2xl px-6 py-8 text-center shadow-sm ${
+            className={`flex min-h-[240px] flex-col items-center justify-center rounded-2xl px-6 py-10 text-center shadow-sm ${
               heroAllOk
                 ? "border border-emerald-100/80 bg-[#EDFAF5]"
                 : heroHasFejl
@@ -609,7 +569,7 @@ export function PortalSystemsDashboard({
                 >
                   <Check className="h-9 w-9 text-[#0A7C5C]" strokeWidth={2.5} />
                 </div>
-                <h1 className="text-3xl font-semibold tracking-tight text-[#0D1F2D]">Alt fungerer</h1>
+                <h1 className="text-3xl font-light tracking-tight text-[#0D1F2D]">Alt fungerer</h1>
                 <p className="mt-1.5 text-sm text-[#7AAEC8]">
                   Senest tjekket {latestCheckSubtext}
                 </p>
@@ -625,7 +585,7 @@ export function PortalSystemsDashboard({
                     strokeWidth={2}
                   />
                 </div>
-                <h1 className="text-2xl font-semibold tracking-tight text-[#0D1F2D] sm:text-3xl">
+                <h1 className="text-2xl font-light tracking-tight text-[#0D1F2D] sm:text-3xl">
                   {counts.needsAttention === 1
                     ? "1 system kræver opmærksomhed"
                     : `${counts.needsAttention} systemer kræver opmærksomhed`}
@@ -642,7 +602,7 @@ export function PortalSystemsDashboard({
                           row.status === "fejl"
                             ? "border-red-200 bg-white/90 text-[#C42B2B] hover:bg-red-50"
                             : "border-amber-200 bg-white/90 text-[#C47B0A] hover:bg-amber-50"
-                        } ${row.friendly === "Domæne" ? "portal-hero-pill-shake" : ""}`}
+                        }`}
                       >
                         {row.friendly}
                       </button>
@@ -659,10 +619,7 @@ export function PortalSystemsDashboard({
               <span className="text-[10px]" aria-hidden>
                 🟢
               </span>
-              <span className="font-semibold tabular-nums text-[#0D1F2D]">
-                <AnimatedCount value={counts.ok} />
-              </span>{" "}
-              OK
+              <span className="font-semibold tabular-nums text-[#0D1F2D]">{counts.ok}</span> OK
             </span>
             <span className="mx-2 text-[#D0E8F5]">·</span>
             <span className="inline-flex items-center gap-1">
@@ -670,7 +627,7 @@ export function PortalSystemsDashboard({
                 🟡
               </span>
               <span className="font-semibold tabular-nums text-[#0D1F2D]">
-                <AnimatedCount value={counts.advarsel + counts.fejl} />
+                {counts.advarsel + counts.fejl}
               </span>{" "}
               Advarsel
             </span>
@@ -679,9 +636,7 @@ export function PortalSystemsDashboard({
               <span className="text-[10px]" aria-hidden>
                 ⚪
               </span>
-              <span className="font-semibold tabular-nums text-[#0D1F2D]">
-                <AnimatedCount value={counts.afventer} />
-              </span>{" "}
+              <span className="font-semibold tabular-nums text-[#0D1F2D]">{counts.afventer}</span>{" "}
               Afventer
             </span>
           </p>
@@ -690,7 +645,7 @@ export function PortalSystemsDashboard({
           <section className="overflow-hidden rounded-2xl border border-sky-100 bg-white shadow-sm">
             <div
               ref={tabNavRef}
-              className={`relative border-b border-sky-100 ${tabsHovered ? "portal-tabs-paused" : ""}`}
+              className="relative border-b border-sky-100"
               onMouseEnter={() => setTabsHovered(true)}
               onMouseLeave={() => setTabsHovered(false)}
             >
@@ -722,7 +677,7 @@ export function PortalSystemsDashboard({
                         <span
                           className={`ml-1.5 inline-flex min-w-[1.25rem] justify-center rounded-full px-1 text-[10px] font-semibold ${
                             isActive ? "bg-[#0A6EBD] text-white" : "bg-amber-100 text-amber-800"
-                          } portal-tab-badge-pop`}
+                          }`}
                         >
                           {issueCount}
                         </span>
@@ -740,38 +695,20 @@ export function PortalSystemsDashboard({
                 }}
                 aria-hidden
               />
-
-              {autoRotateEnabled && !tabsHovered && tabsWithSystems.length > 1 ? (
-                <span
-                  key={`progress-${activeTabKey}-${tabProgressEpoch}`}
-                  className="portal-tab-progress pointer-events-none absolute bottom-0 left-0 h-0.5 bg-[#0A6EBD]/35"
-                  style={{
-                    transform: `translateX(${tabIndicator.left}px)`,
-                    width: tabIndicator.width,
-                  }}
-                  aria-hidden
-                />
-              ) : null}
             </div>
 
-            <ul key={displayedTabKey} className="divide-y divide-sky-50">
-              {displayedTabRows.map((row, index) => (
+            <ul
+              key={activeTabKey}
+              className={`divide-y divide-sky-50 transition-opacity duration-150 ease-out ${
+                tabListVisible ? "opacity-100" : "opacity-0"
+              }`}
+            >
+              {activeTabRows.map((row) => (
                 <li key={row.key}>
                   <button
                     type="button"
                     onClick={() => openDetail(row)}
-                    className={`flex w-full items-center gap-3 px-4 py-4 text-left transition-colors duration-150 hover:bg-sky-50/80 ${rowAccentClass(row.status)} ${
-                      rowListPhase === "in"
-                        ? "portal-dashboard-row-in"
-                        : rowListPhase === "out"
-                          ? "portal-dashboard-row-out"
-                          : ""
-                    }`}
-                    style={
-                      rowListPhase === "in"
-                        ? { animationDelay: `${index * 40}ms` }
-                        : undefined
-                    }
+                    className={`flex w-full items-center gap-3 px-4 py-4 text-left transition-colors duration-150 hover:bg-sky-50/80 ${rowAccentClass(row.status)}`}
                   >
                     <span
                       className={dotClassName(row.status)}
@@ -803,35 +740,11 @@ export function PortalSystemsDashboard({
             </ul>
           </section>
 
-          {/* 4. Collapsed uptime chart */}
-          {showHistorySection ? (
-            <div className="text-center">
-              <button
-                type="button"
-                onClick={() => setHistoryExpanded((v) => !v)}
-                className="inline-flex items-center gap-1 text-sm font-medium text-[#0A6EBD] hover:text-[#0859A0]"
-              >
-                {historyExpanded ? (
-                  <>
-                    Skjul historik
-                    <ChevronUp className="h-4 w-4" />
-                  </>
-                ) : (
-                  <>
-                    Vis historik
-                    <ChevronDown className="h-4 w-4" />
-                  </>
-                )}
-              </button>
-              {historyExpanded ? (
-                <section className="portal-tab-panel-in mt-3 rounded-2xl border border-sky-100 bg-white px-4 py-5 shadow-sm">
-                  <h2 className="text-left text-sm font-semibold text-[#0D1F2D]">
-                    Oppetid de seneste 30 dage
-                  </h2>
-                  {historyLoading ? (
-                    <p className="mt-3 text-left text-sm text-[#7AAEC8]">Indlæser historik…</p>
-                  ) : showHistoryChart ? (
-                    <div className="mt-4 h-48 w-full">
+          {/* 4. Uptime chart (only when enough data) */}
+          {showUptimeChart ? (
+            <section className="rounded-2xl border border-sky-100 bg-white px-4 py-5 shadow-sm">
+              <h2 className="text-sm font-semibold text-[#0D1F2D]">Oppetid de seneste 30 dage</h2>
+              <div className="mt-4 h-48 w-full">
                       <ResponsiveContainer width="100%" height="100%">
                         <AreaChart
                           data={lineChartData}
@@ -880,15 +793,8 @@ export function PortalSystemsDashboard({
                           />
                         </AreaChart>
                       </ResponsiveContainer>
-                    </div>
-                  ) : showHistoryFallback ? (
-                    <p className="mt-3 text-left text-sm text-[#2C4A5E]">
-                      Ikke nok data endnu — grafen vises efter første overvågningsuge
-                    </p>
-                  ) : null}
-                </section>
-              ) : null}
-            </div>
+              </div>
+            </section>
           ) : null}
         </div>
       )}
@@ -972,9 +878,7 @@ export function PortalSystemsDashboard({
       {!preview ? (
         <Link
           href="/portal/support"
-          className={`fixed bottom-6 right-6 z-30 inline-flex items-center gap-1.5 rounded-full bg-[#062840] px-5 py-3.5 text-sm font-semibold text-white shadow-xl transition hover:bg-[#0D1F2D] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#0A6EBD] focus-visible:ring-offset-2 ${
-            hasActiveErrors ? "portal-fab-pulse" : "portal-fab-enter"
-          }`}
+          className="fixed bottom-6 right-6 z-30 inline-flex items-center gap-1.5 rounded-full bg-[#062840] px-5 py-3.5 text-sm font-semibold text-white shadow-lg transition-colors hover:bg-[#0D1F2D] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#0A6EBD] focus-visible:ring-offset-2"
         >
           <Plus className="h-4 w-4" strokeWidth={2.5} aria-hidden />
           Opret IT-sag
