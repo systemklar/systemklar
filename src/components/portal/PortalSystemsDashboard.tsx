@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
-import { AlertTriangle, Check, Plus, X } from "lucide-react";
+import { AlertTriangle, Check, ChevronDown, ChevronRight, X } from "lucide-react";
 import {
   Area,
   AreaChart,
@@ -31,8 +31,16 @@ import {
 import {
   PortalDashboardHeroSkeleton,
   PortalDashboardSystemRowSkeleton,
+  PortalDashboardTicketRowSkeleton,
 } from "@/components/portal/PortalMonitoringSkeletons";
 import { PortalSlideInPanel } from "@/components/portal/PortalOverlay";
+import { StatusBadge } from "@/components/tickets/StatusBadge";
+import {
+  TICKET_SELECT_BASE,
+  normalizeTicketWithProfile,
+  type TicketWithProfileRow,
+} from "@/lib/tickets-with-profile";
+import { logSupabaseError } from "@/lib/supabase-error";
 
 type PortalSystemsDashboardProps = {
   preview?: boolean;
@@ -56,6 +64,9 @@ const CHART_FEJL = "#C42B2B";
 const CHART_AFVENTER = "#94A3B8";
 const LINE_STATUS = "#0A6EBD";
 const TAB_ROTATE_MS = 8000;
+const MAX_DASHBOARD_TICKETS = 3;
+
+const ticketDateFmt = new Intl.DateTimeFormat("da-DK", { dateStyle: "medium" });
 
 function easeOutCubic(t: number) {
   return 1 - (1 - t) ** 3;
@@ -247,6 +258,11 @@ export function PortalSystemsDashboard({
   const [tabIndicator, setTabIndicator] = useState({ left: 0, width: 0 });
   const rotateTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const prevMonitoringLoadingRef = useRef(true);
+  const [chartOpen, setChartOpen] = useState(false);
+  const [activeTickets, setActiveTickets] = useState<TicketWithProfileRow[]>([]);
+  const [activeTicketCount, setActiveTicketCount] = useState(0);
+  const [ticketsLoading, setTicketsLoading] = useState(true);
+  const [hasSentReports, setHasSentReports] = useState(false);
 
   const orgIdForMonitoring = preview
     ? (organisationIdProp?.trim() || null)
@@ -419,6 +435,75 @@ export function PortalSystemsDashboard({
       cancelled = true;
     };
   }, [orgIdForMonitoring]);
+
+  useEffect(() => {
+    if (preview || !orgIdForMonitoring) {
+      setActiveTickets([]);
+      setActiveTicketCount(0);
+      setHasSentReports(false);
+      setTicketsLoading(false);
+      return;
+    }
+
+    let cancelled = false;
+    setTicketsLoading(true);
+
+    void (async () => {
+      const orgId = orgIdForMonitoring;
+
+      const [ticketsRes, countRes, reportsRes] = await Promise.all([
+        supabase
+          .from("tickets")
+          .select(TICKET_SELECT_BASE)
+          .eq("organisation_id", orgId)
+          .neq("status", "resolved")
+          .order("created_at", { ascending: false })
+          .limit(MAX_DASHBOARD_TICKETS + 1),
+        supabase
+          .from("tickets")
+          .select("id", { count: "exact", head: true })
+          .eq("organisation_id", orgId)
+          .neq("status", "resolved"),
+        supabase
+          .from("it_reports")
+          .select("id", { count: "exact", head: true })
+          .eq("organisation_id", orgId)
+          .eq("status", "sent"),
+      ]);
+
+      if (cancelled) return;
+
+      if (ticketsRes.error) {
+        logSupabaseError("[PortalSystemsDashboard] tickets", ticketsRes.error);
+        setActiveTickets([]);
+      } else {
+        const rows = (ticketsRes.data ?? [])
+          .map((r) => normalizeTicketWithProfile(r as unknown as Record<string, unknown>))
+          .filter((x): x is TicketWithProfileRow => x !== null);
+        setActiveTickets(rows.slice(0, MAX_DASHBOARD_TICKETS));
+      }
+
+      if (countRes.error) {
+        logSupabaseError("[PortalSystemsDashboard] ticket count", countRes.error);
+        setActiveTicketCount(0);
+      } else {
+        setActiveTicketCount(countRes.count ?? 0);
+      }
+
+      if (reportsRes.error) {
+        logSupabaseError("[PortalSystemsDashboard] it_reports", reportsRes.error);
+        setHasSentReports(false);
+      } else {
+        setHasSentReports((reportsRes.count ?? 0) > 0);
+      }
+
+      setTicketsLoading(false);
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [orgIdForMonitoring, preview, supabase]);
 
   const groups = useMemo(() => buildOnboardingDashboardGroups(namesLive), [namesLive]);
 
@@ -598,6 +683,15 @@ export function PortalSystemsDashboard({
     historyDistinctDayCount >= 2 &&
     lineChartData.length >= 2;
 
+  const displayedTickets = activeTickets.slice(0, MAX_DASHBOARD_TICKETS);
+  const showAllTicketsLink = activeTicketCount > MAX_DASHBOARD_TICKETS;
+
+  const heroSurfaceClass = heroAllOk
+    ? "border border-emerald-100/80 bg-[#EDFAF5]"
+    : heroHasFejl
+      ? "border border-red-100/80 bg-gradient-to-r from-[#FEF2F2] to-[#FFFBFB]"
+      : "border border-amber-100/80 bg-gradient-to-r from-[#FFFBEB] to-[#FFFEF7]";
+
   const renderSystemRow = (row: SystemRowModel, tabKey: string, index: number, animate: boolean) => (
     <li
       key={`${tabKey}-${tabRowGeneration}-${row.key}`}
@@ -651,72 +745,95 @@ export function PortalSystemsDashboard({
         </div>
       ) : (
         <div className="flex flex-col gap-4">
-          {/* 1. Hero status */}
+          {/* 1. Hero status (compact) */}
           {monitoringLoading ? (
             <PortalDashboardHeroSkeleton />
           ) : (
-          <section
-            className={`portal-hero-enter flex min-h-[260px] flex-col items-center justify-center rounded-2xl px-6 py-10 text-center shadow-sm ${
-              heroAllOk
-                ? "border border-emerald-100/80 bg-[#EDFAF5]"
-                : heroHasFejl
-                  ? "border border-red-100/80 bg-gradient-to-b from-[#FEF2F2] to-[#FFFBFB]"
-                  : "border border-amber-100/80 bg-gradient-to-b from-[#FFFBEB] to-[#FFFEF7]"
-            }`}
-          >
-            {heroAllOk ? (
-              <>
-                <div className="portal-hero-icon-fade-in mb-3" aria-hidden>
-                  <div className="portal-hero-icon-wrap flex h-16 w-16 items-center justify-center rounded-full bg-white/90 shadow-sm">
-                    <Check className="h-9 w-9 text-[#0A7C5C]" strokeWidth={2.5} />
+            <section
+              className={`portal-hero-enter flex max-h-[160px] flex-col justify-center overflow-hidden rounded-2xl px-5 py-6 shadow-sm ${heroSurfaceClass}`}
+            >
+              <div className="flex items-center gap-3 sm:gap-4">
+                <div className="portal-hero-icon-fade-in shrink-0" aria-hidden>
+                  <div
+                    className={`flex h-10 w-10 items-center justify-center rounded-full bg-white/90 shadow-sm ${
+                      heroAllOk ? "" : "portal-hero-warning-icon-glow"
+                    }`}
+                  >
+                    {heroAllOk ? (
+                      <Check className="h-8 w-8 text-[#0A7C5C]" strokeWidth={2.5} />
+                    ) : (
+                      <AlertTriangle
+                        className={`h-8 w-8 ${heroHasFejl ? "text-[#C42B2B]" : "text-[#C47B0A]"}`}
+                        strokeWidth={2}
+                      />
+                    )}
                   </div>
                 </div>
-                <h1 className="text-3xl font-light tracking-tight text-[#0D1F2D]">Alt fungerer</h1>
-                <p className="mt-1.5 text-sm text-[#7AAEC8]">
-                  Senest tjekket {latestCheckSubtext}
-                </p>
-              </>
-            ) : (
-              <>
-                <div className="portal-hero-icon-fade-in mb-3" aria-hidden>
-                  <div className="portal-hero-icon-wrap portal-hero-warning-icon-glow flex h-14 w-14 items-center justify-center rounded-full bg-white/90 shadow-sm">
-                    <AlertTriangle
-                      className={`h-8 w-8 ${heroHasFejl ? "text-[#C42B2B]" : "text-[#C47B0A]"}`}
-                      strokeWidth={2}
-                    />
-                  </div>
+                <div className="min-w-0 flex-1 text-left">
+                  <h1
+                    className={`text-2xl font-semibold leading-tight tracking-tight ${
+                      heroAllOk ? "text-[#0D1F2D]" : "portal-hero-warning-shimmer"
+                    }`}
+                  >
+                    {heroAllOk
+                      ? "Alt fungerer"
+                      : counts.needsAttention === 1
+                        ? "1 system kræver opmærksomhed"
+                        : `${counts.needsAttention} systemer kræver opmærksomhed`}
+                  </h1>
+                  <p className="mt-0.5 text-xs text-[#7AAEC8]">
+                    Senest tjekket {latestCheckSubtext}
+                  </p>
                 </div>
-                <h1 className="portal-hero-warning-shimmer text-2xl font-light tracking-tight sm:text-3xl">
-                  {counts.needsAttention === 1
-                    ? "1 system kræver opmærksomhed"
-                    : `${counts.needsAttention} systemer kræver opmærksomhed`}
-                </h1>
-                <p className="mt-1 text-xs text-[#7AAEC8]">Senest tjekket {latestCheckSubtext}</p>
-                {attentionRows.length > 0 ? (
-                  <div className="mt-3 flex max-w-lg flex-wrap justify-center gap-2">
-                    {attentionRows.map((row, pillIndex) => (
-                      <button
-                        key={row.key}
-                        type="button"
-                        onClick={() => openDetail(row)}
-                        className={`portal-hero-pill-bob rounded-full border px-2.5 py-1 text-xs font-medium transition hover:shadow-sm ${
-                          row.status === "fejl"
-                            ? "border-red-200 bg-white/90 text-[#C42B2B] hover:bg-red-50"
-                            : "border-amber-200 bg-white/90 text-[#C47B0A] hover:bg-amber-50"
-                        }`}
-                        style={{ animationDelay: `${pillIndex * 200}ms` }}
-                      >
-                        {row.friendly}
-                      </button>
-                    ))}
-                  </div>
-                ) : null}
-              </>
-            )}
-          </section>
+              </div>
+              {!heroAllOk && attentionRows.length > 0 ? (
+                <div className="mt-2 flex gap-1.5 overflow-x-auto pb-0.5 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+                  {attentionRows.map((row) => (
+                    <button
+                      key={row.key}
+                      type="button"
+                      onClick={() => openDetail(row)}
+                      className={`shrink-0 rounded-full border px-2 py-0.5 text-[11px] font-medium transition hover:shadow-sm ${
+                        row.status === "fejl"
+                          ? "border-red-200 bg-white/90 text-[#C42B2B] hover:bg-red-50"
+                          : "border-amber-200 bg-white/90 text-[#C47B0A] hover:bg-amber-50"
+                      }`}
+                    >
+                      {row.friendly}
+                    </button>
+                  ))}
+                </div>
+              ) : null}
+            </section>
           )}
 
-          {/* 2. Stat pills */}
+          {/* 2. Quick actions */}
+          {!preview ? (
+            <div className="flex flex-wrap items-center gap-2">
+              <Link
+                href="/portal/support/new"
+                className="inline-flex items-center justify-center rounded-full bg-[#0A6EBD] px-4 py-2 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-[#0859A0]"
+              >
+                Opret IT-sag
+              </Link>
+              <Link
+                href="/portal/systemer"
+                className="inline-flex items-center justify-center rounded-full border border-sky-200 bg-white px-4 py-2 text-sm font-medium text-[#2C4A5E] transition-colors hover:border-sky-300 hover:bg-sky-50"
+              >
+                Se alle systemer →
+              </Link>
+              {hasSentReports ? (
+                <Link
+                  href="/portal/rapport"
+                  className="inline-flex items-center justify-center rounded-full border border-sky-200 bg-white px-4 py-2 text-sm font-medium text-[#2C4A5E] transition-colors hover:border-sky-300 hover:bg-sky-50"
+                >
+                  Download IT-rapport →
+                </Link>
+              ) : null}
+            </div>
+          ) : null}
+
+          {/* 3. Stat pills */}
           {!monitoringLoading ? (
           <p className="text-center text-sm text-[#2C4A5E]">
             <span className="inline-flex items-center gap-1">
@@ -746,7 +863,7 @@ export function PortalSystemsDashboard({
           </p>
           ) : null}
 
-          {/* 3. Tabbed system list */}
+          {/* 4. Tabbed system list */}
           <section className="overflow-hidden rounded-2xl border border-sky-100 bg-white shadow-sm">
             <div ref={tabNavRef} className="relative border-b border-sky-100">
               <nav
@@ -834,11 +951,90 @@ export function PortalSystemsDashboard({
             </div>
           </section>
 
-          {/* 4. Uptime chart (only when enough data) */}
+          {/* 5. Aktive sager */}
+          {!preview ? (
+            <section className="overflow-hidden rounded-2xl border border-sky-100 bg-white shadow-sm">
+              <div className="flex items-center justify-between gap-3 border-b border-sky-50 px-4 py-3">
+                <div className="flex items-center gap-2">
+                  <h2 className="text-sm font-semibold text-[#0D1F2D]">Aktive sager</h2>
+                  {!ticketsLoading ? (
+                    <span className="rounded-full bg-sky-100 px-2 py-0.5 text-xs font-semibold tabular-nums text-sky-800">
+                      {activeTicketCount}
+                    </span>
+                  ) : null}
+                </div>
+              </div>
+              {ticketsLoading ? (
+                <ul className="divide-y divide-sky-50" aria-busy>
+                  {[0, 1, 2].map((i) => (
+                    <PortalDashboardTicketRowSkeleton key={i} />
+                  ))}
+                </ul>
+              ) : displayedTickets.length === 0 ? (
+                <p className="px-4 py-8 text-center text-sm text-[#7AAEC8]">
+                  Ingen aktive sager — alt kører problemfrit 🎉
+                </p>
+              ) : (
+                <>
+                  <ul className="divide-y divide-sky-50">
+                    {displayedTickets.map((ticket) => (
+                      <li key={ticket.id}>
+                        <div className="flex flex-wrap items-center gap-x-3 gap-y-2 px-4 py-3 sm:flex-nowrap">
+                          <p className="min-w-0 flex-1 truncate text-sm font-semibold text-[#0D1F2D]">
+                            {ticket.title}
+                          </p>
+                          <p className="shrink-0 text-xs text-[#7AAEC8]">
+                            {ticket.created_at
+                              ? ticketDateFmt.format(new Date(ticket.created_at))
+                              : "—"}
+                          </p>
+                          <StatusBadge status={ticket.status} />
+                          <Link
+                            href={`/portal/support/${ticket.id}`}
+                            className="shrink-0 text-xs font-semibold text-[#0A6EBD] hover:underline"
+                          >
+                            Åbn →
+                          </Link>
+                        </div>
+                      </li>
+                    ))}
+                  </ul>
+                  {showAllTicketsLink ? (
+                    <div className="border-t border-sky-50 px-4 py-3">
+                      <Link
+                        href="/portal/support"
+                        className="inline-flex items-center gap-0.5 text-sm font-semibold text-[#0A6EBD] hover:underline"
+                      >
+                        Se alle sager
+                        <ChevronRight className="h-4 w-4" aria-hidden />
+                      </Link>
+                    </div>
+                  ) : null}
+                </>
+              )}
+            </section>
+          ) : null}
+
+          {/* 6. Uptime chart (collapsed by default) */}
           {showUptimeChart ? (
-            <section className="rounded-2xl border border-sky-100 bg-white px-4 py-5 shadow-sm">
-              <h2 className="text-sm font-semibold text-[#0D1F2D]">Oppetid de seneste 30 dage</h2>
-              <div className="mt-4 h-48 w-full">
+            <section className="overflow-hidden rounded-2xl border border-sky-100 bg-white shadow-sm">
+              <button
+                type="button"
+                onClick={() => setChartOpen((open) => !open)}
+                className="flex w-full items-center justify-between gap-3 px-4 py-3.5 text-left transition-colors hover:bg-sky-50/60"
+                aria-expanded={chartOpen}
+              >
+                <h2 className="text-sm font-semibold text-[#0D1F2D]">Oppetid de seneste 30 dage</h2>
+                <ChevronDown
+                  className={`h-4 w-4 shrink-0 text-[#7AAEC8] transition-transform duration-200 ${
+                    chartOpen ? "rotate-180" : ""
+                  }`}
+                  aria-hidden
+                />
+              </button>
+              {chartOpen ? (
+              <div className="border-t border-sky-50 px-4 pb-5 pt-1">
+              <div className="h-48 w-full">
                       <ResponsiveContainer width="100%" height="100%">
                         <AreaChart
                           data={lineChartData}
@@ -888,6 +1084,8 @@ export function PortalSystemsDashboard({
                         </AreaChart>
                       </ResponsiveContainer>
               </div>
+              </div>
+              ) : null}
             </section>
           ) : null}
         </div>
