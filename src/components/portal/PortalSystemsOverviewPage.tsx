@@ -51,6 +51,12 @@ function customerStatusLabel(status: MonitoringStatusKey): string {
   }
 }
 
+const REMOVE_BLOCKED_TOOLTIP = "Kontakt os for at fjerne et aktivt overvåget system.";
+
+function monitoringBlocksRemove(status: MonitoringStatusKey): boolean {
+  return status === "ok" || status === "advarsel" || status === "fejl";
+}
+
 function statusPillClass(status: MonitoringStatusKey): string {
   switch (status) {
     case "ok":
@@ -96,6 +102,13 @@ function SystemCard({
   checkedAgo,
   onStartSetup,
   extraAction,
+  showRemove,
+  removeBlocked,
+  removeConfirmOpen,
+  onRemoveClick,
+  onRemoveConfirm,
+  onRemoveCancel,
+  removeBusy,
 }: {
   muted?: boolean;
   storedName: string;
@@ -105,6 +118,13 @@ function SystemCard({
   checkedAgo: string | null;
   onStartSetup?: () => void;
   extraAction?: ReactNode;
+  showRemove?: boolean;
+  removeBlocked?: boolean;
+  removeConfirmOpen?: boolean;
+  onRemoveClick?: () => void;
+  onRemoveConfirm?: () => void;
+  onRemoveCancel?: () => void;
+  removeBusy?: boolean;
 }) {
   return (
     <article
@@ -112,7 +132,7 @@ function SystemCard({
         muted ? "opacity-75" : ""
       }`}
     >
-      <div className="flex items-start gap-4">
+      <div className="flex items-start gap-3">
         <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-[#F5FAFD] text-[#0A6EBD]">
           <Icon className="h-6 w-6" aria-hidden />
         </span>
@@ -122,12 +142,59 @@ function SystemCard({
             <p className="mt-0.5 text-xs text-[#7AAEC8]">{storedName}</p>
           ) : null}
         </div>
-        <span
-          className={`shrink-0 rounded-full px-3 py-1 text-xs font-semibold ${statusPillClass(status)}`}
-        >
-          {customerStatusLabel(status)}
-        </span>
+        <div className="flex shrink-0 flex-col items-end gap-2">
+          {showRemove ? (
+            removeBlocked ? (
+              <span title={REMOVE_BLOCKED_TOOLTIP} className="inline-flex">
+                <button
+                  type="button"
+                  disabled
+                  className="cursor-not-allowed text-xs font-medium text-[#7AAEC8]/50"
+                  aria-label={REMOVE_BLOCKED_TOOLTIP}
+                >
+                  Fjern
+                </button>
+              </span>
+            ) : (
+              <button
+                type="button"
+                onClick={onRemoveClick}
+                disabled={Boolean(removeConfirmOpen)}
+                className="text-xs font-medium text-[#7AAEC8] transition-colors hover:text-red-600 disabled:opacity-60"
+              >
+                Fjern
+              </button>
+            )
+          ) : null}
+          <span
+            className={`rounded-full px-3 py-1 text-xs font-semibold ${statusPillClass(status)}`}
+          >
+            {customerStatusLabel(status)}
+          </span>
+        </div>
       </div>
+      {removeConfirmOpen ? (
+        <div className="rounded-xl border border-[#D0E8F5] bg-[#F5FAFD] px-3 py-2.5 text-sm text-[#2C4A5E]">
+          Fjern dette system?{" "}
+          <button
+            type="button"
+            disabled={removeBusy}
+            onClick={onRemoveConfirm}
+            className="font-semibold text-[#0A6EBD] underline-offset-2 hover:underline disabled:opacity-50"
+          >
+            Ja
+          </button>
+          {" · "}
+          <button
+            type="button"
+            disabled={removeBusy}
+            onClick={onRemoveCancel}
+            className="font-semibold text-[#2C4A5E] underline-offset-2 hover:underline disabled:opacity-50"
+          >
+            Annuller
+          </button>
+        </div>
+      ) : null}
       <div className="flex flex-wrap items-center justify-between gap-3 border-t border-[#D0E8F5]/80 pt-4">
         <div className="text-sm text-[#7AAEC8]">
           {checkedAgo ? <span>{checkedAgo}</span> : <span>Ingen seneste tjek endnu</span>}
@@ -178,6 +245,9 @@ export function PortalSystemsOverviewPage() {
   const [modal, setModal] = useState<SetupModal | null>(null);
   const [addingName, setAddingName] = useState<string | null>(null);
   const [addError, setAddError] = useState<string | null>(null);
+  const [removeConfirmFor, setRemoveConfirmFor] = useState<string | null>(null);
+  const [removeBusy, setRemoveBusy] = useState(false);
+  const [removeError, setRemoveError] = useState<string | null>(null);
 
   const reloadUnion = useCallback(async () => {
     const userId = portalSession?.userId?.trim();
@@ -276,6 +346,7 @@ export function PortalSystemsOverviewPage() {
 
   const handleAdd = async (system: OnboardingSystem) => {
     setAddError(null);
+    setRemoveError(null);
     setAddingName(system.name);
     try {
       const res = await fetch("/api/portal/profile/onboarding-systems", {
@@ -291,15 +362,7 @@ export function PortalSystemsOverviewPage() {
       }
       await reloadUnion();
       if (orgId) {
-        try {
-          const mon = await fetch(`/api/monitoring/${encodeURIComponent(orgId)}`, { credentials: "include" });
-          if (mon.ok) {
-            const data = (await mon.json()) as { results?: MonitoringResultRow[] };
-            setMonitoringByName(monitoringResultsBySystemName(data.results ?? []));
-          }
-        } catch {
-          /* ignore */
-        }
+        await refreshMonitoring();
       }
     } catch {
       setAddError("Netværksfejl. Prøv igen.");
@@ -312,6 +375,51 @@ export function PortalSystemsOverviewPage() {
     const subject = `Opsætning af ${storedName}`;
     return `/portal/support/new?${new URLSearchParams({ subject }).toString()}`;
   };
+
+  const refreshMonitoring = useCallback(async () => {
+    const oid = orgId?.trim();
+    if (!oid) {
+      setMonitoringByName(new Map());
+      return;
+    }
+    try {
+      const mon = await fetch(`/api/monitoring/${encodeURIComponent(oid)}`, { credentials: "include" });
+      if (mon.ok) {
+        const data = (await mon.json()) as { results?: MonitoringResultRow[] };
+        setMonitoringByName(monitoringResultsBySystemName(data.results ?? []));
+      }
+    } catch {
+      /* ignore */
+    }
+  }, [orgId]);
+
+  const handleRemoveConfirm = useCallback(
+    async (storedName: string) => {
+      setRemoveBusy(true);
+      setRemoveError(null);
+      try {
+        const res = await fetch("/api/portal/profile/onboarding-systems/remove", {
+          method: "PATCH",
+          credentials: "include",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ systemName: storedName }),
+        });
+        const json = (await res.json().catch(() => ({}))) as { error?: string };
+        if (!res.ok) {
+          setRemoveError(json.error ?? "Kunne ikke fjerne systemet.");
+          return;
+        }
+        setRemoveConfirmFor(null);
+        await reloadUnion();
+        await refreshMonitoring();
+      } catch {
+        setRemoveError("Netværksfejl. Prøv igen.");
+      } finally {
+        setRemoveBusy(false);
+      }
+    },
+    [reloadUnion, refreshMonitoring],
+  );
 
   if (loading) {
     return <p className="text-sm text-[#7AAEC8]">Indlæser systemer…</p>;
@@ -326,6 +434,7 @@ export function PortalSystemsOverviewPage() {
         ? formatCheckedAgoDa(row.checked_at)
         : null;
     const key = entry.kind === "known" ? entry.system.id : `u-${storedName}`;
+    const blocked = monitoringBlocksRemove(status);
     return (
       <SystemCard
         key={key}
@@ -335,6 +444,16 @@ export function PortalSystemsOverviewPage() {
         status={status}
         checkedAgo={checkedAgo}
         onStartSetup={() => openSetupModal(storedName, friendlyName)}
+        showRemove
+        removeBlocked={blocked}
+        removeConfirmOpen={removeConfirmFor === storedName}
+        onRemoveClick={() => {
+          setRemoveError(null);
+          setRemoveConfirmFor(storedName);
+        }}
+        onRemoveConfirm={() => void handleRemoveConfirm(storedName)}
+        onRemoveCancel={() => setRemoveConfirmFor(null)}
+        removeBusy={removeBusy}
       />
     );
   });
@@ -350,6 +469,9 @@ export function PortalSystemsOverviewPage() {
 
       {addError ? (
         <p className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">{addError}</p>
+      ) : null}
+      {removeError ? (
+        <p className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">{removeError}</p>
       ) : null}
 
       {activeSection ?? (
