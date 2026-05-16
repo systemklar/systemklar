@@ -172,10 +172,10 @@ export function formatMonitoringDetailsLines(details: unknown): string[] {
   }
 
   if (typeof d.spf_found === "boolean") {
-    lines.push(d.spf_found ? "SPF: Fundet ✓" : "SPF: Mangler");
+    lines.push(d.spf_found ? "SPF: Fundet" : "SPF: Mangler");
   }
   if (typeof d.dmarc_found === "boolean") {
-    lines.push(d.dmarc_found ? "DMARC: Fundet ✓" : "DMARC: Mangler");
+    lines.push(d.dmarc_found ? "DMARC: Fundet" : "DMARC: Mangler");
   }
 
   const scoreRaw = d.score;

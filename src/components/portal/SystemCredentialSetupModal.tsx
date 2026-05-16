@@ -1,6 +1,6 @@
 "use client";
 
-import { Eye, EyeOff, X } from "lucide-react";
+import { Check, Eye, EyeOff, X } from "lucide-react";
 import { useMemo, useState } from "react";
 import { PortalModalOverlay } from "@/components/portal/PortalOverlay";
 import {
@@ -152,7 +152,10 @@ export function SystemCredentialSetupModal({
         <div className="flex-1 overflow-y-auto px-6 py-5">
           {isSuccessStep ? (
             <div className="py-6 text-center">
-              <p className="text-lg font-semibold text-[#0A7C5C]">Forbindelsen er oprettet ✓</p>
+              <div className="mx-auto mb-3 flex h-10 w-10 items-center justify-center rounded-full bg-emerald-50">
+                <Check className="h-5 w-5 text-[#0A7C5C]" strokeWidth={2.5} aria-hidden />
+              </div>
+              <p className="text-lg font-semibold text-[#0A7C5C]">Forbindelsen er oprettet</p>
               <p className="mt-2 text-sm text-[#2C4A5E]">
                 Vi kan nu hente data fra {friendlyName}. Du kan lukke denne guide.
               </p>

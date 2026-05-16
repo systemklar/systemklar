@@ -2,7 +2,22 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { BookOpen, LogOut, Menu, User, Users, X } from "lucide-react";
+import {
+  BookOpen,
+  FileSignature,
+  FileText,
+  LayoutDashboard,
+  Lock,
+  LogOut,
+  Menu,
+  MessageSquare,
+  Monitor,
+  Sparkles,
+  User,
+  Users,
+  X,
+  type LucideIcon,
+} from "lucide-react";
 import {
   createContext,
   useContext,
@@ -35,97 +50,42 @@ export type PortalNavKey =
   | "team"
   | "profile";
 
-function LockIcon() {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" className="h-4 w-4 flex-shrink-0" aria-hidden>
-      <path
-        d="M8 10V7a4 4 0 1 1 8 0v3M7 10h10a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1v-8a1 1 0 0 1 1-1Z"
-        stroke="currentColor"
-        strokeWidth="1.7"
-        strokeLinecap="round"
-      />
-    </svg>
-  );
-}
+const navIconClass = "h-4 w-4 shrink-0";
 
-function HomeIcon() {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" className="h-4 w-4 flex-shrink-0" aria-hidden>
-      <path d="M4 10.5 12 4l8 6.5V20a1 1 0 0 1-1 1h-5v-6H10v6H5a1 1 0 0 1-1-1v-9.5Z" stroke="currentColor" strokeWidth="1.7" />
-    </svg>
-  );
-}
-function TicketIcon() {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" className="h-4 w-4 flex-shrink-0" aria-hidden>
-      <path d="M4 7a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v4a2 2 0 1 0 0 4v2a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-2a2 2 0 1 0 0-4V7Z" stroke="currentColor" strokeWidth="1.7" />
-    </svg>
-  );
-}
-function ReportIcon() {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" className="h-4 w-4 flex-shrink-0" aria-hidden>
-      <path d="M7 4h7l3 3v13H7z" stroke="currentColor" strokeWidth="1.7" />
-      <path d="M14 4v3h3M10 12h4M10 15h4" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
-    </svg>
-  );
-}
-function SystemsIcon() {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" className="h-4 w-4 flex-shrink-0" aria-hidden>
-      <path d="M12 3v4m0 10v4M3 12h4m10 0h4M6 6l3 3m6 6 3 3m0-12-3 3m-6 6-3 3" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
-    </svg>
-  );
-}
-function SparklesIcon() {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" className="h-4 w-4 flex-shrink-0" aria-hidden>
-      <path
-        d="M12 3v2.5M12 18.5V21M3 12h2.5M18.5 12H21M5.6 5.6l1.8 1.8M16.6 16.6l1.8 1.8M5.6 18.4l1.8-1.8M16.6 7.4l1.8-1.8"
-        stroke="currentColor"
-        strokeWidth="1.7"
-        strokeLinecap="round"
-      />
-      <path
-        d="M12 8.5 10.8 12 12 15.5 13.2 12 12 8.5Zm-4.2 3.5L5.5 12l2.3.5L8.5 15l.5-2.3L11 12l-2.3-.5L8.5 9l-.5 2.3Zm8.4 0L19.5 12l-2.3.5L15.5 15l-.5-2.3L13 12l2.3-.5L15.5 9l.5 2.3Z"
-        stroke="currentColor"
-        strokeWidth="1.5"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
-}
-function AiIcon() {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" className="h-4 w-4 flex-shrink-0" aria-hidden>
-      <path d="M12 3v4m0 10v4M3 12h4m10 0h4M6.5 6.5l2.8 2.8m5.4 5.4 2.8 2.8m0-11-2.8 2.8m-5.4 5.4-2.8 2.8" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
-      <circle cx="12" cy="12" r="2.5" stroke="currentColor" strokeWidth="1.7" />
-    </svg>
-  );
-}
+type NavItemDef = {
+  label: string;
+  href: string;
+  key: PortalNavKey;
+  icon: LucideIcon;
+  adminOnly?: boolean;
+};
 
-const navItems: { label: string; href: string; key: PortalNavKey; icon?: ReactNode; adminOnly?: boolean }[] = [
-  { label: "Overblik", href: "/portal", key: "dashboard", icon: <HomeIcon /> },
-  { label: "Support & sager", href: "/portal/support", key: "support", icon: <TicketIcon /> },
-  { label: "Kodebank", href: "/portal/kodebank", key: "vault", icon: <LockIcon /> },
-  { label: "IT-rapport", href: "/portal/rapport", key: "rapport", icon: <ReportIcon /> },
-  { label: "Systemer", href: "/portal/systemer", key: "systems", icon: <SystemsIcon /> },
+const navItems: NavItemDef[] = [
+  { label: "Overblik", href: "/portal", key: "dashboard", icon: LayoutDashboard },
+  { label: "Support & sager", href: "/portal/support", key: "support", icon: MessageSquare },
+  { label: "IT-rapport", href: "/portal/rapport", key: "rapport", icon: FileText },
+  { label: "Systemer", href: "/portal/systemer", key: "systems", icon: Monitor },
+  { label: "Kodebank", href: "/portal/kodebank", key: "vault", icon: Lock },
   {
     label: "AI Tilbudsgenerator",
     href: "/portal/tilbudsgenerator",
     key: "tilbudsgenerator",
-    icon: <SparklesIcon />,
+    icon: FileSignature,
   },
-  { label: "AI-assistent", href: "/portal/ai-assistent", key: "ai", icon: <AiIcon /> },
-  {
-    label: "Vejledninger",
-    href: "/portal/vejledninger",
-    key: "guides",
-    icon: <BookOpen className="h-4 w-4 flex-shrink-0" aria-hidden />,
-  },
-  { label: "Team", href: "/portal/team", key: "team", icon: <Users className="h-4 w-4 flex-shrink-0" /> },
-  { label: "Profil", href: "/portal/profil", key: "profile", icon: <User className="h-4 w-4 flex-shrink-0" /> },
+  { label: "AI-assistent", href: "/portal/ai-assistent", key: "ai", icon: Sparkles },
+  { label: "Vejledninger", href: "/portal/vejledninger", key: "guides", icon: BookOpen },
+  { label: "Team", href: "/portal/team", key: "team", icon: Users },
+  { label: "Profil", href: "/portal/profil", key: "profile", icon: User },
 ];
+
+function NavIcon({ icon: Icon, active }: { icon: LucideIcon; active: boolean }) {
+  return (
+    <Icon
+      className={`${navIconClass} ${active ? "text-sky-700" : "text-slate-500 group-hover:text-slate-700"}`}
+      aria-hidden
+    />
+  );
+}
 
 /** Bruges af `app/portal/layout.tsx` til at holde sidenav i sync med URL uden at duplikere logik per side. */
 export function activeNavFromPortalPath(pathname: string | null): PortalNavKey {
@@ -355,13 +315,13 @@ export function PortalLayout({ children, activeNav }: PortalLayoutProps) {
                         <Link
                           key={item.key}
                           href={item.href}
-                          className={`flex cursor-pointer items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition-colors ${
+                          className={`group flex cursor-pointer items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors ${
                             isActive
-                              ? "border border-[#D0E8F5] bg-sky-50 font-semibold text-sky-800"
-                              : "text-[#2C4A5E] hover:bg-[#F5FAFD] hover:text-[#0A6EBD]"
+                              ? "bg-sky-50 font-medium text-sky-800"
+                              : "text-slate-600 hover:bg-sky-50 hover:text-slate-800"
                           }`}
                         >
-                          {item.icon}
+                          <NavIcon icon={item.icon} active={isActive} />
                           {item.label}
                         </Link>
                       );
@@ -391,9 +351,9 @@ export function PortalLayout({ children, activeNav }: PortalLayoutProps) {
               <button
                 type="button"
                 onClick={handleLogout}
-                className="flex w-full items-center gap-2 rounded-xl px-3 py-2.5 text-sm text-[#4A8CB5] transition-all hover:bg-red-50 hover:text-red-500"
+                className="group flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm text-slate-600 transition-colors hover:bg-sky-50 hover:text-slate-800"
               >
-                <LogOut className="h-4 w-4" />
+                <LogOut className={`${navIconClass} text-slate-500 group-hover:text-slate-700`} aria-hidden />
                 Log ud
               </button>
             </div>
@@ -423,22 +383,25 @@ export function PortalLayout({ children, activeNav }: PortalLayoutProps) {
               className="fixed inset-x-0 bottom-0 z-20 grid grid-cols-5 border-t border-sky-100 bg-white shadow-[0_-2px_8px_rgba(0,0,0,0.04)] md:hidden"
               aria-label="Hovednavigation mobil"
             >
-              {[
-                { key: "dashboard" as PortalNavKey, href: "/portal", label: "Overblik", icon: <HomeIcon /> },
-                { key: "support" as PortalNavKey, href: "/portal/support", label: "Support", icon: <TicketIcon /> },
-                { key: "vault" as PortalNavKey, href: "/portal/kodebank", label: "Kodebank", icon: <LockIcon /> },
-                { key: "profile" as PortalNavKey, href: "/portal/profil", label: "Profil", icon: <User className="h-4 w-4 flex-shrink-0" /> },
-              ].map((item) => {
+              {(
+                [
+                  { key: "dashboard" as PortalNavKey, href: "/portal", label: "Overblik", icon: LayoutDashboard },
+                  { key: "support" as PortalNavKey, href: "/portal/support", label: "Support", icon: MessageSquare },
+                  { key: "vault" as PortalNavKey, href: "/portal/kodebank", label: "Kodebank", icon: Lock },
+                  { key: "profile" as PortalNavKey, href: "/portal/profil", label: "Profil", icon: User },
+                ] as const
+              ).map((item) => {
                 const isActive = item.key === activeNav;
+                const Icon = item.icon;
                 return (
                   <Link
                     key={item.key}
                     href={item.href}
                     className={`flex min-h-[56px] flex-col items-center justify-center gap-1 px-2 py-2 text-[11px] font-medium transition-colors ${
-                      isActive ? "text-[#0A6EBD]" : "text-[#4A8CB5] hover:text-[#0A6EBD]"
+                      isActive ? "text-sky-700" : "text-slate-500 hover:text-slate-700"
                     }`}
                   >
-                    {item.icon}
+                    <Icon className="h-4 w-4 shrink-0" aria-hidden />
                     <span>{item.label}</span>
                   </Link>
                 );

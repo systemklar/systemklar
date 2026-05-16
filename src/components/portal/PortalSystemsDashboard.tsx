@@ -860,18 +860,18 @@ export function PortalSystemsDashboard({
               {renderMiniHero()}
               {!monitoringLoading ? (
                 <p className="text-sm text-[#2C4A5E]">
-                  <span className="inline-flex items-center gap-1">
-                    <span className="text-[10px]" aria-hidden>🟢</span>
+                  <span className="inline-flex items-center gap-1.5">
+                    <span className="h-2 w-2 rounded-full bg-[#0A7C5C]" aria-hidden />
                     <span className="font-semibold tabular-nums text-[#0D1F2D]">{displayOk}</span> OK
                   </span>
                   <span className="mx-2 text-[#D0E8F5]">·</span>
-                  <span className="inline-flex items-center gap-1">
-                    <span className="text-[10px]" aria-hidden>🟡</span>
+                  <span className="inline-flex items-center gap-1.5">
+                    <span className="h-2 w-2 rounded-full bg-[#C47B0A]" aria-hidden />
                     <span className="font-semibold tabular-nums text-[#0D1F2D]">{displayAdvarsel}</span> Advarsel
                   </span>
                   <span className="mx-2 text-[#D0E8F5]">·</span>
-                  <span className="inline-flex items-center gap-1">
-                    <span className="text-[10px]" aria-hidden>⚪</span>
+                  <span className="inline-flex items-center gap-1.5">
+                    <span className="h-2 w-2 rounded-full bg-[#94A3B8]" aria-hidden />
                     <span className="font-semibold tabular-nums text-[#0D1F2D]">{displayAfventer}</span> Afventer
                   </span>
                 </p>
@@ -989,7 +989,7 @@ export function PortalSystemsDashboard({
                     ))}
                   </ul>
                 ) : displayedTickets.length === 0 ? (
-                  <p className="py-6 text-center text-sm text-[#7AAEC8]">Ingen aktive sager 🎉</p>
+                  <p className="py-6 text-center text-sm text-[#7AAEC8]">Ingen aktive sager</p>
                 ) : (
                   <ul className="divide-y divide-sky-50">
                     {displayedTickets.map((ticket) => (
