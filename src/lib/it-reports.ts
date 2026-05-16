@@ -249,8 +249,8 @@ export function buildItReportHtmlDocument(input: ItReportHtmlInput): string {
     * { box-sizing: border-box; }
     body { font-family: Inter, ui-sans-serif, system-ui, sans-serif; margin: 0; color: ${DS.text}; background: ${DS.pageBg}; }
     .header { background: ${DS.navy}; color: #fff; padding: 18px 24px; display: flex; align-items: center; justify-content: space-between; gap: 20px; }
-    .wordmark { font-size: 20px; font-weight: 700; letter-spacing: -0.02em; color: #fff; text-transform: lowercase; }
-    .wordmark::before { content: ""; display: inline-block; width: 8px; height: 8px; border-radius: 999px; background: #fff; margin-right: 10px; vertical-align: middle; }
+    .header-brand { display: flex; align-items: center; flex-shrink: 0; }
+    .header-brand img { width: auto; display: block; }
     .header h1 { margin: 0; font-size: 15px; font-weight: 300; letter-spacing: 0.14em; text-transform: none; color: #fff; text-align: right; }
     .sub { padding: 20px 24px 22px; border-bottom: 1px solid ${DS.border}; background: ${DS.card}; }
     .sub h2 { margin: 0 0 6px; font-size: 22px; font-weight: 700; color: ${DS.text}; letter-spacing: -0.02em; }
@@ -279,7 +279,9 @@ export function buildItReportHtmlDocument(input: ItReportHtmlInput): string {
 </head>
 <body>
   <div class="header">
-    <span class="wordmark">systemklar</span>
+    <div class="header-brand">
+      <img src="/logo.png" alt="systemklar" style="height:32px;width:auto;display:block;" />
+    </div>
     <h1>IT-statusrapport</h1>
   </div>
   <div class="sub">
