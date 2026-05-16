@@ -9,12 +9,13 @@ import {
   useRef,
   useState,
 } from "react";
-import { Camera, Loader2, UserMinus, Users } from "lucide-react";
+import { Camera, Loader2, Mail, UserMinus, Users } from "lucide-react";
 import { OrganisationLogo } from "@/components/OrganisationLogo";
 import { ProfileAvatar } from "@/components/ProfileAvatar";
 import { SaveButton } from "@/components/portal/settings/SaveButton";
 import { SettingsRow } from "@/components/portal/settings/SettingsRow";
 import { SettingsSection } from "@/components/portal/settings/SettingsSection";
+import { SettingsTabs, type SettingsTabItem } from "@/components/portal/settings/SettingsTabs";
 import { SettingsToggle } from "@/components/portal/settings/SettingsToggle";
 import { Modal } from "@/components/ui/Modal";
 import {
@@ -28,6 +29,8 @@ import {
 } from "@/lib/notification-preferences";
 import { createClient } from "@/lib/supabase";
 import { publicOrganisationLogoUrl, withCacheBust } from "@/lib/storage-public-urls";
+
+type TeamTabId = "oversigt" | "indstillinger" | "invitationer";
 
 type TeamProfile = {
   id: string;
@@ -73,6 +76,12 @@ function buildInitials(name: string) {
     .toUpperCase();
 }
 
+const ADMIN_TABS: SettingsTabItem[] = [
+  { id: "oversigt", label: "Oversigt" },
+  { id: "indstillinger", label: "Indstillinger" },
+  { id: "invitationer", label: "Invitationer" },
+];
+
 export default function PortalTeamPage() {
   const supabase = useMemo(() => createClient(), []);
   const [loading, setLoading] = useState(true);
@@ -84,6 +93,7 @@ export default function PortalTeamPage() {
   const [isOrgAdmin, setIsOrgAdmin] = useState(false);
   const [members, setMembers] = useState<TeamProfile[]>([]);
   const [pending, setPending] = useState<PendingInvite[]>([]);
+  const [activeTab, setActiveTab] = useState<TeamTabId>("oversigt");
 
   const [orgLogoUrl, setOrgLogoUrl] = useState<string | null>(null);
   const [uploadingOrgAvatar, setUploadingOrgAvatar] = useState(false);
@@ -108,6 +118,7 @@ export default function PortalTeamPage() {
   const [inviteEmail, setInviteEmail] = useState("");
   const [inviteRole, setInviteRole] = useState("member");
   const [savingInvite, setSavingInvite] = useState(false);
+  const [resendingId, setResendingId] = useState<string | null>(null);
 
   const [removeTarget, setRemoveTarget] = useState<TeamProfile | null>(null);
   const [removing, setRemoving] = useState(false);
@@ -333,6 +344,23 @@ export default function PortalTeamPage() {
     void loadTeam();
   };
 
+  const resendInvite = async (inviteId: string) => {
+    if (!isOrgAdmin) return;
+    setResendingId(inviteId);
+    setError(null);
+    setSuccess(null);
+
+    const res = await fetch(`/api/portal/team/invitations/${inviteId}`, { method: "POST" });
+    const payload = (await res.json().catch(() => ({}))) as { error?: string };
+    setResendingId(null);
+
+    if (!res.ok) {
+      setError(payload.error ?? "Kunne ikke sende invitationen igen.");
+      return;
+    }
+    setSuccess("Invitationen er sendt igen.");
+  };
+
   const cancelInvite = async (inviteId: string) => {
     if (!isOrgAdmin) return;
     const { error: cancelError } = await supabase.from("invitations").delete().eq("id", inviteId);
@@ -340,6 +368,7 @@ export default function PortalTeamPage() {
       setError(cancelError.message);
       return;
     }
+    setSuccess("Invitationen er annulleret.");
     void loadTeam();
   };
 
@@ -364,9 +393,261 @@ export default function PortalTeamPage() {
 
   const orgInitials = buildInitials(orgName) || "??";
 
+  const renderOversigt = () => (
+    <div className="space-y-6">
+      <section className="rounded-2xl border border-sky-100 bg-white p-6 shadow-sm">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
+          <OrganisationLogo
+            logoUrl={orgLogoUrl}
+            initials={orgInitials}
+            className="h-16 w-16 shrink-0 text-xl"
+          />
+          <div className="min-w-0">
+            <h2 className="text-lg font-semibold text-[#0D1F2D]">{orgName || "Din organisation"}</h2>
+            <dl className="mt-2 space-y-1 text-sm text-[#2C4A5E]">
+              <div className="flex flex-wrap gap-x-2">
+                <dt className="text-[#7AAEC8]">Branche:</dt>
+                <dd>{industry || "—"}</dd>
+              </div>
+              <div className="flex flex-wrap gap-x-2">
+                <dt className="text-[#7AAEC8]">Antal ansatte:</dt>
+                <dd>{employeeCount || "—"}</dd>
+              </div>
+            </dl>
+          </div>
+        </div>
+      </section>
+
+      {members.length === 0 ? (
+        <div className="flex flex-col items-center gap-3 rounded-2xl border border-sky-100 bg-white py-14 text-center shadow-sm">
+          <div className="flex h-12 w-12 items-center justify-center rounded-full bg-sky-50 text-[#0A6EBD]">
+            <Users className="h-6 w-6" />
+          </div>
+          <p className="text-sm font-medium text-[#0D1F2D]">Dit team er tomt</p>
+          {isOrgAdmin ? (
+            <button
+              type="button"
+              onClick={() => setModalOpen(true)}
+              className="text-sm font-semibold text-[#0A6EBD] hover:underline"
+            >
+              Inviter første kollega
+            </button>
+          ) : null}
+        </div>
+      ) : (
+        <ul className="grid gap-4 sm:grid-cols-2">
+          {members.map((member) => {
+            const initials =
+              member.avatar_initials?.trim().slice(0, 2).toUpperCase() ||
+              buildInitials(member.full_name ?? "") ||
+              "??";
+            const joined = member.created_at
+              ? dateFmt.format(new Date(member.created_at))
+              : null;
+            const canRemove = isOrgAdmin && member.id !== authUserId && members.length > 1;
+
+            return (
+              <li
+                key={member.id}
+                className="flex flex-col rounded-2xl border border-sky-100 bg-white p-5 shadow-sm"
+              >
+                <div className="flex items-start gap-3">
+                  <ProfileAvatar
+                    avatarUrl={member.avatar_url}
+                    initials={initials}
+                    className="h-11 w-11 text-sm"
+                  />
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate text-sm font-semibold text-[#0D1F2D]">
+                      {member.full_name || "Ukendt navn"}
+                      {member.id === authUserId ? (
+                        <span className="ml-1 font-normal text-[#7AAEC8]">(dig)</span>
+                      ) : null}
+                    </p>
+                    <p className="truncate text-xs text-[#7AAEC8]">{member.email || "—"}</p>
+                  </div>
+                </div>
+                <div className="mt-4 flex flex-wrap items-center justify-between gap-2 border-t border-sky-50 pt-3">
+                  <div>
+                    <span
+                      className={`inline-flex rounded-full px-2.5 py-0.5 text-[11px] font-semibold ${
+                        member.role === "org_admin"
+                          ? "bg-sky-100 text-sky-800"
+                          : "bg-[#F5FAFD] text-[#2C4A5E]"
+                      }`}
+                    >
+                      {member.role === "org_admin" ? "Administrator" : "Medlem"}
+                    </span>
+                    {joined ? (
+                      <p className="mt-1.5 text-[11px] text-[#7AAEC8]">Tilføjet {joined}</p>
+                    ) : null}
+                  </div>
+                  {canRemove ? (
+                    <button
+                      type="button"
+                      onClick={() => setRemoveTarget(member)}
+                      className="inline-flex items-center gap-1 rounded-full border border-red-200 px-3 py-1.5 text-xs font-semibold text-red-700 transition hover:bg-red-50"
+                    >
+                      <UserMinus className="h-3.5 w-3.5" />
+                      Fjern
+                    </button>
+                  ) : null}
+                </div>
+              </li>
+            );
+          })}
+        </ul>
+      )}
+    </div>
+  );
+
+  const renderIndstillinger = () => (
+    <div className="space-y-6">
+      <SettingsSection
+        title="Organisation"
+        footer={
+          <SaveButton visible={orgDirty} saving={savingOrg} onClick={() => void saveOrganisation()} />
+        }
+      >
+        <div className="mb-4 flex items-center gap-4 border-b border-sky-50 pb-4">
+          <button
+            type="button"
+            onClick={onOrgAvatarPick}
+            disabled={uploadingOrgAvatar}
+            aria-label="Skift organisationens logo"
+            className="group relative h-16 w-16 shrink-0 overflow-hidden rounded-full"
+          >
+            <OrganisationLogo logoUrl={orgLogoUrl} initials={orgInitials} className="h-full w-full text-xl" />
+            <span
+              className={`absolute inset-0 flex items-center justify-center bg-black/40 transition ${
+                uploadingOrgAvatar ? "opacity-100" : "opacity-0 group-hover:opacity-100"
+              }`}
+            >
+              {uploadingOrgAvatar ? (
+                <Loader2 className="h-5 w-5 animate-spin text-white" />
+              ) : (
+                <Camera className="h-5 w-5 text-white" />
+              )}
+            </span>
+          </button>
+          <input
+            ref={orgFileInputRef}
+            type="file"
+            accept="image/*"
+            className="hidden"
+            onChange={(e) => void onOrgAvatarFileChange(e)}
+          />
+          <p className="text-sm text-[#7AAEC8]">Klik på logoet for at uploade et nyt</p>
+        </div>
+
+        <SettingsRow label="Virksomhedsnavn">
+          <input
+            type="text"
+            value={orgName}
+            onChange={(e) => setOrgName(e.target.value)}
+            className={inputClass}
+          />
+        </SettingsRow>
+
+        <SettingsRow label="Branche">
+          <select value={industry} onChange={(e) => setIndustry(e.target.value)} className={selectClass}>
+            <option value="">Vælg branche</option>
+            {ORGANISATION_INDUSTRY_OPTIONS.map((opt) => (
+              <option key={opt} value={opt}>
+                {opt}
+              </option>
+            ))}
+          </select>
+        </SettingsRow>
+
+        <SettingsRow label="Antal ansatte" last>
+          <select
+            value={employeeCount}
+            onChange={(e) => setEmployeeCount(e.target.value)}
+            className={selectClass}
+          >
+            <option value="">Vælg størrelse</option>
+            {ORGANISATION_EMPLOYEE_COUNT_OPTIONS.map((opt) => (
+              <option key={opt} value={opt}>
+                {opt}
+              </option>
+            ))}
+          </select>
+        </SettingsRow>
+      </SettingsSection>
+
+      <SettingsSection
+        title="Notifikationer for virksomheden"
+        footer={
+          <SaveButton
+            visible={orgNotifDirty}
+            saving={savingOrgNotif}
+            onClick={() => void saveOrgNotifications()}
+          />
+        }
+      >
+        <SettingsRow label="Send notifikation til alle når et system fejler">
+          <SettingsToggle
+            checked={orgNotifPrefs.notify_all_system_failure}
+            onChange={(v) => setOrgNotifPrefs((p) => ({ ...p, notify_all_system_failure: v }))}
+          />
+        </SettingsRow>
+        <SettingsRow label="Send månedlig IT-rapport til alle teammedlemmer" last>
+          <SettingsToggle
+            checked={orgNotifPrefs.notify_all_monthly_report}
+            onChange={(v) => setOrgNotifPrefs((p) => ({ ...p, notify_all_monthly_report: v }))}
+          />
+        </SettingsRow>
+      </SettingsSection>
+    </div>
+  );
+
+  const renderInvitationer = () => (
+    <SettingsSection title="Afventende invitationer">
+      {pending.length === 0 ? (
+        <p className="py-6 text-center text-sm text-[#7AAEC8]">Ingen afventende invitationer.</p>
+      ) : (
+        <ul className="divide-y divide-sky-50">
+          {pending.map((invite) => (
+            <li
+              key={invite.id}
+              className="flex flex-wrap items-center justify-between gap-3 py-4 first:pt-0 last:pb-0"
+            >
+              <div className="min-w-0">
+                <p className="truncate text-sm font-semibold text-[#0D1F2D]">{invite.email}</p>
+                <p className="text-xs text-[#7AAEC8]">
+                  {invite.role === "org_admin" ? "Administrator" : "Medlem"} · inviteret{" "}
+                  {dateFmt.format(new Date(invite.created_at))}
+                </p>
+              </div>
+              <div className="flex shrink-0 items-center gap-2">
+                <button
+                  type="button"
+                  disabled={resendingId === invite.id}
+                  onClick={() => void resendInvite(invite.id)}
+                  className="inline-flex items-center gap-1 rounded-full border border-sky-200 px-3 py-1.5 text-xs font-semibold text-[#0A6EBD] transition hover:bg-sky-50 disabled:opacity-50"
+                >
+                  <Mail className="h-3.5 w-3.5" />
+                  {resendingId === invite.id ? "Sender…" : "Send igen"}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => void cancelInvite(invite.id)}
+                  className="rounded-full border border-red-200 px-3 py-1.5 text-xs font-semibold text-red-700 transition hover:bg-red-50"
+                >
+                  Annuller
+                </button>
+              </div>
+            </li>
+          ))}
+        </ul>
+      )}
+    </SettingsSection>
+  );
+
   return (
     <>
-      <div className="mx-auto max-w-2xl space-y-6">
+      <div className="mx-auto max-w-3xl">
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
             <h1 className="text-2xl font-bold text-[#0D1F2D]">Team</h1>
@@ -384,253 +665,30 @@ export default function PortalTeamPage() {
         </div>
 
         {error ? (
-          <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">{error}</p>
+          <p className="mt-4 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">{error}</p>
         ) : null}
         {success ? (
-          <p className="rounded-lg bg-green-50 px-3 py-2 text-sm text-green-700">{success}</p>
+          <p className="mt-4 rounded-lg bg-green-50 px-3 py-2 text-sm text-green-700">{success}</p>
         ) : null}
 
         {loading ? (
-          <p className="text-sm text-[#7AAEC8]">Indlæser team…</p>
+          <p className="mt-6 text-sm text-[#7AAEC8]">Indlæser team…</p>
         ) : (
           <>
-            <SettingsSection
-              title="Organisation"
-              footer={
-                isOrgAdmin ? (
-                  <SaveButton
-                    visible={orgDirty}
-                    saving={savingOrg}
-                    onClick={() => void saveOrganisation()}
-                  />
-                ) : undefined
-              }
-            >
-              <div className="mb-4 flex items-center gap-4 border-b border-sky-50 pb-4">
-                <button
-                  type="button"
-                  onClick={onOrgAvatarPick}
-                  disabled={!isOrgAdmin || uploadingOrgAvatar}
-                  aria-label={isOrgAdmin ? "Skift organisationens logo" : "Organisationens logo"}
-                  className="group relative h-16 w-16 shrink-0 overflow-hidden rounded-full disabled:cursor-default"
-                >
-                  <OrganisationLogo
-                    logoUrl={orgLogoUrl}
-                    initials={orgInitials}
-                    className="h-full w-full text-xl"
-                  />
-                  {isOrgAdmin ? (
-                    <span
-                      className={`absolute inset-0 flex items-center justify-center bg-black/40 transition ${
-                        uploadingOrgAvatar ? "opacity-100" : "opacity-0 group-hover:opacity-100"
-                      }`}
-                    >
-                      {uploadingOrgAvatar ? (
-                        <Loader2 className="h-5 w-5 animate-spin text-white" />
-                      ) : (
-                        <Camera className="h-5 w-5 text-white" />
-                      )}
-                    </span>
-                  ) : null}
-                </button>
-                <input
-                  ref={orgFileInputRef}
-                  type="file"
-                  accept="image/*"
-                  className="hidden"
-                  onChange={(e) => void onOrgAvatarFileChange(e)}
-                />
-                <p className="text-sm text-[#7AAEC8]">
-                  {isOrgAdmin
-                    ? "Klik på logoet for at uploade et nyt"
-                    : "Kun administratorer kan ændre logoet"}
-                </p>
-              </div>
-
-              <SettingsRow label="Virksomhedsnavn">
-                {isOrgAdmin ? (
-                  <input
-                    type="text"
-                    value={orgName}
-                    onChange={(e) => setOrgName(e.target.value)}
-                    className={inputClass}
-                  />
-                ) : (
-                  <span className="text-sm text-[#2C4A5E]">{orgName || "—"}</span>
-                )}
-              </SettingsRow>
-
-              <SettingsRow label="Branche">
-                {isOrgAdmin ? (
-                  <select
-                    value={industry}
-                    onChange={(e) => setIndustry(e.target.value)}
-                    className={selectClass}
-                  >
-                    <option value="">Vælg branche</option>
-                    {ORGANISATION_INDUSTRY_OPTIONS.map((opt) => (
-                      <option key={opt} value={opt}>
-                        {opt}
-                      </option>
-                    ))}
-                  </select>
-                ) : (
-                  <span className="text-sm text-[#2C4A5E]">{industry || "—"}</span>
-                )}
-              </SettingsRow>
-
-              <SettingsRow label="Antal ansatte" last>
-                {isOrgAdmin ? (
-                  <select
-                    value={employeeCount}
-                    onChange={(e) => setEmployeeCount(e.target.value)}
-                    className={selectClass}
-                  >
-                    <option value="">Vælg størrelse</option>
-                    {ORGANISATION_EMPLOYEE_COUNT_OPTIONS.map((opt) => (
-                      <option key={opt} value={opt}>
-                        {opt}
-                      </option>
-                    ))}
-                  </select>
-                ) : (
-                  <span className="text-sm text-[#2C4A5E]">{employeeCount || "—"}</span>
-                )}
-              </SettingsRow>
-            </SettingsSection>
-
-            <SettingsSection title="Teammedlemmer">
-              {members.length === 0 ? (
-                <div className="flex flex-col items-center gap-3 py-10 text-center">
-                  <div className="flex h-12 w-12 items-center justify-center rounded-full bg-sky-50 text-[#0A6EBD]">
-                    <Users className="h-6 w-6" />
-                  </div>
-                  <p className="text-sm font-medium text-[#0D1F2D]">Dit team er tomt</p>
-                  {isOrgAdmin ? (
-                    <button
-                      type="button"
-                      onClick={() => setModalOpen(true)}
-                      className="text-sm font-semibold text-[#0A6EBD] hover:underline"
-                    >
-                      Inviter første kollega
-                    </button>
-                  ) : null}
-                </div>
-              ) : (
-                <ul className="divide-y divide-sky-50">
-                  {members.map((member) => {
-                    const initials =
-                      member.avatar_initials?.trim().slice(0, 2).toUpperCase() ||
-                      buildInitials(member.full_name ?? "") ||
-                      "??";
-                    const joined = member.created_at
-                      ? dateFmt.format(new Date(member.created_at))
-                      : null;
-                    const canRemove =
-                      isOrgAdmin && member.id !== authUserId && members.length > 1;
-
-                    return (
-                      <li
-                        key={member.id}
-                        className="flex items-center gap-3 py-3 first:pt-0 last:pb-0"
-                      >
-                        <ProfileAvatar
-                          avatarUrl={member.avatar_url}
-                          initials={initials}
-                          className="h-10 w-10 text-sm"
-                        />
-                        <div className="min-w-0 flex-1">
-                          <p className="truncate text-sm font-semibold text-[#0D1F2D]">
-                            {member.full_name || "Ukendt navn"}
-                            {member.id === authUserId ? (
-                              <span className="ml-1 font-normal text-[#7AAEC8]">(dig)</span>
-                            ) : null}
-                          </p>
-                          <p className="truncate text-xs text-[#7AAEC8]">{member.email || "—"}</p>
-                          <p className="mt-0.5 text-[11px] text-[#7AAEC8]">
-                            {member.role === "org_admin" ? "Administrator" : "Medlem"}
-                            {joined ? ` · Tilføjet ${joined}` : ""}
-                          </p>
-                        </div>
-                        {canRemove ? (
-                          <button
-                            type="button"
-                            onClick={() => setRemoveTarget(member)}
-                            className="inline-flex items-center gap-1 rounded-full border border-red-200 px-3 py-1.5 text-xs font-semibold text-red-700 transition hover:bg-red-50"
-                          >
-                            <UserMinus className="h-3.5 w-3.5" />
-                            Fjern
-                          </button>
-                        ) : null}
-                      </li>
-                    );
-                  })}
-                </ul>
-              )}
-
-              {isOrgAdmin && pending.length > 0 ? (
-                <div className="mt-6 border-t border-sky-50 pt-4">
-                  <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-[#7AAEC8]">
-                    Afventende invitationer
-                  </p>
-                  <ul className="space-y-2">
-                    {pending.map((invite) => (
-                      <li
-                        key={invite.id}
-                        className="flex items-center justify-between gap-3 rounded-xl border border-sky-50 bg-[#FAFCFE] px-3 py-2.5"
-                      >
-                        <div className="min-w-0">
-                          <p className="truncate text-sm font-medium text-[#0D1F2D]">
-                            {invite.email}
-                          </p>
-                          <p className="text-xs text-[#7AAEC8]">
-                            {invite.role === "org_admin" ? "Administrator" : "Medlem"} · inviteret{" "}
-                            {dateFmt.format(new Date(invite.created_at))}
-                          </p>
-                        </div>
-                        <button
-                          type="button"
-                          onClick={() => void cancelInvite(invite.id)}
-                          className="shrink-0 text-xs font-semibold text-red-600 hover:text-red-700"
-                        >
-                          Annuller
-                        </button>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              ) : null}
-            </SettingsSection>
-
             {isOrgAdmin ? (
-              <SettingsSection
-                title="Notifikationer for virksomheden"
-                footer={
-                  <SaveButton
-                    visible={orgNotifDirty}
-                    saving={savingOrgNotif}
-                    onClick={() => void saveOrgNotifications()}
-                  />
-                }
-              >
-                <SettingsRow label="Send notifikation til alle når et system fejler">
-                  <SettingsToggle
-                    checked={orgNotifPrefs.notify_all_system_failure}
-                    onChange={(v) =>
-                      setOrgNotifPrefs((p) => ({ ...p, notify_all_system_failure: v }))
-                    }
-                  />
-                </SettingsRow>
-                <SettingsRow label="Send månedlig IT-rapport til alle teammedlemmer" last>
-                  <SettingsToggle
-                    checked={orgNotifPrefs.notify_all_monthly_report}
-                    onChange={(v) =>
-                      setOrgNotifPrefs((p) => ({ ...p, notify_all_monthly_report: v }))
-                    }
-                  />
-                </SettingsRow>
-              </SettingsSection>
+              <SettingsTabs
+                tabs={ADMIN_TABS}
+                activeId={activeTab}
+                onChange={(id) => setActiveTab(id as TeamTabId)}
+                ariaLabel="Team sektioner"
+              />
             ) : null}
+
+            <div role="tabpanel" className={isOrgAdmin ? undefined : "mt-6"}>
+              {(!isOrgAdmin || activeTab === "oversigt") && renderOversigt()}
+              {isOrgAdmin && activeTab === "indstillinger" && renderIndstillinger()}
+              {isOrgAdmin && activeTab === "invitationer" && renderInvitationer()}
+            </div>
           </>
         )}
       </div>

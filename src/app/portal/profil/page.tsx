@@ -16,6 +16,7 @@ import { ComingSoonBadge } from "@/components/portal/settings/ComingSoonBadge";
 import { SaveButton } from "@/components/portal/settings/SaveButton";
 import { SettingsRow } from "@/components/portal/settings/SettingsRow";
 import { SettingsSection } from "@/components/portal/settings/SettingsSection";
+import { SettingsTabs, type SettingsTabItem } from "@/components/portal/settings/SettingsTabs";
 import { SettingsToggle } from "@/components/portal/settings/SettingsToggle";
 import { Modal } from "@/components/ui/Modal";
 import {
@@ -30,6 +31,8 @@ import {
   withCacheBust,
 } from "@/lib/storage-public-urls";
 
+type ProfileTabId = "profil" | "sikkerhed" | "notifikationer";
+
 type ProfileRow = {
   id: string;
   full_name: string | null;
@@ -42,6 +45,12 @@ type ProfileRow = {
   notif_status_change: boolean | null;
   notif_monthly_report: boolean | null;
 };
+
+const PROFILE_TABS: SettingsTabItem[] = [
+  { id: "profil", label: "Min profil" },
+  { id: "sikkerhed", label: "Sikkerhed" },
+  { id: "notifikationer", label: "Notifikationer" },
+];
 
 function buildInitials(name: string) {
   return name
@@ -64,6 +73,7 @@ export default function PortalProfilePage() {
   const [profile, setProfile] = useState<ProfileRow | null>(null);
   const [authUserId, setAuthUserId] = useState<string | null>(null);
   const [authEmail, setAuthEmail] = useState<string | null>(null);
+  const [activeTab, setActiveTab] = useState<ProfileTabId>("profil");
 
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [uploadingAvatar, setUploadingAvatar] = useState(false);
@@ -325,222 +335,226 @@ export default function PortalProfilePage() {
     );
   }
 
+  const renderProfil = () => (
+    <SettingsSection
+      footer={
+        <SaveButton
+          visible={profileDirty}
+          saving={savingProfile}
+          onClick={() => void saveProfileFields()}
+        />
+      }
+    >
+      <div className="mb-4 flex items-center gap-4 border-b border-sky-50 pb-4">
+        <button
+          type="button"
+          onClick={onAvatarPick}
+          disabled={uploadingAvatar}
+          aria-label="Skift profilbillede"
+          className="group relative h-16 w-16 shrink-0 overflow-hidden rounded-full focus:outline-none focus-visible:ring-2 focus-visible:ring-[#0A6EBD]"
+        >
+          <ProfileAvatar
+            avatarUrl={avatarUrl ?? profile?.avatar_url}
+            initials={avatarText}
+            className="h-full w-full text-xl"
+            variant="brand"
+          />
+          <span
+            className={`absolute inset-0 flex items-center justify-center bg-black/40 transition ${
+              uploadingAvatar ? "opacity-100" : "opacity-0 group-hover:opacity-100"
+            }`}
+          >
+            {uploadingAvatar ? (
+              <Loader2 className="h-5 w-5 animate-spin text-white" />
+            ) : (
+              <Camera className="h-5 w-5 text-white" />
+            )}
+          </span>
+        </button>
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept="image/*"
+          className="hidden"
+          onChange={(e) => void onAvatarFileChange(e)}
+        />
+        <p className="text-sm text-[#7AAEC8]">Klik på billedet for at uploade et nyt profilbillede</p>
+      </div>
+
+      <SettingsRow label="Fuldt navn">
+        <input
+          type="text"
+          value={fullName}
+          onChange={(e) => setFullName(e.target.value)}
+          className={inputClass}
+          placeholder="Dit navn"
+        />
+      </SettingsRow>
+
+      <SettingsRow label="Email" description="Kontakt os for at ændre din email">
+        <span className="text-sm text-[#2C4A5E]">{displayEmail}</span>
+      </SettingsRow>
+
+      <SettingsRow label="Telefonnummer" last>
+        <input
+          type="tel"
+          value={phone}
+          onChange={(e) => setPhone(e.target.value)}
+          className={inputClass}
+          placeholder="Valgfrit"
+        />
+      </SettingsRow>
+    </SettingsSection>
+  );
+
+  const renderSikkerhed = () => (
+    <SettingsSection title="Sikkerhed">
+      <form onSubmit={(e) => void savePassword(e)}>
+        <SettingsRow label="Nuværende adgangskode">
+          <div className="relative w-full max-w-xs">
+            <input
+              type={showCurrentPassword ? "text" : "password"}
+              value={currentPassword}
+              onChange={(e) => setCurrentPassword(e.target.value)}
+              className={`${inputClass} pr-10 sm:text-right`}
+              autoComplete="current-password"
+            />
+            <button
+              type="button"
+              onClick={() => setShowCurrentPassword(!showCurrentPassword)}
+              className="absolute top-1/2 right-3 -translate-y-1/2 text-[#7AAEC8]"
+            >
+              {showCurrentPassword ? (
+                <EyeOff className="h-4 w-4" />
+              ) : (
+                <Eye className="h-4 w-4" />
+              )}
+            </button>
+          </div>
+        </SettingsRow>
+        <SettingsRow label="Ny adgangskode">
+          <input
+            type="password"
+            minLength={8}
+            value={newPassword}
+            onChange={(e) => setNewPassword(e.target.value)}
+            className={inputClass}
+            autoComplete="new-password"
+          />
+        </SettingsRow>
+        <SettingsRow label="Bekræft ny adgangskode" last>
+          <input
+            type="password"
+            minLength={8}
+            value={confirmNewPassword}
+            onChange={(e) => setConfirmNewPassword(e.target.value)}
+            className={inputClass}
+            autoComplete="new-password"
+          />
+        </SettingsRow>
+        {passwordDirty ? (
+          <div className="mt-4 flex justify-end border-t border-sky-50 pt-4">
+            <button
+              type="submit"
+              disabled={savingPassword}
+              className="rounded-full bg-[#0A6EBD] px-5 py-2 text-sm font-semibold text-white hover:bg-[#0859A0] disabled:opacity-60"
+            >
+              {savingPassword ? "Gemmer…" : "Gem adgangskode"}
+            </button>
+          </div>
+        ) : null}
+      </form>
+
+      <div className="mt-4 flex items-center justify-between gap-4 border-t border-sky-50 pt-4">
+        <div>
+          <p className="text-sm font-medium text-[#0D1F2D]">To-faktor godkendelse</p>
+          <div className="mt-1 flex items-center gap-2">
+            <ComingSoonBadge />
+          </div>
+        </div>
+        <SettingsToggle checked={false} onChange={() => {}} disabled />
+      </div>
+    </SettingsSection>
+  );
+
+  const renderNotifikationer = () => (
+    <SettingsSection
+      title="Notifikationer"
+      footer={
+        <SaveButton
+          visible={notifDirty}
+          saving={savingNotifications}
+          onClick={() => void saveNotifications()}
+        />
+      }
+    >
+      <SettingsRow label="Send mig email når en IT-sag opdateres">
+        <SettingsToggle
+          checked={notifPrefs.ticket_updated}
+          onChange={(v) => setNotifPrefs((p) => ({ ...p, ticket_updated: v }))}
+        />
+      </SettingsRow>
+      <SettingsRow label="Send mig email når et system fejler">
+        <SettingsToggle
+          checked={notifPrefs.system_failure}
+          onChange={(v) => setNotifPrefs((p) => ({ ...p, system_failure: v }))}
+        />
+      </SettingsRow>
+      <SettingsRow label="Send mig email når en IT-rapport er klar">
+        <SettingsToggle
+          checked={notifPrefs.report_ready}
+          onChange={(v) => setNotifPrefs((p) => ({ ...p, report_ready: v }))}
+        />
+      </SettingsRow>
+      <SettingsRow label="Send mig ugentligt overblik over systemstatus" last>
+        <SettingsToggle
+          checked={notifPrefs.weekly_status}
+          onChange={(v) => setNotifPrefs((p) => ({ ...p, weekly_status: v }))}
+        />
+      </SettingsRow>
+    </SettingsSection>
+  );
+
   return (
-    <div className="mx-auto max-w-2xl space-y-6">
+    <div className="mx-auto max-w-2xl">
       <div>
         <h1 className="text-2xl font-bold text-[#0D1F2D]">Profil</h1>
         <p className="mt-1 text-sm text-[#7AAEC8]">Personlige indstillinger og sikkerhed</p>
       </div>
 
       {error ? (
-        <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">{error}</p>
+        <p className="mt-4 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">{error}</p>
       ) : null}
       {success ? (
-        <p className="rounded-lg bg-green-50 px-3 py-2 text-sm text-green-700">{success}</p>
+        <p className="mt-4 rounded-lg bg-green-50 px-3 py-2 text-sm text-green-700">{success}</p>
       ) : null}
 
       {loading || !profile ? (
-        <p className="text-sm text-[#7AAEC8]">Indlæser profil…</p>
+        <p className="mt-6 text-sm text-[#7AAEC8]">Indlæser profil…</p>
       ) : (
         <>
-          <SettingsSection
-            title="Min profil"
-            footer={
-              <SaveButton
-                visible={profileDirty}
-                saving={savingProfile}
-                onClick={() => void saveProfileFields()}
-              />
-            }
-          >
-            <div className="mb-4 flex items-center gap-4 border-b border-sky-50 pb-4">
-              <button
-                type="button"
-                onClick={onAvatarPick}
-                disabled={uploadingAvatar}
-                aria-label="Skift profilbillede"
-                className="group relative h-16 w-16 shrink-0 overflow-hidden rounded-full focus:outline-none focus-visible:ring-2 focus-visible:ring-[#0A6EBD]"
-              >
-                <ProfileAvatar
-                  avatarUrl={avatarUrl ?? profile.avatar_url}
-                  initials={avatarText}
-                  className="h-full w-full text-xl"
-                  variant="brand"
-                />
-                <span
-                  className={`absolute inset-0 flex items-center justify-center bg-black/40 transition ${
-                    uploadingAvatar ? "opacity-100" : "opacity-0 group-hover:opacity-100"
-                  }`}
-                >
-                  {uploadingAvatar ? (
-                    <Loader2 className="h-5 w-5 animate-spin text-white" />
-                  ) : (
-                    <Camera className="h-5 w-5 text-white" />
-                  )}
-                </span>
-              </button>
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept="image/*"
-                className="hidden"
-                onChange={(e) => void onAvatarFileChange(e)}
-              />
-              <p className="text-sm text-[#7AAEC8]">Klik på billedet for at uploade et nyt profilbillede</p>
-            </div>
+          <SettingsTabs
+            tabs={PROFILE_TABS}
+            activeId={activeTab}
+            onChange={(id) => setActiveTab(id as ProfileTabId)}
+            ariaLabel="Profil sektioner"
+          />
 
-            <SettingsRow label="Fuldt navn">
-              <input
-                type="text"
-                value={fullName}
-                onChange={(e) => setFullName(e.target.value)}
-                className={inputClass}
-                placeholder="Dit navn"
-              />
-            </SettingsRow>
+          <div role="tabpanel">
+            {activeTab === "profil" && renderProfil()}
+            {activeTab === "sikkerhed" && renderSikkerhed()}
+            {activeTab === "notifikationer" && renderNotifikationer()}
+          </div>
 
-            <SettingsRow
-              label="Email"
-              description="Kontakt os for at ændre din email"
+          <p className="mt-10 text-center text-sm">
+            <button
+              type="button"
+              onClick={() => setDeleteModalOpen(true)}
+              className="text-[#7AAEC8] underline-offset-2 hover:text-[#2C4A5E] hover:underline"
             >
-              <span className="text-sm text-[#2C4A5E]">{displayEmail}</span>
-            </SettingsRow>
-
-            <SettingsRow label="Telefonnummer" last>
-              <input
-                type="tel"
-                value={phone}
-                onChange={(e) => setPhone(e.target.value)}
-                className={inputClass}
-                placeholder="Valgfrit"
-              />
-            </SettingsRow>
-          </SettingsSection>
-
-          <SettingsSection title="Sikkerhed">
-            <form onSubmit={(e) => void savePassword(e)}>
-              <SettingsRow label="Nuværende adgangskode">
-                <div className="relative w-full max-w-xs">
-                  <input
-                    type={showCurrentPassword ? "text" : "password"}
-                    value={currentPassword}
-                    onChange={(e) => setCurrentPassword(e.target.value)}
-                    className={`${inputClass} pr-10 sm:text-right`}
-                    autoComplete="current-password"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowCurrentPassword(!showCurrentPassword)}
-                    className="absolute top-1/2 right-3 -translate-y-1/2 text-[#7AAEC8]"
-                  >
-                    {showCurrentPassword ? (
-                      <EyeOff className="h-4 w-4" />
-                    ) : (
-                      <Eye className="h-4 w-4" />
-                    )}
-                  </button>
-                </div>
-              </SettingsRow>
-              <SettingsRow label="Ny adgangskode">
-                <input
-                  type="password"
-                  minLength={8}
-                  value={newPassword}
-                  onChange={(e) => setNewPassword(e.target.value)}
-                  className={inputClass}
-                  autoComplete="new-password"
-                />
-              </SettingsRow>
-              <SettingsRow label="Bekræft ny adgangskode" last>
-                <input
-                  type="password"
-                  minLength={8}
-                  value={confirmNewPassword}
-                  onChange={(e) => setConfirmNewPassword(e.target.value)}
-                  className={inputClass}
-                  autoComplete="new-password"
-                />
-              </SettingsRow>
-              {passwordDirty ? (
-                <div className="mt-4 flex justify-end border-t border-sky-50 pt-4">
-                  <button
-                    type="submit"
-                    disabled={savingPassword}
-                    className="rounded-full bg-[#0A6EBD] px-5 py-2 text-sm font-semibold text-white hover:bg-[#0859A0] disabled:opacity-60"
-                  >
-                    {savingPassword ? "Gemmer…" : "Gem adgangskode"}
-                  </button>
-                </div>
-              ) : null}
-            </form>
-
-            <div className="mt-4 flex items-center justify-between gap-4 border-t border-sky-50 pt-4">
-              <div>
-                <p className="text-sm font-medium text-[#0D1F2D]">To-faktor godkendelse</p>
-                <div className="mt-1 flex items-center gap-2">
-                  <ComingSoonBadge />
-                </div>
-              </div>
-              <SettingsToggle checked={false} onChange={() => {}} disabled />
-            </div>
-          </SettingsSection>
-
-          <SettingsSection
-            title="Notifikationer"
-            footer={
-              <SaveButton
-                visible={notifDirty}
-                saving={savingNotifications}
-                onClick={() => void saveNotifications()}
-              />
-            }
-          >
-            <SettingsRow label="Send mig email når en IT-sag opdateres">
-              <SettingsToggle
-                checked={notifPrefs.ticket_updated}
-                onChange={(v) => setNotifPrefs((p) => ({ ...p, ticket_updated: v }))}
-              />
-            </SettingsRow>
-            <SettingsRow label="Send mig email når et system fejler">
-              <SettingsToggle
-                checked={notifPrefs.system_failure}
-                onChange={(v) => setNotifPrefs((p) => ({ ...p, system_failure: v }))}
-              />
-            </SettingsRow>
-            <SettingsRow label="Send mig email når en IT-rapport er klar">
-              <SettingsToggle
-                checked={notifPrefs.report_ready}
-                onChange={(v) => setNotifPrefs((p) => ({ ...p, report_ready: v }))}
-              />
-            </SettingsRow>
-            <SettingsRow label="Send mig ugentligt overblik over systemstatus" last>
-              <SettingsToggle
-                checked={notifPrefs.weekly_status}
-                onChange={(v) => setNotifPrefs((p) => ({ ...p, weekly_status: v }))}
-              />
-            </SettingsRow>
-          </SettingsSection>
-
-          <SettingsSection title="Privatliv & data">
-            <SettingsRow label="Download mine data">
-              <button
-                type="button"
-                disabled
-                className="rounded-full border border-sky-100 px-4 py-2 text-sm font-medium text-[#7AAEC8] opacity-60"
-              >
-                Download mine data
-              </button>
-            </SettingsRow>
-            <SettingsRow label="Slet min konto" last>
-              <button
-                type="button"
-                onClick={() => setDeleteModalOpen(true)}
-                className="text-sm font-semibold text-red-600 hover:text-red-700"
-              >
-                Slet min konto
-              </button>
-            </SettingsRow>
-          </SettingsSection>
+              Privatliv
+            </button>
+          </p>
         </>
       )}
 
