@@ -11,6 +11,8 @@ type SettingsTabsProps = {
   onChange: (id: string) => void;
   /** Accessible name for the tab list */
   ariaLabel?: string;
+  /** Spacing below page subtitle (default: mt-6 mb-8) */
+  className?: string;
 };
 
 /**
@@ -21,12 +23,16 @@ export function SettingsTabs({
   activeId,
   onChange,
   ariaLabel = "Sektioner",
+  className = "mt-6 mb-8",
 }: SettingsTabsProps) {
   if (tabs.length <= 1) return null;
 
   return (
-    <nav className="mb-6 border-b border-sky-100" aria-label={ariaLabel}>
-      <div className="-mb-px flex flex-wrap gap-x-6 gap-y-1">
+    <nav
+      className={`border-b border-sky-100 ${className}`.trim()}
+      aria-label={ariaLabel}
+    >
+      <div className="-mb-px flex flex-wrap gap-8 gap-y-1">
         {tabs.map((tab) => {
           const isActive = tab.id === activeId;
           return (
@@ -36,7 +42,7 @@ export function SettingsTabs({
               role="tab"
               aria-selected={isActive}
               onClick={() => onChange(tab.id)}
-              className={`border-b-2 pb-3 text-sm transition-colors ${
+              className={`border-b-2 px-1 pb-3 text-sm transition-colors ${
                 isActive
                   ? "border-[#0A6EBD] font-semibold text-[#0D1F2D]"
                   : "border-transparent text-[#7AAEC8] hover:text-[#2C4A5E]"

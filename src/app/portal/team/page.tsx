@@ -9,7 +9,7 @@ import {
   useRef,
   useState,
 } from "react";
-import { Camera, Loader2, Mail, UserMinus, Users } from "lucide-react";
+import { Camera, Loader2, Mail, Plus, UserMinus, Users } from "lucide-react";
 import { OrganisationLogo } from "@/components/OrganisationLogo";
 import { ProfileAvatar } from "@/components/ProfileAvatar";
 import { SaveButton } from "@/components/portal/settings/SaveButton";
@@ -393,111 +393,127 @@ export default function PortalTeamPage() {
 
   const orgInitials = buildInitials(orgName) || "??";
 
+  const renderMemberCard = (member: TeamProfile) => {
+    const initials =
+      member.avatar_initials?.trim().slice(0, 2).toUpperCase() ||
+      buildInitials(member.full_name ?? "") ||
+      "??";
+    const joined = member.created_at ? dateFmt.format(new Date(member.created_at)) : null;
+    const canRemove = isOrgAdmin && member.id !== authUserId && members.length > 1;
+
+    return (
+      <li
+        key={member.id}
+        className="flex w-[min(100%,220px)] shrink-0 flex-col items-center gap-2 rounded-2xl border border-sky-100 bg-white p-5 text-center shadow-sm"
+      >
+        <ProfileAvatar avatarUrl={member.avatar_url} initials={initials} className="h-16 w-16 text-lg" />
+        <div className="min-w-0 w-full">
+          <p className="truncate text-sm font-semibold text-[#0D1F2D]">
+            {member.full_name || "Ukendt navn"}
+            {member.id === authUserId ? (
+              <span className="block text-[11px] font-normal text-[#7AAEC8]">(dig)</span>
+            ) : null}
+          </p>
+          <span
+            className={`mt-2 inline-flex rounded-full px-2.5 py-0.5 text-[11px] font-semibold ${
+              member.role === "org_admin"
+                ? "bg-sky-100 text-sky-800"
+                : "bg-[#F5FAFD] text-[#2C4A5E]"
+            }`}
+          >
+            {member.role === "org_admin" ? "Administrator" : "Medlem"}
+          </span>
+          <p className="mt-2 truncate text-xs text-[#7AAEC8]">{member.email || "—"}</p>
+          {joined ? <p className="mt-1 text-[11px] text-[#7AAEC8]">Tilføjet {joined}</p> : null}
+        </div>
+        {canRemove ? (
+          <button
+            type="button"
+            onClick={() => setRemoveTarget(member)}
+            className="mt-1 inline-flex items-center gap-1 rounded-full border border-red-200 px-3 py-1 text-[11px] font-semibold text-red-700 transition hover:bg-red-50"
+          >
+            <UserMinus className="h-3 w-3" />
+            Fjern
+          </button>
+        ) : null}
+      </li>
+    );
+  };
+
   const renderOversigt = () => (
-    <div className="space-y-6">
-      <section className="rounded-2xl border border-sky-100 bg-white p-6 shadow-sm">
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
+    <div className="space-y-10">
+      <section className="rounded-2xl border border-sky-100 bg-white px-8 py-10 shadow-sm">
+        <div className="flex flex-col items-start gap-6 sm:flex-row sm:items-center">
           <OrganisationLogo
             logoUrl={orgLogoUrl}
             initials={orgInitials}
-            className="h-16 w-16 shrink-0 text-xl"
+            className="h-20 w-20 shrink-0 text-2xl"
           />
-          <div className="min-w-0">
-            <h2 className="text-lg font-semibold text-[#0D1F2D]">{orgName || "Din organisation"}</h2>
-            <dl className="mt-2 space-y-1 text-sm text-[#2C4A5E]">
-              <div className="flex flex-wrap gap-x-2">
-                <dt className="text-[#7AAEC8]">Branche:</dt>
-                <dd>{industry || "—"}</dd>
-              </div>
-              <div className="flex flex-wrap gap-x-2">
-                <dt className="text-[#7AAEC8]">Antal ansatte:</dt>
-                <dd>{employeeCount || "—"}</dd>
-              </div>
-            </dl>
+          <div className="min-w-0 space-y-3">
+            <h2 className="text-2xl font-bold tracking-tight text-[#0D1F2D] sm:text-3xl">
+              {orgName || "Din organisation"}
+            </h2>
+            <div className="flex flex-wrap gap-2">
+              {industry ? (
+                <span className="rounded-full border border-sky-100 bg-[#F5FAFD] px-3 py-1 text-xs font-medium text-[#2C4A5E]">
+                  {industry}
+                </span>
+              ) : null}
+              {employeeCount ? (
+                <span className="rounded-full border border-sky-100 bg-[#F5FAFD] px-3 py-1 text-xs font-medium text-[#2C4A5E]">
+                  {employeeCount} ansatte
+                </span>
+              ) : null}
+            </div>
           </div>
         </div>
       </section>
 
-      {members.length === 0 ? (
-        <div className="flex flex-col items-center gap-3 rounded-2xl border border-sky-100 bg-white py-14 text-center shadow-sm">
-          <div className="flex h-12 w-12 items-center justify-center rounded-full bg-sky-50 text-[#0A6EBD]">
-            <Users className="h-6 w-6" />
-          </div>
-          <p className="text-sm font-medium text-[#0D1F2D]">Dit team er tomt</p>
-          {isOrgAdmin ? (
-            <button
-              type="button"
-              onClick={() => setModalOpen(true)}
-              className="text-sm font-semibold text-[#0A6EBD] hover:underline"
-            >
-              Inviter første kollega
-            </button>
-          ) : null}
+      <div>
+        <div className="mb-4 flex flex-wrap items-center gap-2">
+          <h3 className="text-lg font-semibold text-[#0D1F2D]">Teammedlemmer</h3>
+          <span className="rounded-full bg-sky-100 px-2.5 py-0.5 text-xs font-semibold tabular-nums text-sky-800">
+            {members.length}
+          </span>
         </div>
-      ) : (
-        <ul className="grid gap-4 sm:grid-cols-2">
-          {members.map((member) => {
-            const initials =
-              member.avatar_initials?.trim().slice(0, 2).toUpperCase() ||
-              buildInitials(member.full_name ?? "") ||
-              "??";
-            const joined = member.created_at
-              ? dateFmt.format(new Date(member.created_at))
-              : null;
-            const canRemove = isOrgAdmin && member.id !== authUserId && members.length > 1;
 
-            return (
-              <li
-                key={member.id}
-                className="flex flex-col rounded-2xl border border-sky-100 bg-white p-5 shadow-sm"
+        {members.length === 0 ? (
+          <div className="flex flex-col items-center gap-3 rounded-2xl border border-sky-100 bg-white py-14 text-center shadow-sm">
+            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-sky-50 text-[#0A6EBD]">
+              <Users className="h-6 w-6" />
+            </div>
+            <p className="text-sm font-medium text-[#0D1F2D]">Dit team er tomt</p>
+            {isOrgAdmin ? (
+              <button
+                type="button"
+                onClick={() => setModalOpen(true)}
+                className="text-sm font-semibold text-[#0A6EBD] hover:underline"
               >
-                <div className="flex items-start gap-3">
-                  <ProfileAvatar
-                    avatarUrl={member.avatar_url}
-                    initials={initials}
-                    className="h-11 w-11 text-sm"
-                  />
-                  <div className="min-w-0 flex-1">
-                    <p className="truncate text-sm font-semibold text-[#0D1F2D]">
-                      {member.full_name || "Ukendt navn"}
-                      {member.id === authUserId ? (
-                        <span className="ml-1 font-normal text-[#7AAEC8]">(dig)</span>
-                      ) : null}
-                    </p>
-                    <p className="truncate text-xs text-[#7AAEC8]">{member.email || "—"}</p>
-                  </div>
-                </div>
-                <div className="mt-4 flex flex-wrap items-center justify-between gap-2 border-t border-sky-50 pt-3">
-                  <div>
-                    <span
-                      className={`inline-flex rounded-full px-2.5 py-0.5 text-[11px] font-semibold ${
-                        member.role === "org_admin"
-                          ? "bg-sky-100 text-sky-800"
-                          : "bg-[#F5FAFD] text-[#2C4A5E]"
-                      }`}
-                    >
-                      {member.role === "org_admin" ? "Administrator" : "Medlem"}
-                    </span>
-                    {joined ? (
-                      <p className="mt-1.5 text-[11px] text-[#7AAEC8]">Tilføjet {joined}</p>
-                    ) : null}
-                  </div>
-                  {canRemove ? (
-                    <button
-                      type="button"
-                      onClick={() => setRemoveTarget(member)}
-                      className="inline-flex items-center gap-1 rounded-full border border-red-200 px-3 py-1.5 text-xs font-semibold text-red-700 transition hover:bg-red-50"
-                    >
-                      <UserMinus className="h-3.5 w-3.5" />
-                      Fjern
-                    </button>
-                  ) : null}
-                </div>
+                Inviter første kollega
+              </button>
+            ) : null}
+          </div>
+        ) : (
+          <ul className="-mx-1 flex gap-4 overflow-x-auto px-1 pb-2">
+            {members.map((member) => renderMemberCard(member))}
+            {members.length === 1 && isOrgAdmin ? (
+              <li className="w-[min(100%,220px)] shrink-0">
+                <button
+                  type="button"
+                  onClick={() => setModalOpen(true)}
+                  className="flex h-full min-h-[220px] w-full flex-col items-center justify-center gap-3 rounded-2xl border-2 border-dashed border-sky-200 bg-[#FAFCFE] p-5 text-center transition hover:border-[#0A6EBD] hover:bg-sky-50/50"
+                >
+                  <span className="flex h-14 w-14 items-center justify-center rounded-full border border-sky-200 bg-white text-[#0A6EBD] shadow-sm">
+                    <Plus className="h-7 w-7" strokeWidth={2} />
+                  </span>
+                  <span className="text-sm font-semibold text-[#0A6EBD]">Inviter dine kolleger</span>
+                  <span className="text-xs text-[#7AAEC8]">Tilføj flere til teamet</span>
+                </button>
               </li>
-            );
-          })}
-        </ul>
-      )}
+            ) : null}
+          </ul>
+        )}
+      </div>
     </div>
   );
 
@@ -647,7 +663,7 @@ export default function PortalTeamPage() {
 
   return (
     <>
-      <div className="mx-auto max-w-3xl">
+      <div className="mx-auto max-w-4xl">
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
             <h1 className="text-2xl font-bold text-[#0D1F2D]">Team</h1>

@@ -80,9 +80,11 @@ function rowStatusLabel(status: "ok" | "advarsel" | "fejl" | "afventer"): string
 }
 
 function dotClassName(status: "ok" | "advarsel" | "fejl" | "afventer"): string {
-  const base = "h-2 w-2 shrink-0 rounded-full";
-  if (status === "fejl") return `${base} portal-status-dot-fejl`;
-  return base;
+  const base = "portal-dashboard-row-dot h-2 w-2 shrink-0 rounded-full";
+  if (status === "fejl") return `${base} portal-status-dot-fejl portal-dashboard-row-dot-fejl`;
+  if (status === "advarsel") return `${base} portal-dashboard-row-dot-advarsel`;
+  if (status === "ok") return `${base} portal-dashboard-row-dot-ok`;
+  return `${base} portal-dashboard-row-dot-afventer`;
 }
 
 function dotStyle(status: "ok" | "advarsel" | "fejl" | "afventer"): { backgroundColor: string } {
@@ -99,8 +101,8 @@ function dotStyle(status: "ok" | "advarsel" | "fejl" | "afventer"): { background
 }
 
 function rowAccentClass(status: "ok" | "advarsel" | "fejl" | "afventer"): string {
-  if (status === "fejl") return "border-l-[3px] border-l-[#C42B2B] bg-red-50/40";
-  if (status === "advarsel") return "border-l-[3px] border-l-[#C47B0A] bg-amber-50/35";
+  if (status === "fejl") return "portal-attention-border-fejl bg-red-50/30";
+  if (status === "advarsel") return "portal-attention-border-advarsel bg-amber-50/25";
   return "border-l-[3px] border-l-transparent";
 }
 
@@ -203,15 +205,16 @@ export function PortalSystemsDashboard({
   const [historyDistinctDayCount, setHistoryDistinctDayCount] = useState<number | null>(null);
   const [historyLoading, setHistoryLoading] = useState(false);
   const [activeTab, setActiveTab] = useState<string>("");
-  const [autoRotateEnabled, setAutoRotateEnabled] = useState(true);
   const [tabsHovered, setTabsHovered] = useState(false);
-  const [tabListVisible, setTabListVisible] = useState(true);
+  const [tabSlidePhase, setTabSlidePhase] = useState<"idle" | "exit" | "enter">("idle");
+  const [tabProgressKey, setTabProgressKey] = useState(0);
   const [detail, setDetail] = useState<DetailSelection | null>(null);
 
   const tabNavRef = useRef<HTMLDivElement>(null);
   const tabButtonRefs = useRef<Map<string, HTMLButtonElement>>(new Map());
   const [tabIndicator, setTabIndicator] = useState({ left: 0, width: 0 });
   const tabSwitchTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const rotateTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const orgIdForMonitoring = preview
     ? (organisationIdProp?.trim() || null)
@@ -455,22 +458,36 @@ export function PortalSystemsDashboard({
     };
   }, [updateTabIndicator]);
 
+  const resetTabRotateTimer = useCallback(() => {
+    setTabProgressKey((k) => k + 1);
+  }, []);
+
   const goToTab = useCallback(
     (key: string, manual = false) => {
-      if (manual) setAutoRotateEnabled(false);
+      if (manual) resetTabRotateTimer();
       if (key === activeTabKey) return;
 
       if (tabSwitchTimeoutRef.current) clearTimeout(tabSwitchTimeoutRef.current);
 
-      setTabListVisible(false);
+      setTabSlidePhase("exit");
       tabSwitchTimeoutRef.current = setTimeout(() => {
         setActiveTab(key);
-        setTabListVisible(true);
-        tabSwitchTimeoutRef.current = null;
-      }, 150);
+        setTabProgressKey((k) => k + 1);
+        setTabSlidePhase("enter");
+        tabSwitchTimeoutRef.current = setTimeout(() => {
+          setTabSlidePhase("idle");
+          tabSwitchTimeoutRef.current = null;
+        }, 250);
+      }, 250);
     },
-    [activeTabKey],
+    [activeTabKey, resetTabRotateTimer],
   );
+
+  useLayoutEffect(() => {
+    if (tabSlidePhase !== "enter") return;
+    const id = requestAnimationFrame(() => setTabSlidePhase("idle"));
+    return () => cancelAnimationFrame(id);
+  }, [tabSlidePhase, activeTabKey]);
 
   useEffect(() => {
     if (!activeTab && defaultTabKey) {
@@ -485,30 +502,35 @@ export function PortalSystemsDashboard({
   }, []);
 
   useEffect(() => {
+    if (rotateTimeoutRef.current) clearTimeout(rotateTimeoutRef.current);
+
     if (
-      !autoRotateEnabled ||
       tabsHovered ||
       tabsWithSystems.length <= 1 ||
       preview ||
-      monitoringLoading
+      monitoringLoading ||
+      tabSlidePhase !== "idle"
     ) {
       return;
     }
 
-    const id = window.setInterval(() => {
+    rotateTimeoutRef.current = setTimeout(() => {
       const currentIndex = tabsWithSystems.findIndex((g) => g.shortLabel === activeTabKey);
       const nextIndex = currentIndex < 0 ? 0 : (currentIndex + 1) % tabsWithSystems.length;
       const nextKey = tabsWithSystems[nextIndex]?.shortLabel;
       if (nextKey) goToTab(nextKey, false);
     }, TAB_ROTATE_MS);
 
-    return () => window.clearInterval(id);
+    return () => {
+      if (rotateTimeoutRef.current) clearTimeout(rotateTimeoutRef.current);
+    };
   }, [
     activeTabKey,
-    autoRotateEnabled,
     goToTab,
     monitoringLoading,
     preview,
+    tabProgressKey,
+    tabSlidePhase,
     tabsHovered,
     tabsWithSystems,
   ]);
@@ -702,7 +724,7 @@ export function PortalSystemsDashboard({
                       type="button"
                       onClick={() => goToTab(g.shortLabel, true)}
                       disabled={monitoringLoading}
-                      className={`relative shrink-0 px-4 py-3.5 text-sm font-medium transition-colors duration-150 ${
+                      className={`relative shrink-0 overflow-hidden px-4 py-3.5 text-sm font-medium transition-colors duration-150 ${
                         isActive ? "text-[#0D1F2D]" : "text-[#7AAEC8] hover:text-[#2C4A5E]"
                       }`}
                     >
@@ -722,21 +744,34 @@ export function PortalSystemsDashboard({
               </nav>
 
               <span
-                className="pointer-events-none absolute bottom-0 left-0 h-0.5 bg-[#0A6EBD] transition-[transform,width] duration-300 ease-out"
+                className="pointer-events-none absolute bottom-0 left-0 h-0.5 overflow-hidden bg-sky-100/80 transition-[transform,width] duration-300 ease-out"
                 style={{
                   transform: `translateX(${tabIndicator.left}px)`,
                   width: tabIndicator.width,
                 }}
                 aria-hidden
-              />
+              >
+                {!monitoringLoading && !preview && tabsWithSystems.length > 1 ? (
+                  <span
+                    key={tabProgressKey}
+                    className={`portal-tab-progress block h-full bg-[#0A6EBD] ${
+                      tabsHovered ? "portal-tab-progress-paused" : ""
+                    }`}
+                  />
+                ) : null}
+              </span>
             </div>
 
+            <div className="overflow-hidden" aria-busy={monitoringLoading}>
             <ul
               key={activeTabKey}
-              className={`divide-y divide-sky-50 transition-opacity duration-150 ease-out ${
-                tabListVisible ? "opacity-100" : "opacity-0"
+              className={`divide-y divide-sky-50 transition-[transform,opacity] duration-[250ms] ease-out ${
+                tabSlidePhase === "exit"
+                  ? "-translate-x-full opacity-0"
+                  : tabSlidePhase === "enter"
+                    ? "translate-x-full opacity-0"
+                    : "translate-x-0 opacity-100"
               }`}
-              aria-busy={monitoringLoading}
             >
               {monitoringLoading
                 ? activeTabRows.map((row) => <PortalDashboardSystemRowSkeleton key={row.key} />)
@@ -745,7 +780,7 @@ export function PortalSystemsDashboard({
                   <button
                     type="button"
                     onClick={() => openDetail(row)}
-                    className={`flex w-full items-center gap-3 px-4 py-4 text-left transition-colors duration-150 hover:bg-sky-50/80 ${rowAccentClass(row.status)}`}
+                    className={`group/dash-row flex w-full items-center gap-3 px-4 py-4 text-left transition-colors duration-150 hover:bg-sky-50 ${rowAccentClass(row.status)}`}
                   >
                     <span
                       className={dotClassName(row.status)}
@@ -775,6 +810,7 @@ export function PortalSystemsDashboard({
                 </li>
               ))}
             </ul>
+            </div>
           </section>
 
           {/* 4. Uptime chart (only when enough data) */}

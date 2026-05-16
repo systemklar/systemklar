@@ -263,3 +263,62 @@ button {
 .portal-status-dot-fejl {
   animation: portal-status-dot-fejl-glow 2s ease-in-out infinite;
 }
+
+/* Portal dashboard: tab auto-rotate progress */
+@keyframes portal-tab-progress-fill {
+  from {
+    width: 0%;
+  }
+  to {
+    width: 100%;
+  }
+}
+
+.portal-tab-progress {
+  animation: portal-tab-progress-fill 5s linear forwards;
+}
+
+.portal-tab-progress-paused {
+  animation-play-state: paused;
+}
+
+/* Portal dashboard: attention row left border pulse */
+@keyframes portal-attention-border-pulse {
+  0%,
+  100% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+.portal-attention-border-fejl {
+  border-left: 3px solid #c42b2b;
+  animation: portal-attention-border-pulse 2s ease-in-out infinite;
+}
+
+.portal-attention-border-advarsel {
+  border-left: 3px solid #c47b0a;
+  animation: portal-attention-border-pulse 2s ease-in-out infinite;
+}
+
+.portal-dashboard-row-dot {
+  transition: box-shadow 150ms ease-out;
+}
+
+.group\/dash-row:hover .portal-dashboard-row-dot-ok {
+  box-shadow: 0 0 0 3px rgba(10, 124, 92, 0.35);
+}
+
+.group\/dash-row:hover .portal-dashboard-row-dot-advarsel {
+  box-shadow: 0 0 0 3px rgba(196, 123, 10, 0.35);
+}
+
+.group\/dash-row:hover .portal-dashboard-row-dot-fejl {
+  box-shadow: 0 0 0 3px rgba(196, 43, 43, 0.4);
+}
+
+.group\/dash-row:hover .portal-dashboard-row-dot-afventer {
+  box-shadow: 0 0 0 3px rgba(148, 163, 184, 0.35);
+}
