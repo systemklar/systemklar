@@ -32,6 +32,7 @@ import {
   PortalDashboardHeroSkeleton,
   PortalDashboardSystemRowSkeleton,
 } from "@/components/portal/PortalMonitoringSkeletons";
+import { PortalSlideInPanel } from "@/components/portal/PortalOverlay";
 
 type PortalSystemsDashboardProps = {
   preview?: boolean;
@@ -836,14 +837,7 @@ export function PortalSystemsDashboard({
       )}
 
       {detail ? (
-        <>
-          <button
-            type="button"
-            aria-label="Luk panel"
-            className="fixed inset-0 z-40 bg-[#062840]/20 backdrop-blur-[1px]"
-            onClick={closeDetail}
-          />
-          <aside className="fixed inset-y-0 right-0 z-50 flex w-full max-w-md flex-col border-l border-sky-100 bg-white shadow-xl">
+        <PortalSlideInPanel open onClose={closeDetail}>
             <div className="flex items-start justify-between gap-3 border-b border-sky-100 px-5 py-4">
               <h2 className="text-lg font-semibold text-[#0D1F2D]">{detail.friendly}</h2>
               <button
@@ -907,8 +901,7 @@ export function PortalSystemsDashboard({
                 );
               })()}
             </div>
-          </aside>
-        </>
+        </PortalSlideInPanel>
       ) : null}
 
       {!preview ? (

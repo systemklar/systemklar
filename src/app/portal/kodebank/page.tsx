@@ -2,6 +2,7 @@
 
 import { FormEvent, useEffect, useMemo, useState } from "react";
 import { Lock } from "lucide-react";
+import { PortalModalOverlay } from "@/components/portal/PortalOverlay";
 
 type VaultCategory = "microsoft" | "google" | "regnskab" | "webshop" | "hr" | "it" | "andet";
 
@@ -381,8 +382,18 @@ export default function PortalKodebankPage() {
       </div>
 
       {showModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/40 p-4">
-          <div className="w-full max-w-xl rounded-2xl border border-sky-100 bg-white p-6 shadow-xl">
+        <PortalModalOverlay
+          open
+          onClose={() => {
+            setShowModal(false);
+            setEditingId(null);
+            setForm(emptyForm);
+          }}
+        >
+          <div
+            className="w-full max-w-xl rounded-2xl border border-sky-100 bg-white p-6 shadow-xl"
+            onClick={(e) => e.stopPropagation()}
+          >
             <h2 className="text-xl font-bold text-[#0D1F2D]">
               {editingId ? "Rediger login" : "Tilføj login"}
             </h2>
@@ -478,7 +489,7 @@ export default function PortalKodebankPage() {
               </div>
             </form>
           </div>
-        </div>
+        </PortalModalOverlay>
       )}
     </>
   );

@@ -4,6 +4,7 @@ import { FileText, HelpCircle, Play } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { getGuideCategoryIcon } from "@/lib/guide-icons";
 import { toVideoEmbedUrl } from "@/lib/video-embed";
+import { PortalModalOverlay } from "@/components/portal/PortalOverlay";
 import { createClient } from "@/lib/supabase";
 
 type GuideCategoryRow = {
@@ -258,13 +259,11 @@ export default function PortalVejledningerPage() {
       </div>
 
       {articleModal ? (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
-          role="dialog"
-          onClick={() => setArticleModal(null)}
-        >
+        <PortalModalOverlay open onClose={() => setArticleModal(null)}>
           <div
             className="max-h-[85vh] w-full max-w-lg overflow-y-auto rounded-2xl border border-sky-100 bg-white p-6 shadow-xl"
+            role="dialog"
+            aria-modal="true"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex justify-between gap-4">
@@ -281,7 +280,7 @@ export default function PortalVejledningerPage() {
               {articleModal.content}
             </p>
           </div>
-        </div>
+        </PortalModalOverlay>
       ) : null}
     </>
   );

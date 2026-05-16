@@ -2,6 +2,7 @@
 
 import { Eye, EyeOff, X } from "lucide-react";
 import { useMemo, useState } from "react";
+import { PortalModalOverlay } from "@/components/portal/PortalOverlay";
 import {
   getSelfServiceSetupConfig,
   totalSetupSteps,
@@ -108,11 +109,7 @@ export function SystemCredentialSetupModal({
   };
 
   return (
-    <div
-      className="fixed inset-0 z-50 flex items-end justify-center bg-[#062840]/40 p-4 sm:items-center"
-      onClick={onClose}
-      role="presentation"
-    >
+    <PortalModalOverlay open onClose={onClose} position="bottom-sheet">
       <div
         className="flex max-h-[min(90vh,640px)] w-full max-w-lg flex-col rounded-2xl border border-sky-100 bg-white shadow-xl"
         role="dialog"
@@ -267,6 +264,6 @@ export function SystemCredentialSetupModal({
           </div>
         ) : null}
       </div>
-    </div>
+    </PortalModalOverlay>
   );
 }

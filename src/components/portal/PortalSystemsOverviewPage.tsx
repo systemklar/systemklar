@@ -19,6 +19,7 @@ import { isAutoMonitoredCustomerSystem } from "@/lib/monitoring/monitoring-syste
 import { isSelfServiceCredentialSystem } from "@/lib/system-self-service-setup";
 import { SystemCredentialSetupModal } from "@/components/portal/SystemCredentialSetupModal";
 import { PortalSystemsOverviewRowSkeleton } from "@/components/portal/PortalMonitoringSkeletons";
+import { PortalModalOverlay } from "@/components/portal/PortalOverlay";
 import {
   buildOnboardingDashboardGroups,
   ONBOARDING_SYSTEM_GROUPS,
@@ -565,11 +566,7 @@ export function PortalSystemsOverviewPage() {
       ) : null}
 
       {modal ? (
-        <div
-          className="fixed inset-0 z-50 flex items-end justify-center bg-[#062840]/40 p-4 sm:items-center"
-          onClick={() => setModal(null)}
-          role="presentation"
-        >
+        <PortalModalOverlay open onClose={() => setModal(null)} position="bottom-sheet">
           <div
             className="w-full max-w-lg rounded-2xl border border-sky-100 bg-white p-6 shadow-xl"
             role="dialog"
@@ -616,7 +613,7 @@ export function PortalSystemsOverviewPage() {
               Luk
             </button>
           </div>
-        </div>
+        </PortalModalOverlay>
       ) : null}
     </div>
   );

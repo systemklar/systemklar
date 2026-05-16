@@ -6,6 +6,7 @@ import { fetchCurrentProfile } from "@/lib/current-profile";
 import { formatDanishDateTime } from "@/components/tickets/StatusBadge";
 import { formatDkk, serviceUnitLabel } from "@/lib/service-units";
 import { logSupabaseError } from "@/lib/supabase-error";
+import { PortalModalOverlay } from "@/components/portal/PortalOverlay";
 import { createClient } from "@/lib/supabase";
 
 type ServiceRow = {
@@ -659,11 +660,12 @@ export default function PortalTilbudsgeneratorPage() {
         </section>
 
         {modalMode ? (
-          <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/40 p-4 sm:items-center">
+          <PortalModalOverlay open onClose={closeModal} position="bottom-sheet">
             <div
               className="max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-2xl border border-[#E7E5E4] bg-white p-6 shadow-xl"
               role="dialog"
               aria-modal
+              onClick={(e) => e.stopPropagation()}
             >
               <h2 className="text-lg font-semibold text-[#1C1917]">
                 {modalMode === "create" ? "Ny ydelse" : "Rediger ydelse"}
@@ -732,7 +734,7 @@ export default function PortalTilbudsgeneratorPage() {
                 </div>
               </form>
             </div>
-          </div>
+          </PortalModalOverlay>
         ) : null}
       </div>
   );
