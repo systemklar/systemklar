@@ -24,7 +24,7 @@ export function FeaturesPageContent() {
           {MARKETING_FEATURES.map((feature, index) => {
             const Icon = feature.icon;
             return (
-              <ScrollReveal key={feature.title} staggerMs={index * 80}>
+              <ScrollReveal key={feature.title} staggerMs={index * 150}>
                 <li className="h-full rounded-2xl border border-[#C8D8E4] bg-white p-8">
                   <span className="flex h-11 w-11 items-center justify-center rounded-xl border border-[#E0EAF0] bg-[#EAF1F7] text-[#4A7FA5]">
                     <Icon className="h-5 w-5" strokeWidth={1.5} aria-hidden />

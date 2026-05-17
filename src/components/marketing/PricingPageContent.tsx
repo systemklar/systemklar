@@ -10,6 +10,7 @@ import {
   PRICING_BILLING_FAQ,
   PRICING_PLANS,
 } from "@/lib/marketing-site-content";
+import { MARKETING_DEMO_HREF, MARKETING_DEMO_LABEL } from "@/lib/marketing-cta";
 
 export function PricingPageContent() {
   const [openFaq, setOpenFaq] = useState<number | null>(0);
@@ -56,14 +57,14 @@ export function PricingPageContent() {
                   ))}
                 </ul>
                 <Link
-                  href="/login"
+                  href={MARKETING_DEMO_HREF}
                   className={`mt-8 inline-flex min-h-[48px] items-center justify-center rounded-full px-6 text-sm font-medium transition-colors ${
                     plan.highlight
                       ? "bg-[#4A7FA5] text-white hover:bg-[#3A6F95]"
                       : "border border-[#C8D8E4] text-[#4A6478] hover:border-[#4A7FA5] hover:text-[#1E3448]"
                   }`}
                 >
-                  Kom i gang
+                  {MARKETING_DEMO_LABEL}
                 </Link>
               </article>
             </ScrollReveal>
@@ -155,11 +156,7 @@ export function PricingPageContent() {
         </div>
       </section>
 
-      <MarketingCtaSection
-        heading="Klar til at komme i gang?"
-        subtext="Prøv systemklar gratis i 14 dage — ingen kreditkort påkrævet."
-        buttonLabel="Kom i gang gratis"
-      />
+      <MarketingCtaSection />
     </>
   );
 }

@@ -21,16 +21,21 @@ export function AuthSplitLayout({ children, topRight }: AuthSplitLayoutProps) {
 
       <div className="grid min-h-[calc(100dvh-60px)] md:min-h-screen md:grid-cols-2">
         {/* Left: branding (desktop) */}
-        <aside className="relative hidden flex-col bg-[#1E3448] px-10 py-10 md:flex">
-          <div className="flex-shrink-0">
+        <aside className="relative hidden flex-col overflow-hidden bg-[#1E3448] px-10 py-10 md:flex">
+          <div className="auth-bg-drift" aria-hidden>
+            <span />
+            <span />
+            <span />
+          </div>
+          <div className="relative z-[1] flex-shrink-0">
             <SystemklarLogo href="/" variant="dark" size="sm" />
           </div>
 
-          <div className="flex flex-1 flex-col items-center justify-center py-12">
+          <div className="relative z-[1] flex flex-1 flex-col items-center justify-center py-12">
             <RotatingValueProps />
           </div>
 
-          <p className="flex-shrink-0 text-xs text-[#7A9AB0]">© {year} systemklar</p>
+          <p className="relative z-[1] flex-shrink-0 text-xs text-[#7A9AB0]">© {year} systemklar</p>
         </aside>
 
         {/* Right: form */}

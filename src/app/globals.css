@@ -55,7 +55,7 @@ html {
 /* Marketing: hero load-in + scroll reveal */
 .marketing-hero-enter {
   opacity: 0;
-  animation: marketingHeroEnter 0.5s ease-out forwards;
+  animation: marketingHeroEnter 0.4s ease-out forwards;
 }
 
 @keyframes marketingHeroEnter {
@@ -71,7 +71,7 @@ html {
 
 .marketing-reveal {
   opacity: 0;
-  transform: translateY(20px);
+  transform: translateY(24px);
   transition: opacity 0.5s ease-out, transform 0.5s ease-out;
 }
 
@@ -152,6 +152,201 @@ html {
   to {
     opacity: 1;
     transform: translateX(0);
+  }
+}
+
+.auth-bg-drift {
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+.auth-bg-drift span {
+  position: absolute;
+  border-radius: 50%;
+  background: #fff;
+  opacity: 0.04;
+}
+
+.auth-bg-drift span:nth-child(1) {
+  width: 280px;
+  height: 280px;
+  top: -60px;
+  left: -40px;
+  animation: authDriftA 22s ease-in-out infinite;
+}
+
+.auth-bg-drift span:nth-child(2) {
+  width: 360px;
+  height: 360px;
+  bottom: -80px;
+  right: -100px;
+  animation: authDriftB 26s ease-in-out infinite;
+}
+
+.auth-bg-drift span:nth-child(3) {
+  width: 200px;
+  height: 200px;
+  top: 40%;
+  right: 10%;
+  animation: authDriftC 20s ease-in-out infinite;
+}
+
+@keyframes authDriftA {
+  0%,
+  100% {
+    transform: translate(0, 0);
+  }
+  50% {
+    transform: translate(24px, 18px);
+  }
+}
+
+@keyframes authDriftB {
+  0%,
+  100% {
+    transform: translate(0, 0);
+  }
+  50% {
+    transform: translate(-20px, -16px);
+  }
+}
+
+@keyframes authDriftC {
+  0%,
+  100% {
+    transform: translate(0, 0);
+  }
+  50% {
+    transform: translate(14px, -22px);
+  }
+}
+
+.auth-value-exit {
+  animation: authValueExit 0.4s ease-out forwards;
+}
+
+.auth-value-enter {
+  animation: authValueEnter 0.4s ease-out forwards;
+}
+
+.auth-value-icon-enter {
+  animation: authValueIconEnter 0.4s ease-out 0.1s forwards;
+  opacity: 0;
+}
+
+@keyframes authValueExit {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+}
+
+@keyframes authValueEnter {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes authValueIconEnter {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.portal-slide-in-from-right {
+  animation: portalSlideInRight 0.35s ease-out forwards;
+}
+
+.portal-slide-in-from-left {
+  animation: portalSlideInLeft 0.35s ease-out forwards;
+}
+
+@keyframes portalSlideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(28px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes portalSlideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-28px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.portal-mockup-cursor {
+  position: absolute;
+  z-index: 10;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 2px solid #4a7fa5;
+  background: rgba(74, 127, 165, 0.15);
+  animation: portalCursorMove 6s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes portalCursorMove {
+  0%,
+  100% {
+    top: 28%;
+    left: 18%;
+  }
+  33% {
+    top: 52%;
+    left: 72%;
+  }
+  66% {
+    top: 68%;
+    left: 42%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .marketing-hero-enter,
+  .marketing-reveal,
+  .auth-panel-enter,
+  .auth-value-exit,
+  .auth-value-enter,
+  .auth-value-icon-enter,
+  .portal-slide-in-from-right,
+  .portal-slide-in-from-left,
+  .portal-mockup-cursor,
+  .marketing-status-dot {
+    animation: none !important;
+    transition: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+
+  .marketing-reveal {
+    opacity: 1;
+    transform: none;
   }
 }
 

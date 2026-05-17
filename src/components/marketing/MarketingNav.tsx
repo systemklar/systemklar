@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Menu, X } from "lucide-react";
 import { SystemklarLogo } from "@/components/SystemklarLogo";
+import { MARKETING_DEMO_HREF, MARKETING_DEMO_LABEL } from "@/lib/marketing-cta";
 import { StableNavLink } from "./StableNavLink";
 
 const NAV = [
@@ -68,10 +69,10 @@ export function MarketingNav() {
               Log ind
             </Link>
             <Link
-              href="/login"
+              href={MARKETING_DEMO_HREF}
               className="rounded-full bg-[#4A7FA5] px-5 py-2 text-sm font-medium text-white transition-colors hover:bg-[#3A6F95]"
             >
-              Kom i gang
+              {MARKETING_DEMO_LABEL}
             </Link>
           </div>
 
@@ -121,11 +122,11 @@ export function MarketingNav() {
                 Log ind
               </Link>
               <Link
-                href="/login"
+                href={MARKETING_DEMO_HREF}
                 onClick={() => setMobileOpen(false)}
                 className="flex min-h-[44px] items-center justify-center rounded-full bg-[#4A7FA5] text-sm font-medium text-white hover:bg-[#3A6F95]"
               >
-                Kom i gang
+                {MARKETING_DEMO_LABEL}
               </Link>
             </div>
           </div>

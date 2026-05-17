@@ -9,6 +9,7 @@ type DemoRequestBody = {
   email: string;
   phone?: string;
   employees?: string;
+  helpTopic?: string;
   message?: string;
 };
 
@@ -30,6 +31,7 @@ export async function POST(request: Request) {
   const email = typeof payload.email === "string" ? payload.email.trim() : "";
   const phone = typeof payload.phone === "string" ? payload.phone.trim() : "";
   const employees = typeof payload.employees === "string" ? payload.employees.trim() : "";
+  const helpTopic = typeof payload.helpTopic === "string" ? payload.helpTopic.trim() : "";
   const message = typeof payload.message === "string" ? payload.message.trim() : "";
 
   if (!name || !companyName || !email) {
@@ -40,7 +42,12 @@ export async function POST(request: Request) {
   }
 
   try {
-    const composedMessage = [message, phone ? `Telefon: ${phone}` : "", employees ? `Antal ansatte: ${employees}` : ""]
+    const composedMessage = [
+      helpTopic ? `Emne: ${helpTopic}` : "",
+      message,
+      phone ? `Telefon: ${phone}` : "",
+      employees ? `Antal ansatte: ${employees}` : "",
+    ]
       .filter(Boolean)
       .join("\n");
     await sendBookDemoEmail(email, name, companyName, composedMessage);
@@ -50,6 +57,6 @@ export async function POST(request: Request) {
 
   return NextResponse.json({
     ok: true,
-    message: "Tak! Vi kontakter dig inden for 24 timer.",
+    message: "Tak! Vi kontakter dig inden for 1 hverdag.",
   });
 }

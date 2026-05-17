@@ -9,17 +9,19 @@ import {
   AuthPageHeading,
   AuthSplitLayout,
 } from "@/components/auth/AuthSplitLayout";
-import {
-  AuthField,
-  AuthFormError,
-  AuthInput,
-  AuthSubmitButton,
-} from "@/components/auth/auth-ui";
+import { AuthFloatingField, AuthFormError, AuthSubmitButton } from "@/components/auth/auth-ui";
 import { createClient } from "@/lib/supabase";
 
 function safeInternalPath(raw: string | null): string | null {
   if (!raw || !raw.startsWith("/") || raw.startsWith("//")) return null;
   return raw;
+}
+
+function getTimeGreeting(): string {
+  const hour = new Date().getHours();
+  if (hour < 10) return "God morgen";
+  if (hour < 18) return "God dag";
+  return "God aften";
 }
 
 function toDanishAuthError(message: string): string {
@@ -85,43 +87,40 @@ function LoginForm() {
         </p>
       }
     >
+      <p className="mb-2 text-sm text-[#7A9AB0]">{getTimeGreeting()}</p>
       <AuthPageHeading title="Velkommen tilbage" subtitle="Log ind på din Systemklar konto" />
 
       <form onSubmit={handleSubmit} className="space-y-5">
-        <AuthField id="email" label="E-mail">
-          <AuthInput
-            id="email"
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-            placeholder="dig@firma.dk"
-            autoComplete="email"
-          />
-        </AuthField>
+        <AuthFloatingField
+          id="email"
+          label="E-mail"
+          type="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          required
+          autoComplete="email"
+        />
 
-        <AuthField id="password" label="Adgangskode">
-          <div className="relative">
-            <AuthInput
-              id="password"
-              type={showPassword ? "text" : "password"}
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              placeholder="••••••••"
-              autoComplete="current-password"
-              className="pr-11"
-            />
-            <button
-              type="button"
-              onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-[#9AA8B0] hover:text-[#4A6478]"
-              aria-label={showPassword ? "Skjul adgangskode" : "Vis adgangskode"}
-            >
-              {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-            </button>
-          </div>
-        </AuthField>
+        <div className="relative">
+          <AuthFloatingField
+            id="password"
+            label="Adgangskode"
+            type={showPassword ? "text" : "password"}
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+            autoComplete="current-password"
+            className="pr-11"
+          />
+          <button
+            type="button"
+            onClick={() => setShowPassword(!showPassword)}
+            className="absolute right-3 top-1/2 z-10 -translate-y-1/2 text-[#9AA8B0] hover:text-[#4A6478]"
+            aria-label={showPassword ? "Skjul adgangskode" : "Vis adgangskode"}
+          >
+            {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+          </button>
+        </div>
 
         <div className="flex items-center justify-between gap-4">
           <label className="flex items-center gap-2 text-sm text-[#4A6478]">

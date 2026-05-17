@@ -2,6 +2,7 @@
 
 import { Clock, Mail, MapPin, Phone } from "lucide-react";
 import { FormEvent, useState } from "react";
+import { BookDemoCompactForm } from "@/components/marketing/kontakt/BookDemoCompactForm";
 import { FaqAccordion } from "@/components/marketing/FaqAccordion";
 import { MarketingCtaSection } from "@/components/marketing/MarketingCtaSection";
 import { MarketingShell } from "@/components/marketing/MarketingShell";
@@ -69,8 +70,14 @@ export default function KontaktPage() {
         <ScrollReveal className="mx-auto max-w-3xl text-center">
           <h1 className="text-4xl font-light tracking-tight text-[#1E3448] md:text-5xl">Kontakt os</h1>
           <p className="mt-4 text-lg text-[#4A6478]">
-            Spørgsmål om systemklar? Skriv til os — vi svarer gerne.
+            Book en demo eller skriv til os — vi svarer inden for 1 hverdag.
           </p>
+        </ScrollReveal>
+      </section>
+
+      <section className="bg-white px-6 pb-12 pt-4 md:pb-16">
+        <ScrollReveal className="mx-auto max-w-2xl">
+          <BookDemoCompactForm />
         </ScrollReveal>
       </section>
 
@@ -197,11 +204,7 @@ export default function KontaktPage() {
       </section>
 
       <FaqAccordion />
-      <MarketingCtaSection
-        heading="Vil du prøve systemklar?"
-        subtext="Opret en konto og kom i gang på under 10 minutter."
-        buttonLabel="Kom i gang gratis"
-      />
+      <MarketingCtaSection heading="Har du flere spørgsmål?" />
     </MarketingShell>
   );
 }

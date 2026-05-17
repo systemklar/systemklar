@@ -1,18 +1,22 @@
 import Link from "next/link";
+import { MarketingCtaNote } from "@/components/marketing/MarketingCtaNote";
 import { ScrollReveal } from "@/components/marketing/ScrollReveal";
+import { MARKETING_DEMO_HREF, MARKETING_DEMO_LABEL } from "@/lib/marketing-cta";
 
 type MarketingCtaSectionProps = {
   heading?: string;
   subtext?: string;
   buttonLabel?: string;
   buttonHref?: string;
+  showNote?: boolean;
 };
 
 export function MarketingCtaSection({
-  heading = "Klar til at få styr på din IT?",
-  subtext = "Kom i gang på få minutter — vi hjælper dig med opsætningen.",
-  buttonLabel = "Kom i gang i dag",
-  buttonHref = "/login",
+  heading = "Klar til en uforpligtende snak?",
+  subtext = "Fortæl os om din virksomhed — vi viser dig, hvordan systemklar kan hjælpe.",
+  buttonLabel = MARKETING_DEMO_LABEL,
+  buttonHref = MARKETING_DEMO_HREF,
+  showNote = true,
 }: MarketingCtaSectionProps) {
   return (
     <section className="bg-[#1E3448] px-6 py-20 md:py-28">
@@ -25,6 +29,7 @@ export function MarketingCtaSection({
         >
           {buttonLabel}
         </Link>
+        {showNote ? <MarketingCtaNote className="mt-4 text-[#7A9AB0]" /> : null}
       </ScrollReveal>
     </section>
   );

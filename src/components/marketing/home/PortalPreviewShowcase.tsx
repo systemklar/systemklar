@@ -3,7 +3,9 @@
 import Link from "next/link";
 import { Download } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { MarketingCtaNote } from "@/components/marketing/MarketingCtaNote";
 import { ScrollReveal } from "@/components/marketing/ScrollReveal";
+import { MARKETING_DEMO_HREF, MARKETING_DEMO_LABEL } from "@/lib/marketing-cta";
 
 const TABS = [
   { id: "status", label: "Systemstatus" },
@@ -14,7 +16,6 @@ const TABS = [
 type TabId = (typeof TABS)[number]["id"];
 
 const ROTATE_MS = 5000;
-const FADE_MS = 280;
 
 function BrowserChrome({ children }: { children: React.ReactNode }) {
   return (
@@ -26,7 +27,7 @@ function BrowserChrome({ children }: { children: React.ReactNode }) {
           <span className="h-2.5 w-2.5 rounded-full bg-[#E0EAF0]" />
         </div>
         <div className="min-w-0 flex-1 rounded-md border border-[#E0EAF0] bg-white px-3 py-1.5 text-center text-[11px] text-[#7A9AB0]">
-          systemklar.dk/portal
+          app.systemklar.dk/portal
         </div>
       </div>
       <div className="bg-[#F7F4EF] p-4 md:p-5">{children}</div>
@@ -42,7 +43,8 @@ function StatusMockup() {
   ] as const;
 
   return (
-    <div className="rounded-xl border border-[#C8D8E4] bg-white p-4 shadow-sm">
+    <div className="relative rounded-xl border border-[#C8D8E4] bg-white p-4 shadow-sm">
+      <span className="portal-mockup-cursor motion-reduce:hidden" aria-hidden />
       <div className="rounded-xl border border-emerald-100/80 bg-[#EDFAF5] px-4 py-3">
         <div className="flex items-center gap-3">
           <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-white/90">
@@ -175,19 +177,18 @@ function MockupPanel({ tab }: { tab: TabId }) {
 
 export function PortalPreviewShowcase() {
   const [activeIndex, setActiveIndex] = useState(0);
-  const [visible, setVisible] = useState(true);
-  const fadeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [slideClass, setSlideClass] = useState("portal-slide-in-from-right");
   const pauseAuto = useRef(false);
 
   const activeTab = TABS[activeIndex].id;
 
   const transitionTo = useCallback((index: number) => {
-    if (fadeTimer.current) clearTimeout(fadeTimer.current);
-    setVisible(false);
-    fadeTimer.current = setTimeout(() => {
-      setActiveIndex(index);
-      setVisible(true);
-    }, FADE_MS);
+    setActiveIndex((current) => {
+      if (index !== current) {
+        setSlideClass(index > current ? "portal-slide-in-from-right" : "portal-slide-in-from-left");
+      }
+      return index;
+    });
   }, []);
 
   const activeRef = useRef(activeIndex);
@@ -202,17 +203,11 @@ export function PortalPreviewShowcase() {
     return () => window.clearInterval(id);
   }, [transitionTo]);
 
-  useEffect(
-    () => () => {
-      if (fadeTimer.current) clearTimeout(fadeTimer.current);
-    },
-    [],
-  );
-
   const onTabClick = (index: number) => {
     if (index === activeIndex) return;
     pauseAuto.current = true;
-    transitionTo(index);
+    setSlideClass(index > activeIndex ? "portal-slide-in-from-right" : "portal-slide-in-from-left");
+    setActiveIndex(index);
     window.setTimeout(() => {
       pauseAuto.current = false;
     }, ROTATE_MS * 2);
@@ -256,30 +251,23 @@ export function PortalPreviewShowcase() {
         </ScrollReveal>
 
         <ScrollReveal staggerMs={160} className="mt-8 flex justify-center">
-          <div
-            className={`w-full max-w-3xl origin-top transition-opacity duration-300 ease-out ${
-              visible ? "opacity-100" : "opacity-0"
-            }`}
-            style={{ transform: "scale(0.8)" }}
-            role="tabpanel"
-            aria-label={TABS[activeIndex].label}
-          >
+          <div className="w-full max-w-3xl origin-top md:scale-[0.92]" role="tabpanel" aria-label={TABS[activeIndex].label}>
             <BrowserChrome>
-              <MockupPanel tab={activeTab} />
+              <div key={activeTab} className={slideClass}>
+                <MockupPanel tab={activeTab} />
+              </div>
             </BrowserChrome>
           </div>
         </ScrollReveal>
 
         <ScrollReveal staggerMs={240} className="mt-12 text-center">
-          <p className="text-sm text-[#4A6478]">
-            Prøv det gratis i 14 dage — ingen kreditkort påkrævet
-          </p>
           <Link
-            href="/login"
-            className="mt-5 inline-flex min-h-[48px] items-center justify-center rounded-full bg-[#4A7FA5] px-8 text-sm font-medium text-white transition-colors hover:bg-[#3A6F95]"
+            href={MARKETING_DEMO_HREF}
+            className="inline-flex min-h-[48px] items-center justify-center rounded-full bg-[#4A7FA5] px-8 text-sm font-medium text-white transition-colors hover:bg-[#3A6F95]"
           >
-            Kom i gang gratis
+            {MARKETING_DEMO_LABEL}
           </Link>
+          <MarketingCtaNote className="mt-4" />
         </ScrollReveal>
       </div>
     </section>

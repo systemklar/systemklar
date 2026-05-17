@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Bell, FileText, MessageSquare, Monitor } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
@@ -12,38 +12,51 @@ const PROPS: { icon: LucideIcon; text: string }[] = [
 ];
 
 const INTERVAL_MS = 4000;
-const FADE_MS = 500;
+const ANIM_MS = 400;
 
 export function RotatingValueProps() {
   const [index, setIndex] = useState(0);
-  const [visible, setVisible] = useState(true);
+  const [phase, setPhase] = useState<"idle" | "exit">("idle");
+  const [displayIndex, setDisplayIndex] = useState(0);
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
-    let fadeTimeout: number | undefined;
     const intervalId = window.setInterval(() => {
-      setVisible(false);
-      fadeTimeout = window.setTimeout(() => {
-        setIndex((i) => (i + 1) % PROPS.length);
-        setVisible(true);
-      }, FADE_MS);
+      setPhase("exit");
+      timeoutRef.current = setTimeout(() => {
+        setIndex((i) => {
+          const next = (i + 1) % PROPS.length;
+          setDisplayIndex(next);
+          return next;
+        });
+        setPhase("idle");
+      }, ANIM_MS);
     }, INTERVAL_MS);
 
     return () => {
       window.clearInterval(intervalId);
-      if (fadeTimeout !== undefined) window.clearTimeout(fadeTimeout);
+      if (timeoutRef.current) clearTimeout(timeoutRef.current);
     };
   }, []);
 
-  const { icon: Icon, text } = PROPS[index];
+  const { icon: Icon, text } = PROPS[displayIndex];
 
   return (
     <div
-      className="auth-value-prop flex flex-col items-center text-center transition-opacity duration-500"
-      style={{ opacity: visible ? 1 : 0 }}
+      className="relative flex min-h-[120px] flex-col items-center justify-center text-center"
       aria-live="polite"
     >
-      <Icon className="h-8 w-8 text-white" strokeWidth={1.5} aria-hidden />
-      <p className="mt-5 max-w-xs text-xl font-light leading-snug text-white">{text}</p>
+      <div
+        key={displayIndex}
+        className={`flex flex-col items-center ${phase === "exit" ? "auth-value-exit" : "auth-value-enter"}`}
+      >
+        <Icon
+          className={`h-8 w-8 text-white ${phase === "exit" ? "" : "auth-value-icon-enter"}`}
+          strokeWidth={1.5}
+          aria-hidden
+        />
+        <p className="mt-5 max-w-xs text-xl font-light leading-snug text-white">{text}</p>
+      </div>
     </div>
   );
 }
