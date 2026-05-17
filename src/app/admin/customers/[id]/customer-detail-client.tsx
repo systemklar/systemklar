@@ -420,7 +420,7 @@ export default function AdminCustomerDetailClient() {
   if (!org) {
     return (
       <div>
-        <Link href="/admin/customers" className="text-sm font-semibold text-sky-700 hover:underline">
+        <Link href="/admin/customers" className="text-sm font-semibold text-[#7A8A5A] hover:underline">
           ← Kunder
         </Link>
         <p className="mt-6 text-sm text-slate-600">
@@ -439,10 +439,10 @@ export default function AdminCustomerDetailClient() {
 
   return (
     <div className="space-y-8">
-      <header className="rounded-2xl border border-sky-100 bg-white p-6 shadow-sm">
+      <header className="rounded-2xl border border-[#D4C9A8] bg-white p-6 shadow-sm">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
           <div>
-            <Link href="/admin/customers" className="text-sm font-semibold text-sky-700 hover:underline">
+            <Link href="/admin/customers" className="text-sm font-semibold text-[#7A8A5A] hover:underline">
               ← Kunder
             </Link>
             <div className="mt-3 flex items-center gap-4">
@@ -455,11 +455,11 @@ export default function AdminCustomerDetailClient() {
                 initials={initialsFromName(org.name)}
                 className="h-14 w-14 text-lg"
               />
-              <h1 className="text-3xl font-bold text-[#0D1F2D]">{org.name}</h1>
+              <h1 className="text-3xl font-bold text-[#2C3020]">{org.name}</h1>
             </div>
 
             <div className="mt-3">
-              <p className="text-xs font-semibold uppercase tracking-wide text-[#7AAEC8]">Domæne</p>
+              <p className="text-xs font-semibold uppercase tracking-wide text-[#8C8A78]">Domæne</p>
               {domainEditing ? (
                 <div className="mt-1.5 flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center">
                   <input
@@ -469,14 +469,14 @@ export default function AdminCustomerDetailClient() {
                     placeholder="benjasmod.dk"
                     autoFocus
                     disabled={domainSaving}
-                    className="min-w-[12rem] max-w-md flex-1 rounded-lg border border-sky-100 px-3 py-2 text-sm text-[#0D1F2D] outline-none focus:border-sky-500 disabled:opacity-60"
+                    className="min-w-[12rem] max-w-md flex-1 rounded-lg border border-[#D4C9A8] px-3 py-2 text-sm text-[#2C3020] outline-none focus:border-[#E8E2D0]0 disabled:opacity-60"
                   />
                   <div className="flex items-center gap-2">
                     <button
                       type="button"
                       disabled={domainSaving}
                       onClick={() => void saveDomain()}
-                      className="rounded-full bg-[#0A6EBD] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#0859A0] disabled:opacity-50"
+                      className="rounded-full bg-[#8B9E6B] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#7A8A5A] disabled:opacity-50"
                     >
                       {domainSaving ? "Gemmer..." : "Gem"}
                     </button>
@@ -496,12 +496,12 @@ export default function AdminCustomerDetailClient() {
                     type="button"
                     onClick={beginDomainEdit}
                     aria-label={org.domain ? `Rediger domæne (${org.domain})` : "Tilføj domæne"}
-                    className="group inline-flex max-w-full items-center gap-2 rounded-lg py-0.5 text-left text-sm text-[#0D1F2D] hover:bg-sky-50/80"
+                    className="group inline-flex max-w-full items-center gap-2 rounded-lg py-0.5 text-left text-sm text-[#2C3020] hover:bg-[#EEF2E6]/80"
                   >
                     <span className={org.domain ? "font-medium" : "italic text-slate-500"}>
                       {org.domain ?? "Ikke angivet — klik for at tilføje"}
                     </span>
-                    <span className="inline-flex shrink-0 rounded-md p-1 text-[#4A8CB5] group-hover:text-sky-700" aria-hidden>
+                    <span className="inline-flex shrink-0 rounded-md p-1 text-[#5C5A48] group-hover:text-[#7A8A5A]" aria-hidden>
                       <Pencil className="h-4 w-4" />
                     </span>
                   </button>
@@ -524,7 +524,7 @@ export default function AdminCustomerDetailClient() {
             <div className="flex flex-wrap items-center justify-end gap-2 sm:gap-3">
               <Link
                 href={`/admin/customers/${org.id}/dashboard`}
-                className="inline-flex min-h-11 shrink-0 items-center justify-center rounded-full border border-sky-200 bg-white px-5 py-2.5 text-center text-sm font-semibold text-sky-700 shadow-sm transition hover:border-sky-300 hover:bg-sky-50"
+                className="inline-flex min-h-11 shrink-0 items-center justify-center rounded-full border border-[#D4C9A8] bg-white px-5 py-2.5 text-center text-sm font-semibold text-[#7A8A5A] shadow-sm transition hover:border-[#D4C9A8] hover:bg-[#EEF2E6]"
               >
                 Se kundens dashboard
               </Link>
@@ -546,7 +546,7 @@ export default function AdminCustomerDetailClient() {
               <button
                 type="button"
                 onClick={() => setInviteModalOpen(true)}
-                className="inline-flex min-h-11 shrink-0 items-center justify-center rounded-full bg-[#0A6EBD] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[#0859A0]"
+                className="inline-flex min-h-11 shrink-0 items-center justify-center rounded-full bg-[#8B9E6B] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[#7A8A5A]"
               >
                 Inviter bruger
               </button>
@@ -558,10 +558,10 @@ export default function AdminCustomerDetailClient() {
       {error ? <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">{error}</p> : null}
 
       <section>
-        <h2 className="mb-3 text-lg font-semibold text-[#0D1F2D]">Brugere</h2>
+        <h2 className="mb-3 text-lg font-semibold text-[#2C3020]">Brugere</h2>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           {profiles.map((p) => (
-            <article key={p.id} className="rounded-2xl border border-sky-100 bg-white p-5 shadow-sm">
+            <article key={p.id} className="rounded-2xl border border-[#D4C9A8] bg-white p-5 shadow-sm">
               <div className="flex items-start gap-4">
                 <ProfileAvatar
                   avatarUrl={
@@ -573,11 +573,11 @@ export default function AdminCustomerDetailClient() {
                   className="h-10 w-10 text-sm"
                 />
                 <div className="min-w-0 flex-1">
-                  <p className="font-semibold text-[#0D1F2D]">{p.full_name || p.email || "Ukendt bruger"}</p>
-                  <p className="text-sm text-[#4A8CB5]">{p.email || "—"}</p>
+                  <p className="font-semibold text-[#2C3020]">{p.full_name || p.email || "Ukendt bruger"}</p>
+                  <p className="text-sm text-[#5C5A48]">{p.email || "—"}</p>
                   <span
                     className={`mt-1 inline-flex rounded-full px-2 py-0.5 text-xs ${
-                      p.role === "org_admin" ? "bg-sky-100 text-sky-700" : "bg-stone-100 text-stone-600"
+                      p.role === "org_admin" ? "bg-[#EEF2E6] text-[#7A8A5A]" : "bg-stone-100 text-stone-600"
                     }`}
                   >
                     {p.role === "org_admin" ? "Administrator" : "Medlem"}
@@ -631,8 +631,8 @@ export default function AdminCustomerDetailClient() {
                   {initialsOf(inv)}
                 </div>
                 <div>
-                  <p className="font-semibold text-[#0D1F2D]">{inv.contact_name || inv.email || "Invitation"}</p>
-                  <p className="text-sm text-[#4A8CB5]">{inv.email || "—"}</p>
+                  <p className="font-semibold text-[#2C3020]">{inv.contact_name || inv.email || "Invitation"}</p>
+                  <p className="text-sm text-[#5C5A48]">{inv.email || "—"}</p>
                   <span className="mt-1 inline-flex rounded-full bg-amber-100 px-2 py-0.5 text-xs text-amber-800">
                     Afventer
                   </span>
@@ -649,23 +649,23 @@ export default function AdminCustomerDetailClient() {
       </section>
 
       <section>
-        <h2 className="mb-3 text-lg font-semibold text-[#0D1F2D]">Supportssager</h2>
+        <h2 className="mb-3 text-lg font-semibold text-[#2C3020]">Supportssager</h2>
         {tickets.length === 0 ? (
-          <p className="rounded-2xl border border-sky-100 bg-white p-5 text-sm text-slate-600 shadow-sm">
+          <p className="rounded-2xl border border-[#D4C9A8] bg-white p-5 text-sm text-slate-600 shadow-sm">
             Ingen sager endnu
           </p>
         ) : (
-          <ul className="overflow-hidden rounded-2xl border border-sky-100 bg-white shadow-sm">
+          <ul className="overflow-hidden rounded-2xl border border-[#D4C9A8] bg-white shadow-sm">
             {tickets.map((ticket) => (
-              <li key={ticket.id} className="border-b border-sky-50 last:border-b-0">
+              <li key={ticket.id} className="border-b border-[#E8E2D0] last:border-b-0">
                 <Link
                   href={`/admin/tickets/${ticket.id}`}
-                  className="flex flex-col gap-2 px-4 py-3 transition hover:bg-sky-50 sm:flex-row sm:items-center sm:justify-between"
+                  className="flex flex-col gap-2 px-4 py-3 transition hover:bg-[#EEF2E6] sm:flex-row sm:items-center sm:justify-between"
                 >
                   <div>
                     <div className="flex flex-wrap items-center gap-2">
                       <TicketNumberBadge ticketNumber={ticket.ticket_number} />
-                      <p className="font-medium text-[#0D1F2D]">{ticket.title || "Uden titel"}</p>
+                      <p className="font-medium text-[#2C3020]">{ticket.title || "Uden titel"}</p>
                     </div>
                     <p className="text-xs text-slate-500">{ticket.created_by_name || "Ukendt afsender"}</p>
                   </div>
@@ -681,7 +681,7 @@ export default function AdminCustomerDetailClient() {
       </section>
 
       <section>
-        <h2 className="mb-3 text-lg font-semibold text-[#0D1F2D]">Systemer</h2>
+        <h2 className="mb-3 text-lg font-semibold text-[#2C3020]">Systemer</h2>
         <div className="space-y-4">
           {onboardingSystemNames.length > 0 ? (
             <div className="space-y-3">
@@ -695,7 +695,7 @@ export default function AdminCustomerDetailClient() {
           ) : null}
 
           {systems.length === 0 && onboardingSystemNames.length === 0 ? (
-            <p className="rounded-2xl border border-sky-100 bg-white p-5 text-sm text-slate-600 shadow-sm">
+            <p className="rounded-2xl border border-[#D4C9A8] bg-white p-5 text-sm text-slate-600 shadow-sm">
               Ingen systemer endnu
             </p>
           ) : null}
@@ -705,11 +705,11 @@ export default function AdminCustomerDetailClient() {
               {systems.map((system) => {
                 const status = system.status === "advarsel" || system.status === "nede" ? system.status : "ok";
                 return (
-                  <li key={system.id} className="rounded-2xl border border-sky-100 bg-white p-5 shadow-sm">
+                  <li key={system.id} className="rounded-2xl border border-[#D4C9A8] bg-white p-5 shadow-sm">
                     <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                       <div>
-                        <p className="font-semibold text-[#0D1F2D]">{system.name || "Ukendt system"}</p>
-                        <p className="text-sm text-[#4A8CB5]">{system.type || "—"}</p>
+                        <p className="font-semibold text-[#2C3020]">{system.name || "Ukendt system"}</p>
+                        <p className="text-sm text-[#5C5A48]">{system.type || "—"}</p>
                       </div>
                       <div className="text-right">
                         <span className={`inline-flex rounded-full px-2 py-0.5 text-xs ${systemStatusStyles[status]}`}>
@@ -762,35 +762,35 @@ export default function AdminCustomerDetailClient() {
           className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-slate-900/40 p-4 sm:items-center"
           onClick={(e) => e.target === e.currentTarget && setInviteModalOpen(false)}
         >
-          <div className="w-full max-w-md rounded-2xl border border-sky-100 bg-white p-6 shadow-xl">
-            <h3 className="text-lg font-semibold text-[#0D1F2D]">Inviter bruger</h3>
+          <div className="w-full max-w-md rounded-2xl border border-[#D4C9A8] bg-white p-6 shadow-xl">
+            <h3 className="text-lg font-semibold text-[#2C3020]">Inviter bruger</h3>
             <form className="mt-4 space-y-4" onSubmit={(e) => void sendInvite(e)}>
               <div>
-                <label className="mb-1 block text-sm font-medium text-[#0D1F2D]">Kontaktpersonens fulde navn</label>
+                <label className="mb-1 block text-sm font-medium text-[#2C3020]">Kontaktpersonens fulde navn</label>
                 <input
                   type="text"
                   value={inviteContactName}
                   onChange={(e) => setInviteContactName(e.target.value)}
                   required
-                  className="w-full rounded-lg border border-sky-100 px-3 py-2 text-sm outline-none focus:border-sky-500"
+                  className="w-full rounded-lg border border-[#D4C9A8] px-3 py-2 text-sm outline-none focus:border-[#E8E2D0]0"
                 />
               </div>
               <div>
-                <label className="mb-1 block text-sm font-medium text-[#0D1F2D]">Email</label>
+                <label className="mb-1 block text-sm font-medium text-[#2C3020]">Email</label>
                 <input
                   type="email"
                   value={inviteEmail}
                   onChange={(e) => setInviteEmail(e.target.value)}
                   required
-                  className="w-full rounded-lg border border-sky-100 px-3 py-2 text-sm outline-none focus:border-sky-500"
+                  className="w-full rounded-lg border border-[#D4C9A8] px-3 py-2 text-sm outline-none focus:border-[#E8E2D0]0"
                 />
               </div>
               <div>
-                <label className="mb-1 block text-sm font-medium text-[#0D1F2D]">Rolle</label>
+                <label className="mb-1 block text-sm font-medium text-[#2C3020]">Rolle</label>
                 <select
                   value={inviteRole}
                   onChange={(e) => setInviteRole(e.target.value === "org_admin" ? "org_admin" : "member")}
-                  className="w-full rounded-lg border border-sky-100 px-3 py-2 text-sm outline-none focus:border-sky-500"
+                  className="w-full rounded-lg border border-[#D4C9A8] px-3 py-2 text-sm outline-none focus:border-[#E8E2D0]0"
                 >
                   <option value="member">Medlem</option>
                   <option value="org_admin">Administrator</option>
@@ -807,7 +807,7 @@ export default function AdminCustomerDetailClient() {
                 <button
                   type="submit"
                   disabled={inviteSaving}
-                  className="rounded-full bg-[#0A6EBD] px-5 py-2 text-sm font-semibold text-white hover:bg-[#0859A0] disabled:opacity-60"
+                  className="rounded-full bg-[#8B9E6B] px-5 py-2 text-sm font-semibold text-white hover:bg-[#7A8A5A] disabled:opacity-60"
                 >
                   {inviteSaving ? "Sender..." : "Send invitation"}
                 </button>

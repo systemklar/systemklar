@@ -25,23 +25,23 @@ export function TicketDetailHeader({
         <StatusBadge status={ticket.status} />
         <TicketPriorityDot priority={ticket.priority} showLabel />
       </div>
-      <h1 className="text-xl font-bold leading-snug text-[#0D1F2D] md:text-2xl">
+      <h1 className="text-xl font-bold leading-snug text-[#2C3020] md:text-2xl">
         <span className="sr-only">{formatTicketNumber(ticket.ticket_number)} </span>
         {ticket.title}
       </h1>
-      {subtitle ? <p className="text-sm text-[#4A8CB5]">{subtitle}</p> : null}
-      <dl className="flex flex-wrap gap-x-6 gap-y-1 text-xs text-[#4A8CB5]">
+      {subtitle ? <p className="text-sm text-[#5C5A48]">{subtitle}</p> : null}
+      <dl className="flex flex-wrap gap-x-6 gap-y-1 text-xs text-[#5C5A48]">
         <div>
-          <dt className="inline font-medium text-[#7AAEC8]">Oprettet: </dt>
+          <dt className="inline font-medium text-[#8C8A78]">Oprettet: </dt>
           <dd className="inline">{formatDanishDateTime(ticket.created_at)}</dd>
         </div>
         <div>
-          <dt className="inline font-medium text-[#7AAEC8]">Opdateret: </dt>
+          <dt className="inline font-medium text-[#8C8A78]">Opdateret: </dt>
           <dd className="inline">{formatDanishDateTime(updatedAt)}</dd>
         </div>
       </dl>
       {showExpectedResponse && isActive ? (
-        <p className="rounded-lg border border-sky-100 bg-[#F0F7FF] px-3 py-2 text-sm text-[#2C4A5E]">
+        <p className="rounded-lg border border-[#D4C9A8] bg-[#EEF2E6] px-3 py-2 text-sm text-[#5C5A48]">
           Forventet svartid: inden for 1 hverdag
         </p>
       ) : null}

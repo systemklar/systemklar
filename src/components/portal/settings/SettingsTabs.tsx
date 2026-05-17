@@ -29,7 +29,7 @@ export function SettingsTabs({
 
   return (
     <nav
-      className={`border-b border-sky-100 ${className}`.trim()}
+      className={`border-b border-[#D4C9A8] ${className}`.trim()}
       aria-label={ariaLabel}
     >
       <div className="-mb-px flex flex-wrap gap-8 gap-y-1">
@@ -44,8 +44,8 @@ export function SettingsTabs({
               onClick={() => onChange(tab.id)}
               className={`border-b-2 px-1 pb-3 text-sm transition-colors ${
                 isActive
-                  ? "border-[#0A6EBD] font-semibold text-[#0D1F2D]"
-                  : "border-transparent text-[#7AAEC8] hover:text-[#2C4A5E]"
+                  ? "border-[#8B9E6B] font-semibold text-[#2C3020]"
+                  : "border-transparent text-[#8C8A78] hover:text-[#5C5A48]"
               }`}
             >
               {tab.label}

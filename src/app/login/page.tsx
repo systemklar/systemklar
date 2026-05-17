@@ -85,7 +85,7 @@ function LoginForm() {
               value={email}
               onChange={(event) => setEmail(event.target.value)}
               required
-              className="w-full rounded-xl border border-sky-200 px-4 py-3 text-base outline-none transition focus:ring-2 focus:ring-sky-500 md:text-sm"
+              className="w-full rounded-xl border border-[#D4C9A8] px-4 py-3 text-base outline-none transition focus:ring-2 focus:ring-[#8B9E6B] md:text-sm"
               placeholder="dig@firma.dk"
               autoComplete="email"
             />
@@ -102,7 +102,7 @@ function LoginForm() {
                 value={password}
                 onChange={(event) => setPassword(event.target.value)}
                 required
-                className="w-full rounded-xl border border-sky-200 px-4 py-3 text-base outline-none transition focus:ring-2 focus:ring-sky-500 md:text-sm"
+                className="w-full rounded-xl border border-[#D4C9A8] px-4 py-3 text-base outline-none transition focus:ring-2 focus:ring-[#8B9E6B] md:text-sm"
                 placeholder="••••••••"
                 autoComplete="current-password"
               />
@@ -125,7 +125,7 @@ function LoginForm() {
             Husk mig
           </label>
 
-          <Link href="/forgot-password" className="block text-sm font-semibold text-sky-600 hover:underline">
+          <Link href="/forgot-password" className="block text-sm font-semibold text-[#8B9E6B] hover:underline">
             Glemt adgangskode?
           </Link>
 
@@ -138,22 +138,22 @@ function LoginForm() {
           <button
             type="submit"
             disabled={isLoading}
-            className="w-full rounded-full bg-[#0A6EBD] py-3 font-semibold text-white transition hover:bg-[#0859A0] disabled:opacity-60"
+            className="w-full rounded-full bg-[#8B9E6B] py-3 font-semibold text-white transition hover:bg-[#7A8A5A] disabled:opacity-60"
           >
             {isLoading ? "Logger ind..." : "Log ind"}
           </button>
-          <p className="mt-4 text-center text-xs text-[#4A8CB5]">
+          <p className="mt-4 text-center text-xs text-[#5C5A48]">
             Ved at logge ind accepterer du vores{" "}
-            <a href="/vilkaar" className="text-sky-600 hover:underline">
+            <a href="/vilkaar" className="text-[#8B9E6B] hover:underline">
               vilkår
             </a>{" "}
             og{" "}
-            <a href="/privatlivspolitik" className="text-sky-600 hover:underline">
+            <a href="/privatlivspolitik" className="text-[#8B9E6B] hover:underline">
               privatlivspolitik
             </a>
           </p>
       </form>
-      <Link href="/" className="mt-6 inline-block text-sm font-semibold text-sky-600 hover:underline">
+      <Link href="/" className="mt-6 inline-block text-sm font-semibold text-[#8B9E6B] hover:underline">
         Tilbage til forsiden
       </Link>
     </AuthSplitLayout>

@@ -570,7 +570,7 @@ export function MarketingHomeContent() {
   const stepCardClass = (active: boolean, pulse = true) =>
     `relative flex flex-col items-start rounded-2xl p-4 text-left transition-all duration-200 ${
       active
-        ? `border border-sky-400/50 bg-sky-500/20 ring-1 ring-sky-400/30${pulse ? " animate-pulse" : ""}`
+        ? `border border-[#8B9E6B]/50 bg-[#8B9E6B]/20 ring-1 ring-[#8B9E6B]/30${pulse ? " animate-pulse" : ""}`
         : "cursor-pointer border border-white/10 bg-white/5 hover:border-white/20 hover:bg-white/10"
     }`;
 
@@ -588,7 +588,7 @@ export function MarketingHomeContent() {
         .dot-drift { animation: drift 8s ease-in-out infinite; }
       `}</style>
 
-      <section className="relative flex min-h-screen items-center justify-center overflow-hidden border-t border-black/5 bg-gradient-to-br from-[#0A6EBD] to-[#062840] py-0">
+      <section className="relative flex min-h-screen items-center justify-center overflow-hidden border-t border-black/5 bg-gradient-to-br from-[#8B9E6B] to-[#2C3E2A] py-0">
         <div
           className="dot-drift absolute inset-0 opacity-10"
           style={{
@@ -622,7 +622,7 @@ export function MarketingHomeContent() {
             <div className="flex w-full flex-col items-stretch justify-center gap-3 sm:inline-flex sm:w-auto sm:flex-row sm:flex-wrap sm:items-center">
               <button
                 onClick={() => document.getElementById("roi-beregner")?.scrollIntoView({ behavior: "smooth" })}
-                className="min-h-[44px] rounded-full bg-white px-8 py-4 text-base font-semibold text-[#0A6EBD] transition-all hover:bg-white/90"
+                className="min-h-[44px] rounded-full bg-white px-8 py-4 text-base font-semibold text-[#8B9E6B] transition-all hover:bg-white/90"
               >
                 Se hvad IT-rod koster jer
               </button>
@@ -652,36 +652,36 @@ export function MarketingHomeContent() {
         </div>
       </section>
 
-      <section className="relative z-10 border-t border-black/5 bg-[#F0F7FF] py-16 md:py-24">
+      <section className="relative z-10 border-t border-black/5 bg-[#EEF2E6] py-16 md:py-24">
         <div className="mx-auto max-w-2xl px-6 text-center">
-          <h2 className="mb-3 text-2xl font-bold tracking-tight text-[#0D1F2D] md:text-3xl">
+          <h2 className="mb-3 text-2xl font-bold tracking-tight text-[#2C3020] md:text-3xl">
             Alt på ét sted – præcis som det er
           </h2>
-          <p className="mx-auto mb-6 max-w-2xl text-base text-[#2C4A5E] md:text-lg">
+          <p className="mx-auto mb-6 max-w-2xl text-base text-[#5C5A48] md:text-lg">
             Se hvordan platformen ser ud i praksis – med et overblik du kan forstå med det samme.
           </p>
         </div>
         <div className="mx-auto max-w-2xl px-6">
           <AnimatedSection direction="up">
-            <div className="hidden overflow-hidden rounded-2xl border border-sky-100 bg-white shadow-md md:block">
-              <div className="flex items-center gap-2 border-b border-sky-100 bg-[#F0F7FF] px-3 py-2">
+            <div className="hidden overflow-hidden rounded-2xl border border-[#D4C9A8] bg-white shadow-md md:block">
+              <div className="flex items-center gap-2 border-b border-[#D4C9A8] bg-[#EEF2E6] px-3 py-2">
                 <div className="flex gap-1">
                   <div className="h-2.5 w-2.5 rounded-full bg-red-400" />
                   <div className="h-2.5 w-2.5 rounded-full bg-amber-400" />
                   <div className="h-2.5 w-2.5 rounded-full bg-green-400" />
                 </div>
-                <div className="flex-1 rounded-full bg-white px-3 py-0.5 text-[10px] text-[#4A8CB5]">
+                <div className="flex-1 rounded-full bg-white px-3 py-0.5 text-[10px] text-[#5C5A48]">
                   systemklar.dk/portal
                 </div>
               </div>
               <div className="p-3">
-                <div className="mb-3 flex gap-1 rounded-lg bg-[#F0F7FF] p-1">
+                <div className="mb-3 flex gap-1 rounded-lg bg-[#EEF2E6] p-1">
                   {(["Overblik", "Support", "IT-rapport"] as TabKey[]).map((tab) => (
                     <button
                       key={tab}
                       onClick={() => handleTabChange(tab)}
                       className={`flex-1 rounded-md px-2 py-1 text-xs font-medium transition-all duration-200 ${
-                        activeTab === tab ? "bg-white text-sky-700 shadow-sm" : "text-[#4A8CB5] hover:text-sky-700"
+                        activeTab === tab ? "bg-white text-[#7A8A5A] shadow-sm" : "text-[#5C5A48] hover:text-[#7A8A5A]"
                       }`}
                     >
                       {tab}
@@ -691,9 +691,9 @@ export function MarketingHomeContent() {
                 <div className={`transition-opacity duration-300 ${changing ? "opacity-0" : "opacity-100"}`}>
                   {activeTab === "Overblik" ? (
                     <div className="flex" style={{ height: "220px" }}>
-                      <div className="flex w-32 flex-col gap-1 border-r border-sky-50 bg-[#F5FAFD] p-2.5">
-                        <div className="mb-1 text-[10px] font-bold text-[#0A6EBD]">systemklar</div>
-                        <div className="rounded-md bg-sky-50 px-2 py-1 text-[10px] font-medium text-sky-700">
+                      <div className="flex w-32 flex-col gap-1 border-r border-[#E8E2D0] bg-[#F5F0E8] p-2.5">
+                        <div className="mb-1 text-[10px] font-bold text-[#8B9E6B]">systemklar</div>
+                        <div className="rounded-md bg-[#EEF2E6] px-2 py-1 text-[10px] font-medium text-[#7A8A5A]">
                           Overblik
                         </div>
                         <div className="px-2 py-1 text-[10px] text-slate-500">Support</div>
@@ -701,20 +701,20 @@ export function MarketingHomeContent() {
                         <div className="px-2 py-1 text-[10px] text-slate-500">IT-rapport</div>
                       </div>
                       <div className="flex-1 bg-white p-3">
-                        <div className="mb-0.5 text-xs font-bold text-[#0D1F2D]">Goddag, Møllers VVS</div>
-                        <div className="mb-2 text-[10px] text-[#4A8CB5]">Her er dagens overblik.</div>
+                        <div className="mb-0.5 text-xs font-bold text-[#2C3020]">Goddag, Møllers VVS</div>
+                        <div className="mb-2 text-[10px] text-[#5C5A48]">Her er dagens overblik.</div>
                         <div className="grid grid-cols-3 gap-1.5">
-                          <div className="rounded-md bg-[#F0F7FF] p-1.5 text-center">
-                            <div className="text-xs font-bold text-[#0A6EBD]">3</div>
-                            <div className="text-[9px] text-[#4A8CB5]">Systemer OK</div>
+                          <div className="rounded-md bg-[#EEF2E6] p-1.5 text-center">
+                            <div className="text-xs font-bold text-[#8B9E6B]">3</div>
+                            <div className="text-[9px] text-[#5C5A48]">Systemer OK</div>
                           </div>
-                          <div className="rounded-md bg-[#F0F7FF] p-1.5 text-center">
-                            <div className="text-xs font-bold text-[#0A6EBD]">1</div>
-                            <div className="text-[9px] text-[#4A8CB5]">Åben sag</div>
+                          <div className="rounded-md bg-[#EEF2E6] p-1.5 text-center">
+                            <div className="text-xs font-bold text-[#8B9E6B]">1</div>
+                            <div className="text-[9px] text-[#5C5A48]">Åben sag</div>
                           </div>
-                          <div className="rounded-md bg-[#F0F7FF] p-1.5 text-center">
-                            <div className="text-xs font-bold text-[#0A6EBD]">apr</div>
-                            <div className="text-[9px] text-[#4A8CB5]">Rapport</div>
+                          <div className="rounded-md bg-[#EEF2E6] p-1.5 text-center">
+                            <div className="text-xs font-bold text-[#8B9E6B]">apr</div>
+                            <div className="text-[9px] text-[#5C5A48]">Rapport</div>
                           </div>
                         </div>
                       </div>
@@ -722,12 +722,12 @@ export function MarketingHomeContent() {
                   ) : null}
                   {activeTab === "Support" ? (
                     <div style={{ height: "220px" }} className="p-1">
-                      <div className="mb-2 text-xs font-bold text-[#0D1F2D]">Support &amp; sager</div>
+                      <div className="mb-2 text-xs font-bold text-[#2C3020]">Support &amp; sager</div>
                       <div className="flex flex-col gap-1.5">
-                        <div className="max-w-[80%] self-end rounded-2xl rounded-tr-sm bg-[#0A6EBD] px-2.5 py-1.5 text-[10px] text-white">
+                        <div className="max-w-[80%] self-end rounded-2xl rounded-tr-sm bg-[#8B9E6B] px-2.5 py-1.5 text-[10px] text-white">
                           Vores printer printer ikke – det haster lidt
                         </div>
-                        <div className="max-w-[80%] self-start rounded-2xl rounded-tl-sm bg-[#F0F7FF] px-2.5 py-1.5 text-[10px] text-[#2C4A5E]">
+                        <div className="max-w-[80%] self-start rounded-2xl rounded-tl-sm bg-[#EEF2E6] px-2.5 py-1.5 text-[10px] text-[#5C5A48]">
                           Forstået! Vi kigger på det med det samme.
                         </div>
                       </div>
@@ -735,20 +735,20 @@ export function MarketingHomeContent() {
                   ) : null}
                   {activeTab === "IT-rapport" ? (
                     <div style={{ height: "220px" }} className="p-1">
-                      <div className="text-xs font-bold text-[#0D1F2D]">IT-rapport – april 2026</div>
-                      <div className="mb-2 text-[10px] text-[#4A8CB5]">Møllers VVS</div>
+                      <div className="text-xs font-bold text-[#2C3020]">IT-rapport – april 2026</div>
+                      <div className="mb-2 text-[10px] text-[#5C5A48]">Møllers VVS</div>
                       <div className="grid grid-cols-3 gap-1.5">
                         <div className="rounded-md bg-green-50 p-1.5 text-center">
                           <div className="text-xs font-bold text-green-700">100%</div>
                           <div className="text-[9px] text-green-600">Oppetid</div>
                         </div>
-                        <div className="rounded-md bg-[#F0F7FF] p-1.5 text-center">
-                          <div className="text-xs font-bold text-[#0A6EBD]">3</div>
-                          <div className="text-[9px] text-[#4A8CB5]">Løste sager</div>
+                        <div className="rounded-md bg-[#EEF2E6] p-1.5 text-center">
+                          <div className="text-xs font-bold text-[#8B9E6B]">3</div>
+                          <div className="text-[9px] text-[#5C5A48]">Løste sager</div>
                         </div>
-                        <div className="rounded-md bg-[#F0F7FF] p-1.5 text-center">
-                          <div className="text-xs font-bold text-[#0A6EBD]">0</div>
-                          <div className="text-[9px] text-[#4A8CB5]">Åbne sager</div>
+                        <div className="rounded-md bg-[#EEF2E6] p-1.5 text-center">
+                          <div className="text-xs font-bold text-[#8B9E6B]">0</div>
+                          <div className="text-[9px] text-[#5C5A48]">Åbne sager</div>
                         </div>
                       </div>
                     </div>
@@ -761,7 +761,7 @@ export function MarketingHomeContent() {
             {featurePills.map((feature, i) => (
               <span
                 key={feature}
-                className="rounded-full border border-sky-200 bg-white px-3 py-1 text-xs font-medium text-sky-700 shadow-sm"
+                className="rounded-full border border-[#D4C9A8] bg-white px-3 py-1 text-xs font-medium text-[#7A8A5A] shadow-sm"
                 style={{ animation: `fadeUp 0.5s ease-out ${0.1 + i * 0.1}s both` }}
               >
                 {feature}
@@ -771,7 +771,7 @@ export function MarketingHomeContent() {
           <div className="mt-8 text-center">
             <Link
               href="/platformen"
-              className="inline-flex items-center gap-2 text-sm font-medium text-sky-600 transition-colors hover:text-sky-700"
+              className="inline-flex items-center gap-2 text-sm font-medium text-[#8B9E6B] transition-colors hover:text-[#7A8A5A]"
             >
               Se alt hvad platformen kan
               <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
@@ -784,20 +784,20 @@ export function MarketingHomeContent() {
 
       <section id="roi-beregner" className="relative z-10 bg-white py-16 md:py-24">
         <div className="mb-12 px-6 text-center">
-          <span className="inline-flex items-center rounded-full border border-sky-200 bg-sky-50 px-4 py-1.5 text-xs font-semibold uppercase tracking-wide text-sky-700">
+          <span className="inline-flex items-center rounded-full border border-[#D4C9A8] bg-[#EEF2E6] px-4 py-1.5 text-xs font-semibold uppercase tracking-wide text-[#7A8A5A]">
             Gratis beregner
           </span>
-          <h2 className="mb-3 mt-4 text-2xl font-extrabold text-[#0D1F2D] md:text-4xl">
+          <h2 className="mb-3 mt-4 text-2xl font-extrabold text-[#2C3020] md:text-4xl">
             Hvad koster IT-rod
             <br />
             din virksomhed?
           </h2>
-          <p className="mx-auto max-w-lg text-base text-[#4A8CB5]">
+          <p className="mx-auto max-w-lg text-base text-[#5C5A48]">
             Besvar 6 spørgsmål og få et præcist svar på hvad IT-rod koster jer.
           </p>
         </div>
         <div className="mx-auto max-w-2xl px-4 md:px-6">
-          <div className="rounded-3xl bg-gradient-to-br from-sky-500/20 to-[#0A3D5C]/40 p-[1px]">
+          <div className="rounded-3xl bg-gradient-to-br from-[#8B9E6B]/20 to-[#2C3E2A]/40 p-[1px]">
             <div className="rounded-[23px] bg-[#0A2535] p-5 md:p-8">
               <div className="mb-8 flex items-center justify-center gap-2">
                 {[0, 1, 2, 3, 4, 5].map((i) => (
@@ -805,9 +805,9 @@ export function MarketingHomeContent() {
                     key={i}
                     className={`rounded-full transition-all duration-300 ${
                       i === calculatorStep
-                        ? "h-2 w-6 bg-sky-400"
+                        ? "h-2 w-6 bg-[#8B9E6B]"
                         : i < calculatorStep
-                          ? "h-2 w-2 bg-[#0A6EBD]"
+                          ? "h-2 w-2 bg-[#8B9E6B]"
                           : "h-2 w-2 bg-white/20"
                     }`}
                   />
@@ -835,7 +835,7 @@ export function MarketingHomeContent() {
                         if (cvrResults.length > 0) setShowDropdown(true);
                       }}
                       placeholder="CVR-nummer eller virksomhedsnavn..."
-                      className="w-full rounded-2xl border border-white/10 bg-white/5 px-5 py-4 pr-12 text-sm text-white outline-none placeholder:text-white/30 focus:border-sky-400/50"
+                      className="w-full rounded-2xl border border-white/10 bg-white/5 px-5 py-4 pr-12 text-sm text-white outline-none placeholder:text-white/30 focus:border-[#8B9E6B]/50"
                     />
                     {cvrLoading ? (
                       <div className="absolute right-4 top-1/2 -translate-y-1/2">
@@ -893,7 +893,7 @@ export function MarketingHomeContent() {
                   </div>
                   {cvrError ? <p className="mt-2 text-xs text-red-400">{cvrError}</p> : null}
                   {cvrData && !showDropdown ? (
-                    <div className="mt-3 flex items-center gap-3 rounded-2xl border border-sky-400/20 bg-sky-500/10 px-5 py-4">
+                    <div className="mt-3 flex items-center gap-3 rounded-2xl border border-[#8B9E6B]/20 bg-[#8B9E6B]/10 px-5 py-4">
                       <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full border border-green-400/30 bg-green-500/20">
                         <CheckCircle className="h-4 w-4 text-green-400" />
                       </div>
@@ -932,15 +932,15 @@ export function MarketingHomeContent() {
                           className={stepCardClass(active)}
                         >
                           {active && cvrData ? (
-                            <span className="absolute -top-2 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full border border-sky-400/30 bg-sky-500/30 px-2 py-0.5 text-[9px] font-semibold text-sky-300">
+                            <span className="absolute -top-2 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full border border-[#8B9E6B]/30 bg-[#8B9E6B]/30 px-2 py-0.5 text-[9px] font-semibold text-[#C8D4A8]">
                               Fra CVR
                             </span>
                           ) : null}
                           <div className="mb-3 flex h-8 w-8 items-center justify-center rounded-xl bg-white/10">
-                            <Users className={`h-4 w-4 ${active ? "text-sky-300" : "text-white/70"}`} />
+                            <Users className={`h-4 w-4 ${active ? "text-[#C8D4A8]" : "text-white/70"}`} />
                           </div>
                           <p
-                            className={`text-sm font-semibold ${active ? "text-sky-200" : "text-white"}`}
+                            className={`text-sm font-semibold ${active ? "text-[#C8D4A8]" : "text-white"}`}
                           >
                             {option.label}
                           </p>
@@ -969,15 +969,15 @@ export function MarketingHomeContent() {
                           className={stepCardClass(active)}
                         >
                           {active && cvrData ? (
-                            <span className="absolute -top-2 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full border border-sky-400/30 bg-sky-500/30 px-2 py-0.5 text-[9px] font-semibold text-sky-300">
+                            <span className="absolute -top-2 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full border border-[#8B9E6B]/30 bg-[#8B9E6B]/30 px-2 py-0.5 text-[9px] font-semibold text-[#C8D4A8]">
                               Fra CVR
                             </span>
                           ) : null}
                           <div className="mb-3 flex h-8 w-8 items-center justify-center rounded-xl bg-white/10">
-                            <Icon className={`h-4 w-4 ${active ? "text-sky-300" : "text-white/70"}`} />
+                            <Icon className={`h-4 w-4 ${active ? "text-[#C8D4A8]" : "text-white/70"}`} />
                           </div>
                           <p
-                            className={`text-sm font-semibold ${active ? "text-sky-200" : "text-white"}`}
+                            className={`text-sm font-semibold ${active ? "text-[#C8D4A8]" : "text-white"}`}
                           >
                             {option.title}
                           </p>
@@ -1006,10 +1006,10 @@ export function MarketingHomeContent() {
                           className={stepCardClass(active)}
                         >
                           <div className="mb-3 flex h-8 w-8 items-center justify-center rounded-xl bg-white/10">
-                            <Icon className={`h-4 w-4 ${active ? "text-sky-300" : "text-white/70"}`} />
+                            <Icon className={`h-4 w-4 ${active ? "text-[#C8D4A8]" : "text-white/70"}`} />
                           </div>
                           <p
-                            className={`text-sm font-semibold ${active ? "text-sky-200" : "text-white"}`}
+                            className={`text-sm font-semibold ${active ? "text-[#C8D4A8]" : "text-white"}`}
                           >
                             {option.title}
                           </p>
@@ -1039,10 +1039,10 @@ export function MarketingHomeContent() {
                           className={stepCardClass(active)}
                         >
                           <div className="mb-3 flex h-8 w-8 items-center justify-center rounded-xl bg-white/10">
-                            <Icon className={`h-4 w-4 ${active ? "text-sky-300" : "text-white/70"}`} />
+                            <Icon className={`h-4 w-4 ${active ? "text-[#C8D4A8]" : "text-white/70"}`} />
                           </div>
                           <p
-                            className={`text-sm font-semibold ${active ? "text-sky-200" : "text-white"}`}
+                            className={`text-sm font-semibold ${active ? "text-[#C8D4A8]" : "text-white"}`}
                           >
                             {option.title}
                           </p>
@@ -1073,10 +1073,10 @@ export function MarketingHomeContent() {
                           className={stepCardClass(selected, false)}
                         >
                           <div className="mb-3 flex h-8 w-8 items-center justify-center rounded-xl bg-white/10">
-                            <Icon className={`h-4 w-4 ${selected ? "text-sky-300" : "text-white/70"}`} />
+                            <Icon className={`h-4 w-4 ${selected ? "text-[#C8D4A8]" : "text-white/70"}`} />
                           </div>
                           <p
-                            className={`text-sm font-semibold ${selected ? "text-sky-200" : "text-white"}`}
+                            className={`text-sm font-semibold ${selected ? "text-[#C8D4A8]" : "text-white"}`}
                           >
                             {option.title}
                           </p>
@@ -1088,7 +1088,7 @@ export function MarketingHomeContent() {
                   <button
                     onClick={() => setCalculatorStep(6)}
                     disabled={selectedWaste.length === 0}
-                    className="mt-4 w-full rounded-2xl bg-sky-500 py-4 font-semibold text-white transition-all hover:bg-sky-400 disabled:cursor-not-allowed disabled:opacity-30"
+                    className="mt-4 w-full rounded-2xl bg-[#8B9E6B] py-4 font-semibold text-white transition-all hover:bg-[#8B9E6B] disabled:cursor-not-allowed disabled:opacity-30"
                   >
                     Beregn resultat
                   </button>
@@ -1119,7 +1119,7 @@ export function MarketingHomeContent() {
                         <p className="mb-2 text-xs font-semibold text-white/70">Sådan beregner vi</p>
                         <ul className="space-y-2 text-[11px] leading-relaxed text-white/50">
                           <li className="flex items-start gap-1.5">
-                            <span className="mt-0.5 flex-shrink-0 text-sky-400">·</span>
+                            <span className="mt-0.5 flex-shrink-0 text-[#C8A96E]">·</span>
                             <span>
                               <span className="text-white/70">Timeløn:</span>{" "}
                               {wageSource === "live"
@@ -1128,7 +1128,7 @@ export function MarketingHomeContent() {
                             </span>
                           </li>
                           <li className="flex items-start gap-1.5">
-                            <span className="mt-0.5 flex-shrink-0 text-sky-400">·</span>
+                            <span className="mt-0.5 flex-shrink-0 text-[#C8A96E]">·</span>
                             <span>
                               <span className="text-white/70">Tidsspild per person:</span>{" "}
                               {wasteHoursPerPerson.toFixed(1)} t/uge baseret på valgte IT-problemer —
@@ -1136,7 +1136,7 @@ export function MarketingHomeContent() {
                             </span>
                           </li>
                           <li className="flex items-start gap-1.5">
-                            <span className="mt-0.5 flex-shrink-0 text-sky-400">·</span>
+                            <span className="mt-0.5 flex-shrink-0 text-[#C8A96E]">·</span>
                             <span>
                               <span className="text-white/70">Berørte medarbejdere:</span>{" "}
                               {Math.round(employeeCount * (cvrData ? itExposedRatio(cvrData.employees) : itExposedRatio(employeeCount)))} ud af {employeeCount} —
@@ -1144,14 +1144,14 @@ export function MarketingHomeContent() {
                             </span>
                           </li>
                           <li className="flex items-start gap-1.5">
-                            <span className="mt-0.5 flex-shrink-0 text-sky-400">·</span>
+                            <span className="mt-0.5 flex-shrink-0 text-[#C8A96E]">·</span>
                             <span>
                               <span className="text-white/70">Problemfrekvens:</span>{" "}
                               skaleret med faktor {frequencyMultiplier} baseret på hvor tit I oplever IT-problemer
                             </span>
                           </li>
                           <li className="flex items-start gap-1.5">
-                            <span className="mt-0.5 flex-shrink-0 text-sky-400">·</span>
+                            <span className="mt-0.5 flex-shrink-0 text-[#C8A96E]">·</span>
                             <span>
                               <span className="text-white/70">Besparelsesprocent:</span>{" "}
                               {Math.round(savingsPct * 100)}% — konservativt estimat baseret på valgt IT-setup
@@ -1163,7 +1163,7 @@ export function MarketingHomeContent() {
                           </li>
                           {cvrData ? (
                             <li className="flex items-start gap-1.5">
-                              <span className="mt-0.5 flex-shrink-0 text-sky-400">·</span>
+                              <span className="mt-0.5 flex-shrink-0 text-[#C8A96E]">·</span>
                               <span>
                                 <span className="text-white/70">Virksomhedsdata:</span>{" "}
                                 hentet fra Det Centrale Virksomhedsregister (CVR) for {cvrData.name}
@@ -1259,7 +1259,7 @@ export function MarketingHomeContent() {
                     ) : null}
                     <Link
                       href="/kontakt"
-                      className="mt-5 block w-full rounded-2xl bg-sky-500 py-4 text-center text-sm font-semibold text-white transition-all hover:bg-sky-400"
+                      className="mt-5 block w-full rounded-2xl bg-[#8B9E6B] py-4 text-center text-sm font-semibold text-white transition-all hover:bg-[#8B9E6B]"
                     >
                       Book en gratis demo
                     </Link>
@@ -1284,9 +1284,9 @@ export function MarketingHomeContent() {
         </div>
       </section>
 
-      <section className="relative z-10 border-t border-black/5 bg-[#062840] py-16 md:py-24">
+      <section className="relative z-10 border-t border-black/5 bg-[#2C3E2A] py-16 md:py-24">
         <div className="mx-auto max-w-2xl px-6 text-center">
-          <p className="mb-3 text-xs font-semibold uppercase tracking-widest text-sky-300">Hvad kunderne siger</p>
+          <p className="mb-3 text-xs font-semibold uppercase tracking-widest text-[#C8D4A8]">Hvad kunderne siger</p>
           <h2 className="mb-8 text-center text-2xl font-bold text-white">Det siger vores kunder</h2>
         </div>
         <div className="mx-auto grid max-w-5xl grid-cols-1 gap-6 px-6 md:grid-cols-3 md:gap-8">
@@ -1300,7 +1300,7 @@ export function MarketingHomeContent() {
             </div>
             <p className="mb-6 flex-1 text-lg leading-relaxed text-white/90">{`"${featuredTestimonial.quote}"`}</p>
             <div className="flex items-center gap-3 border-t border-white/10 pt-4">
-              <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[#0A6EBD] text-xs font-bold text-white">
+              <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[#8B9E6B] text-xs font-bold text-white">
                 {featuredTestimonial.initials}
               </div>
               <div>
@@ -1344,21 +1344,21 @@ export function MarketingHomeContent() {
         </div>
       </section>
 
-      <section className="relative z-10 border-t border-black/5 bg-[#F0F7FF] py-16 md:py-24">
+      <section className="relative z-10 border-t border-black/5 bg-[#EEF2E6] py-16 md:py-24">
         <div className="mx-auto max-w-2xl px-6 text-center">
-          <h2 className="mb-3 text-2xl font-bold tracking-tight text-[#0D1F2D] md:text-3xl">Priser</h2>
-          <p className="mx-auto mb-6 max-w-2xl text-base text-[#2C4A5E] md:text-lg">
+          <h2 className="mb-3 text-2xl font-bold tracking-tight text-[#2C3020] md:text-3xl">Priser</h2>
+          <p className="mx-auto mb-6 max-w-2xl text-base text-[#5C5A48] md:text-lg">
             Vælg den plan der passer til jer i dag, og skift når behovet ændrer sig.
           </p>
         </div>
         <div className="mx-auto max-w-5xl px-6">
           <div className="mb-6 flex min-h-8 items-center justify-center gap-3">
-            <span className={`text-sm font-medium ${!yearly ? "text-[#0D1F2D]" : "text-[#4A8CB5]"}`}>Månedlig</span>
+            <span className={`text-sm font-medium ${!yearly ? "text-[#2C3020]" : "text-[#5C5A48]"}`}>Månedlig</span>
             <button
               onClick={() => setYearly(!yearly)}
               aria-label={yearly ? "Skift til månedlig" : "Skift til årlig"}
               className={`relative h-6 w-12 rounded-full transition-colors duration-200 ${
-                yearly ? "bg-[#0A6EBD]" : "bg-slate-200"
+                yearly ? "bg-[#8B9E6B]" : "bg-slate-200"
               }`}
             >
               <div
@@ -1367,7 +1367,7 @@ export function MarketingHomeContent() {
                 }`}
               />
             </button>
-            <span className={`text-sm font-medium ${yearly ? "text-[#0D1F2D]" : "text-[#4A8CB5]"}`}>Årlig</span>
+            <span className={`text-sm font-medium ${yearly ? "text-[#2C3020]" : "text-[#5C5A48]"}`}>Årlig</span>
             <span
               className={`min-w-[110px] rounded-full bg-green-100 px-2 py-0.5 text-center text-xs font-semibold text-green-700 transition-opacity duration-200 ${
                 yearly ? "opacity-100" : "pointer-events-none opacity-0"
@@ -1386,31 +1386,31 @@ export function MarketingHomeContent() {
                 <div className="relative h-full">
                   {priceCard.highlight ? (
                     <div
-                      className="pointer-events-none absolute -inset-0.5 animate-pulse rounded-[18px] bg-sky-400/30 blur-sm"
+                      className="pointer-events-none absolute -inset-0.5 animate-pulse rounded-[18px] bg-[#8B9E6B]/30 blur-sm"
                       aria-hidden
                     />
                   ) : null}
                   <article
                     className={`relative flex h-full flex-col rounded-2xl bg-white p-8 ${
                       priceCard.highlight
-                        ? "border-2 border-sky-600 shadow-md"
-                        : "border border-sky-200 shadow-sm"
+                        ? "border-2 border-[#7A8A5A] shadow-md"
+                        : "border border-[#D4C9A8] shadow-sm"
                     }`}
                   >
-                    <p className="text-xs font-semibold uppercase tracking-wide text-[#4A8CB5]">{priceCard.name}</p>
+                    <p className="text-xs font-semibold uppercase tracking-wide text-[#5C5A48]">{priceCard.name}</p>
                     <p
-                      className={`mt-2 text-3xl font-bold text-[#0D1F2D] transition-opacity duration-200 ${
+                      className={`mt-2 text-3xl font-bold text-[#2C3020] transition-opacity duration-200 ${
                         priceFading ? "opacity-0" : "opacity-100"
                       }`}
                     >
                       {yearly ? priceCard.yearly : priceCard.monthly}
                     </p>
-                    {yearly ? <p className="mt-0.5 text-[10px] text-[#4A8CB5]">faktureres årligt</p> : null}
-                    <p className="mt-2 text-[10px] text-[#4A8CB5]">{priceCard.fits}</p>
-                    <ul className="mt-4 flex-1 space-y-3 text-base text-[#2C4A5E]">
+                    {yearly ? <p className="mt-0.5 text-[10px] text-[#5C5A48]">faktureres årligt</p> : null}
+                    <p className="mt-2 text-[10px] text-[#5C5A48]">{priceCard.fits}</p>
+                    <ul className="mt-4 flex-1 space-y-3 text-base text-[#5C5A48]">
                       {priceCard.features.map((feature) => (
                         <li key={feature} className="flex items-start gap-2">
-                          <CheckCircle className="mt-1 h-4 w-4 shrink-0 text-sky-600" />
+                          <CheckCircle className="mt-1 h-4 w-4 shrink-0 text-[#8B9E6B]" />
                           <span>{feature}</span>
                         </li>
                       ))}
@@ -1419,8 +1419,8 @@ export function MarketingHomeContent() {
                       href="/priser"
                       className={`mt-4 inline-flex w-full justify-center rounded-full px-5 py-2 text-sm font-semibold transition-colors ${
                         priceCard.highlight
-                          ? "bg-[#0A6EBD] text-white hover:bg-[#0859A0]"
-                          : "border border-sky-200 text-sky-700 hover:bg-sky-50"
+                          ? "bg-[#8B9E6B] text-white hover:bg-[#7A8A5A]"
+                          : "border border-[#D4C9A8] text-[#7A8A5A] hover:bg-[#EEF2E6]"
                       }`}
                     >
                       Vælg {priceCard.name}
@@ -1431,10 +1431,10 @@ export function MarketingHomeContent() {
             ))}
           </div>
           <div className="mt-6 text-center">
-            <Link href="/priser" className="text-xs font-semibold text-sky-600 hover:text-sky-700">
+            <Link href="/priser" className="text-xs font-semibold text-[#8B9E6B] hover:text-[#7A8A5A]">
               Se alle features →
             </Link>
-            <p className="mt-2 text-[10px] text-[#4A8CB5]">
+            <p className="mt-2 text-[10px] text-[#5C5A48]">
               Ingen binding · Opsig når som helst · Kom i gang på 10 minutter
             </p>
           </div>
@@ -1443,7 +1443,7 @@ export function MarketingHomeContent() {
 
       <section
         id="cta"
-        className="relative z-10 border-t border-black/5 bg-[#062840] py-16 md:py-24"
+        className="relative z-10 border-t border-black/5 bg-[#2C3E2A] py-16 md:py-24"
       >
         <div className="mx-auto max-w-2xl px-6 text-center">
           <h2 className="mb-3 text-2xl font-bold tracking-tight text-white md:text-3xl">Klar til at få IT ud af vejen?</h2>
@@ -1454,7 +1454,7 @@ export function MarketingHomeContent() {
             <button
               type="button"
               onClick={() => setShowDemoModal(true)}
-              className="min-h-[44px] rounded-full bg-sky-500 px-7 py-3 text-sm font-semibold text-white transition-colors hover:bg-sky-400"
+              className="min-h-[44px] rounded-full bg-[#8B9E6B] px-7 py-3 text-sm font-semibold text-white transition-colors hover:bg-[#8B9E6B]"
             >
               Book en gratis snak
             </button>

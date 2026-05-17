@@ -15,9 +15,9 @@ type ProfileAvatarProps = {
 };
 
 const variantClasses = {
-  sky: "bg-sky-100 text-sky-700",
+  sky: "bg-[#EEF2E6] text-[#7A8A5A]",
   amber: "bg-amber-100 text-amber-800",
-  brand: "bg-gradient-to-br from-sky-400 to-sky-600 text-white",
+  brand: "bg-gradient-to-br from-[#8B9E6B] to-[#7A8A5A] text-white",
 } as const;
 
 function splitAvatarClasses(className: string) {

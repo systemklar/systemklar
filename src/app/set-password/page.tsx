@@ -109,7 +109,7 @@ export default function SetPasswordPage() {
       {sessionError && (
         <div className="mt-8 space-y-4">
           <p className="rounded-lg bg-amber-50 px-3 py-2 text-sm text-amber-900">{sessionError}</p>
-          <Link href="/login" className="inline-block text-sm font-semibold text-blue-600 hover:underline">
+          <Link href="/login" className="inline-block text-sm font-semibold text-[#8B9E6B] hover:underline">
             Gå til log ind
           </Link>
         </div>
@@ -128,7 +128,7 @@ export default function SetPasswordPage() {
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full rounded-lg border border-[#E7E5E4] px-3 py-2 outline-none transition focus:border-blue-600 focus:ring-2 focus:ring-blue-600/15"
+                className="w-full rounded-lg border border-[#E7E5E4] px-3 py-2 outline-none transition focus:border-[#8B9E6B] focus:ring-2 focus:ring-[#EEF2E6]"
                 placeholder="Mindst 8 tegn"
               />
             </div>
@@ -143,7 +143,7 @@ export default function SetPasswordPage() {
                 required
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
-                className="w-full rounded-lg border border-[#E7E5E4] px-3 py-2 outline-none transition focus:border-blue-600 focus:ring-2 focus:ring-blue-600/15"
+                className="w-full rounded-lg border border-[#E7E5E4] px-3 py-2 outline-none transition focus:border-[#8B9E6B] focus:ring-2 focus:ring-[#EEF2E6]"
                 placeholder="Gentag adgangskode"
               />
             </div>

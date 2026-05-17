@@ -5,11 +5,11 @@ import { MARKETING_CONTACT_EMAIL, MARKETING_CONTACT_PHONE_DISPLAY, MARKETING_CON
 export function MarketingFooter() {
   const year = new Date().getFullYear();
   return (
-    <footer className="border-t-2 border-sky-800/80 bg-[#041f33] text-sm text-sky-100">
+    <footer className="border-t-2 border-[#233320]/80 bg-[#233320] text-sm text-[#EEF2E6]">
       <div className="mx-auto grid max-w-5xl gap-10 px-6 py-16 md:grid-cols-2 md:gap-12 md:py-24 lg:grid-cols-4">
         <div className="md:col-span-2 lg:col-span-1">
           <SystemklarLogo href="/" variant="dark" size="md" />
-          <p className="mt-4 leading-relaxed text-sky-200">
+          <p className="mt-4 leading-relaxed text-[#C8D4A8]">
             IT-platform til danske SMV&apos;er – uden en IT-afdeling.
           </p>
         </div>
@@ -57,22 +57,22 @@ export function MarketingFooter() {
               </Link>
             </li>
             <li>
-              <Link href="/privatlivspolitik" className="text-[#7AAEC8] text-sm transition-colors hover:text-white">
+              <Link href="/privatlivspolitik" className="text-[#8C8A78] text-sm transition-colors hover:text-white">
                 Privatlivspolitik
               </Link>
             </li>
             <li>
-              <Link href="/cookiepolitik" className="text-[#7AAEC8] text-sm transition-colors hover:text-white">
+              <Link href="/cookiepolitik" className="text-[#8C8A78] text-sm transition-colors hover:text-white">
                 Cookiepolitik
               </Link>
             </li>
             <li>
-              <Link href="/vilkaar" className="text-[#7AAEC8] text-sm transition-colors hover:text-white">
+              <Link href="/vilkaar" className="text-[#8C8A78] text-sm transition-colors hover:text-white">
                 Vilkår
               </Link>
             </li>
             <li>
-              <Link href="/databehandleraftale" className="text-[#7AAEC8] text-sm transition-colors hover:text-white">
+              <Link href="/databehandleraftale" className="text-[#8C8A78] text-sm transition-colors hover:text-white">
                 Databehandleraftale
               </Link>
             </li>
@@ -97,8 +97,8 @@ export function MarketingFooter() {
           </ul>
         </div>
       </div>
-      <div className="border-t border-sky-900/60">
-        <p className="mx-auto max-w-5xl px-6 py-6 text-sky-300">
+      <div className="border-t border-[#233320]/60">
+        <p className="mx-auto max-w-5xl px-6 py-6 text-[#C8D4A8]">
           © {year} systemklar. Alle rettigheder forbeholdes.
         </p>
       </div>

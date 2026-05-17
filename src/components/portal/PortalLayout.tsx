@@ -90,7 +90,7 @@ const mobileBottomNav: { key: PortalNavKey; href: string; label: string; icon: L
 function NavIcon({ icon: Icon, active }: { icon: LucideIcon; active: boolean }) {
   return (
     <Icon
-      className={`${navIconClass} ${active ? "text-sky-700" : "text-slate-500 group-hover:text-slate-700"}`}
+      className={`${navIconClass} ${active ? "text-[#C8D4A8]" : "text-[#A8B898] group-hover:text-[#C8D4A8]"}`}
       aria-hidden
     />
   );
@@ -275,8 +275,8 @@ export function PortalLayout({ children, activeNav }: PortalLayoutProps) {
 
   if (isLoading) {
     return (
-      <main className="min-h-screen overflow-x-hidden bg-[#F5FAFD] px-6 py-20 text-[#0D1F2D]">
-        <div className="mx-auto max-w-3xl rounded-2xl border border-[#D0E8F5] bg-white p-8 text-center shadow-sm">
+      <main className="min-h-screen overflow-x-hidden bg-[#F5F0E8] px-6 py-20 text-[#2C3020]">
+        <div className="mx-auto max-w-3xl rounded-2xl border border-[#D4C9A8] bg-white p-8 text-center shadow-sm">
           Indlæser portal...
         </div>
       </main>
@@ -294,7 +294,7 @@ export function PortalLayout({ children, activeNav }: PortalLayoutProps) {
     <PortalSessionContext.Provider
       value={{ email: userEmail, userId, organisationId, role, fullName, avatarUrl, avatarInitials }}
     >
-      <main className="surface-cards h-dvh overflow-x-hidden bg-[#F5FAFD] text-[#0D1F2D]">
+      <main className="surface-cards h-dvh overflow-x-hidden bg-[#F5F0E8] text-[#2C3020]">
         <NavigationProgress />
         <div className="flex h-full min-h-0 w-full overflow-hidden">
           {sidebarOpen ? (
@@ -308,32 +308,32 @@ export function PortalLayout({ children, activeNav }: PortalLayoutProps) {
 
           <aside
             data-tour="portal-sidebar"
-            className={`fixed inset-y-0 left-0 z-50 flex h-full w-[280px] flex-shrink-0 flex-col border-r border-[#D0E8F5] bg-white shadow-xl transition-transform duration-300 ease-out lg:static lg:z-auto lg:translate-x-0 lg:shadow-none ${
+            className={`sk-sidebar fixed inset-y-0 left-0 z-50 flex h-full w-[280px] flex-shrink-0 flex-col border-r shadow-xl transition-transform duration-300 ease-out lg:static lg:z-auto lg:translate-x-0 lg:shadow-none ${
               sidebarOpen ? "translate-x-0" : "-translate-x-full"
             }`}
           >
-            <div className="flex flex-shrink-0 items-center justify-between border-b border-sky-50 p-4">
+            <div className="sk-sidebar-logo flex flex-shrink-0 items-center justify-between border-b px-4 py-4">
               <Link href="/portal" className="block" onClick={closeSidebar}>
-                <SystemklarLogo variant="light" size="sm" />
-                <p className="mt-0.5 text-xs font-medium text-[#4A8CB5]">Kundeportal</p>
+                <SystemklarLogo variant="dark" size="sm" />
+                <p className="sk-sidebar-user-muted mt-0.5 text-xs font-medium">Kundeportal</p>
               </Link>
               <button
                 type="button"
                 onClick={closeSidebar}
-                className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-lg text-[#2C4A5E] lg:hidden"
+                className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-lg text-[#C8D4A8] hover:bg-white/10 lg:hidden"
                 aria-label="Luk menu"
               >
                 <X className="h-5 w-5" />
               </button>
             </div>
 
-            <nav className="flex-1 overflow-y-auto overscroll-contain p-3">
+            <nav className="flex-1 overflow-y-auto overscroll-contain px-3 py-2">
               {navGroups.map((group) => {
                 const items = visibleNavItems.filter((item) => group.keys.includes(item.key));
                 if (items.length === 0) return null;
                 return (
                   <div key={group.label} className="space-y-0.5">
-                    <p className="mb-1 mt-4 px-3 text-[10px] font-semibold uppercase tracking-widest text-[#7AAEC8]">
+                    <p className="sk-sidebar-section-label mb-1 mt-4 px-3 text-[10px] font-semibold uppercase tracking-widest">
                       {group.label}
                     </p>
                     {items.map((item) => {
@@ -344,9 +344,7 @@ export function PortalLayout({ children, activeNav }: PortalLayoutProps) {
                           href={item.href}
                           onClick={closeSidebar}
                           className={`group flex min-h-11 cursor-pointer items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition-colors ${
-                            isActive
-                              ? "bg-sky-50 font-medium text-sky-800"
-                              : "text-slate-600 hover:bg-sky-50 hover:text-slate-800"
+                            isActive ? "sk-sidebar-nav-active" : "sk-sidebar-nav-inactive"
                           }`}
                         >
                           <NavIcon icon={item.icon} active={isActive} />
@@ -359,11 +357,11 @@ export function PortalLayout({ children, activeNav }: PortalLayoutProps) {
               })}
             </nav>
 
-            <div className="flex-shrink-0 border-t border-sky-50 p-3">
+            <div className="flex-shrink-0 border-t border-white/10 p-3">
               <Link
                 href="/portal/profil"
                 onClick={closeSidebar}
-                className="mb-2 flex min-h-11 items-center gap-3 rounded-xl px-3 py-2.5 transition-colors hover:bg-[#F5FAFD]"
+                className="mb-2 flex min-h-11 items-center gap-3 rounded-lg px-3 py-2.5 transition-colors hover:bg-white/6"
               >
                 <ProfileAvatar
                   avatarUrl={avatarUrl}
@@ -371,29 +369,29 @@ export function PortalLayout({ children, activeNav }: PortalLayoutProps) {
                   className="h-9 w-9 text-xs"
                 />
                 <div className="min-w-0 flex-1">
-                  <p className="truncate text-sm font-semibold text-[#0D1F2D]">
+                  <p className="truncate text-sm font-medium text-[#C8D4A8]">
                     {fullName?.trim() || "Min profil"}
                   </p>
-                  <p className="truncate text-xs text-[#4A8CB5]">{userEmail}</p>
+                  <p className="sk-sidebar-user-muted truncate text-xs">{userEmail}</p>
                 </div>
               </Link>
               <button
                 type="button"
                 onClick={handleLogout}
-                className="group flex min-h-11 w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-slate-600 transition-colors hover:bg-sky-50 hover:text-slate-800"
+                className="sk-sidebar-nav-inactive group flex min-h-11 w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition-colors"
               >
-                <LogOut className={`${navIconClass} text-slate-500 group-hover:text-slate-700`} aria-hidden />
+                <LogOut className={`${navIconClass} text-[#A8B898] group-hover:text-[#C8D4A8]`} aria-hidden />
                 Log ud
               </button>
             </div>
           </aside>
 
-          <section className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden bg-[#F5FAFD]">
-            <header className="sticky top-0 z-30 flex flex-shrink-0 items-center gap-3 border-b border-[#D0E8F5] bg-white px-3 py-2 lg:hidden">
+          <section className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden bg-[#F5F0E8]">
+            <header className="sticky top-0 z-30 flex flex-shrink-0 items-center gap-3 border-b border-[#D4C9A8] bg-white px-3 py-2 lg:hidden">
               <button
                 type="button"
                 onClick={() => setSidebarOpen(true)}
-                className="inline-flex min-h-11 min-w-11 shrink-0 items-center justify-center rounded-lg text-[#2C4A5E] hover:bg-sky-50"
+                className="inline-flex min-h-11 min-w-11 shrink-0 items-center justify-center rounded-lg text-[#5C5A48] hover:bg-[#EEF2E6]"
                 aria-label="Åbn menu"
               >
                 <Menu className="h-5 w-5" />
@@ -417,7 +415,7 @@ export function PortalLayout({ children, activeNav }: PortalLayoutProps) {
         </div>
 
         <nav
-          className="fixed inset-x-0 bottom-0 z-30 grid grid-cols-5 border-t border-sky-100 bg-white pb-[env(safe-area-inset-bottom)] shadow-[0_-2px_12px_rgba(0,0,0,0.06)] lg:hidden"
+          className="fixed inset-x-0 bottom-0 z-30 grid grid-cols-5 border-t border-[#D4C9A8] bg-white pb-[env(safe-area-inset-bottom)] shadow-[0_-2px_12px_rgba(0,0,0,0.06)] lg:hidden"
           aria-label="Hovednavigation mobil"
         >
           {mobileBottomNav.map((item) => {
@@ -428,7 +426,7 @@ export function PortalLayout({ children, activeNav }: PortalLayoutProps) {
                 key={item.key}
                 href={item.href}
                 className={`flex min-h-[52px] flex-col items-center justify-center gap-0.5 px-1 py-2 transition-colors ${
-                  isActive ? "text-sky-700" : "text-slate-500 hover:text-slate-700"
+                  isActive ? "text-[#7A8A5A]" : "text-[#8C8A78] hover:text-[#5C5A48]"
                 }`}
               >
                 <Icon className="h-5 w-5 shrink-0" aria-hidden />

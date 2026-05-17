@@ -7,6 +7,6 @@ export default function PortalOnboardingLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <div className="min-h-dvh bg-[#F5FAFD] text-[#0D1F2D] surface-cards antialiased">{children}</div>
+    <div className="min-h-dvh bg-[#F5F0E8] text-[#2C3020] surface-cards antialiased">{children}</div>
   );
 }

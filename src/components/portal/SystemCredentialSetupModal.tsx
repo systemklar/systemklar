@@ -106,19 +106,19 @@ export function SystemCredentialSetupModal({
   return (
     <PortalModalOverlay open onClose={onClose} position="bottom-sheet">
       <div
-        className="flex max-h-[min(90vh,640px)] w-full max-w-lg flex-col rounded-2xl border border-sky-100 bg-white shadow-xl"
+        className="flex max-h-[min(90vh,640px)] w-full max-w-lg flex-col rounded-2xl border border-[#D4C9A8] bg-white shadow-xl"
         role="dialog"
         aria-modal="true"
         aria-labelledby="credential-setup-title"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex items-start justify-between gap-4 border-b border-[#D0E8F5] px-6 py-4">
+        <div className="flex items-start justify-between gap-4 border-b border-[#D4C9A8] px-6 py-4">
           <div>
-            <h2 id="credential-setup-title" className="text-lg font-semibold text-[#0D1F2D]">
+            <h2 id="credential-setup-title" className="text-lg font-semibold text-[#2C3020]">
               Opsætning af {friendlyName}
             </h2>
             {!isSuccessStep ? (
-              <p className="mt-1 text-xs text-[#7AAEC8]">
+              <p className="mt-1 text-xs text-[#8C8A78]">
                 Trin {progressCurrent} af {progressTotal}
               </p>
             ) : null}
@@ -126,7 +126,7 @@ export function SystemCredentialSetupModal({
           <button
             type="button"
             onClick={onClose}
-            className="rounded-full p-1 text-[#7AAEC8] transition-colors hover:bg-[#F5FAFD] hover:text-[#0D1F2D]"
+            className="rounded-full p-1 text-[#8C8A78] transition-colors hover:bg-[#F5F0E8] hover:text-[#2C3020]"
             aria-label="Luk"
           >
             <X className="h-5 w-5" />
@@ -138,7 +138,7 @@ export function SystemCredentialSetupModal({
             <span
               key={i}
               className={`h-1 flex-1 rounded-full ${
-                i < progressCurrent ? "bg-[#0A6EBD]" : "bg-[#D0E8F5]"
+                i < progressCurrent ? "bg-[#8B9E6B]" : "bg-[#D4C9A8]"
               }`}
             />
           ))}
@@ -148,33 +148,33 @@ export function SystemCredentialSetupModal({
           {isSuccessStep ? (
             <div className="py-6 text-center">
               <div className="mx-auto mb-3 flex h-10 w-10 items-center justify-center rounded-full bg-emerald-50">
-                <Check className="h-5 w-5 text-[#0A7C5C]" strokeWidth={2.5} aria-hidden />
+                <Check className="h-5 w-5 text-[#6A8F5A]" strokeWidth={2.5} aria-hidden />
               </div>
-              <p className="text-lg font-semibold text-[#0A7C5C]">Forbindelsen er oprettet</p>
-              <p className="mt-2 text-sm text-[#2C4A5E]">
+              <p className="text-lg font-semibold text-[#6A8F5A]">Forbindelsen er oprettet</p>
+              <p className="mt-2 text-sm text-[#5C5A48]">
                 Vi kan nu hente data fra {friendlyName}. Du kan lukke denne guide.
               </p>
               <button
                 type="button"
                 onClick={onClose}
-                className="mt-8 rounded-full bg-[#0A6EBD] px-6 py-2.5 text-sm font-semibold text-white transition hover:bg-[#0859A0]"
+                className="mt-8 rounded-full bg-[#8B9E6B] px-6 py-2.5 text-sm font-semibold text-white transition hover:bg-[#7A8A5A]"
               >
                 Luk
               </button>
             </div>
           ) : isFormStep ? (
             <div className="space-y-4">
-              <p className="text-sm font-medium text-[#0D1F2D]">Indtast dine oplysninger</p>
+              <p className="text-sm font-medium text-[#2C3020]">Indtast dine oplysninger</p>
               {config.fields.map((field) => (
                 <label key={field.key} className="block">
-                  <span className="text-sm font-medium text-[#2C4A5E]">{field.label}</span>
+                  <span className="text-sm font-medium text-[#5C5A48]">{field.label}</span>
                   <input
                     type={field.sensitive ? "password" : "text"}
                     value={values[field.key] ?? ""}
                     onChange={(e) => setField(field.key, e.target.value)}
                     placeholder={field.placeholder}
                     autoComplete="off"
-                    className="mt-1 w-full rounded-xl border border-[#D0E8F5] py-2.5 px-3 text-sm text-[#0D1F2D] outline-none ring-[#0A6EBD]/30 focus:border-[#0A6EBD] focus:ring-2"
+                    className="mt-1 w-full rounded-xl border border-[#D4C9A8] py-2.5 px-3 text-sm text-[#2C3020] outline-none ring-[#8B9E6B]/30 focus:border-[#8B9E6B] focus:ring-2"
                   />
                 </label>
               ))}
@@ -184,7 +184,7 @@ export function SystemCredentialSetupModal({
                     href={config.helpUrl}
                     target="_blank"
                     rel="noreferrer"
-                    className="font-semibold text-[#0A6EBD] underline-offset-2 hover:underline"
+                    className="font-semibold text-[#8B9E6B] underline-offset-2 hover:underline"
                   >
                     Se vejledning hos leverandøren
                   </a>
@@ -198,14 +198,14 @@ export function SystemCredentialSetupModal({
             </div>
           ) : (
             <div className="space-y-4">
-              <p className="text-sm leading-relaxed text-[#2C4A5E]">{config.instructionSteps[step]}</p>
+              <p className="text-sm leading-relaxed text-[#5C5A48]">{config.instructionSteps[step]}</p>
               {config.helpUrl && step === 0 ? (
                 <p className="text-sm">
                   <a
                     href={config.helpUrl}
                     target="_blank"
                     rel="noreferrer"
-                    className="font-semibold text-[#0A6EBD] underline-offset-2 hover:underline"
+                    className="font-semibold text-[#8B9E6B] underline-offset-2 hover:underline"
                   >
                     Se vejledning hos leverandøren
                   </a>
@@ -216,12 +216,12 @@ export function SystemCredentialSetupModal({
         </div>
 
         {!isSuccessStep ? (
-          <div className="flex flex-wrap items-center justify-between gap-2 border-t border-[#D0E8F5] px-6 py-4">
+          <div className="flex flex-wrap items-center justify-between gap-2 border-t border-[#D4C9A8] px-6 py-4">
             <button
               type="button"
               onClick={step === 0 ? onClose : handleBack}
               disabled={busy}
-              className="rounded-full border border-sky-200 px-4 py-2 text-sm font-semibold text-[#2C4A5E] transition hover:bg-[#F5FAFD] disabled:opacity-50"
+              className="rounded-full border border-[#D4C9A8] px-4 py-2 text-sm font-semibold text-[#5C5A48] transition hover:bg-[#F5F0E8] disabled:opacity-50"
             >
               {step === 0 ? "Annuller" : "Tilbage"}
             </button>
@@ -230,7 +230,7 @@ export function SystemCredentialSetupModal({
                 type="button"
                 disabled={busy}
                 onClick={() => void handleSubmit()}
-                className="rounded-full bg-[#0A6EBD] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[#0859A0] disabled:opacity-50"
+                className="rounded-full bg-[#8B9E6B] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[#7A8A5A] disabled:opacity-50"
               >
                 {busy ? "Gemmer…" : "Gem og verificér"}
               </button>
@@ -238,7 +238,7 @@ export function SystemCredentialSetupModal({
               <button
                 type="button"
                 onClick={handleNext}
-                className="rounded-full bg-[#0A6EBD] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[#0859A0]"
+                className="rounded-full bg-[#8B9E6B] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[#7A8A5A]"
               >
                 Næste
               </button>

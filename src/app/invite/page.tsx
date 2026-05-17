@@ -216,7 +216,7 @@ function InviteContent() {
       subtitle={invitation ? `Du er inviteret med ${invitation.email}` : "Vi tjekker din invitation..."}
       sideTitle={`Velkommen til ${orgName}`}
     >
-      {loading ? <p className="mt-8 text-sm text-[#4A8CB5]">Indlæser invitation...</p> : null}
+      {loading ? <p className="mt-8 text-sm text-[#5C5A48]">Indlæser invitation...</p> : null}
       {!loading && error ? <p className="mt-8 rounded-lg bg-amber-50 px-3 py-2 text-sm text-amber-900">{error}</p> : null}
 
       {!loading && invitation ? (
@@ -231,7 +231,7 @@ function InviteContent() {
               required
               value={fullName}
               onChange={(e) => setFullName(e.target.value)}
-              className="w-full rounded-lg border border-[#E7E5E4] px-3 py-3 text-base outline-none transition focus:border-blue-600 focus:ring-2 focus:ring-blue-600/15 md:py-2 md:text-sm"
+              className="w-full rounded-lg border border-[#E7E5E4] px-3 py-3 text-base outline-none transition focus:border-[#8B9E6B] focus:ring-2 focus:ring-[#EEF2E6] md:py-2 md:text-sm"
             />
           </div>
           <div>
@@ -245,7 +245,7 @@ function InviteContent() {
               required
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full rounded-lg border border-[#E7E5E4] px-3 py-3 text-base outline-none transition focus:border-blue-600 focus:ring-2 focus:ring-blue-600/15 md:py-2 md:text-sm"
+              className="w-full rounded-lg border border-[#E7E5E4] px-3 py-3 text-base outline-none transition focus:border-[#8B9E6B] focus:ring-2 focus:ring-[#EEF2E6] md:py-2 md:text-sm"
             />
           </div>
           <div>
@@ -259,7 +259,7 @@ function InviteContent() {
               required
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
-              className="w-full rounded-lg border border-[#E7E5E4] px-3 py-3 text-base outline-none transition focus:border-blue-600 focus:ring-2 focus:ring-blue-600/15 md:py-2 md:text-sm"
+              className="w-full rounded-lg border border-[#E7E5E4] px-3 py-3 text-base outline-none transition focus:border-[#8B9E6B] focus:ring-2 focus:ring-[#EEF2E6] md:py-2 md:text-sm"
             />
           </div>
 
@@ -276,8 +276,8 @@ export default function InvitePage() {
   return (
     <Suspense
       fallback={
-        <div className="min-h-screen flex items-center justify-center bg-[#F5FAFD]">
-          <div className="text-[#4A8CB5] text-sm">Indlæser invitation...</div>
+        <div className="min-h-screen flex items-center justify-center bg-[#F5F0E8]">
+          <div className="text-[#5C5A48] text-sm">Indlæser invitation...</div>
         </div>
       }
     >

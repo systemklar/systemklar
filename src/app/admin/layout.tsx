@@ -83,7 +83,7 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
   const activeNav = activeNavFromPath(pathname);
 
   return (
-    <div className="surface-cards flex h-dvh overflow-x-hidden bg-[#F5FAFD] text-[#0D1F2D]">
+    <div className="surface-cards flex h-dvh overflow-x-hidden bg-[#F5F0E8] text-[#2C3020]">
       <NavigationProgress />
       <div className="flex h-full min-h-0 w-full overflow-hidden">
         {sidebarOpen ? (
@@ -98,16 +98,16 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
         <AdminSidebar activeNav={activeNav} open={sidebarOpen} onClose={closeSidebar} />
 
         <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden">
-          <header className="sticky top-0 z-30 flex flex-shrink-0 items-center gap-3 border-b border-[#D0E8F5] bg-white px-3 py-2 lg:hidden">
+          <header className="sticky top-0 z-30 flex flex-shrink-0 items-center gap-3 border-b border-[#D4C9A8] bg-white px-3 py-2 lg:hidden">
             <button
               type="button"
               onClick={() => setSidebarOpen(true)}
-              className="inline-flex min-h-11 min-w-11 shrink-0 items-center justify-center rounded-lg text-[#2C4A5E] hover:bg-sky-50"
+              className="inline-flex min-h-11 min-w-11 shrink-0 items-center justify-center rounded-lg text-[#5C5A48] hover:bg-[#EEF2E6]"
               aria-label="Åbn menu"
             >
               <Menu className="h-5 w-5" />
             </button>
-            <span className="min-w-0 flex-1 text-center text-sm font-bold text-[#0A6EBD]">Admin</span>
+            <span className="min-w-0 flex-1 text-center text-sm font-bold text-[#8B9E6B]">Admin</span>
             <span className="w-11 shrink-0" aria-hidden />
           </header>
 

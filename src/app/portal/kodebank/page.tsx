@@ -224,13 +224,13 @@ export default function PortalKodebankPage() {
       <div className="w-full space-y-6 p-6 md:p-8">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
-            <h1 className="text-2xl font-bold text-[#0D1F2D]">Kodebank</h1>
-            <p className="mt-2 text-sm text-[#4A8CB5]">Gem og find login-oplysninger sikkert ét sted.</p>
+            <h1 className="text-2xl font-bold text-[#2C3020]">Kodebank</h1>
+            <p className="mt-2 text-sm text-[#5C5A48]">Gem og find login-oplysninger sikkert ét sted.</p>
           </div>
           <button
             type="button"
             onClick={openCreate}
-            className="rounded-full bg-[#0A6EBD] px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-[#0859A0]"
+            className="rounded-full bg-[#8B9E6B] px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-[#7A8A5A]"
           >
             Tilføj login
           </button>
@@ -242,7 +242,7 @@ export default function PortalKodebankPage() {
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Søg i navn, brugernavn, URL..."
-            className="w-full rounded-xl border border-sky-200 bg-white px-4 py-2.5 text-base outline-none focus:ring-2 focus:ring-sky-500 md:max-w-sm md:text-sm"
+            className="w-full rounded-xl border border-[#D4C9A8] bg-white px-4 py-2.5 text-base outline-none focus:ring-2 focus:ring-[#8B9E6B] md:max-w-sm md:text-sm"
           />
           <div className="-mx-1 mt-3 flex gap-2 overflow-x-auto px-1 pb-1 md:flex-wrap md:overflow-x-visible md:px-0">
             <button
@@ -250,8 +250,8 @@ export default function PortalKodebankPage() {
               onClick={() => setCategory("")}
               className={`shrink-0 rounded-full border px-3 py-1 text-xs transition ${
                 category === ""
-                  ? "border-sky-400 bg-sky-50 text-sky-700"
-                  : "border-sky-100 bg-white text-[#2C4A5E] hover:border-sky-400"
+                  ? "border-[#8B9E6B] bg-[#EEF2E6] text-[#7A8A5A]"
+                  : "border-[#D4C9A8] bg-white text-[#5C5A48] hover:border-[#8B9E6B]"
               }`}
             >
               Alle
@@ -263,8 +263,8 @@ export default function PortalKodebankPage() {
                 onClick={() => setCategory(c)}
                 className={`shrink-0 rounded-full border px-3 py-1 text-xs transition ${
                   category === c
-                    ? "border-sky-400 bg-sky-50 text-sky-700"
-                    : "border-sky-100 bg-white text-[#2C4A5E] hover:border-sky-400"
+                    ? "border-[#8B9E6B] bg-[#EEF2E6] text-[#7A8A5A]"
+                    : "border-[#D4C9A8] bg-white text-[#5C5A48] hover:border-[#8B9E6B]"
                 }`}
               >
                 {categoryLabel[c]}
@@ -278,9 +278,9 @@ export default function PortalKodebankPage() {
         )}
 
         {loading ? (
-          <p className="text-sm text-[#4A8CB5]">Henter logins...</p>
+          <p className="text-sm text-[#5C5A48]">Henter logins...</p>
         ) : filtered.length === 0 ? (
-          <p className="rounded-2xl border border-sky-100 bg-white px-4 py-5 text-sm text-[#4A8CB5] shadow-sm">
+          <p className="rounded-2xl border border-[#D4C9A8] bg-white px-4 py-5 text-sm text-[#5C5A48] shadow-sm">
             Ingen logins fundet.
           </p>
         ) : (
@@ -291,27 +291,27 @@ export default function PortalKodebankPage() {
               return (
                 <article
                   key={entry.id}
-                  className="flex flex-col gap-4 rounded-2xl border border-sky-100 bg-white p-4 shadow-sm transition-all hover:shadow-md md:flex-row md:items-center"
+                  className="flex flex-col gap-4 rounded-2xl border border-[#D4C9A8] bg-white p-4 shadow-sm transition-all hover:shadow-md md:flex-row md:items-center"
                 >
-                  <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-[#F0F7FF]">
-                    <Lock className="h-4 w-4 text-sky-600" />
+                  <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-[#EEF2E6]">
+                    <Lock className="h-4 w-4 text-[#8B9E6B]" />
                   </div>
 
                   <div className="min-w-0 flex-1">
                     <div className="flex flex-wrap items-center gap-2">
-                      <h2 className="text-sm font-semibold text-[#0D1F2D]">{entry.name}</h2>
-                      <span className="rounded-full bg-sky-50 px-2 py-0.5 text-xs text-sky-700">
+                      <h2 className="text-sm font-semibold text-[#2C3020]">{entry.name}</h2>
+                      <span className="rounded-full bg-[#EEF2E6] px-2 py-0.5 text-xs text-[#7A8A5A]">
                         {entry.category ? categoryLabel[entry.category] : "Ingen kategori"}
                       </span>
                     </div>
-                    <p className="mt-1 truncate text-xs text-[#4A8CB5]">{entry.username || "-"}</p>
-                    <p className="mt-0.5 truncate text-xs text-[#4A8CB5]">
+                    <p className="mt-1 truncate text-xs text-[#5C5A48]">{entry.username || "-"}</p>
+                    <p className="mt-0.5 truncate text-xs text-[#5C5A48]">
                       {entry.url ? (
                         <a
                           href={entry.url}
                           target="_blank"
                           rel="noreferrer"
-                          className="text-sky-600 hover:underline"
+                          className="text-[#8B9E6B] hover:underline"
                         >
                           {entry.url}
                         </a>
@@ -321,17 +321,17 @@ export default function PortalKodebankPage() {
                     </p>
                   </div>
 
-                  <div className="w-full rounded-xl border border-sky-100 bg-[#F0F7FF] px-3 py-2.5 md:w-auto md:min-w-[12rem]">
-                    <p className="text-xs font-medium text-[#4A8CB5]">Adgangskode</p>
+                  <div className="w-full rounded-xl border border-[#D4C9A8] bg-[#EEF2E6] px-3 py-2.5 md:w-auto md:min-w-[12rem]">
+                    <p className="text-xs font-medium text-[#5C5A48]">Adgangskode</p>
                     <div className="mt-1 flex items-center justify-between gap-3">
-                      <span className="truncate font-mono text-sm text-[#0D1F2D]">
+                      <span className="truncate font-mono text-sm text-[#2C3020]">
                         {isVisible ? entry.password || "-" : entry.password ? "••••••••" : "-"}
                       </span>
                       <div className="flex items-center gap-2">
                         <button
                           type="button"
                           onClick={() => togglePassword(entry.id)}
-                          className="inline-flex items-center gap-1 text-xs font-semibold text-sky-600 hover:underline"
+                          className="inline-flex items-center gap-1 text-xs font-semibold text-[#8B9E6B] hover:underline"
                         >
                           <EyeIcon off={isVisible} />
                           {isVisible ? "Skjul" : "Vis"}
@@ -340,7 +340,7 @@ export default function PortalKodebankPage() {
                           type="button"
                           onClick={() => void copyPassword(entry)}
                           disabled={!entry.password}
-                          className="text-xs font-semibold text-sky-600 hover:underline disabled:cursor-not-allowed disabled:opacity-50"
+                          className="text-xs font-semibold text-[#8B9E6B] hover:underline disabled:cursor-not-allowed disabled:opacity-50"
                         >
                           {copyStatus === "copied"
                             ? "Kopieret"
@@ -353,7 +353,7 @@ export default function PortalKodebankPage() {
                   </div>
 
                   {entry.notes && (
-                    <p className="hidden max-w-[12rem] whitespace-pre-wrap rounded-xl bg-[#F0F7FF] px-3 py-2 text-xs text-[#4A8CB5] xl:block">
+                    <p className="hidden max-w-[12rem] whitespace-pre-wrap rounded-xl bg-[#EEF2E6] px-3 py-2 text-xs text-[#5C5A48] xl:block">
                       {entry.notes}
                     </p>
                   )}
@@ -362,7 +362,7 @@ export default function PortalKodebankPage() {
                     <button
                       type="button"
                       onClick={() => openEdit(entry)}
-                      className="rounded-full border border-sky-200 px-4 py-1.5 text-xs font-semibold text-sky-700 hover:bg-sky-50"
+                      className="rounded-full border border-[#D4C9A8] px-4 py-1.5 text-xs font-semibold text-[#7A8A5A] hover:bg-[#EEF2E6]"
                     >
                       Rediger
                     </button>
@@ -391,40 +391,40 @@ export default function PortalKodebankPage() {
           }}
         >
           <div
-            className="w-full max-w-xl rounded-2xl border border-sky-100 bg-white p-6 shadow-xl"
+            className="w-full max-w-xl rounded-2xl border border-[#D4C9A8] bg-white p-6 shadow-xl"
             onClick={(e) => e.stopPropagation()}
           >
-            <h2 className="text-xl font-bold text-[#0D1F2D]">
+            <h2 className="text-xl font-bold text-[#2C3020]">
               {editingId ? "Rediger login" : "Tilføj login"}
             </h2>
             <form className="mt-4 space-y-4" onSubmit={handleSubmit}>
               <div>
-                <label className="mb-1 block text-sm font-medium text-[#0D1F2D]">Navn</label>
+                <label className="mb-1 block text-sm font-medium text-[#2C3020]">Navn</label>
                 <input
                   required
                   value={form.name}
                   onChange={(e) => setForm((prev) => ({ ...prev, name: e.target.value }))}
-                  className="w-full rounded-xl border border-sky-200 px-4 py-3 text-base outline-none focus:ring-2 focus:ring-sky-500 md:text-sm"
+                  className="w-full rounded-xl border border-[#D4C9A8] px-4 py-3 text-base outline-none focus:ring-2 focus:ring-[#8B9E6B] md:text-sm"
                 />
               </div>
 
               <div className="grid gap-4 md:grid-cols-2">
                 <div>
-                  <label className="mb-1 block text-sm font-medium text-[#0D1F2D]">Brugernavn</label>
+                  <label className="mb-1 block text-sm font-medium text-[#2C3020]">Brugernavn</label>
                   <input
                     value={form.username}
                     onChange={(e) => setForm((prev) => ({ ...prev, username: e.target.value }))}
-                    className="w-full rounded-xl border border-sky-200 px-4 py-3 text-base outline-none focus:ring-2 focus:ring-sky-500 md:text-sm"
+                    className="w-full rounded-xl border border-[#D4C9A8] px-4 py-3 text-base outline-none focus:ring-2 focus:ring-[#8B9E6B] md:text-sm"
                   />
                 </div>
                 <div>
-                  <label className="mb-1 block text-sm font-medium text-[#0D1F2D]">Kategori</label>
+                  <label className="mb-1 block text-sm font-medium text-[#2C3020]">Kategori</label>
                   <select
                     value={form.category}
                     onChange={(e) =>
                       setForm((prev) => ({ ...prev, category: (e.target.value as VaultCategory | "") ?? "" }))
                     }
-                    className="w-full rounded-xl border border-sky-200 px-4 py-3 text-base outline-none focus:ring-2 focus:ring-sky-500 md:text-sm"
+                    className="w-full rounded-xl border border-[#D4C9A8] px-4 py-3 text-base outline-none focus:ring-2 focus:ring-[#8B9E6B] md:text-sm"
                   >
                     <option value="">Ingen kategori</option>
                     {CATEGORIES.map((c) => (
@@ -438,32 +438,32 @@ export default function PortalKodebankPage() {
 
               <div className="grid gap-4 md:grid-cols-2">
                 <div>
-                  <label className="mb-1 block text-sm font-medium text-[#0D1F2D]">Adgangskode</label>
+                  <label className="mb-1 block text-sm font-medium text-[#2C3020]">Adgangskode</label>
                   <input
                     type="text"
                     value={form.password}
                     onChange={(e) => setForm((prev) => ({ ...prev, password: e.target.value }))}
-                    className="w-full rounded-xl border border-sky-200 px-4 py-3 text-base outline-none focus:ring-2 focus:ring-sky-500 md:text-sm"
+                    className="w-full rounded-xl border border-[#D4C9A8] px-4 py-3 text-base outline-none focus:ring-2 focus:ring-[#8B9E6B] md:text-sm"
                   />
                 </div>
                 <div>
-                  <label className="mb-1 block text-sm font-medium text-[#0D1F2D]">URL</label>
+                  <label className="mb-1 block text-sm font-medium text-[#2C3020]">URL</label>
                   <input
                     type="url"
                     value={form.url}
                     onChange={(e) => setForm((prev) => ({ ...prev, url: e.target.value }))}
-                    className="w-full rounded-xl border border-sky-200 px-4 py-3 text-base outline-none focus:ring-2 focus:ring-sky-500 md:text-sm"
+                    className="w-full rounded-xl border border-[#D4C9A8] px-4 py-3 text-base outline-none focus:ring-2 focus:ring-[#8B9E6B] md:text-sm"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="mb-1 block text-sm font-medium text-[#0D1F2D]">Notater</label>
+                <label className="mb-1 block text-sm font-medium text-[#2C3020]">Notater</label>
                 <textarea
                   rows={4}
                   value={form.notes}
                   onChange={(e) => setForm((prev) => ({ ...prev, notes: e.target.value }))}
-                  className="w-full rounded-xl border border-sky-200 px-4 py-3 text-base outline-none focus:ring-2 focus:ring-sky-500 md:text-sm"
+                  className="w-full rounded-xl border border-[#D4C9A8] px-4 py-3 text-base outline-none focus:ring-2 focus:ring-[#8B9E6B] md:text-sm"
                 />
               </div>
 
@@ -475,14 +475,14 @@ export default function PortalKodebankPage() {
                     setEditingId(null);
                     setForm(emptyForm);
                   }}
-                  className="rounded-full border border-sky-200 px-4 py-2 text-sm font-semibold text-sky-700 hover:bg-sky-50"
+                  className="rounded-full border border-[#D4C9A8] px-4 py-2 text-sm font-semibold text-[#7A8A5A] hover:bg-[#EEF2E6]"
                 >
                   Annuller
                 </button>
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="rounded-full bg-[#0A6EBD] px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-[#0859A0] disabled:opacity-50"
+                  className="rounded-full bg-[#8B9E6B] px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-[#7A8A5A] disabled:opacity-50"
                 >
                   {submitting ? "Gemmer..." : editingId ? "Gem ændringer" : "Opret login"}
                 </button>

@@ -31,13 +31,13 @@ function FeatureCopy({
 }) {
   return (
     <div>
-      <p className="text-xs font-semibold uppercase tracking-widest text-sky-300">{label}</p>
-      <h2 className="mt-3 text-2xl font-bold tracking-tight text-[#0D1F2D] md:text-4xl">{title}</h2>
-      <p className="mt-4 text-base leading-relaxed text-[#2C4A5E]">{description}</p>
+      <p className="text-xs font-semibold uppercase tracking-widest text-[#C8D4A8]">{label}</p>
+      <h2 className="mt-3 text-2xl font-bold tracking-tight text-[#2C3020] md:text-4xl">{title}</h2>
+      <p className="mt-4 text-base leading-relaxed text-[#5C5A48]">{description}</p>
       <ul className="mt-6 space-y-3">
         {features.map((feature) => (
-          <li key={feature} className="flex items-start gap-2 text-sm text-[#0D1F2D]">
-            <CheckCircle className="mt-0.5 h-4 w-4 shrink-0 text-sky-400" />
+          <li key={feature} className="flex items-start gap-2 text-sm text-[#2C3020]">
+            <CheckCircle className="mt-0.5 h-4 w-4 shrink-0 text-[#C8A96E]" />
             <span>{feature}</span>
           </li>
         ))}
@@ -48,7 +48,7 @@ function FeatureCopy({
 
 function MockupShell({ children }: { children: ReactNode }) {
   return (
-    <div className="cursor-default rounded-2xl border border-white/10 bg-[#062840] p-6 text-white shadow-xl transition-transform duration-500 hover:scale-[1.02]">
+    <div className="cursor-default rounded-2xl border border-white/10 bg-[#2C3E2A] p-6 text-white shadow-xl transition-transform duration-500 hover:scale-[1.02]">
       {children}
     </div>
   );
@@ -97,7 +97,7 @@ function QuoteMockup() {
         ))}
         <div className="mt-2 flex justify-between text-xs font-semibold text-white">
           <span>Total/md.</span>
-          <span className="text-sky-400">1.697 kr.</span>
+          <span className="text-[#C8A96E]">1.697 kr.</span>
         </div>
       </div>
       <div
@@ -105,15 +105,15 @@ function QuoteMockup() {
         style={{ animation: "mockupFadeIn 0.4s ease-out 0.4s both" }}
       >
         <div
-          className="h-1.5 w-1.5 animate-bounce rounded-full bg-sky-400"
+          className="h-1.5 w-1.5 animate-bounce rounded-full bg-[#8B9E6B]"
           style={{ animationDelay: "0ms" }}
         />
         <div
-          className="h-1.5 w-1.5 animate-bounce rounded-full bg-sky-400"
+          className="h-1.5 w-1.5 animate-bounce rounded-full bg-[#8B9E6B]"
           style={{ animationDelay: "150ms" }}
         />
         <div
-          className="h-1.5 w-1.5 animate-bounce rounded-full bg-sky-400"
+          className="h-1.5 w-1.5 animate-bounce rounded-full bg-[#8B9E6B]"
           style={{ animationDelay: "300ms" }}
         />
         <span className="ml-1 text-[10px] text-white/40">AI genererer...</span>
@@ -160,7 +160,7 @@ function ChatMockup() {
             <div
               className={`max-w-[80%] rounded-2xl px-3 py-2 text-xs leading-relaxed ${
                 m.from === "user"
-                  ? "rounded-tr-sm bg-[#0A6EBD] text-white"
+                  ? "rounded-tr-sm bg-[#8B9E6B] text-white"
                   : "rounded-tl-sm bg-white/10 text-white/90"
               }`}
             >
@@ -174,7 +174,7 @@ function ChatMockup() {
         style={{ animation: "mockupFadeIn 0.4s ease-out 0.7s both" }}
       >
         <span className="text-xs text-white/30">Skriv et spørgsmål...</span>
-        <div className="flex h-6 w-6 items-center justify-center rounded-full bg-[#0A6EBD]">
+        <div className="flex h-6 w-6 items-center justify-center rounded-full bg-[#8B9E6B]">
           <svg
             className="h-3 w-3 text-white"
             fill="none"
@@ -207,7 +207,7 @@ function ReportMockup() {
           <div className="text-sm font-semibold text-white">IT-rapport – april 2026</div>
           <div className="mt-0.5 text-[10px] text-white/50">Møllers VVS · Genereret 1. maj</div>
         </div>
-        <span className="rounded-full bg-sky-500/20 px-2 py-0.5 text-[10px] font-medium text-sky-300">
+        <span className="rounded-full bg-[#8B9E6B]/20 px-2 py-0.5 text-[10px] font-medium text-[#C8D4A8]">
           PDF klar
         </span>
       </div>
@@ -218,7 +218,7 @@ function ReportMockup() {
             className={`rounded-xl border p-3 text-center ${
               s.tone === "ok"
                 ? "border-green-400/20 bg-green-500/10 text-green-300"
-                : "border-white/10 bg-white/5 text-sky-300"
+                : "border-white/10 bg-white/5 text-[#C8D4A8]"
             }`}
             style={{ animation: `mockupFadeIn 0.4s ease-out ${0.2 + i * 0.1}s both` }}
           >
@@ -252,7 +252,7 @@ function ReportMockup() {
 
 const blocks = [
   {
-    bg: "bg-[#F5FAFD]",
+    bg: "bg-[#F5F0E8]",
     textFirst: true,
     label: "TILBUDSGENERATOR",
     title: "Tilbud på 2 minutter",
@@ -282,7 +282,7 @@ const blocks = [
     Mockup: ChatMockup,
   },
   {
-    bg: "bg-[#F5FAFD]",
+    bg: "bg-[#F5F0E8]",
     textFirst: true,
     label: "AUTOMATISK RAPPORT",
     title: "Din månedlige rapport – uden du løfter en finger",
@@ -309,7 +309,7 @@ export default function AiVaerktoejerPage() {
           }
         `}</style>
 
-        <section className="relative overflow-hidden bg-gradient-to-br from-[#0A6EBD] to-[#062840] py-20 pt-32 md:py-32 md:pt-40">
+        <section className="relative overflow-hidden bg-gradient-to-br from-[#8B9E6B] to-[#2C3E2A] py-20 pt-32 md:py-32 md:pt-40">
           <div
             className="absolute inset-0 opacity-10"
             style={{

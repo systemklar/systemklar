@@ -10,7 +10,7 @@ import {
 } from "@/components/portal/portal-onboarding-tour";
 
 const SPOTLIGHT_RING =
-  "0 0 0 6px #0A6EBD, 0 0 0 12px rgba(10,110,189,0.2)";
+  "0 0 0 6px #8B9E6B, 0 0 0 12px rgba(10,110,189,0.2)";
 const SCRIM_COLOR = "rgba(15, 23, 42, 0.7)";
 const TOOLTIP_GAP = 16;
 const VIEWPORT_PAD = 16;
@@ -252,7 +252,7 @@ export function PortalOnboardingTour({ open, onComplete }: PortalOnboardingTourP
         role="dialog"
         aria-modal="true"
         aria-labelledby="portal-tour-title"
-        className="pointer-events-auto fixed z-[52] w-[min(calc(100vw-2rem),28rem)] max-w-md rounded-3xl border border-sky-100/80 bg-white p-8 shadow-2xl ease-out"
+        className="pointer-events-auto fixed z-[52] w-[min(calc(100vw-2rem),28rem)] max-w-md rounded-3xl border border-[#D4C9A8]/80 bg-white p-8 shadow-2xl ease-out"
         style={{
           top: tooltipPos.top,
           left: tooltipPos.left,
@@ -264,13 +264,13 @@ export function PortalOnboardingTour({ open, onComplete }: PortalOnboardingTourP
         <button
           type="button"
           onClick={finish}
-          className="absolute right-4 top-4 rounded-full p-1.5 text-[#7AAEC8] transition hover:bg-sky-50 hover:text-[#0D1F2D]"
+          className="absolute right-4 top-4 rounded-full p-1.5 text-[#8C8A78] transition hover:bg-[#EEF2E6] hover:text-[#2C3020]"
           aria-label="Spring tour over"
         >
           <X className="h-4 w-4" aria-hidden />
         </button>
 
-        <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-sky-400">
+        <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-[#C8A96E]">
           Trin {stepIndex + 1} af {steps.length}
         </p>
 
@@ -279,29 +279,29 @@ export function PortalOnboardingTour({ open, onComplete }: PortalOnboardingTourP
             <span
               key={i}
               className={`h-2 w-2 rounded-full transition-colors ${
-                i === stepIndex ? "bg-[#0A6EBD]" : "border border-sky-200 bg-transparent"
+                i === stepIndex ? "bg-[#8B9E6B]" : "border border-[#D4C9A8] bg-transparent"
               }`}
             />
           ))}
         </div>
 
-        <h2 id="portal-tour-title" className="mt-5 pr-8 text-2xl font-light text-[#0D1F2D]">
+        <h2 id="portal-tour-title" className="mt-5 pr-8 text-2xl font-light text-[#2C3020]">
           {step.title}
         </h2>
-        <p className="mt-3 max-w-xs text-base leading-relaxed text-[#2C4A5E]">{step.text}</p>
+        <p className="mt-3 max-w-xs text-base leading-relaxed text-[#5C5A48]">{step.text}</p>
 
         <div className="mt-8 flex items-center justify-between gap-4">
           <button
             type="button"
             onClick={finish}
-            className="text-sm font-medium text-[#7AAEC8] transition hover:text-[#0D1F2D]"
+            className="text-sm font-medium text-[#8C8A78] transition hover:text-[#2C3020]"
           >
             Spring over
           </button>
           <button
             type="button"
             onClick={goNext}
-            className="rounded-full bg-[#0A6EBD] px-6 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-[#0859A0]"
+            className="rounded-full bg-[#8B9E6B] px-6 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-[#7A8A5A]"
           >
             {isLast ? "Kom i gang →" : "Næste →"}
           </button>

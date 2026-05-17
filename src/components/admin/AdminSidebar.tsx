@@ -67,62 +67,58 @@ export function AdminSidebar({ activeNav, open = false, onClose }: AdminSidebarP
 
   return (
     <aside
-      className={`fixed inset-y-0 left-0 z-50 flex h-full w-[280px] shrink-0 flex-col border-r border-[#D0E8F5] bg-white p-4 shadow-xl transition-transform duration-300 ease-out lg:static lg:z-auto lg:h-auto lg:min-h-screen lg:translate-x-0 lg:shadow-none ${
+      className={`sk-sidebar fixed inset-y-0 left-0 z-50 flex h-full w-[280px] shrink-0 flex-col border-r shadow-xl transition-transform duration-300 ease-out lg:static lg:z-auto lg:h-auto lg:min-h-screen lg:translate-x-0 lg:shadow-none ${
         open ? "translate-x-0" : "-translate-x-full"
       }`}
     >
-      <div className="flex min-h-0 flex-1 flex-col">
-        <div className="mb-4 flex items-center justify-between border-b border-sky-50 pb-4">
-          <Link href="/admin/overblik" className="block">
-            <SystemklarLogo variant="light" size="sm" />
-            <p className="mt-0.5 text-xs font-medium text-[#4A8CB5]">Admin</p>
-          </Link>
-          <button
-            type="button"
-            onClick={onClose}
-            className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-lg text-[#2C4A5E] lg:hidden"
-            aria-label="Luk menu"
-          >
-            <X className="h-5 w-5" />
-          </button>
-        </div>
-
-        <nav className="px-3 py-2">
-          {navGroups.map((group) => (
-            <div key={group.label} className="space-y-0.5">
-              <p className="mb-1 mt-4 px-3 text-[10px] font-semibold uppercase tracking-widest text-[#7AAEC8]">
-                {group.label}
-              </p>
-              {navItems
-                .filter((item) => group.keys.includes(item.key))
-                .map((item) => {
-                  const isActive = item.key === activeNav;
-                  return (
-                    <Link
-                      key={item.key}
-                      href={item.href}
-                      onClick={onClose}
-                      className={`flex min-h-11 cursor-pointer items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition-colors ${
-                        isActive
-                          ? "border border-[#D0E8F5] bg-sky-50 font-semibold text-sky-800"
-                          : "text-[#2C4A5E] hover:bg-[#F5FAFD] hover:text-[#0A6EBD]"
-                      }`}
-                    >
-                      {item.icon}
-                      {item.label}
-                    </Link>
-                  );
-                })}
-            </div>
-          ))}
-        </nav>
+      <div className="sk-sidebar-logo flex flex-shrink-0 items-center justify-between border-b px-4 py-4">
+        <Link href="/admin/overblik" className="block" onClick={onClose}>
+          <SystemklarLogo variant="dark" size="sm" />
+          <p className="sk-sidebar-user-muted mt-0.5 text-xs font-medium">Admin</p>
+        </Link>
+        <button
+          type="button"
+          onClick={onClose}
+          className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-lg text-[#C8D4A8] hover:bg-white/10 lg:hidden"
+          aria-label="Luk menu"
+        >
+          <X className="h-5 w-5" />
+        </button>
       </div>
 
-      <div className="mt-auto border-t border-sky-50 pt-3">
+      <nav className="flex-1 overflow-y-auto overscroll-contain px-3 py-2">
+        {navGroups.map((group) => (
+          <div key={group.label} className="space-y-0.5">
+            <p className="sk-sidebar-section-label mb-1 mt-4 px-3 text-[10px] font-semibold uppercase tracking-widest">
+              {group.label}
+            </p>
+            {navItems
+              .filter((item) => group.keys.includes(item.key))
+              .map((item) => {
+                const isActive = item.key === activeNav;
+                return (
+                  <Link
+                    key={item.key}
+                    href={item.href}
+                    onClick={onClose}
+                    className={`flex min-h-11 cursor-pointer items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition-colors ${
+                      isActive ? "sk-sidebar-nav-active" : "sk-sidebar-nav-inactive"
+                    }`}
+                  >
+                    {item.icon}
+                    {item.label}
+                  </Link>
+                );
+              })}
+          </div>
+        ))}
+      </nav>
+
+      <div className="flex-shrink-0 border-t border-white/10 p-3">
         <button
           type="button"
           onClick={() => void handleLogout()}
-          className="flex min-h-11 w-full items-center gap-2 rounded-xl px-3 py-2.5 text-sm text-[#4A8CB5] transition-all hover:bg-red-50 hover:text-red-500"
+          className="sk-sidebar-nav-inactive flex min-h-11 w-full items-center gap-2 rounded-lg px-3 py-2.5 text-sm transition-colors"
         >
           <LogOut className="h-4 w-4" />
           Log ud

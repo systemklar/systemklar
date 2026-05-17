@@ -29,10 +29,10 @@ export function formatCheckedAgoDa(iso: string): string {
 }
 
 const STATUS_PILL: Record<string, string> = {
-  ok: "bg-green-100 text-green-800",
-  advarsel: "bg-amber-100 text-amber-900",
-  fejl: "bg-red-100 text-red-800",
-  afventer: "bg-slate-100 text-slate-600",
+  ok: "sk-status-ok border rounded-full",
+  advarsel: "sk-status-warning border rounded-full",
+  fejl: "sk-status-error border rounded-full",
+  afventer: "sk-status-pending border rounded-full",
 };
 
 const STATUS_LABEL: Record<string, string> = {

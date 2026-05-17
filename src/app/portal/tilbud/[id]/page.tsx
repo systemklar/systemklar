@@ -140,7 +140,7 @@ export default function PortalTilbudDetailPage() {
   if (!quote) {
     return (
       <div className="w-full p-6 md:p-8">
-        <Link href="/portal/tilbudsgenerator" className="text-sm font-semibold text-blue-600 hover:underline">
+        <Link href="/portal/tilbudsgenerator" className="text-sm font-semibold text-[#8B9E6B] hover:underline">
           ← Tilbage til AI Tilbudsgenerator
         </Link>
         <p className="mt-6 text-sm text-slate-600">Tilbud ikke fundet.</p>
@@ -150,7 +150,7 @@ export default function PortalTilbudDetailPage() {
 
   return (
     <div className="w-full p-6 md:p-8">
-      <Link href="/portal/tilbudsgenerator" className="text-sm font-semibold text-blue-600 hover:underline">
+      <Link href="/portal/tilbudsgenerator" className="text-sm font-semibold text-[#8B9E6B] hover:underline">
         ← Tilbage til AI Tilbudsgenerator
       </Link>
 
@@ -210,7 +210,7 @@ export default function PortalTilbudDetailPage() {
           <button
             type="submit"
             disabled={saving || sending}
-            className="rounded-full bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
+            className="rounded-full bg-[#8B9E6B] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[#7A8A5A] focus:outline-none focus:ring-2 focus:ring-[#8B9E6B] disabled:opacity-50"
           >
             {saving ? "Gemmer..." : "Gem ændringer"}
           </button>

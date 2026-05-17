@@ -57,10 +57,10 @@ export function normalizeMonitoringStatusForDisplay(raw: string): string {
 
 export function statusColorClass(raw: string): string {
   const s = (raw ?? "").toLowerCase();
-  if (s === "ok") return "text-[#0A7C5C]";
-  if (s === "advarsel") return "text-[#C47B0A]";
-  if (s === "fejl") return "text-[#C42B2B]";
-  return "text-[#2C4A5E]";
+  if (s === "ok") return "text-[#6A8F5A]";
+  if (s === "advarsel") return "text-[#C4A84F]";
+  if (s === "fejl") return "text-[#B85C4A]";
+  return "text-[#5C5A48]";
 }
 
 type MonRow = { system_name: string; status: string; checked_at: string };
@@ -154,17 +154,17 @@ export type ItReportHtmlInput = {
 };
 
 const DS = {
-  accent: "#0A6EBD",
-  navy: "#062840",
-  pageBg: "#F5FAFD",
+  accent: "#8B9E6B",
+  navy: "#2C3E2A",
+  pageBg: "#F5F0E8",
   card: "#FFFFFF",
-  text: "#0D1F2D",
-  textSecondary: "#2C4A5E",
-  helper: "#7AAEC8",
-  border: "#D0E8F5",
-  ok: "#0A7C5C",
-  warn: "#C47B0A",
-  err: "#C42B2B",
+  text: "#2C3020",
+  textSecondary: "#5C5A48",
+  helper: "#8C8A78",
+  border: "#D4C9A8",
+  ok: "#6A8F5A",
+  warn: "#C4A84F",
+  err: "#B85C4A",
 } as const;
 
 const SIGNOFF_CHECK_SVG = `<svg width="44" height="44" viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" style="flex-shrink:0">

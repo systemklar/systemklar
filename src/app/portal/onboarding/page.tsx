@@ -25,12 +25,12 @@ function OnboardingProgress({ step }: { step: 1 | 2 | 3 | 4 }) {
           <div
             key={n}
             className={`h-1.5 flex-1 rounded-full transition-colors ${
-              step >= n ? "bg-[#0A6EBD]" : "bg-sky-100"
+              step >= n ? "bg-[#8B9E6B]" : "bg-[#EEF2E6]"
             }`}
           />
         ))}
       </div>
-      <p className="mt-2 text-center text-xs font-medium text-[#4A8CB5]">Trin {step} af 4</p>
+      <p className="mt-2 text-center text-xs font-medium text-[#5C5A48]">Trin {step} af 4</p>
     </div>
   );
 }
@@ -104,18 +104,18 @@ function OnboardingContent({
       <OnboardingProgress step={step} />
 
       {step === 1 ? (
-        <section className="rounded-2xl border border-sky-100 bg-white p-8 shadow-sm">
-          <h1 className="text-2xl font-bold tracking-tight text-[#0D1F2D]">
+        <section className="rounded-2xl border border-[#D4C9A8] bg-white p-8 shadow-sm">
+          <h1 className="text-2xl font-bold tracking-tight text-[#2C3020]">
             Velkommen til Systemklar, {firstName}
           </h1>
-          <p className="mt-4 text-sm leading-relaxed text-[#2C4A5E]">
+          <p className="mt-4 text-sm leading-relaxed text-[#5C5A48]">
             Vi overvåger din IT så du ikke behøver. Lad os starte med at lære din virksomhed at
             kende.
           </p>
           <button
             type="button"
             onClick={() => setStep(2)}
-            className="mt-8 w-full rounded-full bg-[#0A6EBD] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#0859A0] sm:w-auto"
+            className="mt-8 w-full rounded-full bg-[#8B9E6B] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#7A8A5A] sm:w-auto"
           >
             Kom i gang →
           </button>
@@ -123,16 +123,16 @@ function OnboardingContent({
       ) : null}
 
       {step === 2 ? (
-        <section className="rounded-2xl border border-sky-100 bg-white p-6 shadow-sm sm:p-8">
-          <h1 className="text-2xl font-bold tracking-tight text-[#0D1F2D]">Hvilke systemer bruger I?</h1>
-          <p className="mt-2 text-sm text-[#4A8CB5]">
+        <section className="rounded-2xl border border-[#D4C9A8] bg-white p-6 shadow-sm sm:p-8">
+          <h1 className="text-2xl font-bold tracking-tight text-[#2C3020]">Hvilke systemer bruger I?</h1>
+          <p className="mt-2 text-sm text-[#5C5A48]">
             Vælg de systemer din virksomhed bruger. Du kan altid tilføje flere senere.
           </p>
 
           <div className="mt-6 space-y-6">
             {ONBOARDING_SYSTEM_GROUPS.map((group) => (
               <div key={group.label}>
-                <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-[#4A8CB5]">
+                <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-[#5C5A48]">
                   {group.label}
                 </p>
                 <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
@@ -146,21 +146,21 @@ function OnboardingContent({
                         onClick={() => toggleSystem(system.id)}
                         className={`flex items-center gap-3 rounded-xl border px-3 py-3 text-left text-sm transition ${
                           isSelected
-                            ? "border-sky-300 bg-sky-50 text-[#0D1F2D] ring-1 ring-sky-200"
-                            : "border-sky-100 bg-white text-[#2C4A5E] hover:border-sky-200 hover:bg-sky-50/50"
+                            ? "border-[#D4C9A8] bg-[#EEF2E6] text-[#2C3020] ring-1 ring-[#D4C9A8]"
+                            : "border-[#D4C9A8] bg-white text-[#5C5A48] hover:border-[#D4C9A8] hover:bg-[#EEF2E6]/50"
                         }`}
                         aria-pressed={isSelected}
                       >
                         <span
                           className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg ${
-                            isSelected ? "bg-[#0A6EBD] text-white" : "bg-sky-50 text-sky-600"
+                            isSelected ? "bg-[#8B9E6B] text-white" : "bg-[#EEF2E6] text-[#8B9E6B]"
                           }`}
                         >
                           <Icon className="h-4 w-4" aria-hidden />
                         </span>
                         <span className="min-w-0 flex-1 font-medium">{system.name}</span>
                         {isSelected ? (
-                          <Check className="h-4 w-4 shrink-0 text-sky-600" aria-hidden />
+                          <Check className="h-4 w-4 shrink-0 text-[#8B9E6B]" aria-hidden />
                         ) : null}
                       </button>
                     );
@@ -174,7 +174,7 @@ function OnboardingContent({
             type="button"
             disabled={selected.size === 0}
             onClick={() => setStep(3)}
-            className="mt-8 w-full rounded-full bg-[#0A6EBD] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#0859A0] disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
+            className="mt-8 w-full rounded-full bg-[#8B9E6B] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#7A8A5A] disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
           >
             Fortsæt →
           </button>
@@ -182,11 +182,11 @@ function OnboardingContent({
       ) : null}
 
       {step === 3 ? (
-        <section className="rounded-2xl border border-sky-100 bg-white p-8 shadow-sm">
-          <h1 className="text-2xl font-bold tracking-tight text-[#0D1F2D]">
+        <section className="rounded-2xl border border-[#D4C9A8] bg-white p-8 shadow-sm">
+          <h1 className="text-2xl font-bold tracking-tight text-[#2C3020]">
             Næsten klar — tilpas din profil
           </h1>
-          <p className="mt-3 text-sm leading-relaxed text-[#2C4A5E]">
+          <p className="mt-3 text-sm leading-relaxed text-[#5C5A48]">
             Hjælper os med at genkende dig — du kan altid ændre det senere.
           </p>
           <OnboardingPhotoUploads
@@ -205,7 +205,7 @@ function OnboardingContent({
           <button
             type="button"
             onClick={() => setStep(4)}
-            className="mt-8 w-full rounded-full bg-[#0A6EBD] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#0859A0] sm:w-auto"
+            className="mt-8 w-full rounded-full bg-[#8B9E6B] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#7A8A5A] sm:w-auto"
           >
             Fortsæt →
           </button>
@@ -213,9 +213,9 @@ function OnboardingContent({
       ) : null}
 
       {step === 4 ? (
-        <section className="rounded-2xl border border-sky-100 bg-white p-8 shadow-sm">
-          <h1 className="text-2xl font-bold tracking-tight text-[#0D1F2D]">Perfekt, {firstName}!</h1>
-          <p className="mt-4 text-sm leading-relaxed text-[#2C4A5E]">
+        <section className="rounded-2xl border border-[#D4C9A8] bg-white p-8 shadow-sm">
+          <h1 className="text-2xl font-bold tracking-tight text-[#2C3020]">Perfekt, {firstName}!</h1>
+          <p className="mt-4 text-sm leading-relaxed text-[#5C5A48]">
             Vi har gemt dine systemer. Benjamin fra Systemklar kontakter dig inden for 24 timer for at
             færdiggøre opsætningen.
           </p>
@@ -226,7 +226,7 @@ function OnboardingContent({
             type="button"
             disabled={saving}
             onClick={() => void completeOnboarding()}
-            className="mt-8 inline-flex w-full items-center justify-center gap-2 rounded-full bg-[#0A6EBD] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#0859A0] disabled:opacity-50 sm:w-auto"
+            className="mt-8 inline-flex w-full items-center justify-center gap-2 rounded-full bg-[#8B9E6B] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#7A8A5A] disabled:opacity-50 sm:w-auto"
           >
             {saving ? (
               <>
@@ -334,7 +334,7 @@ export default function PortalOnboardingPage() {
   if (bootstrapping) {
     return (
       <main className="flex min-h-dvh flex-col items-center justify-center px-4">
-        <p className="text-sm text-[#4A8CB5]">Indlæser...</p>
+        <p className="text-sm text-[#5C5A48]">Indlæser...</p>
       </main>
     );
   }

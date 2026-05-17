@@ -50,7 +50,7 @@ export function MarketingNav() {
         className={`fixed left-0 right-0 top-0 z-50 transition-all duration-300 ${
           transparent
             ? "border-b border-transparent bg-transparent"
-            : "border-b border-white/10 bg-[#062840]/80 shadow-sm backdrop-blur-md"
+            : "border-b border-white/10 bg-[#2C3E2A]/80 shadow-sm backdrop-blur-md"
         }`}
       >
         <div className="relative mx-auto h-16 w-full max-w-[1200px] px-6">
@@ -81,8 +81,8 @@ export function MarketingNav() {
                 onClick={() => setShowModal(true)}
                 className={`rounded-full px-4 py-1.5 text-xs font-semibold transition-colors ${
                   transparent
-                    ? "bg-white text-[#0A6EBD] hover:bg-white/90"
-                    : "bg-[#0A6EBD] text-white hover:bg-[#0859A0]"
+                    ? "bg-white text-[#8B9E6B] hover:bg-white/90"
+                    : "bg-[#8B9E6B] text-white hover:bg-[#7A8A5A]"
                 }`}
               >
                 Book demo
@@ -106,7 +106,7 @@ export function MarketingNav() {
       {mobileOpen ? (
         <div
           id="marketing-mobile-nav"
-          className="fixed inset-0 top-[64px] z-40 flex flex-col gap-4 bg-[#062840]/95 p-6 backdrop-blur-md md:hidden"
+          className="fixed inset-0 top-[64px] z-40 flex flex-col gap-4 bg-[#2C3E2A]/95 p-6 backdrop-blur-md md:hidden"
         >
           <nav className="flex flex-col" aria-label="Mobil menu">
             {NAV.map((item) => (
@@ -137,7 +137,7 @@ export function MarketingNav() {
                 setMobileOpen(false);
                 setShowModal(true);
               }}
-              className="block min-h-[44px] w-full rounded-full bg-[#0A6EBD] px-5 py-3 text-center text-sm font-semibold text-white transition-colors hover:bg-[#0859A0]"
+              className="block min-h-[44px] w-full rounded-full bg-[#8B9E6B] px-5 py-3 text-center text-sm font-semibold text-white transition-colors hover:bg-[#7A8A5A]"
             >
               Book demo
             </button>

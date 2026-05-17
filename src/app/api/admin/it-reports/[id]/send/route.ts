@@ -80,11 +80,11 @@ export async function POST(_request: Request, context: { params: Promise<{ id: s
       const to = r.email.trim();
       const name = (r.full_name ?? "").trim() || "der";
       const bodyInner = `
-    <p style="margin:0 0 12px;font-size:15px;line-height:1.5;color:#0D1F2D;font-family:Inter,Arial,sans-serif;">Hej ${escapeHtml(name)},</p>
-    <p style="margin:0 0 12px;font-size:15px;line-height:1.55;color:#2C4A5E;font-family:Inter,Arial,sans-serif;">Vi har udarbejdet jeres IT-statusrapport for <strong style="color:#0D1F2D;">${escapeHtml(orgName)}</strong> (${escapeHtml(monthLabel)}). Den ligger klar i jeres Systemklar-portal.</p>
-    <p style="margin:0 0 16px;"><a href="${rapportUrl}" style="display:inline-block;padding:10px 20px;border-radius:9999px;background:#0A6EBD;color:#ffffff;font-weight:600;font-size:14px;font-family:Inter,Arial,sans-serif;text-decoration:none;">Åbn IT-rapporter i portalen</a></p>
-    <p style="margin:0 0 12px;font-size:14px;line-height:1.5;color:#2C4A5E;font-family:Inter,Arial,sans-serif;">Har I spørgsmål, er I velkomne til at skrive til os på <a href="mailto:kontakt@systemklar.dk" style="color:#0A6EBD;font-weight:600;">kontakt@systemklar.dk</a>.</p>
-    <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-top:20px;border:1px solid #062840;border-radius:16px;">
+    <p style="margin:0 0 12px;font-size:15px;line-height:1.5;color:#2C3020;font-family:Inter,Arial,sans-serif;">Hej ${escapeHtml(name)},</p>
+    <p style="margin:0 0 12px;font-size:15px;line-height:1.55;color:#5C5A48;font-family:Inter,Arial,sans-serif;">Vi har udarbejdet jeres IT-statusrapport for <strong style="color:#2C3020;">${escapeHtml(orgName)}</strong> (${escapeHtml(monthLabel)}). Den ligger klar i jeres Systemklar-portal.</p>
+    <p style="margin:0 0 16px;"><a href="${rapportUrl}" style="display:inline-block;padding:10px 20px;border-radius:9999px;background:#8B9E6B;color:#ffffff;font-weight:600;font-size:14px;font-family:Inter,Arial,sans-serif;text-decoration:none;">Åbn IT-rapporter i portalen</a></p>
+    <p style="margin:0 0 12px;font-size:14px;line-height:1.5;color:#5C5A48;font-family:Inter,Arial,sans-serif;">Har I spørgsmål, er I velkomne til at skrive til os på <a href="mailto:kontakt@systemklar.dk" style="color:#8B9E6B;font-weight:600;">kontakt@systemklar.dk</a>.</p>
+    <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-top:20px;border:1px solid #2C3E2A;border-radius:16px;">
       <tr>
         <td style="padding:24px;font-family:Inter,Arial,sans-serif;">
           <table width="100%" cellpadding="0" cellspacing="0" border="0">
@@ -92,10 +92,10 @@ export async function POST(_request: Request, context: { params: Promise<{ id: s
               <td style="vertical-align:top;width:99%;">
                 <table cellpadding="0" cellspacing="0" border="0">
                   <tr>
-                    <td style="vertical-align:top;padding-right:12px;color:#0A7C5C;font-size:22px;line-height:1.2;font-weight:700;">&#10003;</td>
+                    <td style="vertical-align:top;padding-right:12px;color:#6A8F5A;font-size:22px;line-height:1.2;font-weight:700;">&#10003;</td>
                     <td style="vertical-align:top;">
-                      <p style="margin:0 0 8px;font-size:15px;font-weight:700;color:#0D1F2D;">Personligt gennemgået af Systemklar</p>
-                      <p style="margin:0;font-size:12px;line-height:1.55;color:#2C4A5E;">Denne rapport er udarbejdet på baggrund af data fra dit IT-miljø og er gennemgået og godkendt af Systemklar inden udsendelse. Vi står altid klar til at hjælpe hvis du har spørgsmål.</p>
+                      <p style="margin:0 0 8px;font-size:15px;font-weight:700;color:#2C3020;">Personligt gennemgået af Systemklar</p>
+                      <p style="margin:0;font-size:12px;line-height:1.55;color:#5C5A48;">Denne rapport er udarbejdet på baggrund af data fra dit IT-miljø og er gennemgået og godkendt af Systemklar inden udsendelse. Vi står altid klar til at hjælpe hvis du har spørgsmål.</p>
                     </td>
                   </tr>
                 </table>
@@ -107,18 +107,18 @@ export async function POST(_request: Request, context: { params: Promise<{ id: s
                       <img src="${logoUrl}" alt="" width="120" height="28" style="display:block;height:28px;width:auto;" />
                     </td>
                     <td style="vertical-align:middle;padding:0;padding-left:8px;">
-                      <span style="font-size:18px;font-weight:700;color:#0A6EBD;font-family:Inter,Arial,sans-serif;letter-spacing:-0.02em;text-transform:lowercase;">systemklar</span>
+                      <span style="font-size:18px;font-weight:700;color:#8B9E6B;font-family:Inter,Arial,sans-serif;letter-spacing:-0.02em;text-transform:lowercase;">systemklar</span>
                     </td>
                   </tr>
                 </table>
-                <p style="margin:6px 0 0;font-size:12px;color:#7AAEC8;font-family:Inter,Arial,sans-serif;">systemklar.dk</p>
+                <p style="margin:6px 0 0;font-size:12px;color:#8C8A78;font-family:Inter,Arial,sans-serif;">systemklar.dk</p>
               </td>
             </tr>
           </table>
         </td>
       </tr>
     </table>
-    <p style="margin-top:20px;font-size:12px;color:#7AAEC8;font-family:Inter,Arial,sans-serif;text-transform:lowercase;">Venlig hilsen<br/><span style="font-weight:700;color:#0A6EBD;">systemklar</span></p>
+    <p style="margin-top:20px;font-size:12px;color:#8C8A78;font-family:Inter,Arial,sans-serif;text-transform:lowercase;">Venlig hilsen<br/><span style="font-weight:700;color:#8B9E6B;">systemklar</span></p>
   `;
       await resend.emails.send({
         from: FROM,

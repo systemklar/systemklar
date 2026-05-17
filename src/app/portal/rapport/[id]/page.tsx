@@ -53,7 +53,7 @@ export default function PortalRapportDetailPage() {
   if (loading) {
     return (
       <RapportDetailShell>
-        <p className="text-sm text-[#4A8CB5]">Indlæser rapport...</p>
+        <p className="text-sm text-[#5C5A48]">Indlæser rapport...</p>
       </RapportDetailShell>
     );
   }
@@ -61,10 +61,10 @@ export default function PortalRapportDetailPage() {
   if (!report) {
     return (
       <RapportDetailShell>
-        <Link href="/portal/rapport" className="text-sm font-semibold text-[#0A6EBD] hover:underline">
+        <Link href="/portal/rapport" className="text-sm font-semibold text-[#8B9E6B] hover:underline">
           ← Tilbage til IT-rapport
         </Link>
-        <p className="mt-6 text-sm text-[#4A8CB5]">Rapporten findes ikke.</p>
+        <p className="mt-6 text-sm text-[#5C5A48]">Rapporten findes ikke.</p>
       </RapportDetailShell>
     );
   }

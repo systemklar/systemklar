@@ -126,17 +126,17 @@ function PortalSupportNewPageInner() {
         <SubjectFromQuery onApply={applySubject} />
       </Suspense>
 
-      <div className="border-b border-sky-100 pb-6">
-        <Link href="/portal/support" className="text-sm font-semibold text-[#0A6EBD] hover:underline">
+      <div className="border-b border-[#D4C9A8] pb-6">
+        <Link href="/portal/support" className="text-sm font-semibold text-[#8B9E6B] hover:underline">
           ← Tilbage til Support & sager
         </Link>
-        <h1 className="mt-4 text-2xl font-bold text-[#0D1F2D]">Ny sag</h1>
-        <p className="mt-2 text-sm text-[#4A8CB5]">
+        <h1 className="mt-4 text-2xl font-bold text-[#2C3020]">Ny sag</h1>
+        <p className="mt-2 text-sm text-[#5C5A48]">
           Beskriv dit problem — vi vender tilbage hurtigst muligt.
         </p>
       </div>
 
-      <div className="rounded-2xl border border-sky-100 bg-white p-6 shadow-sm">
+      <div className="rounded-2xl border border-[#D4C9A8] bg-white p-6 shadow-sm">
         <TicketForm
           initialTitle={initialTitle}
           onSubmit={handleSubmit}
@@ -156,7 +156,7 @@ export default function PortalSupportNewPage() {
   return (
     <Suspense
       fallback={
-        <div className="w-full p-6 text-sm text-[#4A8CB5] md:p-8">Indlæser…</div>
+        <div className="w-full p-6 text-sm text-[#5C5A48] md:p-8">Indlæser…</div>
       }
     >
       <PortalSupportNewPageInner />

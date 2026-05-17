@@ -33,7 +33,7 @@ function truncateFileName(name: string, max = 30): string {
 function fileIcon(fileName: string, mime: string | null) {
   const lower = fileName.toLowerCase();
   if (/\.(png|jpe?g|gif|webp|svg)$/i.test(lower) || mime?.startsWith("image/")) {
-    return <ImageIcon className="h-4 w-4 shrink-0 text-sky-600" aria-hidden />;
+    return <ImageIcon className="h-4 w-4 shrink-0 text-[#8B9E6B]" aria-hidden />;
   }
   if (/\.(pdf|docx?|xlsx?|txt)$/i.test(lower)) {
     return <FileText className="h-4 w-4 shrink-0 text-emerald-600" aria-hidden />;
@@ -161,8 +161,8 @@ export function TicketAttachmentsPanel({
 
   if (loading) {
     return (
-      <section className="rounded-2xl border border-sky-100 bg-white p-5 shadow-sm">
-        <p className="flex items-center gap-2 text-sm text-[#4A8CB5]">
+      <section className="rounded-2xl border border-[#D4C9A8] bg-white p-5 shadow-sm">
+        <p className="flex items-center gap-2 text-sm text-[#5C5A48]">
           <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
           Henter vedhæftede filer…
         </p>
@@ -175,11 +175,11 @@ export function TicketAttachmentsPanel({
   }
 
   return (
-    <section className="rounded-2xl border border-sky-100 bg-white p-5 shadow-sm">
-      <h2 className="text-sm font-semibold text-[#0D1F2D]">Vedhæftede filer</h2>
+    <section className="rounded-2xl border border-[#D4C9A8] bg-white p-5 shadow-sm">
+      <h2 className="text-sm font-semibold text-[#2C3020]">Vedhæftede filer</h2>
 
       {attachments.length > 0 ? (
-        <ul className="mt-3 divide-y divide-sky-50">
+        <ul className="mt-3 divide-y divide-[#E8E2D0]">
           {attachments.map((attachment) => (
             <li
               key={attachment.id}
@@ -187,18 +187,18 @@ export function TicketAttachmentsPanel({
             >
               {fileIcon(attachment.file_name, attachment.file_type)}
               <span
-                className="min-w-0 flex-1 truncate text-sm text-[#0D1F2D]"
+                className="min-w-0 flex-1 truncate text-sm text-[#2C3020]"
                 title={attachment.file_name}
               >
                 {truncateFileName(attachment.file_name)}
               </span>
-              <span className="shrink-0 text-xs text-[#4A8CB5]">
+              <span className="shrink-0 text-xs text-[#5C5A48]">
                 {formatFileSize(attachment.file_size)}
               </span>
               <button
                 type="button"
                 onClick={() => void openAttachment(attachment)}
-                className="shrink-0 rounded-full px-3 py-1 text-xs font-semibold text-sky-600 transition hover:bg-sky-50"
+                className="shrink-0 rounded-full px-3 py-1 text-xs font-semibold text-[#8B9E6B] transition hover:bg-[#EEF2E6]"
               >
                 Åbn
               </button>
@@ -206,13 +206,13 @@ export function TicketAttachmentsPanel({
           ))}
         </ul>
       ) : (
-        <p className="mt-2 text-sm text-[#4A8CB5]">Ingen vedhæftede filer endnu.</p>
+        <p className="mt-2 text-sm text-[#5C5A48]">Ingen vedhæftede filer endnu.</p>
       )}
 
       {error ? <p className="mt-2 text-xs text-red-600">{error}</p> : null}
 
       {allowUpload ? (
-        <div className="mt-4 border-t border-sky-50 pt-3">
+        <div className="mt-4 border-t border-[#E8E2D0] pt-3">
           <input
             ref={fileInputRef}
             type="file"
@@ -225,7 +225,7 @@ export function TicketAttachmentsPanel({
             type="button"
             onClick={() => fileInputRef.current?.click()}
             disabled={uploading}
-            className="inline-flex items-center gap-1.5 text-sm font-medium text-sky-600 transition hover:text-sky-700 disabled:opacity-50"
+            className="inline-flex items-center gap-1.5 text-sm font-medium text-[#8B9E6B] transition hover:text-[#7A8A5A] disabled:opacity-50"
           >
             {uploading ? (
               <Loader2 className="h-4 w-4 animate-spin" aria-hidden />

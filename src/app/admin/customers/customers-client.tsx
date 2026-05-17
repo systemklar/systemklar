@@ -227,13 +227,13 @@ export default function AdminCustomersClient() {
     <div>
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-[#0D1F2D] md:text-3xl">Kunder</h1>
-          <p className="mt-2 text-sm text-[#4A8CB5]">Organisationer med brugere og invitationer.</p>
+          <h1 className="text-2xl font-bold text-[#2C3020] md:text-3xl">Kunder</h1>
+          <p className="mt-2 text-sm text-[#5C5A48]">Organisationer med brugere og invitationer.</p>
         </div>
         <button
           type="button"
           onClick={() => setModalOpen(true)}
-          className="inline-flex min-h-11 items-center justify-center rounded-full bg-[#0A6EBD] px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-[#0859A0]"
+          className="inline-flex min-h-11 items-center justify-center rounded-full bg-[#8B9E6B] px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-[#7A8A5A]"
         >
           Ny kunde
         </button>
@@ -259,7 +259,7 @@ export default function AdminCustomersClient() {
               <Link
                 key={org.id}
                 href={`/admin/customers/${org.id}`}
-                className="cursor-pointer rounded-2xl border border-sky-100 bg-white p-6 shadow-sm transition-all hover:border-sky-200 hover:shadow-md"
+                className="cursor-pointer rounded-2xl border border-[#D4C9A8] bg-white p-6 shadow-sm transition-all hover:border-[#D4C9A8] hover:shadow-md"
               >
                 <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                   <div className="flex items-center gap-3">
@@ -273,8 +273,8 @@ export default function AdminCustomersClient() {
                       className="h-10 w-10 text-sm"
                     />
                     <div>
-                      <h2 className="text-xl font-semibold text-[#0D1F2D]">{org.name}</h2>
-                      <p className="mt-1 text-sm text-[#4A8CB5]">
+                      <h2 className="text-xl font-semibold text-[#2C3020]">{org.name}</h2>
+                      <p className="mt-1 text-sm text-[#5C5A48]">
                         {profiles.length} aktive brugere · {pendingInvites.length} afventende invitationer
                       </p>
                     </div>
@@ -291,7 +291,7 @@ export default function AdminCustomersClient() {
                 <div className="mt-4 flex items-center justify-between">
                   <div className="flex items-center">
                     {stack.length === 0 ? (
-                      <div className="flex h-9 w-9 items-center justify-center rounded-full bg-sky-100 text-xs font-semibold text-sky-700">
+                      <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[#EEF2E6] text-xs font-semibold text-[#7A8A5A]">
                         ?
                       </div>
                     ) : (
@@ -315,7 +315,7 @@ export default function AdminCustomersClient() {
                       })
                     )}
                   </div>
-                  <span className="text-sm font-semibold text-sky-700">Se detaljer →</span>
+                  <span className="text-sm font-semibold text-[#7A8A5A]">Se detaljer →</span>
                 </div>
               </Link>
             );
@@ -340,7 +340,7 @@ export default function AdminCustomersClient() {
                   required
                   value={contactName}
                   onChange={(e) => setContactName(e.target.value)}
-                  className="w-full rounded-lg border border-slate-300 px-3 py-2 text-base outline-none focus:border-blue-600 md:text-sm"
+                  className="w-full rounded-lg border border-slate-300 px-3 py-2 text-base outline-none focus:border-[#8B9E6B] md:text-sm"
                   placeholder="Fx Mette Jensen"
                 />
               </div>
@@ -354,7 +354,7 @@ export default function AdminCustomersClient() {
                   required
                   value={companyName}
                   onChange={(e) => setCompanyName(e.target.value)}
-                  className="w-full rounded-lg border border-slate-300 px-3 py-2 text-base outline-none focus:border-blue-600 md:text-sm"
+                  className="w-full rounded-lg border border-slate-300 px-3 py-2 text-base outline-none focus:border-[#8B9E6B] md:text-sm"
                   placeholder="Firma A/S"
                 />
               </div>
@@ -368,7 +368,7 @@ export default function AdminCustomersClient() {
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full rounded-lg border border-slate-300 px-3 py-2 text-base outline-none focus:border-blue-600 md:text-sm"
+                  className="w-full rounded-lg border border-slate-300 px-3 py-2 text-base outline-none focus:border-[#8B9E6B] md:text-sm"
                   placeholder="kunde@firma.dk"
                 />
               </div>
@@ -381,7 +381,7 @@ export default function AdminCustomersClient() {
                   type="text"
                   value={domain}
                   onChange={(e) => setDomain(e.target.value)}
-                  className="w-full rounded-lg border border-slate-300 px-3 py-2 text-base outline-none focus:border-blue-600 md:text-sm"
+                  className="w-full rounded-lg border border-slate-300 px-3 py-2 text-base outline-none focus:border-[#8B9E6B] md:text-sm"
                   placeholder="firmadomain.dk (valgfrit)"
                   autoComplete="off"
                 />
@@ -394,7 +394,7 @@ export default function AdminCustomersClient() {
                   id="cust-role"
                   value={role}
                   onChange={(e) => setRole(e.target.value === "member" ? "member" : "org_admin")}
-                  className="w-full rounded-lg border border-slate-300 px-3 py-2 text-base outline-none focus:border-blue-600 md:text-sm"
+                  className="w-full rounded-lg border border-slate-300 px-3 py-2 text-base outline-none focus:border-[#8B9E6B] md:text-sm"
                 >
                   <option value="org_admin">Administrator</option>
                   <option value="member">Medlem</option>
@@ -412,7 +412,7 @@ export default function AdminCustomersClient() {
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="rounded-full bg-[#0A6EBD] px-5 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-[#0859A0] disabled:opacity-50"
+                  className="rounded-full bg-[#8B9E6B] px-5 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-[#7A8A5A] disabled:opacity-50"
                 >
                   {submitting ? "Opretter..." : "Opret"}
                 </button>

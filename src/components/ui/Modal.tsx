@@ -57,7 +57,7 @@ export function Modal({
         role="dialog"
         aria-modal="true"
         aria-labelledby={titleId}
-        className={`flex h-full min-h-0 w-full flex-col overflow-y-auto bg-white p-6 shadow-2xl md:h-auto md:max-h-[min(90vh,calc(100dvh-2rem))] md:rounded-2xl md:border md:border-sky-100 md:shadow-sm ${panelClassName}`}
+        className={`flex h-full min-h-0 w-full flex-col overflow-y-auto bg-white p-6 shadow-2xl md:h-auto md:max-h-[min(90vh,calc(100dvh-2rem))] md:rounded-2xl md:border md:border-[#D4C9A8] md:shadow-sm ${panelClassName}`}
         onClick={(event) => event.stopPropagation()}
       >
         {children}

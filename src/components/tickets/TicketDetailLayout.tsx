@@ -35,7 +35,7 @@ export function TicketDetailLayout({
 }: TicketDetailLayoutProps) {
   return (
     <div className="flex min-h-0 w-full flex-1 flex-col">
-      <Link href={backHref} className="text-sm font-semibold text-[#0A6EBD] hover:underline">
+      <Link href={backHref} className="text-sm font-semibold text-[#8B9E6B] hover:underline">
         {backLabel}
       </Link>
 
@@ -51,20 +51,20 @@ export function TicketDetailLayout({
         </div>
 
         <aside className="space-y-4">
-          <section className="rounded-2xl border border-sky-100 bg-white p-5 shadow-sm">
-            <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-[#4A8CB5]">
+          <section className="rounded-2xl border border-[#D4C9A8] bg-white p-5 shadow-sm">
+            <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-[#5C5A48]">
               Sag-info
             </p>
             <TicketDetailHeader
               ticket={ticket}
               showExpectedResponse={showExpectedResponse}
             />
-            <dl className="mt-4 space-y-2 border-t border-sky-50 pt-4 text-sm">
+            <dl className="mt-4 space-y-2 border-t border-[#E8E2D0] pt-4 text-sm">
               <div>
-                <dt className="text-xs font-medium text-[#4A8CB5]">Kunde</dt>
-                <dd className="mt-0.5 font-medium text-[#0D1F2D]">
+                <dt className="text-xs font-medium text-[#5C5A48]">Kunde</dt>
+                <dd className="mt-0.5 font-medium text-[#2C3020]">
                   {customerProfileHref ? (
-                    <Link href={customerProfileHref} className="text-[#0A6EBD] hover:underline">
+                    <Link href={customerProfileHref} className="text-[#8B9E6B] hover:underline">
                       {customerName}
                     </Link>
                   ) : (
@@ -73,8 +73,8 @@ export function TicketDetailLayout({
                 </dd>
               </div>
             </dl>
-            <div className="mt-4 border-t border-sky-50 pt-4">
-              <p className="mb-2 text-xs font-medium text-[#4A8CB5]">Status</p>
+            <div className="mt-4 border-t border-[#E8E2D0] pt-4">
+              <p className="mb-2 text-xs font-medium text-[#5C5A48]">Status</p>
               <TicketStatusToggle
                 ticketId={ticket.id}
                 status={ticket.status}
@@ -83,14 +83,14 @@ export function TicketDetailLayout({
             </div>
           </section>
 
-          <section className="rounded-2xl border border-sky-100 bg-white p-5 shadow-sm">
-            <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-[#4A8CB5]">
+          <section className="rounded-2xl border border-[#D4C9A8] bg-white p-5 shadow-sm">
+            <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-[#5C5A48]">
               Beskrivelse
             </p>
             {ticket.description ? (
-              <p className="whitespace-pre-wrap text-sm text-[#2C4A5E]">{ticket.description}</p>
+              <p className="whitespace-pre-wrap text-sm text-[#5C5A48]">{ticket.description}</p>
             ) : (
-              <p className="text-sm text-[#4A8CB5]">Ingen beskrivelse.</p>
+              <p className="text-sm text-[#5C5A48]">Ingen beskrivelse.</p>
             )}
           </section>
 

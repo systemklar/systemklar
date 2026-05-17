@@ -265,17 +265,17 @@ export default function AdminTicketsClient({
 
   return (
     <div>
-      <div className="flex flex-col gap-4 border-b border-sky-100 pb-6 sm:flex-row sm:items-start sm:justify-between">
+      <div className="flex flex-col gap-4 border-b border-[#D4C9A8] pb-6 sm:flex-row sm:items-start sm:justify-between">
         <div>
-          <p className="mb-1 text-xs text-[#4A8CB5]">Admin</p>
-          <h1 className="text-2xl font-bold text-[#062840]">Support & sager</h1>
-          <p className="mt-2 text-sm text-[#4A8CB5]">Alle supportssager på tværs af kunder.</p>
+          <p className="mb-1 text-xs text-[#5C5A48]">Admin</p>
+          <h1 className="text-2xl font-bold text-[#2C3E2A]">Support & sager</h1>
+          <p className="mt-2 text-sm text-[#5C5A48]">Alle supportssager på tværs af kunder.</p>
         </div>
         <div className="flex flex-wrap items-center gap-3 sm:justify-end">
           <button
             type="button"
             onClick={openNewTicketModal}
-            className="rounded-full bg-[#0A6EBD] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[#0859A0]"
+            className="rounded-full bg-[#8B9E6B] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[#7A8A5A]"
           >
             Ny sag
           </button>
@@ -293,9 +293,9 @@ export default function AdminTicketsClient({
         </p>
       ) : null}
 
-      <div className="mt-8 rounded-2xl border border-sky-100 bg-white p-5 shadow-sm">
+      <div className="mt-8 rounded-2xl border border-[#D4C9A8] bg-white p-5 shadow-sm">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-          <h2 className="text-base font-semibold text-[#062840]">Alle sager</h2>
+          <h2 className="text-base font-semibold text-[#2C3E2A]">Alle sager</h2>
           <TicketStatusFilterTabs value={statusFilter} onChange={setStatusFilter} />
         </div>
         <div className="mt-4">
@@ -315,11 +315,11 @@ export default function AdminTicketsClient({
         </div>
 
         {ticketsLoading ? (
-          <p className="mt-4 text-sm text-[#4A8CB5]">Henter sager…</p>
+          <p className="mt-4 text-sm text-[#5C5A48]">Henter sager…</p>
         ) : tickets.length === 0 ? (
-          <p className="mt-4 text-sm text-[#4A8CB5]">Ingen sager endnu.</p>
+          <p className="mt-4 text-sm text-[#5C5A48]">Ingen sager endnu.</p>
         ) : viewFilteredTickets.length === 0 ? (
-          <p className="mt-6 text-center text-sm text-[#4A8CB5]">
+          <p className="mt-6 text-center text-sm text-[#5C5A48]">
             {debouncedSearch.trim()
               ? "Ingen sager matcher din søgning."
               : "Ingen sager matcher filteret."}
@@ -348,7 +348,7 @@ export default function AdminTicketsClient({
                           event.stopPropagation();
                           void markAsResolved(t.id);
                         }}
-                        className="rounded-full border border-sky-200 bg-white px-3 py-1 text-xs font-semibold text-[#4A8CB5] transition hover:border-sky-300 hover:bg-sky-50 disabled:opacity-50"
+                        className="rounded-full border border-[#D4C9A8] bg-white px-3 py-1 text-xs font-semibold text-[#5C5A48] transition hover:border-[#D4C9A8] hover:bg-[#EEF2E6] disabled:opacity-50"
                       >
                         {isResolving ? "Gemmer…" : "Markér som løst"}
                       </button>
@@ -362,10 +362,10 @@ export default function AdminTicketsClient({
       </div>
 
       <Modal open={modalOpen} onClose={closeNewTicketModal} titleId="new-ticket-title" panelClassName="max-w-lg">
-        <h2 id="new-ticket-title" className="text-lg font-semibold text-[#062840]">
+        <h2 id="new-ticket-title" className="text-lg font-semibold text-[#2C3E2A]">
           Ny supportssag
         </h2>
-        <p className="mt-1 text-sm text-[#4A8CB5]">
+        <p className="mt-1 text-sm text-[#5C5A48]">
           Opret en sag på vegne af en kunde direkte fra admin-panelet.
         </p>
         <div className="mt-6">

@@ -1,17 +1,46 @@
 @import "tailwindcss";
 
 :root {
-  --background: #f5fafd;
-  --foreground: #0d1f2d;
-  --sk-accent: #0a6ebd;
-  --sk-navy: #062840;
-  --sk-border: #d0e8f5;
+  --color-primary: #8b9e6b;
+  --color-primary-hover: #7a8a5a;
+  --color-primary-light: #eef2e6;
+  --color-navy: #2c3e2a;
+  --color-navy-hover: #233320;
+  --color-bg-page: #f5f0e8;
+  --color-bg-card: #ffffff;
+  --color-border: #d4c9a8;
+  --color-border-light: #e8e2d0;
+  --color-accent: #c8a96e;
+  --color-text-primary: #2c3020;
+  --color-text-secondary: #5c5a48;
+  --color-text-muted: #8c8a78;
+  --color-status-ok: #6a8f5a;
+  --color-status-warning: #c4a84f;
+  --color-status-error: #b85c4a;
+  --color-status-pending: #a8a090;
+
+  --background: var(--color-bg-page);
+  --foreground: var(--color-text-primary);
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-inter);
+
+  --color-sk-primary: #8b9e6b;
+  --color-sk-primary-hover: #7a8a5a;
+  --color-sk-primary-light: #eef2e6;
+  --color-sk-navy: #2c3e2a;
+  --color-sk-navy-hover: #233320;
+  --color-sk-bg-page: #f5f0e8;
+  --color-sk-bg-card: #ffffff;
+  --color-sk-border: #d4c9a8;
+  --color-sk-border-light: #e8e2d0;
+  --color-sk-accent: #c8a96e;
+  --color-sk-text-primary: #2c3020;
+  --color-sk-text-secondary: #5c5a48;
+  --color-sk-text-muted: #8c8a78;
 }
 
 body {
@@ -40,7 +69,6 @@ html {
   }
 }
 
-/* App shell: calm enter on client navigations */
 @keyframes page-transition-enter {
   from {
     opacity: 0;
@@ -56,7 +84,6 @@ html {
   animation: page-transition-enter 200ms ease-out forwards;
 }
 
-/* Marketing: scroll reveal (Intersection Observer toggler .visible) */
 .animate-on-scroll {
   opacity: 0;
   transform: translateY(14px);
@@ -68,7 +95,6 @@ html {
   transform: translateY(0);
 }
 
-/* Stagger fade-in for lists */
 .stagger-item {
   opacity: 0;
   transform: translateY(16px);
@@ -96,7 +122,6 @@ html {
   transition-delay: 240ms;
 }
 
-/* Smooth number counter feel */
 .fade-scale {
   opacity: 0;
   transform: scale(0.96);
@@ -108,15 +133,14 @@ html {
   transform: scale(1);
 }
 
-/* Subtle card hover */
 .card-hover {
   transition: transform 0.2s ease, box-shadow 0.2s ease, background-image 0.2s ease;
 }
 
 .card-hover:hover {
   transform: translateY(-2px);
-  background-image: linear-gradient(180deg, #ffffff 0%, #f0f7ff 100%);
-  box-shadow: 0 8px 24px rgba(10, 110, 189, 0.08);
+  background-image: linear-gradient(180deg, #ffffff 0%, #eef2e6 100%);
+  box-shadow: 0 8px 24px rgba(44, 62, 42, 0.08);
 }
 
 .surface-cards .rounded-2xl.border.bg-white,
@@ -127,8 +151,8 @@ html {
 .surface-cards .rounded-2xl.border.bg-white:hover,
 .surface-cards .rounded-xl.border.bg-white:hover {
   transform: translateY(-2px);
-  background-image: linear-gradient(180deg, #ffffff 0%, #f0f7ff 100%);
-  box-shadow: 0 8px 24px rgba(10, 110, 189, 0.08);
+  background-image: linear-gradient(180deg, #ffffff 0%, #eef2e6 100%);
+  box-shadow: 0 8px 24px rgba(44, 62, 42, 0.08);
 }
 
 .app-rhythm > div.space-y-6,
@@ -145,24 +169,26 @@ html {
 }
 
 .app-rhythm .rounded-2xl.border.bg-white {
-  border-color: #d0e8f5;
+  border-color: var(--color-border);
+  border-radius: 16px;
+  box-shadow: none;
 }
 
 .app-rhythm table thead {
-  background: #f8fbff;
+  background: #f4f2ec;
 }
 
 .app-rhythm table th {
   font-weight: 600;
-  color: #36566f;
+  color: var(--color-text-secondary);
 }
 
 .app-rhythm table td {
-  color: #0d1f2d;
+  color: var(--color-text-primary);
 }
 
 .app-rhythm .text-slate-600 {
-  color: #4a6478;
+  color: var(--color-text-secondary);
 }
 
 a,
@@ -171,14 +197,14 @@ button {
 }
 
 .btn-primary {
-  background-color: #0a6ebd;
+  background-color: var(--color-primary);
   color: #fff;
   border-radius: 9999px;
   transition: transform 0.1s ease, background-color 0.2s ease;
 }
 
 .btn-primary:hover {
-  background-color: #0859a0;
+  background-color: var(--color-primary-hover);
 }
 
 .btn-primary:active {
@@ -186,19 +212,99 @@ button {
 }
 
 .btn-primary:focus-visible {
-  outline: 2px solid rgba(10, 110, 189, 0.45);
+  outline: 2px solid rgba(139, 158, 107, 0.45);
   outline-offset: 2px;
 }
 
+.btn-secondary {
+  border: 1px solid var(--color-border);
+  color: var(--color-text-secondary);
+  border-radius: 9999px;
+  background: transparent;
+}
+
+.btn-secondary:hover {
+  background: var(--color-bg-page);
+}
+
+.btn-navy {
+  background: var(--color-navy);
+  color: #fff;
+  border-radius: 9999px;
+}
+
+.btn-navy:hover {
+  background: var(--color-navy-hover);
+}
+
 .btn-danger {
-  background-color: #fef2f2;
-  color: #b91c1c;
-  border: 1px solid #fecaca;
+  background-color: #fdf0ee;
+  color: var(--color-status-error);
+  border: 1px solid #e8c4bc;
   border-radius: 9999px;
 }
 
 .btn-danger:hover {
-  background-color: #fee2e2;
+  background-color: #fbe8e4;
+}
+
+/* App shell sidebars (portal + admin) */
+.sk-sidebar {
+  background: var(--color-navy);
+  border-color: var(--color-navy-hover);
+}
+
+.sk-sidebar-logo {
+  background: var(--color-navy-hover);
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+.sk-sidebar-nav-active {
+  background: rgba(139, 158, 107, 0.2);
+  color: #c8d4a8;
+  font-weight: 500;
+}
+
+.sk-sidebar-nav-inactive {
+  color: #a8b898;
+}
+
+.sk-sidebar-nav-inactive:hover {
+  background: rgba(255, 255, 255, 0.06);
+  color: #c8d4a8;
+}
+
+.sk-sidebar-section-label {
+  color: rgba(168, 184, 152, 0.85);
+}
+
+.sk-sidebar-user-muted {
+  color: #a8b898;
+}
+
+/* Status badges */
+.sk-status-ok {
+  background: #eef4ea;
+  color: #4a7a3a;
+  border: 1px solid #c4d8b8;
+}
+
+.sk-status-warning {
+  background: #fbf5e4;
+  color: #8a6a1a;
+  border: 1px solid #e8d498;
+}
+
+.sk-status-error {
+  background: #fbf0ee;
+  color: #8a3a2a;
+  border: 1px solid #e8c4bc;
+}
+
+.sk-status-pending {
+  background: #f4f2ec;
+  color: #6a6858;
+  border: 1px solid #d4ceb8;
 }
 
 /* TicketMessageThread: bouncing typing dots */
@@ -232,7 +338,6 @@ button {
   animation-delay: 0.36s;
 }
 
-/* Portal dashboard: hero entrance */
 @keyframes portal-hero-enter {
   from {
     opacity: 0;
@@ -262,7 +367,6 @@ button {
   animation: portal-hero-icon-fade-in 400ms ease-out 200ms forwards;
 }
 
-/* Portal dashboard: hero icon breathe + float */
 @keyframes portal-hero-icon-pulse {
   0%,
   100% {
@@ -289,14 +393,13 @@ button {
     portal-hero-icon-pulse 3s ease-in-out infinite;
 }
 
-/* Portal dashboard: warning hero icon glow */
 @keyframes portal-hero-warning-icon-glow {
   0%,
   100% {
-    box-shadow: 0 0 0 0 rgba(196, 123, 10, 0.4);
+    box-shadow: 0 0 0 0 rgba(196, 168, 79, 0.4);
   }
   50% {
-    box-shadow: 0 0 0 16px rgba(196, 123, 10, 0);
+    box-shadow: 0 0 0 16px rgba(196, 168, 79, 0);
   }
 }
 
@@ -304,7 +407,6 @@ button {
   animation: portal-hero-warning-icon-glow 2.5s ease-in-out infinite;
 }
 
-/* Portal dashboard: warning headline shimmer */
 @keyframes portal-hero-warning-shimmer {
   0% {
     background-position: 120% 50%;
@@ -317,13 +419,13 @@ button {
 .portal-hero-warning-shimmer {
   background-image: linear-gradient(
     105deg,
-    #0d1f2d 0%,
-    #0d1f2d 42%,
-    #8a6420 48%,
-    #c47b0a 50%,
-    #8a6420 54%,
-    #0d1f2d 58%,
-    #0d1f2d 100%
+    #2c3020 0%,
+    #2c3020 42%,
+    #8a6a1a 48%,
+    #c4a84f 50%,
+    #8a6a1a 54%,
+    #2c3020 58%,
+    #2c3020 100%
   );
   background-size: 220% 100%;
   -webkit-background-clip: text;
@@ -332,7 +434,6 @@ button {
   animation: portal-hero-warning-shimmer 4s ease-in-out infinite;
 }
 
-/* Portal dashboard: attention pills bob */
 @keyframes portal-hero-pill-bob {
   0%,
   100% {
@@ -347,14 +448,13 @@ button {
   animation: portal-hero-pill-bob 2s ease-in-out infinite;
 }
 
-/* Portal dashboard: fejl status dot glow */
 @keyframes portal-status-dot-fejl-glow {
   0%,
   100% {
-    box-shadow: 0 0 0 0 rgba(196, 43, 43, 0.4);
+    box-shadow: 0 0 0 0 rgba(184, 92, 74, 0.4);
   }
   50% {
-    box-shadow: 0 0 0 8px rgba(196, 43, 43, 0);
+    box-shadow: 0 0 0 8px rgba(184, 92, 74, 0);
   }
 }
 
@@ -362,7 +462,6 @@ button {
   animation: portal-status-dot-fejl-glow 2s ease-in-out infinite;
 }
 
-/* Portal dashboard: tab auto-rotate progress */
 @keyframes portal-tab-progress-fill {
   from {
     width: 0%;
@@ -391,7 +490,6 @@ button {
   backdrop-filter: none !important;
 }
 
-/* Portal dashboard: attention row left border pulse */
 @keyframes portal-attention-border-pulse {
   0%,
   100% {
@@ -403,12 +501,12 @@ button {
 }
 
 .portal-attention-border-fejl {
-  border-left: 3px solid #c42b2b;
+  border-left: 3px solid var(--color-status-error);
   animation: portal-attention-border-pulse 2s ease-in-out infinite;
 }
 
 .portal-attention-border-advarsel {
-  border-left: 3px solid #c47b0a;
+  border-left: 3px solid var(--color-status-warning);
   animation: portal-attention-border-pulse 2s ease-in-out infinite;
 }
 
@@ -417,22 +515,21 @@ button {
 }
 
 .group\/dash-row:hover .portal-dashboard-row-dot-ok {
-  box-shadow: 0 0 0 3px rgba(10, 124, 92, 0.35);
+  box-shadow: 0 0 0 3px rgba(106, 143, 90, 0.35);
 }
 
 .group\/dash-row:hover .portal-dashboard-row-dot-advarsel {
-  box-shadow: 0 0 0 3px rgba(196, 123, 10, 0.35);
+  box-shadow: 0 0 0 3px rgba(196, 168, 79, 0.35);
 }
 
 .group\/dash-row:hover .portal-dashboard-row-dot-fejl {
-  box-shadow: 0 0 0 3px rgba(196, 43, 43, 0.4);
+  box-shadow: 0 0 0 3px rgba(184, 92, 74, 0.4);
 }
 
 .group\/dash-row:hover .portal-dashboard-row-dot-afventer {
-  box-shadow: 0 0 0 3px rgba(148, 163, 184, 0.35);
+  box-shadow: 0 0 0 3px rgba(168, 160, 144, 0.35);
 }
 
-/* Portal dashboard: row stagger entrance */
 @keyframes portal-dash-row-enter {
   from {
     opacity: 0;
@@ -449,7 +546,6 @@ button {
   opacity: 0;
 }
 
-/* Portal dashboard: status dot pulses */
 @keyframes portal-dot-advarsel-pulse {
   0%,
   100% {
@@ -468,11 +564,11 @@ button {
   0%,
   100% {
     transform: scale(1);
-    box-shadow: 0 0 0 0 rgba(196, 43, 43, 0.45);
+    box-shadow: 0 0 0 0 rgba(184, 92, 74, 0.45);
   }
   50% {
     transform: scale(1.25);
-    box-shadow: 0 0 0 6px rgba(196, 43, 43, 0);
+    box-shadow: 0 0 0 6px rgba(184, 92, 74, 0);
   }
 }
 
@@ -494,7 +590,6 @@ button {
   animation: portal-dot-afventer-fade 2s ease-in-out infinite;
 }
 
-/* App shells: prevent horizontal scroll; mobile-friendly form controls */
 .surface-cards {
   overflow-x: hidden;
 }

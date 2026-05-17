@@ -4,8 +4,8 @@ import { TicketStatusFilterTabs } from "@/components/tickets/TicketStatusFilterT
 import type { AdminTicketSort, TicketListStatusFilter } from "@/lib/ticket-display";
 
 const filterFieldClass =
-  "mt-1.5 w-full rounded-xl border border-sky-200 bg-white px-4 py-2.5 text-sm text-[#0D1F2D] outline-none transition focus:border-[#0A6EBD] focus:ring-2 focus:ring-[#0A6EBD]/20";
-const filterLabelClass = "text-xs font-semibold uppercase tracking-wide text-[#4A8CB5]";
+  "mt-1.5 w-full rounded-xl border border-[#D4C9A8] bg-white px-4 py-2.5 text-sm text-[#2C3020] outline-none transition focus:border-[#8B9E6B] focus:ring-2 focus:ring-[#8B9E6B]/20";
+const filterLabelClass = "text-xs font-semibold uppercase tracking-wide text-[#5C5A48]";
 
 type OrganisationOption = { id: string; name: string };
 

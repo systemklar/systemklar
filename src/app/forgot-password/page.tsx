@@ -42,7 +42,7 @@ export default function ForgotPasswordPage() {
     >
 
       {sent ? (
-        <p className="mt-8 rounded-lg border border-blue-100 bg-[#EFF6FF] px-3 py-2 text-sm text-blue-800">
+        <p className="mt-8 rounded-lg border border-[#C4D8B8] bg-[#EEF4EA] px-3 py-2 text-sm text-[#4A7A3A]">
           Vi har sendt et nulstillingslink til din e-mail.
         </p>
       ) : (
@@ -57,7 +57,7 @@ export default function ForgotPasswordPage() {
                 value={email}
                 onChange={(event) => setEmail(event.target.value)}
                 required
-                className="w-full rounded-lg border border-[#E7E5E4] px-3 py-2 outline-none transition focus:border-blue-600 focus:ring-2 focus:ring-blue-600/15"
+                className="w-full rounded-lg border border-[#E7E5E4] px-3 py-2 outline-none transition focus:border-[#8B9E6B] focus:ring-2 focus:ring-[#EEF2E6]"
                 placeholder="dig@firma.dk"
                 autoComplete="email"
               />
@@ -73,7 +73,7 @@ export default function ForgotPasswordPage() {
         </form>
       )}
 
-      <Link href="/login" className="mt-6 inline-block text-sm font-semibold text-blue-600 hover:underline">
+      <Link href="/login" className="mt-6 inline-block text-sm font-semibold text-[#8B9E6B] hover:underline">
         Tilbage til login
       </Link>
     </AuthSplitLayout>

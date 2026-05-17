@@ -7,7 +7,6 @@ const SIZES = {
   lg: { imgPx: 36, textPx: 20 },
 } as const;
 
-/** Must match `public/logo.png` intrinsic ratio so layout is stable before decode. */
 const LOGO_SRC_WIDTH = 256;
 const LOGO_SRC_HEIGHT = 256;
 
@@ -23,7 +22,7 @@ export type SystemklarLogoProps = {
 
 /**
  * Fælles logo: `/logo.png` + «systemklar» i Inter bold.
- * Lys baggrund: blå logo uden filter, tekst #0A6EBD.
+ * Lys baggrund: oliven logo + tekst #8B9E6B.
  * Mørk/navy: hvid tekst + logo via filter.
  */
 export function SystemklarLogo({
@@ -47,8 +46,8 @@ export function SystemklarLogo({
           WebkitFilter: "brightness(0) invert(1)",
         }
       : {
-          filter: "none",
-          WebkitFilter: "none",
+          filter: "sepia(1) saturate(2) hue-rotate(50deg) brightness(0.7)",
+          WebkitFilter: "sepia(1) saturate(2) hue-rotate(50deg) brightness(0.7)",
         }),
   };
 
@@ -65,7 +64,7 @@ export function SystemklarLogo({
         style={imgStyle}
       />
       <span
-        className={isDark ? "font-bold text-white" : "font-bold text-[#0A6EBD]"}
+        className={isDark ? "font-bold text-white" : "font-bold text-[#8B9E6B]"}
         style={{ fontSize: textPx, lineHeight: 1.1 }}
       >
         systemklar

@@ -35,7 +35,7 @@ type OnboardingPhotoUploadsProps = {
 
 function UploadSuccessBadge() {
   return (
-    <span className="absolute -bottom-1 -right-1 flex h-7 w-7 items-center justify-center rounded-full border-2 border-white bg-[#0A7C5C] text-white shadow-sm">
+    <span className="absolute -bottom-1 -right-1 flex h-7 w-7 items-center justify-center rounded-full border-2 border-white bg-[#6A8F5A] text-white shadow-sm">
       <CheckCircle2 className="h-4 w-4" aria-hidden />
       <span className="sr-only">Uploadet</span>
     </span>
@@ -133,7 +133,7 @@ export function OnboardingPhotoUploads({
       onClick={onAvatarPick}
       disabled={uploadingAvatar}
       aria-label="Upload profilbillede"
-      className={`group relative ${avatarSize} overflow-hidden rounded-full border-2 border-dashed border-sky-200 bg-sky-50/50 p-0 transition hover:border-sky-300 hover:bg-sky-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 disabled:cursor-not-allowed`}
+      className={`group relative ${avatarSize} overflow-hidden rounded-full border-2 border-dashed border-[#D4C9A8] bg-[#EEF2E6]/50 p-0 transition hover:border-[#D4C9A8] hover:bg-[#EEF2E6] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#8B9E6B] disabled:cursor-not-allowed`}
     >
       <ProfileAvatar
         avatarUrl={avatarUrl}
@@ -169,7 +169,7 @@ export function OnboardingPhotoUploads({
       onClick={onLogoPick}
       disabled={uploadingLogo}
       aria-label="Upload virksomhedslogo"
-      className={`group relative ${logoSize} overflow-hidden border-2 border-dashed border-sky-200 bg-sky-50/50 p-0 transition hover:border-sky-300 hover:bg-sky-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 disabled:cursor-not-allowed`}
+      className={`group relative ${logoSize} overflow-hidden border-2 border-dashed border-[#D4C9A8] bg-[#EEF2E6]/50 p-0 transition hover:border-[#D4C9A8] hover:bg-[#EEF2E6] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#8B9E6B] disabled:cursor-not-allowed`}
     >
       <OrganisationLogo logoUrl={logoUrl} initials={orgInitials} className="h-full w-full text-xl" />
       <span
@@ -206,7 +206,7 @@ export function OnboardingPhotoUploads({
             className="hidden"
             onChange={(e) => void onAvatarChange(e)}
           />
-          <p className="text-sm font-semibold text-[#0D1F2D]">Dit profilbillede</p>
+          <p className="text-sm font-semibold text-[#2C3020]">Dit profilbillede</p>
         </div>
 
         {showOrgLogo ? (
@@ -219,7 +219,7 @@ export function OnboardingPhotoUploads({
               className="hidden"
               onChange={(e) => void onLogoChange(e)}
             />
-            <p className="text-sm font-semibold text-[#0D1F2D]">Jeres virksomhedslogo</p>
+            <p className="text-sm font-semibold text-[#2C3020]">Jeres virksomhedslogo</p>
           </div>
         ) : null}
 
@@ -231,7 +231,7 @@ export function OnboardingPhotoUploads({
           <button
             type="button"
             onClick={onSkip}
-            className="text-sm font-medium text-[#4A8CB5] underline-offset-2 hover:text-sky-700 hover:underline"
+            className="text-sm font-medium text-[#5C5A48] underline-offset-2 hover:text-[#7A8A5A] hover:underline"
           >
             Spring over
           </button>
@@ -254,7 +254,7 @@ export function OnboardingPhotoUploads({
             className="hidden"
             onChange={(e) => void onAvatarChange(e)}
           />
-          <span className="text-center text-xs font-medium text-[#4A8CB5]">Upload profilbillede</span>
+          <span className="text-center text-xs font-medium text-[#5C5A48]">Upload profilbillede</span>
         </div>
 
         {showOrgLogo ? (
@@ -267,7 +267,7 @@ export function OnboardingPhotoUploads({
               className="hidden"
               onChange={(e) => void onLogoChange(e)}
             />
-            <span className="text-center text-xs font-medium text-[#4A8CB5]">Upload virksomhedslogo</span>
+            <span className="text-center text-xs font-medium text-[#5C5A48]">Upload virksomhedslogo</span>
           </div>
         ) : null}
       </div>
@@ -280,7 +280,7 @@ export function OnboardingPhotoUploads({
         <button
           type="button"
           onClick={onSkip}
-          className="text-sm font-medium text-[#4A8CB5] underline-offset-2 hover:text-sky-700 hover:underline"
+          className="text-sm font-medium text-[#5C5A48] underline-offset-2 hover:text-[#7A8A5A] hover:underline"
         >
           Spring over
         </button>

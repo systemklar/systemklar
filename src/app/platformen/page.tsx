@@ -39,20 +39,20 @@ export const metadata: Metadata = {
 
 function BrowserChrome({ path }: { path: string }) {
   return (
-    <div className="flex items-center gap-2 border-b border-sky-100 bg-[#F0F7FF] px-4 py-2.5">
+    <div className="flex items-center gap-2 border-b border-[#D4C9A8] bg-[#EEF2E6] px-4 py-2.5">
       <div className="flex gap-1.5">
         <div className="h-2.5 w-2.5 rounded-full bg-red-400" />
         <div className="h-2.5 w-2.5 rounded-full bg-amber-400" />
         <div className="h-2.5 w-2.5 rounded-full bg-green-400" />
       </div>
-      <div className="flex-1 rounded-full bg-white px-3 py-0.5 text-xs text-[#4A8CB5]">{path}</div>
+      <div className="flex-1 rounded-full bg-white px-3 py-0.5 text-xs text-[#5C5A48]">{path}</div>
     </div>
   );
 }
 
 function MockupCard({ children }: { children: ReactNode }) {
   return (
-    <div className="cursor-default overflow-hidden rounded-2xl border border-sky-100 bg-white shadow-xl transition-transform duration-500 hover:scale-[1.02]">
+    <div className="cursor-default overflow-hidden rounded-2xl border border-[#D4C9A8] bg-white shadow-xl transition-transform duration-500 hover:scale-[1.02]">
       {children}
     </div>
   );
@@ -67,15 +67,15 @@ function Sidebar({ active }: { active: string }) {
     { label: "Systemer", icon: Server },
   ];
   return (
-    <div className="flex w-36 shrink-0 flex-col gap-1 border-r border-sky-50 bg-[#F5FAFD] p-3">
-      <div className="mb-2 px-1 text-[10px] font-bold text-[#0A6EBD]">systemklar</div>
+    <div className="flex w-36 shrink-0 flex-col gap-1 border-r border-[#E8E2D0] bg-[#F5F0E8] p-3">
+      <div className="mb-2 px-1 text-[10px] font-bold text-[#8B9E6B]">systemklar</div>
       {items.map(({ label, icon: Icon }) => {
         const isActive = active === label;
         return (
           <div
             key={label}
             className={`flex items-center gap-1.5 rounded-lg px-2 py-1.5 text-xs ${
-              isActive ? "bg-sky-50 font-medium text-sky-700" : "text-slate-400"
+              isActive ? "bg-[#EEF2E6] font-medium text-[#7A8A5A]" : "text-slate-400"
             }`}
           >
             <Icon className="h-3 w-3" />
@@ -90,7 +90,7 @@ function Sidebar({ active }: { active: string }) {
 const dashboardStats: Array<{ value: string; label: string; cls: string }> = [
   { value: "3", label: "Systemer OK", cls: "bg-green-50 text-green-700" },
   { value: "1", label: "Åben sag", cls: "bg-amber-50 text-amber-700" },
-  { value: "apr", label: "Rapport", cls: "bg-sky-50 text-sky-700" },
+  { value: "apr", label: "Rapport", cls: "bg-[#EEF2E6] text-[#7A8A5A]" },
 ];
 
 const dashboardCases: Array<{ title: string; status: string; cls: string }> = [
@@ -105,8 +105,8 @@ function DashboardMockup() {
       <div className="flex" style={{ minHeight: "320px" }}>
         <Sidebar active="Overblik" />
         <div className="flex-1 bg-white p-5">
-          <div className="mb-0.5 text-sm font-bold text-[#0D1F2D]">Goddag, Møllers VVS</div>
-          <div className="mb-4 text-xs text-[#4A8CB5]">Onsdag den 7. maj 2026</div>
+          <div className="mb-0.5 text-sm font-bold text-[#2C3020]">Goddag, Møllers VVS</div>
+          <div className="mb-4 text-xs text-[#5C5A48]">Onsdag den 7. maj 2026</div>
           <div className="mb-4 grid grid-cols-3 gap-2">
             {dashboardStats.map((stat, i) => (
               <div
@@ -119,14 +119,14 @@ function DashboardMockup() {
               </div>
             ))}
           </div>
-          <div className="mb-2 text-xs font-semibold text-[#0D1F2D]">Seneste sager</div>
+          <div className="mb-2 text-xs font-semibold text-[#2C3020]">Seneste sager</div>
           {dashboardCases.map((c, i) => (
             <div
               key={c.title}
-              className="mb-1.5 flex items-center justify-between rounded-lg bg-[#F0F7FF] px-3 py-2"
+              className="mb-1.5 flex items-center justify-between rounded-lg bg-[#EEF2E6] px-3 py-2"
               style={{ animation: `mockupFadeIn 0.4s ease-out ${0.3 + i * 0.1}s both` }}
             >
-              <span className="text-xs text-[#2C4A5E]">{c.title}</span>
+              <span className="text-xs text-[#5C5A48]">{c.title}</span>
               <span className={`rounded-full px-2 py-0.5 text-[10px] font-medium ${c.cls}`}>{c.status}</span>
             </div>
           ))}
@@ -148,14 +148,14 @@ function SupportMockup() {
     <MockupCard>
       <BrowserChrome path="systemklar.dk/support" />
       <div className="bg-white" style={{ minHeight: "320px" }}>
-        <div className="border-b border-sky-50 px-4 py-3">
+        <div className="border-b border-[#E8E2D0] px-4 py-3">
           <div className="flex items-center justify-between">
-            <div className="text-sm font-bold text-[#0D1F2D]">Sag #1284 – Printer virker ikke</div>
+            <div className="text-sm font-bold text-[#2C3020]">Sag #1284 – Printer virker ikke</div>
             <span className="rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-medium text-amber-700">
               Aktiv
             </span>
           </div>
-          <div className="mt-1 text-[10px] text-[#4A8CB5]">Oprettet for 12 minutter siden · 2 svar</div>
+          <div className="mt-1 text-[10px] text-[#5C5A48]">Oprettet for 12 minutter siden · 2 svar</div>
         </div>
         <div className="flex flex-col gap-2 p-4">
           {supportMessages.map((m, i) => (
@@ -163,8 +163,8 @@ function SupportMockup() {
               key={i}
               className={`max-w-xs rounded-2xl px-3 py-2 text-xs ${
                 m.from === "user"
-                  ? "self-end rounded-tr-sm bg-[#0A6EBD] text-white"
-                  : "self-start rounded-tl-sm bg-[#F0F7FF] text-[#2C4A5E]"
+                  ? "self-end rounded-tr-sm bg-[#8B9E6B] text-white"
+                  : "self-start rounded-tl-sm bg-[#EEF2E6] text-[#5C5A48]"
               }`}
               style={{ animation: `mockupFadeIn 0.4s ease-out ${i * 0.15}s both` }}
             >
@@ -172,11 +172,11 @@ function SupportMockup() {
             </div>
           ))}
         </div>
-        <div className="border-t border-sky-50 p-3">
-          <div className="flex items-center gap-2 rounded-full border border-sky-100 bg-[#F8FCFF] px-3 py-1.5">
-            <Paperclip className="h-3.5 w-3.5 text-[#4A8CB5]" />
-            <span className="flex-1 text-xs text-[#4A8CB5]">Skriv en besked …</span>
-            <span className="flex h-6 w-6 items-center justify-center rounded-full bg-[#0A6EBD]">
+        <div className="border-t border-[#E8E2D0] p-3">
+          <div className="flex items-center gap-2 rounded-full border border-[#D4C9A8] bg-[#F8FCFF] px-3 py-1.5">
+            <Paperclip className="h-3.5 w-3.5 text-[#5C5A48]" />
+            <span className="flex-1 text-xs text-[#5C5A48]">Skriv en besked …</span>
+            <span className="flex h-6 w-6 items-center justify-center rounded-full bg-[#8B9E6B]">
               <Send className="h-3 w-3 text-white" />
             </span>
           </div>
@@ -189,8 +189,8 @@ function SupportMockup() {
 function ReportMockup() {
   const stats: Array<{ value: string; label: string; cls: string }> = [
     { value: "100%", label: "Oppetid", cls: "bg-green-50 text-green-700" },
-    { value: "3", label: "Løste sager", cls: "bg-sky-50 text-sky-700" },
-    { value: "0", label: "Åbne sager", cls: "bg-sky-50 text-sky-700" },
+    { value: "3", label: "Løste sager", cls: "bg-[#EEF2E6] text-[#7A8A5A]" },
+    { value: "0", label: "Åbne sager", cls: "bg-[#EEF2E6] text-[#7A8A5A]" },
   ];
   return (
     <MockupCard>
@@ -198,10 +198,10 @@ function ReportMockup() {
       <div className="bg-white p-5" style={{ minHeight: "320px" }}>
         <div className="flex items-start justify-between">
           <div>
-            <div className="text-sm font-bold text-[#0D1F2D]">IT-rapport – april 2026</div>
-            <div className="mt-0.5 text-xs text-[#4A8CB5]">Møllers VVS · Genereret 1. maj</div>
+            <div className="text-sm font-bold text-[#2C3020]">IT-rapport – april 2026</div>
+            <div className="mt-0.5 text-xs text-[#5C5A48]">Møllers VVS · Genereret 1. maj</div>
           </div>
-          <span className="rounded-full bg-sky-50 px-2 py-0.5 text-[10px] font-medium text-sky-700">PDF klar</span>
+          <span className="rounded-full bg-[#EEF2E6] px-2 py-0.5 text-[10px] font-medium text-[#7A8A5A]">PDF klar</span>
         </div>
         <div className="mt-4 grid grid-cols-3 gap-2">
           {stats.map((s, i) => (
@@ -215,7 +215,7 @@ function ReportMockup() {
             </div>
           ))}
         </div>
-        <div className="mt-4 mb-1.5 text-xs font-semibold text-[#0D1F2D]">Anbefaling til næste måned</div>
+        <div className="mt-4 mb-1.5 text-xs font-semibold text-[#2C3020]">Anbefaling til næste måned</div>
         <div
           className="flex items-start gap-2 rounded-lg border border-amber-100 bg-amber-50 px-3 py-2 text-xs text-amber-800"
           style={{ animation: "mockupFadeIn 0.4s ease-out 0.3s both" }}
@@ -223,7 +223,7 @@ function ReportMockup() {
           <AlertTriangle className="mt-0.5 h-3.5 w-3.5 shrink-0" />
           <span>Opdater Windows på 2 maskiner inden næste måned for fortsat sikkerhed.</span>
         </div>
-        <div className="mt-3 flex items-center justify-between text-[10px] text-[#4A8CB5]">
+        <div className="mt-3 flex items-center justify-between text-[10px] text-[#5C5A48]">
           <span className="inline-flex items-center gap-1">
             <History className="h-3 w-3" />
             Historik tilbage til januar
@@ -248,31 +248,31 @@ function VaultMockup() {
       <BrowserChrome path="systemklar.dk/kodebank" />
       <div className="bg-white p-5" style={{ minHeight: "320px" }}>
         <div className="mb-3 flex items-center justify-between">
-          <div className="text-sm font-bold text-[#0D1F2D]">Kodebank</div>
+          <div className="text-sm font-bold text-[#2C3020]">Kodebank</div>
           <span className="inline-flex items-center gap-1 rounded-full bg-green-50 px-2 py-0.5 text-[10px] font-medium text-green-700">
             <Lock className="h-3 w-3" />
             Krypteret
           </span>
         </div>
-        <div className="mb-3 flex items-center gap-2 rounded-lg border border-sky-100 bg-[#F8FCFF] px-3 py-2">
-          <Search className="h-3.5 w-3.5 text-[#4A8CB5]" />
-          <span className="flex-1 text-xs text-[#4A8CB5]">Søg på navn, kategori eller URL …</span>
+        <div className="mb-3 flex items-center gap-2 rounded-lg border border-[#D4C9A8] bg-[#F8FCFF] px-3 py-2">
+          <Search className="h-3.5 w-3.5 text-[#5C5A48]" />
+          <span className="flex-1 text-xs text-[#5C5A48]">Søg på navn, kategori eller URL …</span>
         </div>
         <div className="space-y-2">
           {vaultEntries.map((entry, i) => (
             <div
               key={entry.name}
-              className="flex items-center justify-between rounded-lg bg-[#F0F7FF] px-3 py-2"
+              className="flex items-center justify-between rounded-lg bg-[#EEF2E6] px-3 py-2"
               style={{ animation: `mockupFadeIn 0.4s ease-out ${i * 0.08}s both` }}
             >
               <div>
-                <div className="text-xs font-semibold text-[#0D1F2D]">{entry.name}</div>
-                <div className="mt-0.5 inline-flex items-center gap-1 text-[10px] text-[#4A8CB5]">
+                <div className="text-xs font-semibold text-[#2C3020]">{entry.name}</div>
+                <div className="mt-0.5 inline-flex items-center gap-1 text-[10px] text-[#5C5A48]">
                   <Tag className="h-2.5 w-2.5" />
                   {entry.category}
                 </div>
               </div>
-              <span className="text-xs tracking-wider text-[#4A8CB5]">••••••••</span>
+              <span className="text-xs tracking-wider text-[#5C5A48]">••••••••</span>
             </div>
           ))}
         </div>
@@ -300,8 +300,8 @@ function SystemsMockup() {
       <BrowserChrome path="systemklar.dk/systemer" />
       <div className="bg-white p-5" style={{ minHeight: "320px" }}>
         <div className="mb-3 flex items-center justify-between">
-          <div className="text-sm font-bold text-[#0D1F2D]">Systemer</div>
-          <span className="inline-flex items-center gap-1 rounded-full bg-sky-50 px-2 py-0.5 text-[10px] font-medium text-sky-700">
+          <div className="text-sm font-bold text-[#2C3020]">Systemer</div>
+          <span className="inline-flex items-center gap-1 rounded-full bg-[#EEF2E6] px-2 py-0.5 text-[10px] font-medium text-[#7A8A5A]">
             <Activity className="h-3 w-3" />
             Live overvågning
           </span>
@@ -312,14 +312,14 @@ function SystemsMockup() {
             return (
               <div
                 key={sys.name}
-                className="flex items-center justify-between rounded-lg border border-sky-100 bg-[#F8FCFF] px-3 py-2.5"
+                className="flex items-center justify-between rounded-lg border border-[#D4C9A8] bg-[#F8FCFF] px-3 py-2.5"
                 style={{ animation: `mockupFadeIn 0.4s ease-out ${i * 0.1}s both` }}
               >
                 <div className="flex items-center gap-2.5">
                   <span className={`h-2 w-2 rounded-full ${cfg.dot}`} aria-hidden />
                   <div>
-                    <div className="text-xs font-semibold text-[#0D1F2D]">{sys.name}</div>
-                    <div className="text-[10px] text-[#4A8CB5]">{sys.type}</div>
+                    <div className="text-xs font-semibold text-[#2C3020]">{sys.name}</div>
+                    <div className="text-[10px] text-[#5C5A48]">{sys.type}</div>
                   </div>
                 </div>
                 <span className={`rounded-full px-2 py-0.5 text-[10px] font-medium ${cfg.badge}`}>{cfg.label}</span>
@@ -327,7 +327,7 @@ function SystemsMockup() {
             );
           })}
         </div>
-        <div className="mt-3 flex items-center gap-1.5 text-[10px] text-[#4A8CB5]">
+        <div className="mt-3 flex items-center gap-1.5 text-[10px] text-[#5C5A48]">
           <Bell className="h-3 w-3" />
           Du får besked på e-mail hvis status ændrer sig
         </div>
@@ -337,9 +337,9 @@ function SystemsMockup() {
 }
 
 const teamMembers: Array<{ name: string; role: string; initials: string; cls: string }> = [
-  { name: "Benjamin Sørensen", role: "Administrator", initials: "BS", cls: "bg-[#0A6EBD] text-white" },
-  { name: "Maria Larsen", role: "Medlem", initials: "ML", cls: "bg-sky-100 text-sky-700" },
-  { name: "Jens Kristensen", role: "Medlem", initials: "JK", cls: "bg-sky-100 text-sky-700" },
+  { name: "Benjamin Sørensen", role: "Administrator", initials: "BS", cls: "bg-[#8B9E6B] text-white" },
+  { name: "Maria Larsen", role: "Medlem", initials: "ML", cls: "bg-[#EEF2E6] text-[#7A8A5A]" },
+  { name: "Jens Kristensen", role: "Medlem", initials: "JK", cls: "bg-[#EEF2E6] text-[#7A8A5A]" },
 ];
 
 function TeamMockup() {
@@ -348,8 +348,8 @@ function TeamMockup() {
       <BrowserChrome path="systemklar.dk/team" />
       <div className="bg-white p-5" style={{ minHeight: "320px" }}>
         <div className="mb-3 flex items-center justify-between">
-          <div className="text-sm font-bold text-[#0D1F2D]">Team</div>
-          <span className="inline-flex items-center gap-1 rounded-full bg-sky-50 px-2 py-0.5 text-[10px] font-medium text-sky-700">
+          <div className="text-sm font-bold text-[#2C3020]">Team</div>
+          <span className="inline-flex items-center gap-1 rounded-full bg-[#EEF2E6] px-2 py-0.5 text-[10px] font-medium text-[#7A8A5A]">
             <Building2 className="h-3 w-3" />
             Møllers VVS
           </span>
@@ -358,7 +358,7 @@ function TeamMockup() {
           {teamMembers.map((m, i) => (
             <div
               key={m.name}
-              className="flex items-center justify-between rounded-lg border border-sky-100 bg-[#F8FCFF] px-3 py-2.5"
+              className="flex items-center justify-between rounded-lg border border-[#D4C9A8] bg-[#F8FCFF] px-3 py-2.5"
               style={{ animation: `mockupFadeIn 0.4s ease-out ${i * 0.1}s both` }}
             >
               <div className="flex items-center gap-2.5">
@@ -368,16 +368,16 @@ function TeamMockup() {
                   {m.initials}
                 </div>
                 <div>
-                  <div className="text-xs font-semibold text-[#0D1F2D]">{m.name}</div>
-                  <div className="text-[10px] text-[#4A8CB5]">{m.role}</div>
+                  <div className="text-xs font-semibold text-[#2C3020]">{m.name}</div>
+                  <div className="text-[10px] text-[#5C5A48]">{m.role}</div>
                 </div>
               </div>
-              <ChevronRight className="h-3.5 w-3.5 text-[#4A8CB5]" />
+              <ChevronRight className="h-3.5 w-3.5 text-[#5C5A48]" />
             </div>
           ))}
         </div>
         <button
-          className="mt-3 inline-flex w-full items-center justify-center gap-1.5 rounded-lg border border-dashed border-sky-200 px-3 py-2 text-xs font-medium text-sky-600"
+          className="mt-3 inline-flex w-full items-center justify-center gap-1.5 rounded-lg border border-dashed border-[#D4C9A8] px-3 py-2 text-xs font-medium text-[#8B9E6B]"
           style={{ animation: "mockupFadeIn 0.4s ease-out 0.4s both" }}
         >
           <UserPlus className="h-3 w-3" />
@@ -403,13 +403,13 @@ function FeatureCopy({
 }) {
   return (
     <div>
-      <p className="text-xs font-semibold uppercase tracking-widest text-sky-600">{label}</p>
-      <h2 className="mt-3 text-2xl font-bold tracking-tight text-[#0D1F2D] md:text-4xl">{title}</h2>
-      <p className="mt-4 text-base leading-relaxed text-[#2C4A5E]">{description}</p>
+      <p className="text-xs font-semibold uppercase tracking-widest text-[#8B9E6B]">{label}</p>
+      <h2 className="mt-3 text-2xl font-bold tracking-tight text-[#2C3020] md:text-4xl">{title}</h2>
+      <p className="mt-4 text-base leading-relaxed text-[#5C5A48]">{description}</p>
       <ul className="mt-6 space-y-3">
         {points.map((p) => (
-          <li key={p} className="flex items-start gap-2 text-sm text-[#0D1F2D]">
-            <CheckCircle className="mt-0.5 h-4 w-4 shrink-0 text-sky-600" />
+          <li key={p} className="flex items-start gap-2 text-sm text-[#2C3020]">
+            <CheckCircle className="mt-0.5 h-4 w-4 shrink-0 text-[#8B9E6B]" />
             <span>{p}</span>
           </li>
         ))}
@@ -435,7 +435,7 @@ const blocks = [
     Mockup: DashboardMockup,
   },
   {
-    bg: "bg-[#F0F7FF]",
+    bg: "bg-[#EEF2E6]",
     textFirst: false,
     label: "Support",
     title: "Få hjælp uden at ringe rundt",
@@ -465,7 +465,7 @@ const blocks = [
     Mockup: ReportMockup,
   },
   {
-    bg: "bg-[#F0F7FF]",
+    bg: "bg-[#EEF2E6]",
     textFirst: false,
     label: "Kodebank",
     title: "Alle passwords samlet – aldrig væk",
@@ -495,7 +495,7 @@ const blocks = [
     Mockup: SystemsMockup,
   },
   {
-    bg: "bg-[#F0F7FF]",
+    bg: "bg-[#EEF2E6]",
     textFirst: false,
     label: "Team & brugere",
     title: "Giv hele teamet adgang",
@@ -522,7 +522,7 @@ export default function PlatformenPage() {
           }
         `}</style>
 
-        <section className="relative overflow-hidden bg-gradient-to-br from-[#0A6EBD] to-[#062840] py-20 pt-32 md:py-32 md:pt-40">
+        <section className="relative overflow-hidden bg-gradient-to-br from-[#8B9E6B] to-[#2C3E2A] py-20 pt-32 md:py-32 md:pt-40">
           <div
             className="absolute inset-0 opacity-10"
             style={{

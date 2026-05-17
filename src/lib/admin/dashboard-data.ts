@@ -168,10 +168,10 @@ export function detectStatusChangeEvents(
 }
 
 export const MONITORING_STATUS_COLORS: Record<MonitoringStatus, string> = {
-  ok: "#0A7C5C",
-  advarsel: "#C47B0A",
-  fejl: "#C42B2B",
-  afventer: "#94a3b8",
+  ok: "#6A8F5A",
+  advarsel: "#C4A84F",
+  fejl: "#B85C4A",
+  afventer: "#A8A090",
 };
 
 export const MONITORING_STATUS_LABELS: Record<MonitoringStatus, string> = {

@@ -43,10 +43,10 @@ export function ItReportInlineView({ report, backHref, backLabel, pdfHref }: ItR
   if (!content) {
     return (
       <div>
-        <Link href={backHref} className="text-sm font-semibold text-[#0A6EBD] hover:underline">
+        <Link href={backHref} className="text-sm font-semibold text-[#8B9E6B] hover:underline">
           {backLabel}
         </Link>
-        <p className="mt-6 text-sm text-[#4A8CB5]">Rapportindholdet kunne ikke vises.</p>
+        <p className="mt-6 text-sm text-[#5C5A48]">Rapportindholdet kunne ikke vises.</p>
       </div>
     );
   }
@@ -54,26 +54,26 @@ export function ItReportInlineView({ report, backHref, backLabel, pdfHref }: ItR
   return (
     <div className="w-full">
       <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <Link href={backHref} className="text-sm font-semibold text-[#0A6EBD] hover:underline">
+        <Link href={backHref} className="text-sm font-semibold text-[#8B9E6B] hover:underline">
           {backLabel}
         </Link>
         <a
           href={pdfHref}
           target="_blank"
           rel="noreferrer"
-          className="inline-flex shrink-0 items-center justify-center gap-2 rounded-xl border border-sky-200 bg-white px-4 py-2.5 text-sm font-semibold text-[#0D1F2D] shadow-sm transition hover:bg-[#F5FAFD]"
+          className="inline-flex shrink-0 items-center justify-center gap-2 rounded-xl border border-[#D4C9A8] bg-white px-4 py-2.5 text-sm font-semibold text-[#2C3020] shadow-sm transition hover:bg-[#F5F0E8]"
         >
-          <FileDown className="h-4 w-4 text-[#0A6EBD]" aria-hidden />
+          <FileDown className="h-4 w-4 text-[#8B9E6B]" aria-hidden />
           Download som PDF
         </a>
       </div>
 
       <header className="mb-6">
-        <h1 className="text-2xl font-bold text-[#0D1F2D]">{report.title}</h1>
-        <p className="mt-1 text-sm text-[#4A8CB5]">{periodLabel}</p>
+        <h1 className="text-2xl font-bold text-[#2C3020]">{report.title}</h1>
+        <p className="mt-1 text-sm text-[#5C5A48]">{periodLabel}</p>
       </header>
 
-      <div className="overflow-hidden rounded-2xl border border-sky-100 bg-[#F5FAFD] shadow-sm">
+      <div className="overflow-hidden rounded-2xl border border-[#D4C9A8] bg-[#F5F0E8] shadow-sm">
         <iframe
           ref={iframeRef}
           title={report.title}

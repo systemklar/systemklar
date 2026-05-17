@@ -25,19 +25,19 @@ export type EmailTemplateDefaultRow = {
 };
 
 const STYLE_H2 =
-  "margin:0 0 16px 0;font-size:22px;font-weight:700;color:#0D1F2D;font-family:Inter,Arial,sans-serif;";
+  "margin:0 0 16px 0;font-size:22px;font-weight:700;color:#2C3020;font-family:Inter,Arial,sans-serif;";
 const STYLE_P =
-  "margin:0 0 12px 0;font-size:15px;color:#2C4A5E;line-height:1.6;font-family:Arial,sans-serif;";
+  "margin:0 0 12px 0;font-size:15px;color:#5C5A48;line-height:1.6;font-family:Arial,sans-serif;";
 const STYLE_P_LAST =
-  "margin:0 0 20px 0;font-size:15px;color:#2C4A5E;line-height:1.6;font-family:Arial,sans-serif;";
+  "margin:0 0 20px 0;font-size:15px;color:#5C5A48;line-height:1.6;font-family:Arial,sans-serif;";
 const STYLE_P_INFO =
-  "margin:0 0 8px 0;font-size:14px;color:#2C4A5E;line-height:1.6;font-family:Arial,sans-serif;";
+  "margin:0 0 8px 0;font-size:14px;color:#5C5A48;line-height:1.6;font-family:Arial,sans-serif;";
 const STYLE_P_HELP =
-  "margin:16px 0 0 0;font-size:13px;color:#4A8CB5;line-height:1.6;font-family:Arial,sans-serif;";
-const STYLE_STRONG_DARK = "color:#0D1F2D;";
-const STYLE_LINK = "color:#0A6EBD;text-decoration:none;";
+  "margin:16px 0 0 0;font-size:13px;color:#5C5A48;line-height:1.6;font-family:Arial,sans-serif;";
+const STYLE_STRONG_DARK = "color:#2C3020;";
+const STYLE_LINK = "color:#8B9E6B;text-decoration:none;";
 const STYLE_QUOTE =
-  "background:#F0F7FF;border-left:3px solid #0A6EBD;padding:12px 16px;border-radius:0 8px 8px 0;margin:16px 0;color:#2C4A5E;font-size:14px;line-height:1.6;font-family:Arial,sans-serif;";
+  "background:#EEF2E6;border-left:3px solid #8B9E6B;padding:12px 16px;border-radius:0 8px 8px 0;margin:16px 0;color:#5C5A48;font-size:14px;line-height:1.6;font-family:Arial,sans-serif;";
 
 export const DEFAULT_EMAIL_TEMPLATE_ROWS: readonly EmailTemplateDefaultRow[] = [
   {
@@ -112,7 +112,7 @@ export const DEFAULT_EMAIL_TEMPLATE_ROWS: readonly EmailTemplateDefaultRow[] = [
     body: `<h2 style="${STYLE_H2}">Ny supportsag</h2>
 <p style="${STYLE_P_INFO}"><strong style="${STYLE_STRONG_DARK}">Virksomhed:</strong> {{orgName}}</p>
 <p style="${STYLE_P_INFO}"><strong style="${STYLE_STRONG_DARK}">Oprettet af:</strong> {{createdBy}}</p>
-<p style="margin:0 0 20px 0;font-size:14px;color:#2C4A5E;line-height:1.6;font-family:Arial,sans-serif;"><strong style="${STYLE_STRONG_DARK}">Emne:</strong> {{ticketTitle}}</p>
+<p style="margin:0 0 20px 0;font-size:14px;color:#5C5A48;line-height:1.6;font-family:Arial,sans-serif;"><strong style="${STYLE_STRONG_DARK}">Emne:</strong> {{ticketTitle}}</p>
 {{adminButton}}`,
     variables: ["orgName", "createdBy", "ticketTitle", "ticketNumber", "adminButton"],
   },
@@ -126,7 +126,7 @@ export const DEFAULT_EMAIL_TEMPLATE_ROWS: readonly EmailTemplateDefaultRow[] = [
 <p style="${STYLE_P_INFO}"><strong style="${STYLE_STRONG_DARK}">Virksomhed:</strong> {{company}}</p>
 <p style="${STYLE_P_INFO}"><strong style="${STYLE_STRONG_DARK}">Email:</strong> <a href="mailto:{{email}}" style="${STYLE_LINK}">{{email}}</a></p>
 <p style="${STYLE_P_INFO}"><strong style="${STYLE_STRONG_DARK}">Telefon:</strong> {{phone}}</p>
-<p style="margin:16px 0 8px 0;font-size:14px;color:#2C4A5E;font-family:Arial,sans-serif;"><strong style="${STYLE_STRONG_DARK}">Besked:</strong></p>
+<p style="margin:16px 0 8px 0;font-size:14px;color:#5C5A48;font-family:Arial,sans-serif;"><strong style="${STYLE_STRONG_DARK}">Besked:</strong></p>
 <div style="${STYLE_QUOTE}">{{message}}</div>
 {{replyButton}}`,
     variables: ["name", "company", "email", "phone", "message", "replyButton"],
@@ -140,7 +140,7 @@ export const DEFAULT_EMAIL_TEMPLATE_ROWS: readonly EmailTemplateDefaultRow[] = [
 <p style="${STYLE_P_INFO}"><strong style="${STYLE_STRONG_DARK}">Navn:</strong> {{name}}</p>
 <p style="${STYLE_P_INFO}"><strong style="${STYLE_STRONG_DARK}">Virksomhed:</strong> {{company}}</p>
 <p style="${STYLE_P_INFO}"><strong style="${STYLE_STRONG_DARK}">Email:</strong> <a href="mailto:{{email}}" style="${STYLE_LINK}">{{email}}</a></p>
-<p style="margin:16px 0 8px 0;font-size:14px;color:#2C4A5E;font-family:Arial,sans-serif;"><strong style="${STYLE_STRONG_DARK}">Besked:</strong></p>
+<p style="margin:16px 0 8px 0;font-size:14px;color:#5C5A48;font-family:Arial,sans-serif;"><strong style="${STYLE_STRONG_DARK}">Besked:</strong></p>
 <div style="${STYLE_QUOTE}">{{message}}</div>
 {{replyButton}}`,
     variables: ["name", "company", "email", "message", "replyButton"],
