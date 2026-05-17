@@ -4,11 +4,11 @@ import { type ReactNode, useEffect, useRef } from "react";
 
 type ScrollRevealProps = {
   children: ReactNode;
-  /** Forsinkelse af transition når elementet bliver synligt (stagger) */
   staggerMs?: number;
   className?: string;
 };
 
+/** Scroll-triggered fade-up: 20px → 0, 500ms ease-out. */
 export function ScrollReveal({ children, staggerMs = 0, className = "" }: ScrollRevealProps) {
   const ref = useRef<HTMLDivElement>(null);
 
@@ -33,7 +33,7 @@ export function ScrollReveal({ children, staggerMs = 0, className = "" }: Scroll
   return (
     <div
       ref={ref}
-      className={`animate-on-scroll ${className}`.trim()}
+      className={`marketing-reveal ${className}`.trim()}
       style={staggerMs ? { transitionDelay: `${staggerMs}ms` } : undefined}
     >
       {children}

@@ -3,9 +3,9 @@ import { MarketingHomeContent } from "@/components/marketing/MarketingHomeConten
 import { MarketingShell } from "@/components/marketing/MarketingShell";
 
 export const metadata: Metadata = {
-  title: "systemklar – IT-platform til danske SMV'er",
+  title: "systemklar – IT-overvågning til danske SMV'er",
   description:
-    "Få styr på IT uden en IT-afdeling. systemklar samler support, systemoverblik og IT-dokumentation ét sted. Prøv gratis.",
+    "Få overblik over din virksomheds IT uden en IT-afdeling. Automatisk overvågning, besked ved fejl og månedlig rapport. Kom i gang gratis.",
   openGraph: {
     title: "systemklar – IT-platform til danske SMV'er",
     description:
