@@ -21,15 +21,15 @@ export function emailOuterHtml(content: string): string {
 <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
 <title>systemklar</title>
 </head>
-<body style="margin:0;padding:0;background:#F7F4EF;font-family:'DM Sans',Arial,sans-serif;">
-<table width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#F7F4EF;">
+<body style="margin:0;padding:0;background:#F2F5FA;font-family:'DM Sans',Arial,sans-serif;">
+<table width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#F2F5FA;">
   <tr>
     <td align="center" style="padding:32px 16px;">
       <table width="560" cellpadding="0" cellspacing="0" border="0" style="max-width:560px;width:100%;">
 
         <!-- HEADER -->
         <tr>
-          <td style="background:#1E3448;border-radius:16px 16px 0 0;padding:24px 32px;">
+          <td style="background:#0A1628;border-radius:16px 16px 0 0;padding:24px 32px;">
             <table width="100%" cellpadding="0" cellspacing="0" border="0">
               <tr>
                 <td style="vertical-align:middle;">
@@ -57,23 +57,23 @@ export function emailOuterHtml(content: string): string {
 
         <!-- BODY -->
         <tr>
-          <td style="background:#ffffff;padding:32px;border:1px solid #C8D8E4;border-top:none;">
+          <td style="background:#ffffff;padding:32px;border:1px solid #CBD5E8;border-top:none;">
             ${content}
           </td>
         </tr>
 
         <!-- FOOTER -->
         <tr>
-          <td style="background:#F7F4EF;padding:16px 32px;border-radius:0 0 16px 16px;border:1px solid #C8D8E4;border-top:none;text-align:center;">
-            <p style="color:#7A9AB0;font-size:12px;margin:0 0 4px 0;font-family:'DM Sans',Arial,sans-serif;text-transform:lowercase;">
+          <td style="background:#F2F5FA;padding:16px 32px;border-radius:0 0 16px 16px;border:1px solid #CBD5E8;border-top:none;text-align:center;">
+            <p style="color:#6A82A8;font-size:12px;margin:0 0 4px 0;font-family:'DM Sans',Arial,sans-serif;text-transform:lowercase;">
               systemklar · systemklar.dk · kontakt@systemklar.dk
             </p>
             <p style="margin:0;">
-              <a href="${EMAIL_SITE}/privatlivspolitik" style="color:#7A9AB0;font-size:11px;font-family:'DM Sans',Arial,sans-serif;text-decoration:none;">Privatlivspolitik</a>
+              <a href="${EMAIL_SITE}/privatlivspolitik" style="color:#6A82A8;font-size:11px;font-family:'DM Sans',Arial,sans-serif;text-decoration:none;">Privatlivspolitik</a>
               &nbsp;·&nbsp;
-              <a href="${EMAIL_SITE}/vilkaar" style="color:#7A9AB0;font-size:11px;font-family:'DM Sans',Arial,sans-serif;text-decoration:none;">Vilkår</a>
+              <a href="${EMAIL_SITE}/vilkaar" style="color:#6A82A8;font-size:11px;font-family:'DM Sans',Arial,sans-serif;text-decoration:none;">Vilkår</a>
               &nbsp;·&nbsp;
-              <a href="${EMAIL_SITE}/kontakt" style="color:#7A9AB0;font-size:11px;font-family:'DM Sans',Arial,sans-serif;text-decoration:none;">Kontakt os</a>
+              <a href="${EMAIL_SITE}/kontakt" style="color:#6A82A8;font-size:11px;font-family:'DM Sans',Arial,sans-serif;text-decoration:none;">Kontakt os</a>
             </p>
           </td>
         </tr>

@@ -35,9 +35,9 @@ export const TICKET_PRIORITY_STYLES: Record<
   TicketPriority,
   { dot: string; label: string; title: string }
 > = {
-  low: { dot: "bg-slate-400", label: "Lav", title: "Lav prioritet" },
-  medium: { dot: "bg-[#C4A84F]", label: "Medium", title: "Medium prioritet" },
-  high: { dot: "bg-[#B85C4A]", label: "Høj", title: "Høj prioritet" },
+  low: { dot: "bg-[#9AAAC8]", label: "Lav", title: "Lav prioritet" },
+  medium: { dot: "bg-[#F0A030]", label: "Medium", title: "Medium prioritet" },
+  high: { dot: "bg-[#E05040]", label: "Høj", title: "Høj prioritet" },
 };
 
 export function ticketMatchesStatusFilter(

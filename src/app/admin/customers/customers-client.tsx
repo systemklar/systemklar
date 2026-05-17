@@ -227,13 +227,13 @@ export default function AdminCustomersClient() {
     <div>
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-[#1E3448] md:text-3xl">Kunder</h1>
-          <p className="mt-2 text-sm text-[#4A6478]">Organisationer med brugere og invitationer.</p>
+          <h1 className="text-2xl font-bold text-[#0A1628] md:text-3xl">Kunder</h1>
+          <p className="mt-2 text-sm text-[#2A4868]">Organisationer med brugere og invitationer.</p>
         </div>
         <button
           type="button"
           onClick={() => setModalOpen(true)}
-          className="inline-flex min-h-11 items-center justify-center rounded-full bg-[#4A7FA5] px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-[#3A6F95]"
+          className="inline-flex min-h-11 items-center justify-center rounded-full bg-[#2952A3] px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-[#1E4490]"
         >
           Ny kunde
         </button>
@@ -242,9 +242,9 @@ export default function AdminCustomersClient() {
       {actionError ? <p className="mt-4 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">{actionError}</p> : null}
 
       {loading ? (
-        <p className="mt-10 text-sm text-slate-500">Henter kunder...</p>
+        <p className="mt-10 text-sm text-[#6A82A8]">Henter kunder...</p>
       ) : orgs.length === 0 ? (
-        <p className="mt-10 text-sm text-slate-600">
+        <p className="mt-10 text-sm text-[#2A4868]">
           Ingen kunder endnu. Opret den første med &quot;Ny kunde&quot;.
         </p>
       ) : (
@@ -259,7 +259,7 @@ export default function AdminCustomersClient() {
               <Link
                 key={org.id}
                 href={`/admin/customers/${org.id}`}
-                className="cursor-pointer rounded-2xl border border-[#C8D8E4] bg-white p-6 shadow-sm transition-all hover:border-[#C8D8E4] hover:shadow-md"
+                className="cursor-pointer rounded-2xl border border-[#CBD5E8] bg-white p-6 shadow-sm transition-all hover:border-[#CBD5E8] hover:shadow-md"
               >
                 <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                   <div className="flex items-center gap-3">
@@ -273,8 +273,8 @@ export default function AdminCustomersClient() {
                       className="h-10 w-10 text-sm"
                     />
                     <div>
-                      <h2 className="text-xl font-semibold text-[#1E3448]">{org.name}</h2>
-                      <p className="mt-1 text-sm text-[#4A6478]">
+                      <h2 className="text-xl font-semibold text-[#0A1628]">{org.name}</h2>
+                      <p className="mt-1 text-sm text-[#2A4868]">
                         {profiles.length} aktive brugere · {pendingInvites.length} afventende invitationer
                       </p>
                     </div>
@@ -291,7 +291,7 @@ export default function AdminCustomersClient() {
                 <div className="mt-4 flex items-center justify-between">
                   <div className="flex items-center">
                     {stack.length === 0 ? (
-                      <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[#EAF1F7] text-xs font-semibold text-[#3A6F95]">
+                      <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[#E8EEFC] text-xs font-semibold text-[#1E4490]">
                         ?
                       </div>
                     ) : (
@@ -315,7 +315,7 @@ export default function AdminCustomersClient() {
                       })
                     )}
                   </div>
-                  <span className="text-sm font-semibold text-[#3A6F95]">Se detaljer →</span>
+                  <span className="text-sm font-semibold text-[#1E4490]">Se detaljer →</span>
                 </div>
               </Link>
             );
@@ -324,14 +324,14 @@ export default function AdminCustomersClient() {
       )}
 
       <Modal open={modalOpen} onClose={closeModal} titleId="create-customer-title">
-        <h2 id="create-customer-title" className="text-lg font-semibold text-slate-900">
+        <h2 id="create-customer-title" className="text-lg font-semibold text-[#0A1628]">
           Ny kunde
         </h2>
-        <p className="mt-1 text-sm text-slate-500">Opret organisation og send invitation til kontaktpersonen.</p>
+        <p className="mt-1 text-sm text-[#6A82A8]">Opret organisation og send invitation til kontaktpersonen.</p>
 
         <form className="mt-6 space-y-4" onSubmit={(ev) => void handleCreate(ev)}>
               <div>
-                <label htmlFor="cust-contact-name" className="mb-1 block text-sm font-medium text-slate-700">
+                <label htmlFor="cust-contact-name" className="mb-1 block text-sm font-medium text-[#2A4868]">
                   Kontaktpersonens fulde navn
                 </label>
                 <input
@@ -340,12 +340,12 @@ export default function AdminCustomersClient() {
                   required
                   value={contactName}
                   onChange={(e) => setContactName(e.target.value)}
-                  className="w-full rounded-lg border border-slate-300 px-3 py-2 text-base outline-none focus:border-[#4A7FA5] md:text-sm"
+                  className="w-full rounded-lg border border-[#CBD5E8] px-3 py-2 text-base outline-none focus:border-[#2952A3] md:text-sm"
                   placeholder="Fx Mette Jensen"
                 />
               </div>
               <div>
-                <label htmlFor="cust-company" className="mb-1 block text-sm font-medium text-slate-700">
+                <label htmlFor="cust-company" className="mb-1 block text-sm font-medium text-[#2A4868]">
                   Virksomhedsnavn
                 </label>
                 <input
@@ -354,12 +354,12 @@ export default function AdminCustomersClient() {
                   required
                   value={companyName}
                   onChange={(e) => setCompanyName(e.target.value)}
-                  className="w-full rounded-lg border border-slate-300 px-3 py-2 text-base outline-none focus:border-[#4A7FA5] md:text-sm"
+                  className="w-full rounded-lg border border-[#CBD5E8] px-3 py-2 text-base outline-none focus:border-[#2952A3] md:text-sm"
                   placeholder="Firma A/S"
                 />
               </div>
               <div>
-                <label htmlFor="cust-email" className="mb-1 block text-sm font-medium text-slate-700">
+                <label htmlFor="cust-email" className="mb-1 block text-sm font-medium text-[#2A4868]">
                   Email
                 </label>
                 <input
@@ -368,12 +368,12 @@ export default function AdminCustomersClient() {
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full rounded-lg border border-slate-300 px-3 py-2 text-base outline-none focus:border-[#4A7FA5] md:text-sm"
+                  className="w-full rounded-lg border border-[#CBD5E8] px-3 py-2 text-base outline-none focus:border-[#2952A3] md:text-sm"
                   placeholder="kunde@firma.dk"
                 />
               </div>
               <div>
-                <label htmlFor="cust-domain" className="mb-1 block text-sm font-medium text-slate-700">
+                <label htmlFor="cust-domain" className="mb-1 block text-sm font-medium text-[#2A4868]">
                   Domæne
                 </label>
                 <input
@@ -381,20 +381,20 @@ export default function AdminCustomersClient() {
                   type="text"
                   value={domain}
                   onChange={(e) => setDomain(e.target.value)}
-                  className="w-full rounded-lg border border-slate-300 px-3 py-2 text-base outline-none focus:border-[#4A7FA5] md:text-sm"
+                  className="w-full rounded-lg border border-[#CBD5E8] px-3 py-2 text-base outline-none focus:border-[#2952A3] md:text-sm"
                   placeholder="firmadomain.dk (valgfrit)"
                   autoComplete="off"
                 />
               </div>
               <div>
-                <label htmlFor="cust-role" className="mb-1 block text-sm font-medium text-slate-700">
+                <label htmlFor="cust-role" className="mb-1 block text-sm font-medium text-[#2A4868]">
                   Rolle
                 </label>
                 <select
                   id="cust-role"
                   value={role}
                   onChange={(e) => setRole(e.target.value === "member" ? "member" : "org_admin")}
-                  className="w-full rounded-lg border border-slate-300 px-3 py-2 text-base outline-none focus:border-[#4A7FA5] md:text-sm"
+                  className="w-full rounded-lg border border-[#CBD5E8] px-3 py-2 text-base outline-none focus:border-[#2952A3] md:text-sm"
                 >
                   <option value="org_admin">Administrator</option>
                   <option value="member">Medlem</option>
@@ -405,14 +405,14 @@ export default function AdminCustomersClient() {
                 <button
                   type="button"
                   onClick={closeModal}
-                  className="rounded-full px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100"
+                  className="rounded-full px-4 py-2 text-sm font-medium text-[#2A4868] hover:bg-[#EEF2FA]"
                 >
                   Annuller
                 </button>
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="rounded-full bg-[#4A7FA5] px-5 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-[#3A6F95] disabled:opacity-50"
+                  className="rounded-full bg-[#2952A3] px-5 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-[#1E4490] disabled:opacity-50"
                 >
                   {submitting ? "Opretter..." : "Opret"}
                 </button>

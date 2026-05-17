@@ -415,15 +415,15 @@ export default function AdminCustomerDetailClient() {
     }
   };
 
-  if (loading) return <p className="text-sm text-slate-600">Indlæser virksomhed...</p>;
+  if (loading) return <p className="text-sm text-[#2A4868]">Indlæser virksomhed...</p>;
 
   if (!org) {
     return (
       <div>
-        <Link href="/admin/customers" className="text-sm font-semibold text-[#3A6F95] hover:underline">
+        <Link href="/admin/customers" className="text-sm font-semibold text-[#1E4490] hover:underline">
           ← Kunder
         </Link>
-        <p className="mt-6 text-sm text-slate-600">
+        <p className="mt-6 text-sm text-[#2A4868]">
           {notFound ? "Kunde ikke fundet." : error ?? "Virksomhed ikke fundet."}
         </p>
       </div>
@@ -439,10 +439,10 @@ export default function AdminCustomerDetailClient() {
 
   return (
     <div className="space-y-8">
-      <header className="rounded-2xl border border-[#C8D8E4] bg-white p-6 shadow-sm">
+      <header className="rounded-2xl border border-[#CBD5E8] bg-white p-6 shadow-sm">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
           <div>
-            <Link href="/admin/customers" className="text-sm font-semibold text-[#3A6F95] hover:underline">
+            <Link href="/admin/customers" className="text-sm font-semibold text-[#1E4490] hover:underline">
               ← Kunder
             </Link>
             <div className="mt-3 flex items-center gap-4">
@@ -455,11 +455,11 @@ export default function AdminCustomerDetailClient() {
                 initials={initialsFromName(org.name)}
                 className="h-14 w-14 text-lg"
               />
-              <h1 className="text-3xl font-bold text-[#1E3448]">{org.name}</h1>
+              <h1 className="text-3xl font-bold text-[#0A1628]">{org.name}</h1>
             </div>
 
             <div className="mt-3">
-              <p className="text-xs font-semibold uppercase tracking-wide text-[#7A9AB0]">Domæne</p>
+              <p className="text-xs font-semibold uppercase tracking-wide text-[#6A82A8]">Domæne</p>
               {domainEditing ? (
                 <div className="mt-1.5 flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center">
                   <input
@@ -469,14 +469,14 @@ export default function AdminCustomerDetailClient() {
                     placeholder="benjasmod.dk"
                     autoFocus
                     disabled={domainSaving}
-                    className="min-w-[12rem] max-w-md flex-1 rounded-lg border border-[#C8D8E4] px-3 py-2 text-sm text-[#1E3448] outline-none focus:border-[#E0EAF0]0 disabled:opacity-60"
+                    className="min-w-[12rem] max-w-md flex-1 rounded-lg border border-[#CBD5E8] px-3 py-2 text-sm text-[#0A1628] outline-none focus:border-[#E4EAF5]0 disabled:opacity-60"
                   />
                   <div className="flex items-center gap-2">
                     <button
                       type="button"
                       disabled={domainSaving}
                       onClick={() => void saveDomain()}
-                      className="rounded-full bg-[#4A7FA5] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#3A6F95] disabled:opacity-50"
+                      className="rounded-full bg-[#2952A3] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#1E4490] disabled:opacity-50"
                     >
                       {domainSaving ? "Gemmer..." : "Gem"}
                     </button>
@@ -484,7 +484,7 @@ export default function AdminCustomerDetailClient() {
                       type="button"
                       disabled={domainSaving}
                       onClick={cancelDomainEdit}
-                      className="rounded-full px-4 py-2 text-sm text-slate-600 hover:bg-slate-100 disabled:opacity-50"
+                      className="rounded-full px-4 py-2 text-sm text-[#2A4868] hover:bg-[#EEF2FA] disabled:opacity-50"
                     >
                       Annuller
                     </button>
@@ -496,12 +496,12 @@ export default function AdminCustomerDetailClient() {
                     type="button"
                     onClick={beginDomainEdit}
                     aria-label={org.domain ? `Rediger domæne (${org.domain})` : "Tilføj domæne"}
-                    className="group inline-flex max-w-full items-center gap-2 rounded-lg py-0.5 text-left text-sm text-[#1E3448] hover:bg-[#EAF1F7]/80"
+                    className="group inline-flex max-w-full items-center gap-2 rounded-lg py-0.5 text-left text-sm text-[#0A1628] hover:bg-[#E8EEFC]/80"
                   >
-                    <span className={org.domain ? "font-medium" : "italic text-slate-500"}>
+                    <span className={org.domain ? "font-medium" : "italic text-[#6A82A8]"}>
                       {org.domain ?? "Ikke angivet — klik for at tilføje"}
                     </span>
-                    <span className="inline-flex shrink-0 rounded-md p-1 text-[#4A6478] group-hover:text-[#3A6F95]" aria-hidden>
+                    <span className="inline-flex shrink-0 rounded-md p-1 text-[#2A4868] group-hover:text-[#1E4490]" aria-hidden>
                       <Pencil className="h-4 w-4" />
                     </span>
                   </button>
@@ -524,7 +524,7 @@ export default function AdminCustomerDetailClient() {
             <div className="flex flex-wrap items-center justify-end gap-2 sm:gap-3">
               <Link
                 href={`/admin/customers/${org.id}/dashboard`}
-                className="inline-flex min-h-11 shrink-0 items-center justify-center rounded-full border border-[#C8D8E4] bg-white px-5 py-2.5 text-center text-sm font-semibold text-[#3A6F95] shadow-sm transition hover:border-[#C8D8E4] hover:bg-[#EAF1F7]"
+                className="inline-flex min-h-11 shrink-0 items-center justify-center rounded-full border border-[#CBD5E8] bg-white px-5 py-2.5 text-center text-sm font-semibold text-[#1E4490] shadow-sm transition hover:border-[#CBD5E8] hover:bg-[#E8EEFC]"
               >
                 Se kundens dashboard
               </Link>
@@ -532,7 +532,7 @@ export default function AdminCustomerDetailClient() {
                 type="button"
                 disabled={monitoringRunBusy}
                 onClick={() => void runMonitoringNow()}
-                className="inline-flex min-h-11 shrink-0 items-center justify-center gap-2 rounded-full border border-slate-200 bg-white px-5 py-2.5 text-sm font-semibold text-slate-700 shadow-sm transition hover:border-slate-300 hover:bg-slate-50 disabled:pointer-events-none disabled:opacity-50"
+                className="inline-flex min-h-11 shrink-0 items-center justify-center gap-2 rounded-full border border-[#CBD5E8] bg-white px-5 py-2.5 text-sm font-semibold text-[#2A4868] shadow-sm transition hover:border-[#CBD5E8] hover:bg-[#F2F5FA] disabled:pointer-events-none disabled:opacity-50"
               >
                 {monitoringRunBusy ? (
                   <>
@@ -546,7 +546,7 @@ export default function AdminCustomerDetailClient() {
               <button
                 type="button"
                 onClick={() => setInviteModalOpen(true)}
-                className="inline-flex min-h-11 shrink-0 items-center justify-center rounded-full bg-[#4A7FA5] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[#3A6F95]"
+                className="inline-flex min-h-11 shrink-0 items-center justify-center rounded-full bg-[#2952A3] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[#1E4490]"
               >
                 Inviter bruger
               </button>
@@ -558,10 +558,10 @@ export default function AdminCustomerDetailClient() {
       {error ? <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">{error}</p> : null}
 
       <section>
-        <h2 className="mb-3 text-lg font-semibold text-[#1E3448]">Brugere</h2>
+        <h2 className="mb-3 text-lg font-semibold text-[#0A1628]">Brugere</h2>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           {profiles.map((p) => (
-            <article key={p.id} className="rounded-2xl border border-[#C8D8E4] bg-white p-5 shadow-sm">
+            <article key={p.id} className="rounded-2xl border border-[#CBD5E8] bg-white p-5 shadow-sm">
               <div className="flex items-start gap-4">
                 <ProfileAvatar
                   avatarUrl={
@@ -573,16 +573,16 @@ export default function AdminCustomerDetailClient() {
                   className="h-10 w-10 text-sm"
                 />
                 <div className="min-w-0 flex-1">
-                  <p className="font-semibold text-[#1E3448]">{p.full_name || p.email || "Ukendt bruger"}</p>
-                  <p className="text-sm text-[#4A6478]">{p.email || "—"}</p>
+                  <p className="font-semibold text-[#0A1628]">{p.full_name || p.email || "Ukendt bruger"}</p>
+                  <p className="text-sm text-[#2A4868]">{p.email || "—"}</p>
                   <span
                     className={`mt-1 inline-flex rounded-full px-2 py-0.5 text-xs ${
-                      p.role === "org_admin" ? "bg-[#EAF1F7] text-[#3A6F95]" : "bg-stone-100 text-stone-600"
+                      p.role === "org_admin" ? "bg-[#E8EEFC] text-[#1E4490]" : "bg-stone-100 text-stone-600"
                     }`}
                   >
                     {p.role === "org_admin" ? "Administrator" : "Medlem"}
                   </span>
-                  <p className="mt-2 text-xs text-slate-500">Oprettet {formatDanishDateTime(p.created_at || "")}</p>
+                  <p className="mt-2 text-xs text-[#6A82A8]">Oprettet {formatDanishDateTime(p.created_at || "")}</p>
 
                   {confirmRemoveProfileId === p.id ? (
                     <div className="mt-3 rounded-lg border border-red-100 bg-red-50/60 p-3">
@@ -602,7 +602,7 @@ export default function AdminCustomerDetailClient() {
                           type="button"
                           disabled={removingProfileId === p.id}
                           onClick={() => setConfirmRemoveProfileId(null)}
-                          className="rounded-full px-3 py-1 text-xs font-medium text-slate-600 hover:bg-white disabled:opacity-50"
+                          className="rounded-full px-3 py-1 text-xs font-medium text-[#2A4868] hover:bg-white disabled:opacity-50"
                         >
                           Annuller
                         </button>
@@ -614,7 +614,7 @@ export default function AdminCustomerDetailClient() {
                       disabled={isOnlyMember}
                       title={isOnlyMember ? "Kan ikke fjerne sidste medlem" : undefined}
                       onClick={() => setConfirmRemoveProfileId(p.id)}
-                      className="mt-3 text-xs font-medium text-red-600 hover:text-red-700 disabled:cursor-not-allowed disabled:text-slate-400"
+                      className="mt-3 text-xs font-medium text-red-600 hover:text-red-700 disabled:cursor-not-allowed disabled:text-[#9AAAC8]"
                     >
                       Fjern
                     </button>
@@ -631,46 +631,46 @@ export default function AdminCustomerDetailClient() {
                   {initialsOf(inv)}
                 </div>
                 <div>
-                  <p className="font-semibold text-[#1E3448]">{inv.contact_name || inv.email || "Invitation"}</p>
-                  <p className="text-sm text-[#4A6478]">{inv.email || "—"}</p>
+                  <p className="font-semibold text-[#0A1628]">{inv.contact_name || inv.email || "Invitation"}</p>
+                  <p className="text-sm text-[#2A4868]">{inv.email || "—"}</p>
                   <span className="mt-1 inline-flex rounded-full bg-amber-100 px-2 py-0.5 text-xs text-amber-800">
                     Afventer
                   </span>
-                  <p className="mt-2 text-xs text-slate-500">Inviteret {formatDanishDateTime(inv.created_at || "")}</p>
+                  <p className="mt-2 text-xs text-[#6A82A8]">Inviteret {formatDanishDateTime(inv.created_at || "")}</p>
                 </div>
               </div>
             </article>
           ))}
 
           {profiles.length === 0 && pendingInvites.length === 0 ? (
-            <p className="text-sm text-slate-600">Ingen brugere eller invitationer endnu.</p>
+            <p className="text-sm text-[#2A4868]">Ingen brugere eller invitationer endnu.</p>
           ) : null}
         </div>
       </section>
 
       <section>
-        <h2 className="mb-3 text-lg font-semibold text-[#1E3448]">Supportssager</h2>
+        <h2 className="mb-3 text-lg font-semibold text-[#0A1628]">Supportssager</h2>
         {tickets.length === 0 ? (
-          <p className="rounded-2xl border border-[#C8D8E4] bg-white p-5 text-sm text-slate-600 shadow-sm">
+          <p className="rounded-2xl border border-[#CBD5E8] bg-white p-5 text-sm text-[#2A4868] shadow-sm">
             Ingen sager endnu
           </p>
         ) : (
-          <ul className="overflow-hidden rounded-2xl border border-[#C8D8E4] bg-white shadow-sm">
+          <ul className="overflow-hidden rounded-2xl border border-[#CBD5E8] bg-white shadow-sm">
             {tickets.map((ticket) => (
-              <li key={ticket.id} className="border-b border-[#E0EAF0] last:border-b-0">
+              <li key={ticket.id} className="border-b border-[#E4EAF5] last:border-b-0">
                 <Link
                   href={`/admin/tickets/${ticket.id}`}
-                  className="flex flex-col gap-2 px-4 py-3 transition hover:bg-[#EAF1F7] sm:flex-row sm:items-center sm:justify-between"
+                  className="flex flex-col gap-2 px-4 py-3 transition hover:bg-[#E8EEFC] sm:flex-row sm:items-center sm:justify-between"
                 >
                   <div>
                     <div className="flex flex-wrap items-center gap-2">
                       <TicketNumberBadge ticketNumber={ticket.ticket_number} />
-                      <p className="font-medium text-[#1E3448]">{ticket.title || "Uden titel"}</p>
+                      <p className="font-medium text-[#0A1628]">{ticket.title || "Uden titel"}</p>
                     </div>
-                    <p className="text-xs text-slate-500">{ticket.created_by_name || "Ukendt afsender"}</p>
+                    <p className="text-xs text-[#6A82A8]">{ticket.created_by_name || "Ukendt afsender"}</p>
                   </div>
                   <div className="flex items-center gap-3">
-                    <span className="text-xs text-slate-500">{formatDanishDateTime(ticket.created_at || "")}</span>
+                    <span className="text-xs text-[#6A82A8]">{formatDanishDateTime(ticket.created_at || "")}</span>
                     <StatusBadge status={ticket.status || "open"} />
                   </div>
                 </Link>
@@ -681,7 +681,7 @@ export default function AdminCustomerDetailClient() {
       </section>
 
       <section>
-        <h2 className="mb-3 text-lg font-semibold text-[#1E3448]">Systemer</h2>
+        <h2 className="mb-3 text-lg font-semibold text-[#0A1628]">Systemer</h2>
         <div className="space-y-4">
           {onboardingSystemNames.length > 0 ? (
             <div className="space-y-3">
@@ -690,12 +690,12 @@ export default function AdminCustomerDetailClient() {
                 organisationId={org.id}
                 monitoringRefreshNonce={monitoringRefreshNonce}
               />
-              <p className="text-xs text-slate-500">Valgt under onboarding</p>
+              <p className="text-xs text-[#6A82A8]">Valgt under onboarding</p>
             </div>
           ) : null}
 
           {systems.length === 0 && onboardingSystemNames.length === 0 ? (
-            <p className="rounded-2xl border border-[#C8D8E4] bg-white p-5 text-sm text-slate-600 shadow-sm">
+            <p className="rounded-2xl border border-[#CBD5E8] bg-white p-5 text-sm text-[#2A4868] shadow-sm">
               Ingen systemer endnu
             </p>
           ) : null}
@@ -705,17 +705,17 @@ export default function AdminCustomerDetailClient() {
               {systems.map((system) => {
                 const status = system.status === "advarsel" || system.status === "nede" ? system.status : "ok";
                 return (
-                  <li key={system.id} className="rounded-2xl border border-[#C8D8E4] bg-white p-5 shadow-sm">
+                  <li key={system.id} className="rounded-2xl border border-[#CBD5E8] bg-white p-5 shadow-sm">
                     <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                       <div>
-                        <p className="font-semibold text-[#1E3448]">{system.name || "Ukendt system"}</p>
-                        <p className="text-sm text-[#4A6478]">{system.type || "—"}</p>
+                        <p className="font-semibold text-[#0A1628]">{system.name || "Ukendt system"}</p>
+                        <p className="text-sm text-[#2A4868]">{system.type || "—"}</p>
                       </div>
                       <div className="text-right">
                         <span className={`inline-flex rounded-full px-2 py-0.5 text-xs ${systemStatusStyles[status]}`}>
                           {systemStatusLabel[status]}
                         </span>
-                        <p className="mt-2 text-xs text-slate-500">
+                        <p className="mt-2 text-xs text-[#6A82A8]">
                           Sidst tjekket {system.last_checked ? formatDanishDateTime(system.last_checked) : "—"}
                         </p>
                       </div>
@@ -759,38 +759,38 @@ export default function AdminCustomerDetailClient() {
 
       {inviteModalOpen ? (
         <div
-          className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-slate-900/40 p-4 sm:items-center"
+          className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-[#0A1628]/40 p-4 sm:items-center"
           onClick={(e) => e.target === e.currentTarget && setInviteModalOpen(false)}
         >
-          <div className="w-full max-w-md rounded-2xl border border-[#C8D8E4] bg-white p-6 shadow-xl">
-            <h3 className="text-lg font-semibold text-[#1E3448]">Inviter bruger</h3>
+          <div className="w-full max-w-md rounded-2xl border border-[#CBD5E8] bg-white p-6 shadow-xl">
+            <h3 className="text-lg font-semibold text-[#0A1628]">Inviter bruger</h3>
             <form className="mt-4 space-y-4" onSubmit={(e) => void sendInvite(e)}>
               <div>
-                <label className="mb-1 block text-sm font-medium text-[#1E3448]">Kontaktpersonens fulde navn</label>
+                <label className="mb-1 block text-sm font-medium text-[#0A1628]">Kontaktpersonens fulde navn</label>
                 <input
                   type="text"
                   value={inviteContactName}
                   onChange={(e) => setInviteContactName(e.target.value)}
                   required
-                  className="w-full rounded-lg border border-[#C8D8E4] px-3 py-2 text-sm outline-none focus:border-[#E0EAF0]0"
+                  className="w-full rounded-lg border border-[#CBD5E8] px-3 py-2 text-sm outline-none focus:border-[#E4EAF5]0"
                 />
               </div>
               <div>
-                <label className="mb-1 block text-sm font-medium text-[#1E3448]">Email</label>
+                <label className="mb-1 block text-sm font-medium text-[#0A1628]">Email</label>
                 <input
                   type="email"
                   value={inviteEmail}
                   onChange={(e) => setInviteEmail(e.target.value)}
                   required
-                  className="w-full rounded-lg border border-[#C8D8E4] px-3 py-2 text-sm outline-none focus:border-[#E0EAF0]0"
+                  className="w-full rounded-lg border border-[#CBD5E8] px-3 py-2 text-sm outline-none focus:border-[#E4EAF5]0"
                 />
               </div>
               <div>
-                <label className="mb-1 block text-sm font-medium text-[#1E3448]">Rolle</label>
+                <label className="mb-1 block text-sm font-medium text-[#0A1628]">Rolle</label>
                 <select
                   value={inviteRole}
                   onChange={(e) => setInviteRole(e.target.value === "org_admin" ? "org_admin" : "member")}
-                  className="w-full rounded-lg border border-[#C8D8E4] px-3 py-2 text-sm outline-none focus:border-[#E0EAF0]0"
+                  className="w-full rounded-lg border border-[#CBD5E8] px-3 py-2 text-sm outline-none focus:border-[#E4EAF5]0"
                 >
                   <option value="member">Medlem</option>
                   <option value="org_admin">Administrator</option>
@@ -800,14 +800,14 @@ export default function AdminCustomerDetailClient() {
                 <button
                   type="button"
                   onClick={() => setInviteModalOpen(false)}
-                  className="rounded-full px-4 py-2 text-sm text-slate-600 hover:bg-slate-100"
+                  className="rounded-full px-4 py-2 text-sm text-[#2A4868] hover:bg-[#EEF2FA]"
                 >
                   Annuller
                 </button>
                 <button
                   type="submit"
                   disabled={inviteSaving}
-                  className="rounded-full bg-[#4A7FA5] px-5 py-2 text-sm font-semibold text-white hover:bg-[#3A6F95] disabled:opacity-60"
+                  className="rounded-full bg-[#2952A3] px-5 py-2 text-sm font-semibold text-white hover:bg-[#1E4490] disabled:opacity-60"
                 >
                   {inviteSaving ? "Sender..." : "Send invitation"}
                 </button>

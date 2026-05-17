@@ -98,7 +98,7 @@ export default function PortalSupportTicketPage() {
   if (loading || !ticket) {
     return (
       <div className="p-6 md:p-8">
-        <p className="text-sm text-[#4A6478]">Indlæser sag…</p>
+        <p className="text-sm text-[#2A4868]">Indlæser sag…</p>
       </div>
     );
   }

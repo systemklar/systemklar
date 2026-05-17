@@ -79,15 +79,15 @@ function LoginForm() {
   return (
     <AuthSplitLayout
       topRight={
-        <p className="text-sm text-[#7A9AB0]">
+        <p className="text-sm text-[#6A82A8]">
           Ikke oprettet endnu?{" "}
-          <Link href="/kontakt" className="font-medium text-[#4A7FA5] hover:text-[#3A6F95]">
+          <Link href="/kontakt" className="font-medium text-[#2952A3] hover:text-[#1E4490]">
             Kontakt os →
           </Link>
         </p>
       }
     >
-      <p className="mb-2 text-sm text-[#7A9AB0]">{getTimeGreeting()}</p>
+      <p className="mb-2 text-sm text-[#6A82A8]">{getTimeGreeting()}</p>
       <AuthPageHeading title="Velkommen tilbage" subtitle="Log ind på din Systemklar konto" />
 
       <form onSubmit={handleSubmit} className="space-y-5">
@@ -115,7 +115,7 @@ function LoginForm() {
           <button
             type="button"
             onClick={() => setShowPassword(!showPassword)}
-            className="absolute right-3 top-1/2 z-10 -translate-y-1/2 text-[#9AA8B0] hover:text-[#4A6478]"
+            className="absolute right-3 top-1/2 z-10 -translate-y-1/2 text-[#9AAAC8] hover:text-[#2A4868]"
             aria-label={showPassword ? "Skjul adgangskode" : "Vis adgangskode"}
           >
             {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
@@ -123,16 +123,16 @@ function LoginForm() {
         </div>
 
         <div className="flex items-center justify-between gap-4">
-          <label className="flex items-center gap-2 text-sm text-[#4A6478]">
+          <label className="flex items-center gap-2 text-sm text-[#2A4868]">
             <input
               type="checkbox"
               checked={rememberMe}
               onChange={(e) => setRememberMe(e.target.checked)}
-              className="rounded border-[#C8D8E4] text-[#4A7FA5] focus:ring-[#4A7FA5]"
+              className="rounded border-[#CBD5E8] text-[#2952A3] focus:ring-[#2952A3]"
             />
             Husk mig
           </label>
-          <Link href="/forgot-password" className="text-sm text-[#4A7FA5] hover:text-[#3A6F95]">
+          <Link href="/forgot-password" className="text-sm text-[#2952A3] hover:text-[#1E4490]">
             Glemt adgangskode?
           </Link>
         </div>
@@ -143,13 +143,13 @@ function LoginForm() {
           Log ind
         </AuthSubmitButton>
 
-        <p className="text-center text-xs text-[#7A9AB0]">
+        <p className="text-center text-xs text-[#6A82A8]">
           Ved at logge ind accepterer du vores{" "}
-          <Link href="/vilkaar" className="text-[#4A7FA5] hover:underline">
+          <Link href="/vilkaar" className="text-[#2952A3] hover:underline">
             vilkår
           </Link>{" "}
           og{" "}
-          <Link href="/privatlivspolitik" className="text-[#4A7FA5] hover:underline">
+          <Link href="/privatlivspolitik" className="text-[#2952A3] hover:underline">
             privatlivspolitik
           </Link>
         </p>
@@ -162,7 +162,7 @@ export default function LoginPage() {
   return (
     <Suspense
       fallback={
-        <main className="flex min-h-screen items-center justify-center bg-white text-[#7A9AB0]">
+        <main className="flex min-h-screen items-center justify-center bg-white text-[#6A82A8]">
           Indlæser...
         </main>
       }

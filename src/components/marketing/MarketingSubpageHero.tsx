@@ -17,16 +17,16 @@ type Props = {
  */
 export function MarketingSubpageHero({ badge, title, description, children, centered = false }: Props) {
   const alignBadge = centered
-    ? "fade-in-up mb-6 inline-flex rounded-full border border-gray-100 bg-[#F7F7F5] px-4 py-2 text-sm font-medium text-[#6B6B6B] mx-auto"
-    : "fade-in-up mb-6 inline-flex rounded-full border border-gray-100 bg-[#F7F7F5] px-4 py-2 text-sm font-medium text-[#6B6B6B]";
+    ? "fade-in-up mb-6 mx-auto inline-flex rounded-full border border-[#E4EAF5] bg-[#E8EEFC] px-4 py-2 text-sm font-medium text-[#2952A3]"
+    : "fade-in-up mb-6 inline-flex rounded-full border border-[#E4EAF5] bg-[#E8EEFC] px-4 py-2 text-sm font-medium text-[#2952A3]";
 
   const h1Cls = centered
-    ? "fade-in-up mx-auto max-w-3xl text-center text-4xl font-bold tracking-tight text-[#0A0A0A] md:text-5xl md:leading-tight"
-    : "fade-in-up max-w-3xl text-4xl font-bold tracking-tight text-[#0A0A0A] md:text-5xl md:leading-tight";
+    ? "marketing-hero-title fade-in-up mx-auto max-w-3xl text-center leading-[1.15] md:leading-tight"
+    : "marketing-hero-title fade-in-up max-w-3xl leading-[1.15] md:leading-tight";
 
   const descCls = centered
-    ? "fade-in-up mx-auto mt-6 max-w-2xl text-center text-xl text-gray-500"
-    : "fade-in-up mt-6 max-w-2xl text-xl text-gray-500";
+    ? "fade-in-up mx-auto mt-6 max-w-2xl text-center text-xl text-[#2A4868]"
+    : "fade-in-up mt-6 max-w-2xl text-xl text-[#2A4868]";
 
   const childCls = centered ? "fade-in-up mt-10 flex flex-wrap justify-center gap-3" : "fade-in-up mt-10";
 

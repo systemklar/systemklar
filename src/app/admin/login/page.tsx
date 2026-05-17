@@ -120,18 +120,18 @@ function AdminLoginForm() {
           />
         </AuthField>
 
-        <label className="flex items-center gap-2 text-sm text-[#4A6478]">
+        <label className="flex items-center gap-2 text-sm text-[#2A4868]">
           <input
             type="checkbox"
             checked={rememberMe}
             onChange={(e) => setRememberMe(e.target.checked)}
-            className="rounded border-[#C8D8E4] text-[#4A7FA5] focus:ring-[#4A7FA5]"
+            className="rounded border-[#CBD5E8] text-[#2952A3] focus:ring-[#2952A3]"
           />
           Husk mig
         </label>
 
         <div className="flex justify-end">
-          <Link href="/admin/forgot-password" className="text-sm text-[#4A7FA5] hover:text-[#3A6F95]">
+          <Link href="/admin/forgot-password" className="text-sm text-[#2952A3] hover:text-[#1E4490]">
             Glemt adgangskode?
           </Link>
         </div>
@@ -143,8 +143,8 @@ function AdminLoginForm() {
         </AuthSubmitButton>
       </form>
 
-      <p className="mt-6 text-center text-sm text-[#7A9AB0]">
-        <Link href="/login" className="text-[#4A7FA5] hover:text-[#3A6F95]">
+      <p className="mt-6 text-center text-sm text-[#6A82A8]">
+        <Link href="/login" className="text-[#2952A3] hover:text-[#1E4490]">
           Gå til kunde-login
         </Link>
       </p>
@@ -156,7 +156,7 @@ export default function AdminLoginPage() {
   return (
     <Suspense
       fallback={
-        <main className="flex min-h-screen items-center justify-center bg-white text-[#7A9AB0]">
+        <main className="flex min-h-screen items-center justify-center bg-white text-[#6A82A8]">
           Indlæser...
         </main>
       }

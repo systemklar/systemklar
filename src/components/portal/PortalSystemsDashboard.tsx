@@ -59,11 +59,11 @@ const FRIENDLY_SYSTEM_LABEL_DA: Record<string, string> = {
   "Have I Been Pwned (datalæk)": "Datalæk-tjek",
 };
 
-const CHART_OK = "#5A9A6A";
-const CHART_ADVARSEL = "#C4A84F";
-const CHART_FEJL = "#B85C4A";
+const CHART_OK = "#22C78A";
+const CHART_ADVARSEL = "#F0A030";
+const CHART_FEJL = "#E05040";
 const CHART_AFVENTER = "#94A3B8";
-const LINE_STATUS = "#4A7FA5";
+const LINE_STATUS = "#2952A3";
 const TAB_ROTATE_MS = 8000;
 const MAX_DASHBOARD_TICKETS = 3;
 
@@ -110,9 +110,9 @@ function buildHealthSparklineFromDaily(daily: DailyPctOkPoint[]): HealthSparklin
 }
 
 const ghostLinkClass =
-  "text-sm font-medium text-[#4A7FA5] transition-colors hover:text-[#3A6F95] hover:underline";
+  "text-sm font-medium text-[#2952A3] transition-colors hover:text-[#1E4490] hover:underline";
 const dashboardCardClass =
-  "flex h-full min-h-0 flex-col rounded-2xl border border-[#C8D8E4] bg-white p-5 shadow-sm md:p-6";
+  "flex h-full min-h-0 flex-col rounded-2xl border border-[#CBD5E8] bg-white p-5 shadow-sm md:p-6";
 
 function easeOutCubic(t: number) {
   return 1 - (1 - t) ** 3;
@@ -811,13 +811,13 @@ export function PortalSystemsDashboard({
     if (monitoringLoading) {
       return (
         <div
-          className="flex max-h-[120px] items-center gap-3 rounded-xl border border-[#C8D8E4] bg-[#EAF1F7]/50 px-4 py-3"
+          className="flex max-h-[120px] items-center gap-3 rounded-xl border border-[#CBD5E8] bg-[#E8EEFC]/50 px-4 py-3"
           aria-hidden
         >
-          <div className="h-6 w-6 shrink-0 animate-pulse rounded-full bg-[#EAF1F7]" />
+          <div className="h-6 w-6 shrink-0 animate-pulse rounded-full bg-[#E8EEFC]" />
           <div className="min-w-0 flex-1 space-y-1.5">
-            <div className="h-5 w-40 max-w-full animate-pulse rounded bg-[#EAF1F7]" />
-            <div className="h-3 w-28 animate-pulse rounded bg-[#EAF1F7]/90" />
+            <div className="h-5 w-40 max-w-full animate-pulse rounded bg-[#E8EEFC]" />
+            <div className="h-3 w-28 animate-pulse rounded bg-[#E8EEFC]/90" />
           </div>
         </div>
       );
@@ -835,10 +835,10 @@ export function PortalSystemsDashboard({
               }`}
             >
               {heroAllOk ? (
-                <Check className="h-6 w-6 text-[#5A9A6A]" strokeWidth={2.5} />
+                <Check className="h-6 w-6 text-[#22C78A]" strokeWidth={2.5} />
               ) : (
                 <AlertTriangle
-                  className={`h-6 w-6 ${heroHasFejl ? "text-[#B85C4A]" : "text-[#C4A84F]"}`}
+                  className={`h-6 w-6 ${heroHasFejl ? "text-[#E05040]" : "text-[#F0A030]"}`}
                   strokeWidth={2}
                 />
               )}
@@ -847,7 +847,7 @@ export function PortalSystemsDashboard({
           <div className="min-w-0 flex-1 text-left">
             <h1
               className={`text-lg font-semibold leading-snug tracking-tight md:text-xl ${
-                heroAllOk ? "text-[#1E3448]" : "portal-hero-warning-shimmer"
+                heroAllOk ? "text-[#0A1628]" : "portal-hero-warning-shimmer"
               }`}
             >
               {heroAllOk
@@ -856,7 +856,7 @@ export function PortalSystemsDashboard({
                   ? "1 system kræver opmærksomhed"
                   : `${counts.needsAttention} systemer kræver opmærksomhed`}
             </h1>
-            <p className="mt-0.5 text-[11px] text-[#7A9AB0]">Senest tjekket {latestCheckSubtext}</p>
+            <p className="mt-0.5 text-[11px] text-[#6A82A8]">Senest tjekket {latestCheckSubtext}</p>
           </div>
         </div>
         {!heroAllOk && attentionRows.length > 0 ? (
@@ -868,8 +868,8 @@ export function PortalSystemsDashboard({
                 onClick={() => openDetail(row)}
                 className={`shrink-0 rounded-full border px-1.5 py-px text-[10px] font-medium ${
                   row.status === "fejl"
-                    ? "border-red-200 bg-white/90 text-[#B85C4A]"
-                    : "border-amber-200 bg-white/90 text-[#C4A84F]"
+                    ? "border-red-200 bg-white/90 text-[#E05040]"
+                    : "border-amber-200 bg-white/90 text-[#F0A030]"
                 }`}
               >
                 {row.friendly}
@@ -890,46 +890,46 @@ export function PortalSystemsDashboard({
       <button
         type="button"
         onClick={() => openDetail(row)}
-        className={`group/dash-row flex w-full items-center gap-3 px-4 py-4 text-left transition-colors duration-150 hover:bg-[#EAF1F7] ${rowAccentClass(row.status)}`}
+        className={`group/dash-row flex w-full items-center gap-3 px-4 py-4 text-left transition-colors duration-150 hover:bg-[#E8EEFC] ${rowAccentClass(row.status)}`}
       >
         <span
           className={dotClassName(row.status)}
           style={dotStyle(row.status)}
           aria-hidden
         />
-        <span className="min-w-0 flex-1 text-sm font-semibold text-[#1E3448]">{row.friendly}</span>
-        <span className="hidden shrink-0 text-xs font-medium text-[#4A6478] sm:block">
+        <span className="min-w-0 flex-1 text-sm font-semibold text-[#0A1628]">{row.friendly}</span>
+        <span className="hidden shrink-0 text-xs font-medium text-[#2A4868] sm:block">
           {rowStatusLabel(row.status)}
         </span>
         {row.status === "afventer" ? (
           <Link
             href="/portal/systemer"
             onClick={(e) => e.stopPropagation()}
-            className="shrink-0 text-[11px] text-[#7A9AB0] hover:text-[#4A7FA5]"
+            className="shrink-0 text-[11px] text-[#6A82A8] hover:text-[#2952A3]"
           >
             Opsæt →
           </Link>
         ) : (
-          <span className="hidden shrink-0 text-[10px] text-[#7A9AB0] md:inline">{row.checked}</span>
+          <span className="hidden shrink-0 text-[10px] text-[#6A82A8] md:inline">{row.checked}</span>
         )}
       </button>
     </li>
   );
 
   if (loading) {
-    return <p className="text-sm text-[#7A9AB0]">Indlæser overblik...</p>;
+    return <p className="text-sm text-[#6A82A8]">Indlæser overblik...</p>;
   }
 
   return (
     <div className="relative flex h-full min-h-0 w-full max-w-none flex-col md:overflow-hidden">
       {preview ? (
-        <p className="mb-4 text-center text-xs text-[#7A9AB0]">
+        <p className="mb-4 text-center text-xs text-[#6A82A8]">
           Forhåndsvisning af kundens portal-overblik
         </p>
       ) : null}
 
       {!hasSystems ? (
-        <div className="rounded-2xl border border-[#C8D8E4] bg-white px-6 py-10 text-center text-sm text-[#4A6478] shadow-sm">
+        <div className="rounded-2xl border border-[#CBD5E8] bg-white px-6 py-10 text-center text-sm text-[#2A4868] shadow-sm">
           Dine systemer er ved at blive sat op. Vi vender tilbage inden for 24 timer.
         </div>
       ) : (
@@ -939,35 +939,35 @@ export function PortalSystemsDashboard({
             data-tour="dashboard-systemstatus"
             className={`${dashboardCardClass} min-h-0 lg:col-span-2`}
           >
-            <h2 className="text-sm font-semibold uppercase tracking-wide text-[#7A9AB0]">
+            <h2 className="text-sm font-semibold uppercase tracking-wide text-[#6A82A8]">
               Systemstatus
             </h2>
             <div className="mt-3 flex min-h-0 flex-1 flex-col space-y-3 md:mt-4 md:space-y-3">
               {renderMiniHero()}
               {!monitoringLoading ? (
-                <p className="text-sm text-[#4A6478]">
+                <p className="text-sm text-[#2A4868]">
                   <span className="inline-flex items-center gap-1.5">
-                    <span className="h-2 w-2 rounded-full bg-[#5A9A6A]" aria-hidden />
-                    <span className="font-semibold tabular-nums text-[#1E3448]">{displayOk}</span> OK
+                    <span className="h-2 w-2 rounded-full bg-[#22C78A]" aria-hidden />
+                    <span className="font-semibold tabular-nums text-[#0A1628]">{displayOk}</span> OK
                   </span>
-                  <span className="mx-2 text-[#C8D8E4]">·</span>
+                  <span className="mx-2 text-[#CBD5E8]">·</span>
                   <span className="inline-flex items-center gap-1.5">
-                    <span className="h-2 w-2 rounded-full bg-[#C4A84F]" aria-hidden />
-                    <span className="font-semibold tabular-nums text-[#1E3448]">{displayAdvarsel}</span> Advarsel
+                    <span className="h-2 w-2 rounded-full bg-[#F0A030]" aria-hidden />
+                    <span className="font-semibold tabular-nums text-[#0A1628]">{displayAdvarsel}</span> Advarsel
                   </span>
-                  <span className="mx-2 text-[#C8D8E4]">·</span>
+                  <span className="mx-2 text-[#CBD5E8]">·</span>
                   <span className="inline-flex items-center gap-1.5">
                     <span className="h-2 w-2 rounded-full bg-[#94A3B8]" aria-hidden />
-                    <span className="font-semibold tabular-nums text-[#1E3448]">{displayAfventer}</span> Afventer
+                    <span className="font-semibold tabular-nums text-[#0A1628]">{displayAfventer}</span> Afventer
                   </span>
                 </p>
               ) : null}
               <div
-                className="-mx-2 flex min-h-[200px] flex-1 flex-col overflow-hidden rounded-xl border border-[#C8D8E4] md:min-h-0"
+                className="-mx-2 flex min-h-[200px] flex-1 flex-col overflow-hidden rounded-xl border border-[#CBD5E8] md:min-h-0"
                 onMouseEnter={() => setTabsHovered(true)}
                 onMouseLeave={() => setTabsHovered(false)}
               >
-                <div ref={tabNavRef} data-tour="dashboard-system-tabs" className="relative border-b border-[#C8D8E4]">
+                <div ref={tabNavRef} data-tour="dashboard-system-tabs" className="relative border-b border-[#CBD5E8]">
                   <nav className="flex gap-0 overflow-x-auto" aria-label="Systemkategorier">
                     {tabsWithSystems.map((g) => {
                       const tabRows = rowsByGroup.get(g.shortLabel) ?? [];
@@ -989,7 +989,7 @@ export function PortalSystemsDashboard({
                           onClick={() => goToTab(g.shortLabel, true)}
                           disabled={monitoringLoading}
                           className={`relative shrink-0 overflow-hidden px-4 py-3 text-sm font-medium transition-colors duration-150 ${
-                            isActive ? "text-[#1E3448]" : "text-[#7A9AB0] hover:text-[#4A6478]"
+                            isActive ? "text-[#0A1628]" : "text-[#6A82A8] hover:text-[#2A4868]"
                           }`}
                         >
                           {g.shortLabel}
@@ -997,7 +997,7 @@ export function PortalSystemsDashboard({
                             <span
                               className={`ml-1.5 inline-flex min-w-[1.25rem] justify-center rounded-full px-1 text-[10px] font-semibold ${
                                 isActive
-                                  ? "bg-[#4A7FA5] text-white"
+                                  ? "bg-[#2952A3] text-white"
                                   : "bg-amber-100 text-amber-800"
                               }`}
                             >
@@ -1009,7 +1009,7 @@ export function PortalSystemsDashboard({
                     })}
                   </nav>
                   <span
-                    className="pointer-events-none absolute bottom-0 left-0 h-[2px] overflow-hidden bg-[#EAF1F7]/80 transition-[transform,width] duration-300 ease-out"
+                    className="pointer-events-none absolute bottom-0 left-0 h-[2px] overflow-hidden bg-[#E8EEFC]/80 transition-[transform,width] duration-300 ease-out"
                     style={{
                       transform: `translateX(${tabIndicator.left}px)`,
                       width: tabIndicator.width,
@@ -1019,7 +1019,7 @@ export function PortalSystemsDashboard({
                     {!monitoringLoading && !preview && tabsWithSystems.length > 1 ? (
                       <span
                         key={tabProgressKey}
-                        className={`portal-tab-progress block h-full bg-[#4A7FA5] ${
+                        className={`portal-tab-progress block h-full bg-[#2952A3] ${
                           tabsHovered ? "portal-tab-progress-paused" : ""
                         }`}
                       />
@@ -1034,7 +1034,7 @@ export function PortalSystemsDashboard({
                     return (
                       <ul
                         key={tabKey}
-                        className={`divide-y divide-[#E0EAF0] ${isActive ? "block" : "hidden"}`}
+                        className={`divide-y divide-[#E4EAF5] ${isActive ? "block" : "hidden"}`}
                         aria-hidden={!isActive}
                       >
                         {monitoringLoading
@@ -1060,32 +1060,32 @@ export function PortalSystemsDashboard({
           {!preview ? (
             <article data-tour="dashboard-active-tickets" className={`${dashboardCardClass} min-h-0`}>
               <div className="flex items-center gap-2">
-                <h2 className="text-sm font-semibold text-[#1E3448]">Aktive sager</h2>
+                <h2 className="text-sm font-semibold text-[#0A1628]">Aktive sager</h2>
                 {!ticketsLoading ? (
-                  <span className="rounded-full bg-[#EAF1F7] px-2 py-0.5 text-xs font-semibold tabular-nums text-[#1E3448]">
+                  <span className="rounded-full bg-[#E8EEFC] px-2 py-0.5 text-xs font-semibold tabular-nums text-[#0A1628]">
                     {activeTicketCount}
                   </span>
                 ) : null}
               </div>
               <div className="mt-4 min-h-0 flex-1">
                 {ticketsLoading ? (
-                  <ul className="divide-y divide-[#E0EAF0]" aria-busy>
+                  <ul className="divide-y divide-[#E4EAF5]" aria-busy>
                     {[0, 1, 2].map((i) => (
                       <PortalDashboardTicketRowSkeleton key={i} />
                     ))}
                   </ul>
                 ) : displayedTickets.length === 0 ? (
-                  <p className="py-6 text-center text-sm text-[#7A9AB0]">Ingen aktive sager</p>
+                  <p className="py-6 text-center text-sm text-[#6A82A8]">Ingen aktive sager</p>
                 ) : (
-                  <ul className="divide-y divide-[#E0EAF0]">
+                  <ul className="divide-y divide-[#E4EAF5]">
                     {displayedTickets.map((ticket) => (
                       <li key={ticket.id} className="py-3 first:pt-0">
                         <div className="flex min-w-0 items-center gap-2">
                           <TicketNumberBadge ticketNumber={ticket.ticket_number} />
-                          <p className="truncate text-sm font-semibold text-[#1E3448]">{ticket.title}</p>
+                          <p className="truncate text-sm font-semibold text-[#0A1628]">{ticket.title}</p>
                         </div>
                         <div className="mt-1.5 flex flex-wrap items-center gap-2">
-                          <p className="text-xs text-[#7A9AB0]">
+                          <p className="text-xs text-[#6A82A8]">
                             {ticket.created_at
                               ? ticketDateFmt.format(new Date(ticket.created_at))
                               : "—"}
@@ -1100,7 +1100,7 @@ export function PortalSystemsDashboard({
               <div className="mt-auto space-y-3 pt-5">
                 <Link
                   href="/portal/support/new"
-                  className="inline-flex min-h-11 w-full items-center justify-center rounded-full bg-[#4A7FA5] px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-[#3A6F95]"
+                  className="inline-flex min-h-11 w-full items-center justify-center rounded-full bg-[#2952A3] px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-[#1E4490]"
                 >
                   Opret IT-sag
                 </Link>
@@ -1114,17 +1114,17 @@ export function PortalSystemsDashboard({
           {!preview ? (
             <div className="grid grid-cols-1 gap-6 lg:col-span-3 lg:grid-cols-2">
               <article data-tour="dashboard-latest-report" className={dashboardCardClass}>
-                <h2 className="text-sm font-semibold text-[#1E3448]">Seneste rapport</h2>
+                <h2 className="text-sm font-semibold text-[#0A1628]">Seneste rapport</h2>
               <div className="mt-4 min-h-0 flex-1">
                 {reportsLoading ? (
                   <div className="space-y-2 py-2" aria-hidden>
-                    <div className="h-4 w-3/4 max-w-xs animate-pulse rounded bg-[#EAF1F7]" />
-                    <div className="h-3 w-1/2 max-w-[10rem] animate-pulse rounded bg-[#EAF1F7]/90" />
+                    <div className="h-4 w-3/4 max-w-xs animate-pulse rounded bg-[#E8EEFC]" />
+                    <div className="h-3 w-1/2 max-w-[10rem] animate-pulse rounded bg-[#E8EEFC]/90" />
                   </div>
                 ) : latestReport ? (
                   <div className="space-y-2">
-                    <p className="text-sm font-semibold text-[#1E3448]">{latestReport.title}</p>
-                    <p className="text-xs text-[#7A9AB0]">
+                    <p className="text-sm font-semibold text-[#0A1628]">{latestReport.title}</p>
+                    <p className="text-xs text-[#6A82A8]">
                       {reportPeriodLabel(latestReport.period_start, latestReport.period_end)}
                     </p>
                     <Link
@@ -1136,8 +1136,8 @@ export function PortalSystemsDashboard({
                   </div>
                 ) : (
                   <div className="py-4">
-                    <p className="text-sm font-medium text-[#4A6478]">Ingen rapporter endnu</p>
-                    <p className="mt-1 text-xs text-[#7A9AB0]">
+                    <p className="text-sm font-medium text-[#2A4868]">Ingen rapporter endnu</p>
+                    <p className="mt-1 text-xs text-[#6A82A8]">
                       Din første rapport genereres af Systemklar
                     </p>
                   </div>
@@ -1151,15 +1151,15 @@ export function PortalSystemsDashboard({
               </article>
 
               <article className={`${dashboardCardClass} min-h-0`}>
-                <h2 className="text-sm font-semibold uppercase tracking-wide text-[#7A9AB0]">
+                <h2 className="text-sm font-semibold uppercase tracking-wide text-[#6A82A8]">
                   Systemsundhed
                 </h2>
-                <p className="mt-0.5 text-xs text-[#7A9AB0]">denne måned</p>
+                <p className="mt-0.5 text-xs text-[#6A82A8]">denne måned</p>
                 <div className="mt-4 min-h-0 flex-1">
                   {historyLoading ? (
                     <div className="space-y-3" aria-hidden>
-                      <div className="h-24 w-full animate-pulse rounded-lg bg-[#EAF1F7]" />
-                      <div className="h-4 w-48 animate-pulse rounded bg-[#EAF1F7]" />
+                      <div className="h-24 w-full animate-pulse rounded-lg bg-[#E8EEFC]" />
+                      <div className="h-4 w-48 animate-pulse rounded bg-[#E8EEFC]" />
                     </div>
                   ) : (
                     <>
@@ -1177,7 +1177,7 @@ export function PortalSystemsDashboard({
                             </defs>
                             <XAxis
                               dataKey="label"
-                              tick={{ fontSize: 10, fill: "#7A9AB0" }}
+                              tick={{ fontSize: 10, fill: "#6A82A8" }}
                               axisLine={false}
                               tickLine={false}
                               dy={4}
@@ -1197,7 +1197,7 @@ export function PortalSystemsDashboard({
                         </ResponsiveContainer>
                       </div>
                       {!hasEnoughHealthData ? (
-                        <p className="mt-2 text-center text-xs text-[#7A9AB0]">
+                        <p className="mt-2 text-center text-xs text-[#6A82A8]">
                           Data indsamles — grafen vises snart
                         </p>
                       ) : null}
@@ -1206,14 +1206,14 @@ export function PortalSystemsDashboard({
                 </div>
                 <div className="mt-auto pt-4">
                   {historyLoading ? (
-                    <div className="h-4 w-44 animate-pulse rounded bg-[#EAF1F7]" aria-hidden />
+                    <div className="h-4 w-44 animate-pulse rounded bg-[#E8EEFC]" aria-hidden />
                   ) : averageUptimePct !== null ? (
-                    <p className="text-sm text-[#4A6478]">
+                    <p className="text-sm text-[#2A4868]">
                       Gennemsnitlig oppetid:{" "}
-                      <span className="font-bold text-[#1E3448]">{averageUptimePct}%</span>
+                      <span className="font-bold text-[#0A1628]">{averageUptimePct}%</span>
                     </p>
                   ) : (
-                    <p className="text-sm font-medium text-[#4A6478]">Ikke nok data endnu</p>
+                    <p className="text-sm font-medium text-[#2A4868]">Ikke nok data endnu</p>
                   )}
                 </div>
               </article>
@@ -1222,23 +1222,23 @@ export function PortalSystemsDashboard({
         </div>
 
         {showUptimeChart ? (
-          <section className="mt-4 overflow-hidden rounded-2xl border border-[#C8D8E4] bg-white shadow-sm md:hidden">
+          <section className="mt-4 overflow-hidden rounded-2xl border border-[#CBD5E8] bg-white shadow-sm md:hidden">
             <button
               type="button"
               onClick={() => setChartOpen((open) => !open)}
-              className="flex w-full items-center justify-between gap-3 px-4 py-3.5 text-left transition-colors hover:bg-[#EAF1F7]/60"
+              className="flex w-full items-center justify-between gap-3 px-4 py-3.5 text-left transition-colors hover:bg-[#E8EEFC]/60"
               aria-expanded={chartOpen}
             >
-              <h2 className="text-sm font-semibold text-[#1E3448]">Oppetid de seneste 30 dage</h2>
+              <h2 className="text-sm font-semibold text-[#0A1628]">Oppetid de seneste 30 dage</h2>
               <ChevronDown
-                className={`h-4 w-4 shrink-0 text-[#7A9AB0] transition-transform duration-200 ${
+                className={`h-4 w-4 shrink-0 text-[#6A82A8] transition-transform duration-200 ${
                   chartOpen ? "rotate-180" : ""
                 }`}
                 aria-hidden
               />
             </button>
             {chartOpen ? (
-              <div className="border-t border-[#E0EAF0] px-4 pb-5 pt-1">
+              <div className="border-t border-[#E4EAF5] px-4 pb-5 pt-1">
                 <div className="h-48 w-full">
                   <ResponsiveContainer width="100%" height="100%">
                     <AreaChart
@@ -1253,7 +1253,7 @@ export function PortalSystemsDashboard({
                       </defs>
                       <XAxis
                         dataKey="label"
-                        tick={{ fontSize: 11, fill: "#7A9AB0" }}
+                        tick={{ fontSize: 11, fill: "#6A82A8" }}
                         axisLine={false}
                         tickLine={false}
                         dy={8}
@@ -1262,7 +1262,7 @@ export function PortalSystemsDashboard({
                         domain={[0, 100]}
                         tickFormatter={(v) => `${v}%`}
                         width={40}
-                        tick={{ fontSize: 11, fill: "#7A9AB0" }}
+                        tick={{ fontSize: 11, fill: "#6A82A8" }}
                         axisLine={false}
                         tickLine={false}
                       />
@@ -1272,7 +1272,7 @@ export function PortalSystemsDashboard({
                           "Andel OK",
                         ]}
                         contentStyle={{
-                          border: "1px solid #C8D8E4",
+                          border: "1px solid #CBD5E8",
                           borderRadius: "12px",
                           fontSize: "13px",
                         }}
@@ -1298,12 +1298,12 @@ export function PortalSystemsDashboard({
 
       {detail ? (
         <PortalSlideInPanel open onClose={closeDetail}>
-            <div className="flex items-start justify-between gap-3 border-b border-[#C8D8E4] px-5 py-4">
-              <h2 className="text-lg font-semibold text-[#1E3448]">{detail.friendly}</h2>
+            <div className="flex items-start justify-between gap-3 border-b border-[#CBD5E8] px-5 py-4">
+              <h2 className="text-lg font-semibold text-[#0A1628]">{detail.friendly}</h2>
               <button
                 type="button"
                 onClick={closeDetail}
-                className="rounded-full p-1.5 text-[#7A9AB0] transition hover:bg-[#EAF1F7] hover:text-[#1E3448]"
+                className="rounded-full p-1.5 text-[#6A82A8] transition hover:bg-[#E8EEFC] hover:text-[#0A1628]"
                 aria-label="Luk"
               >
                 <X className="h-5 w-5" />
@@ -1324,7 +1324,7 @@ export function PortalSystemsDashboard({
                 return (
                   <div className="space-y-5">
                     <div>
-                      <p className="text-xs font-semibold uppercase tracking-wide text-[#7A9AB0]">
+                      <p className="text-xs font-semibold uppercase tracking-wide text-[#6A82A8]">
                         Status
                       </p>
                       <span
@@ -1333,26 +1333,26 @@ export function PortalSystemsDashboard({
                         {statusBadgeLabel(st)}
                       </span>
                     </div>
-                    <p className="text-sm leading-relaxed text-[#4A6478]">{expl}</p>
+                    <p className="text-sm leading-relaxed text-[#2A4868]">{expl}</p>
                     {checkedLabel ? (
-                      <p className="text-xs text-[#7A9AB0]">{checkedLabel}</p>
+                      <p className="text-xs text-[#6A82A8]">{checkedLabel}</p>
                     ) : null}
                     {detailLines.length > 0 ? (
                       <div>
-                        <p className="text-xs font-semibold uppercase tracking-wide text-[#7A9AB0]">
+                        <p className="text-xs font-semibold uppercase tracking-wide text-[#6A82A8]">
                           Tekniske detaljer
                         </p>
-                        <ul className="mt-2 space-y-1 text-sm text-[#4A6478]">
+                        <ul className="mt-2 space-y-1 text-sm text-[#2A4868]">
                           {detailLines.map((line, idx) => (
                             <li key={`detail-${idx}`}>{line}</li>
                           ))}
                         </ul>
                       </div>
                     ) : null}
-                    <div className="border-t border-[#C8D8E4] pt-4">
+                    <div className="border-t border-[#CBD5E8] pt-4">
                       <Link
                         href={supportHref}
-                        className="inline-flex w-full items-center justify-center rounded-full bg-[#4A7FA5] px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-[#3A6F95]"
+                        className="inline-flex w-full items-center justify-center rounded-full bg-[#2952A3] px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-[#1E4490]"
                       >
                         Opret en sag om dette
                       </Link>

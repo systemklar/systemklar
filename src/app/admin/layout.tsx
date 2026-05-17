@@ -83,14 +83,14 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
   const activeNav = activeNavFromPath(pathname);
 
   return (
-    <div className="surface-cards flex h-dvh overflow-x-hidden bg-[#F7F4EF] text-[#1E3448]">
+    <div className="surface-cards flex h-dvh overflow-x-hidden bg-[#F2F5FA] text-[#0A1628]">
       <NavigationProgress />
       <div className="flex h-full min-h-0 w-full overflow-hidden">
         {sidebarOpen ? (
           <button
             type="button"
             aria-label="Luk menu"
-            className="fixed inset-0 z-40 bg-slate-900/50 backdrop-blur-sm lg:hidden"
+            className="fixed inset-0 z-40 bg-[#0A1628]/50 backdrop-blur-sm lg:hidden"
             onClick={closeSidebar}
           />
         ) : null}
@@ -98,16 +98,16 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
         <AdminSidebar activeNav={activeNav} open={sidebarOpen} onClose={closeSidebar} />
 
         <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden">
-          <header className="sticky top-0 z-30 flex flex-shrink-0 items-center gap-3 border-b border-[#C8D8E4] bg-white px-3 py-2 lg:hidden">
+          <header className="sticky top-0 z-30 flex flex-shrink-0 items-center gap-3 border-b border-[#CBD5E8] bg-white px-3 py-2 lg:hidden">
             <button
               type="button"
               onClick={() => setSidebarOpen(true)}
-              className="inline-flex min-h-11 min-w-11 shrink-0 items-center justify-center rounded-lg text-[#4A6478] hover:bg-[#EAF1F7]"
+              className="inline-flex min-h-11 min-w-11 shrink-0 items-center justify-center rounded-lg text-[#2A4868] hover:bg-[#E8EEFC]"
               aria-label="Åbn menu"
             >
               <Menu className="h-5 w-5" />
             </button>
-            <span className="min-w-0 flex-1 text-center text-sm font-bold text-[#4A7FA5]">Admin</span>
+            <span className="min-w-0 flex-1 text-center text-sm font-bold text-[#2952A3]">Admin</span>
             <span className="w-11 shrink-0" aria-hidden />
           </header>
 

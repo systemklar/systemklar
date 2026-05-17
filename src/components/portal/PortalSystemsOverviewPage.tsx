@@ -274,7 +274,7 @@ export function PortalSystemsOverviewPage() {
         <button
           type="button"
           onClick={() => setAddOpen((o) => !o)}
-          className="inline-flex items-center gap-2 rounded-full bg-[#4A7FA5] px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-[#3A6F95]"
+          className="inline-flex items-center gap-2 rounded-full bg-[#2952A3] px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-[#1E4490]"
           aria-expanded={addOpen}
           aria-haspopup="true"
         >
@@ -283,28 +283,28 @@ export function PortalSystemsOverviewPage() {
         </button>
         {addOpen ? (
           <div
-            className="absolute right-0 z-40 mt-2 w-[min(100vw-2rem,24rem)] overflow-hidden rounded-2xl border border-[#C8D8E4] bg-white shadow-[0_16px_48px_rgba(30,52,72,0.12)]"
+            className="absolute right-0 z-40 mt-2 w-[min(100vw-2rem,24rem)] overflow-hidden rounded-2xl border border-[#CBD5E8] bg-white shadow-[0_16px_48px_rgba(10,22,40,0.12)]"
             role="menu"
           >
-            <div className="border-b border-[#E0EAF0] p-3">
-              <div className="flex items-center gap-2 rounded-xl border border-[#C8D8E4] bg-[#F7F4EF] px-3 py-2">
-                <Search className="h-4 w-4 shrink-0 text-[#7A9AB0]" aria-hidden />
+            <div className="border-b border-[#E4EAF5] p-3">
+              <div className="flex items-center gap-2 rounded-xl border border-[#CBD5E8] bg-[#F2F5FA] px-3 py-2">
+                <Search className="h-4 w-4 shrink-0 text-[#6A82A8]" aria-hidden />
                 <input
                   type="search"
                   value={addSearch}
                   onChange={(e) => setAddSearch(e.target.value)}
                   placeholder="Søg efter system..."
-                  className="min-w-0 flex-1 bg-transparent text-sm text-[#1E3448] outline-none placeholder:text-[#7A9AB0]"
+                  className="min-w-0 flex-1 bg-transparent text-sm text-[#0A1628] outline-none placeholder:text-[#6A82A8]"
                 />
               </div>
             </div>
             <div className="max-h-[400px] overflow-y-auto py-2">
               {availableGroups.length === 0 ? (
-                <p className="px-4 py-6 text-center text-sm text-[#7A9AB0]">Ingen systemer matcher søgningen.</p>
+                <p className="px-4 py-6 text-center text-sm text-[#6A82A8]">Ingen systemer matcher søgningen.</p>
               ) : (
                 availableGroups.map((group) => (
                   <div key={group.label} className="px-2 py-1">
-                    <p className="px-2 py-1.5 text-xs font-semibold uppercase tracking-wider text-[#7A9AB0]">
+                    <p className="px-2 py-1.5 text-xs font-semibold uppercase tracking-wider text-[#6A82A8]">
                       {group.label}
                     </p>
                     <ul className="space-y-0.5">
@@ -314,17 +314,17 @@ export function PortalSystemsOverviewPage() {
                         return (
                           <li
                             key={system.id}
-                            className="flex items-center justify-between gap-2 rounded-lg px-2 py-2 hover:bg-[#F7F4EF]"
+                            className="flex items-center justify-between gap-2 rounded-lg px-2 py-2 hover:bg-[#F2F5FA]"
                           >
                             <span className="flex min-w-0 flex-1 items-center gap-2">
-                              <Icon className="h-5 w-5 shrink-0 text-[#4A7FA5]" aria-hidden />
-                              <span className="text-sm text-[#1E3448]">{friendlyLabel(system.name)}</span>
+                              <Icon className="h-5 w-5 shrink-0 text-[#2952A3]" aria-hidden />
+                              <span className="text-sm text-[#0A1628]">{friendlyLabel(system.name)}</span>
                             </span>
                             <button
                               type="button"
                               disabled={busy}
                               onClick={() => void handleAdd(system)}
-                              className="shrink-0 rounded-full bg-[#4A7FA5] px-3 py-1 text-xs font-semibold text-white transition hover:bg-[#3A6F95] disabled:opacity-50"
+                              className="shrink-0 rounded-full bg-[#2952A3] px-3 py-1 text-xs font-semibold text-white transition hover:bg-[#1E4490] disabled:opacity-50"
                             >
                               {busy ? "…" : "Tilføj"}
                             </button>
@@ -344,7 +344,7 @@ export function PortalSystemsOverviewPage() {
   if (loading) {
     return (
       <PortalPageShell title="Dine IT-systemer" subtitle="Overblik over overvågning og status">
-        <p className="text-sm text-[#7A9AB0]">Indlæser systemer…</p>
+        <p className="text-sm text-[#6A82A8]">Indlæser systemer…</p>
       </PortalPageShell>
     );
   }
@@ -402,16 +402,16 @@ export function PortalSystemsOverviewPage() {
           })}
         </ul>
       ) : (
-        <div className="rounded-2xl border border-[#C8D8E4] bg-white px-6 py-14 text-center shadow-sm">
-          <p className="text-sm font-medium text-[#1E3448]">Ingen systemer endnu</p>
-          <p className="mt-2 text-sm text-[#4A6478]">
+        <div className="rounded-2xl border border-[#CBD5E8] bg-white px-6 py-14 text-center shadow-sm">
+          <p className="text-sm font-medium text-[#0A1628]">Ingen systemer endnu</p>
+          <p className="mt-2 text-sm text-[#2A4868]">
             Tilføj dit første system for at starte overvågning.
           </p>
           {availableGroups.length > 0 ? (
             <button
               type="button"
               onClick={() => setAddOpen(true)}
-              className="mt-6 inline-flex items-center gap-2 rounded-full bg-[#4A7FA5] px-5 py-2.5 text-sm font-medium text-white hover:bg-[#3A6F95]"
+              className="mt-6 inline-flex items-center gap-2 rounded-full bg-[#2952A3] px-5 py-2.5 text-sm font-medium text-white hover:bg-[#1E4490]"
             >
               <Plus className="h-4 w-4" />
               Tilføj system
@@ -433,43 +433,43 @@ export function PortalSystemsOverviewPage() {
       <PortalSlideInPanel open={modal != null} onClose={() => setModal(null)} panelClassName="max-w-lg">
         {modal ? (
           <div className="flex h-full flex-col">
-            <div className="flex items-start justify-between gap-4 border-b border-[#C8D8E4] px-6 py-5">
+            <div className="flex items-start justify-between gap-4 border-b border-[#CBD5E8] px-6 py-5">
               <div>
-                <h2 className="text-lg font-semibold text-[#1E3448]">Opsætning af {modal.friendlyName}</h2>
-                <p className="mt-1 text-xs text-[#7A9AB0]">Trin 1 af 1</p>
+                <h2 className="text-lg font-semibold text-[#0A1628]">Opsætning af {modal.friendlyName}</h2>
+                <p className="mt-1 text-xs text-[#6A82A8]">Trin 1 af 1</p>
               </div>
               <button
                 type="button"
                 onClick={() => setModal(null)}
-                className="rounded-full p-1 text-[#7A9AB0] transition hover:bg-[#F7F4EF] hover:text-[#1E3448]"
+                className="rounded-full p-1 text-[#6A82A8] transition hover:bg-[#F2F5FA] hover:text-[#0A1628]"
                 aria-label="Luk"
               >
                 <X className="h-5 w-5" />
               </button>
             </div>
             <div className="flex gap-1.5 px-6 pt-4">
-              <span className="h-1 flex-1 rounded-full bg-[#4A7FA5]" />
+              <span className="h-1 flex-1 rounded-full bg-[#2952A3]" />
             </div>
             <div className="flex-1 overflow-y-auto px-6 py-6">
               {modal.kind === "auto" ? (
-                <p className="flex gap-3 text-sm leading-relaxed text-[#4A6478]">
-                  <Info className="h-5 w-5 shrink-0 text-[#7A9AB0]" aria-hidden />
+                <p className="flex gap-3 text-sm leading-relaxed text-[#2A4868]">
+                  <Info className="h-5 w-5 shrink-0 text-[#6A82A8]" aria-hidden />
                   <span>Dette system overvåges automatisk. Ingen opsætning kræves.</span>
                 </p>
               ) : (
                 <>
-                  <p className="text-sm leading-relaxed text-[#4A6478]">
+                  <p className="text-sm leading-relaxed text-[#2A4868]">
                     Denne integration kræver hjælp fra vores team. Opret en sag, så klarer vi opsætningen.
                   </p>
-                  <ol className="mt-6 space-y-3 text-sm text-[#4A6478]">
+                  <ol className="mt-6 space-y-3 text-sm text-[#2A4868]">
                     <li className="flex gap-3">
-                      <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[#EAF1F7] text-xs font-semibold text-[#4A7FA5]">
+                      <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[#E8EEFC] text-xs font-semibold text-[#2952A3]">
                         1
                       </span>
                       Opret en support-sag med systemnavnet
                     </li>
                     <li className="flex gap-3">
-                      <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[#EAF1F7] text-xs font-semibold text-[#4A7FA5]">
+                      <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[#E8EEFC] text-xs font-semibold text-[#2952A3]">
                         2
                       </span>
                       Vi kontakter dig med næste skridt
@@ -477,7 +477,7 @@ export function PortalSystemsOverviewPage() {
                   </ol>
                   <Link
                     href={supportSetupHref(modal.storedName)}
-                    className="mt-8 inline-flex w-full items-center justify-center rounded-full bg-[#4A7FA5] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#3A6F95]"
+                    className="mt-8 inline-flex w-full items-center justify-center rounded-full bg-[#2952A3] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#1E4490]"
                   >
                     Opret sag
                   </Link>
@@ -491,22 +491,22 @@ export function PortalSystemsOverviewPage() {
       <PortalSlideInPanel open={detailPanel != null} onClose={() => setDetailPanel(null)} panelClassName="max-w-md">
         {detailPanel ? (
           <div className="flex h-full flex-col">
-            <div className="flex items-start justify-between gap-4 border-b border-[#C8D8E4] px-6 py-5">
+            <div className="flex items-start justify-between gap-4 border-b border-[#CBD5E8] px-6 py-5">
               <div>
-                <h2 className="text-lg font-semibold text-[#1E3448]">{detailPanel.friendlyName}</h2>
-                <p className="mt-1 text-xs text-[#7A9AB0]">Systemstatus</p>
+                <h2 className="text-lg font-semibold text-[#0A1628]">{detailPanel.friendlyName}</h2>
+                <p className="mt-1 text-xs text-[#6A82A8]">Systemstatus</p>
               </div>
               <button
                 type="button"
                 onClick={() => setDetailPanel(null)}
-                className="rounded-full p-1 text-[#7A9AB0] transition hover:bg-[#F7F4EF]"
+                className="rounded-full p-1 text-[#6A82A8] transition hover:bg-[#F2F5FA]"
                 aria-label="Luk"
               >
                 <X className="h-5 w-5" />
               </button>
             </div>
             <div className="flex-1 overflow-y-auto px-6 py-6">
-              <p className="text-sm text-[#4A6478]">
+              <p className="text-sm text-[#2A4868]">
                 {monitoringCustomerExplanation(
                   detailPanel.storedName,
                   detailPanel.status,
@@ -514,12 +514,12 @@ export function PortalSystemsOverviewPage() {
                 )}
               </p>
               {detailPanel.checkedAgo ? (
-                <p className="mt-4 text-xs text-[#7A9AB0]">Tjekket for {detailPanel.checkedAgo}</p>
+                <p className="mt-4 text-xs text-[#6A82A8]">Tjekket for {detailPanel.checkedAgo}</p>
               ) : null}
               {(detailPanel.status === "advarsel" || detailPanel.status === "fejl") && (
                 <Link
                   href="/portal/support/new"
-                  className="mt-8 inline-flex rounded-full bg-[#4A7FA5] px-5 py-2.5 text-sm font-semibold text-white hover:bg-[#3A6F95]"
+                  className="mt-8 inline-flex rounded-full bg-[#2952A3] px-5 py-2.5 text-sm font-semibold text-white hover:bg-[#1E4490]"
                 >
                   Opret support-sag
                 </Link>

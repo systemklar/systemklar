@@ -14,8 +14,8 @@ export function SettingsToggle({ checked, onChange, disabled, id }: SettingsTogg
       aria-checked={checked}
       disabled={disabled}
       onClick={() => !disabled && onChange(!checked)}
-      className={`relative h-7 w-12 shrink-0 rounded-full transition-colors duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#4A7FA5] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 ${
-        checked ? "bg-[#4A7FA5]" : "bg-[#C8D8E4]"
+      className={`relative h-7 w-12 shrink-0 rounded-full transition-colors duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#2952A3] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 ${
+        checked ? "bg-[#2952A3]" : "bg-[#CBD5E8]"
       }`}
     >
       <span

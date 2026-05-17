@@ -28,7 +28,7 @@ export function btn(text: string, url: string) {
   return `
     <table cellpadding="0" cellspacing="0" border="0" style="margin:16px 0;">
       <tr>
-        <td style="background:#4A7FA5; border-radius:999px; padding:12px 28px;">
+        <td style="background:#2952A3; border-radius:999px; padding:12px 28px;">
           <a href="${url}" style="color:#ffffff; text-decoration:none; font-weight:600; font-size:14px; font-family:'DM Sans',Arial,sans-serif; display:inline-block;">${text}</a>
         </td>
       </tr>

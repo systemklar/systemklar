@@ -21,9 +21,9 @@ export type SystemklarLogoProps = {
 };
 
 /**
- * Fælles logo: `/logo.png` + «systemklar» i DM Sans bold.
- * Lys baggrund: slate blue logo + tekst #4A7FA5.
- * Mørk/navy: hvid tekst + logo via filter.
+ * Fælles logo: `/logo.png` + «systemklar».
+ * Lys baggrund: royal blue logo + tekst #2952A3.
+ * Mørk/sidebar: hvid tekst + logo via filter.
  */
 export function SystemklarLogo({
   variant = "light",
@@ -46,8 +46,8 @@ export function SystemklarLogo({
           WebkitFilter: "brightness(0) invert(1)",
         }
       : {
-          filter: "sepia(1) saturate(1.5) hue-rotate(180deg) brightness(0.7)",
-          WebkitFilter: "sepia(1) saturate(1.5) hue-rotate(180deg) brightness(0.7)",
+          filter: "sepia(1) saturate(2) hue-rotate(200deg) brightness(0.6)",
+          WebkitFilter: "sepia(1) saturate(2) hue-rotate(200deg) brightness(0.6)",
         }),
   };
 
@@ -64,7 +64,7 @@ export function SystemklarLogo({
         style={imgStyle}
       />
       <span
-        className={isDark ? "font-medium text-white" : "font-bold text-[#4A7FA5]"}
+        className={isDark ? "font-medium text-white" : "font-bold text-[#2952A3]"}
         style={{ fontSize: textPx, lineHeight: 1.1 }}
       >
         systemklar

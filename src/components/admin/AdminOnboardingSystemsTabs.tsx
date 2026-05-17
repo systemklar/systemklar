@@ -68,8 +68,8 @@ export function AdminOnboardingSystemsTabs({
   const activeGroup = groups.find((g) => g.shortLabel === activeGroupKey) ?? groups[0];
 
   return (
-    <div className="rounded-2xl border border-[#C8D8E4] bg-white shadow-sm">
-      <div className="border-b border-[#E0EAF0] px-2 pt-2 sm:px-4">
+    <div className="rounded-2xl border border-[#CBD5E8] bg-white shadow-sm">
+      <div className="border-b border-[#E4EAF5] px-2 pt-2 sm:px-4">
         <nav className="-mb-px flex flex-wrap gap-1" aria-label="Systemkategorier">
           {groups.map((g) => {
             const isActive = g.shortLabel === activeGroupKey;
@@ -80,8 +80,8 @@ export function AdminOnboardingSystemsTabs({
                 onClick={() => setActiveShortLabel(g.shortLabel)}
                 className={`whitespace-nowrap rounded-t-lg px-3 py-2.5 text-sm font-medium transition-colors ${
                   isActive
-                    ? "border border-b-0 border-[#C8D8E4] bg-white text-[#1E3448]"
-                    : "text-[#4A6478] hover:bg-[#EAF1F7]/80 hover:text-[#1E3448]"
+                    ? "border border-b-0 border-[#CBD5E8] bg-white text-[#0A1628]"
+                    : "text-[#2A4868] hover:bg-[#E8EEFC]/80 hover:text-[#0A1628]"
                 }`}
               >
                 {g.shortLabel}
@@ -91,7 +91,7 @@ export function AdminOnboardingSystemsTabs({
         </nav>
       </div>
 
-      <ul className="divide-y divide-[#E0EAF0] px-4 sm:px-6">
+      <ul className="divide-y divide-[#E4EAF5] px-4 sm:px-6">
         {activeGroup.items.map((entry, idx) => {
           const Icon = entry.kind === "known" ? entry.system.icon : Monitor;
           const name = entry.kind === "known" ? entry.system.name : entry.name;
@@ -100,17 +100,17 @@ export function AdminOnboardingSystemsTabs({
           return (
             <li key={key} className="flex flex-col gap-3 py-4 sm:flex-row sm:items-center sm:justify-between">
               <div className="flex min-w-0 items-center gap-3">
-                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#EAF1F7] text-[#4A7FA5]">
+                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#E8EEFC] text-[#2952A3]">
                   <Icon className="h-5 w-5" aria-hidden />
                 </span>
-                <span className="font-medium text-[#1E3448]">{name}</span>
+                <span className="font-medium text-[#0A1628]">{name}</span>
               </div>
               <div className="flex shrink-0 items-center gap-3 sm:justify-end">
                 <MonitoringStatusInline
                   systemName={name}
                   row={monitoringByName.get(name) ?? null}
                 />
-                <span className="hidden w-16 text-right text-xs text-slate-300 sm:inline" title="Kommende handlinger">
+                <span className="hidden w-16 text-right text-xs text-[#6A82A8] sm:inline" title="Kommende handlinger">
                   ···
                 </span>
               </div>

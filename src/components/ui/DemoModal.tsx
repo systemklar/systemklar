@@ -11,7 +11,7 @@ type DemoModalProps = {
 };
 
 const fieldClass =
-  "w-full rounded-xl border border-[#C8D8E4] px-4 py-3 text-sm outline-none focus:border-transparent focus:ring-2 focus:ring-[#4A7FA5]";
+  "w-full rounded-xl border border-[#CBD5E8] px-4 py-3 text-sm outline-none focus:border-transparent focus:ring-2 focus:ring-[#2952A3]";
 
 export function DemoModal({ isOpen, onClose, subject }: DemoModalProps) {
   const [name, setName] = useState("");
@@ -91,17 +91,17 @@ export function DemoModal({ isOpen, onClose, subject }: DemoModalProps) {
         <button
           type="button"
           onClick={onClose}
-          className="absolute right-5 top-5 rounded-full p-2 text-slate-400 transition-colors hover:bg-slate-50 hover:text-slate-700"
+          className="absolute right-5 top-5 rounded-full p-2 text-[#9AAAC8] transition-colors hover:bg-[#F2F5FA] hover:text-[#2A4868]"
           aria-label="Luk modal"
         >
           <X className="h-4 w-4" />
         </button>
 
         <SystemklarLogo href="/" variant="light" size="md" />
-        <h2 id="demo-modal-title" className="mt-6 text-xl font-bold text-[#1E3448]">
+        <h2 id="demo-modal-title" className="mt-6 text-xl font-bold text-[#0A1628]">
           Book en gratis snak
         </h2>
-        <p className="mt-1 text-sm text-[#4A6478]">30 min · gratis · uforpligtende</p>
+        <p className="mt-1 text-sm text-[#2A4868]">30 min · gratis · uforpligtende</p>
 
         {success ? (
           <div className="mt-6 rounded-2xl border border-green-100 bg-green-50 p-5 text-center">
@@ -158,11 +158,11 @@ export function DemoModal({ isOpen, onClose, subject }: DemoModalProps) {
             <button
               type="submit"
               disabled={loading}
-              className="w-full rounded-full bg-[#4A7FA5] py-3 font-semibold text-white transition-colors hover:bg-[#3A6F95] disabled:cursor-not-allowed disabled:opacity-60"
+              className="w-full rounded-full bg-[#2952A3] py-3 font-semibold text-white transition-colors hover:bg-[#1E4490] disabled:cursor-not-allowed disabled:opacity-60"
             >
               {loading ? "Sender..." : "Send forespørgsel"}
             </button>
-            <p className="mt-3 text-center text-xs text-[#4A6478]">Ingen binding · Opsig når som helst</p>
+            <p className="mt-3 text-center text-xs text-[#2A4868]">Ingen binding · Opsig når som helst</p>
           </form>
         )}
       </div>

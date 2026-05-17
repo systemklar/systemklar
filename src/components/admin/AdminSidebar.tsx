@@ -71,7 +71,7 @@ export function AdminSidebar({ activeNav, open = false, onClose }: AdminSidebarP
         open ? "translate-x-0" : "-translate-x-full"
       }`}
     >
-      <div className="sk-sidebar-logo flex flex-shrink-0 items-center justify-between border-b px-4 py-4">
+      <div className="sk-sidebar-logo flex flex-shrink-0 items-center justify-between border-b">
         <Link href="/admin/overblik" className="block" onClick={onClose}>
           <SystemklarLogo variant="dark" size="sm" />
           <p className="sk-sidebar-user-muted mt-0.5 text-xs font-medium">Admin</p>
@@ -79,7 +79,7 @@ export function AdminSidebar({ activeNav, open = false, onClose }: AdminSidebarP
         <button
           type="button"
           onClick={onClose}
-          className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-lg text-[#A8C8E0] hover:bg-white/10 lg:hidden"
+          className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-lg text-[#6A92D8] hover:bg-white/[0.04] lg:hidden"
           aria-label="Luk menu"
         >
           <X className="h-5 w-5" />

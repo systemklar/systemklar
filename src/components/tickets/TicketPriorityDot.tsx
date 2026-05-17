@@ -10,7 +10,7 @@ export function TicketPriorityDot({ priority, showLabel = false }: TicketPriorit
   return (
     <span className="inline-flex items-center gap-1.5" title={s.title}>
       <span className={`h-2 w-2 shrink-0 rounded-full ${s.dot}`} aria-hidden />
-      {showLabel ? <span className="text-xs text-[#4A6478]">{s.label}</span> : null}
+      {showLabel ? <span className="text-xs text-[#2A4868]">{s.label}</span> : null}
       <span className="sr-only">{s.title}</span>
     </span>
   );

@@ -454,17 +454,17 @@ export default function PortalTilbudsgeneratorPage() {
 
   return (
       <div className="w-full space-y-8 p-6 md:p-8">
-        <header className="border-b border-[#E0EAF0] pb-8">
+        <header className="border-b border-[#E4EAF5] pb-8">
           <SystemklarLogo size="sm" />
-          <h1 className="mt-4 text-2xl font-light tracking-tight text-[#1E3448] md:text-3xl">
+          <h1 className="mt-4 text-2xl font-light tracking-tight text-[#0A1628] md:text-3xl">
             AI Tilbudsgenerator
           </h1>
-          <p className="mt-2 text-sm text-[#4A6478]">Generér professionelle IT-tilbud på sekunder</p>
+          <p className="mt-2 text-sm text-[#2A4868]">Generér professionelle IT-tilbud på sekunder</p>
         </header>
 
         <div className="grid gap-8 lg:grid-cols-[2fr_3fr]">
-          <div className="rounded-2xl border border-[#C8D8E4] bg-white p-6 shadow-sm">
-            <h2 className="text-sm font-semibold text-[#1E3448]">Tilbudsoplysninger</h2>
+          <div className="rounded-2xl border border-[#CBD5E8] bg-white p-6 shadow-sm">
+            <h2 className="text-sm font-semibold text-[#0A1628]">Tilbudsoplysninger</h2>
             <form
               className="mt-6 space-y-5"
               onSubmit={(e) => {
@@ -473,28 +473,28 @@ export default function PortalTilbudsgeneratorPage() {
               }}
             >
               <div>
-                <label className="block text-sm font-medium text-[#1E3448]">Kundenavn</label>
+                <label className="block text-sm font-medium text-[#0A1628]">Kundenavn</label>
                 <input
                   value={customerName}
                   onChange={(e) => setCustomerName(e.target.value)}
-                  className="mt-1.5 w-full rounded-xl border border-[#C8D8E4] px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-[#4A7FA5]"
+                  className="mt-1.5 w-full rounded-xl border border-[#CBD5E8] px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-[#2952A3]"
                   placeholder="Fx Acme ApS"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-[#1E3448]">Modtager-email</label>
+                <label className="block text-sm font-medium text-[#0A1628]">Modtager-email</label>
                 <input
                   type="email"
                   value={recipientEmail}
                   onChange={(e) => setRecipientEmail(e.target.value)}
-                  className="mt-1.5 w-full rounded-xl border border-[#C8D8E4] px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-[#4A7FA5]"
+                  className="mt-1.5 w-full rounded-xl border border-[#CBD5E8] px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-[#2952A3]"
                   placeholder="kunde@firma.dk"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-[#1E3448]">Ydelser</label>
+                <label className="block text-sm font-medium text-[#0A1628]">Ydelser</label>
                 {services.length === 0 ? (
-                  <p className="mt-2 text-sm text-[#7A9AB0]">Tilføj ydelser i sektionen nedenfor først.</p>
+                  <p className="mt-2 text-sm text-[#6A82A8]">Tilføj ydelser i sektionen nedenfor først.</p>
                 ) : (
                   <div className="mt-2 flex flex-wrap gap-2">
                     {services.map((s) => {
@@ -506,8 +506,8 @@ export default function PortalTilbudsgeneratorPage() {
                           onClick={() => toggleService(s.id)}
                           className={`rounded-full border px-3 py-1.5 text-xs font-medium transition ${
                             on
-                              ? "border-[#4A7FA5] bg-[#EAF1F7] text-[#1E3448]"
-                              : "border-[#C8D8E4] text-[#4A6478] hover:border-[#4A7FA5]"
+                              ? "border-[#2952A3] bg-[#E8EEFC] text-[#0A1628]"
+                              : "border-[#CBD5E8] text-[#2A4868] hover:border-[#2952A3]"
                           }`}
                         >
                           {s.name}
@@ -519,80 +519,80 @@ export default function PortalTilbudsgeneratorPage() {
               </div>
               <div className="grid gap-4 sm:grid-cols-2">
                 <div>
-                  <label className="block text-sm font-medium text-[#1E3448]">Pris (estimat)</label>
-                  <p className="mt-1.5 rounded-xl border border-[#E0EAF0] bg-[#F7F4EF] px-3 py-2.5 text-sm font-medium text-[#1E3448]">
+                  <label className="block text-sm font-medium text-[#0A1628]">Pris (estimat)</label>
+                  <p className="mt-1.5 rounded-xl border border-[#E4EAF5] bg-[#F2F5FA] px-3 py-2.5 text-sm font-medium text-[#0A1628]">
                     {selected.size > 0 ? formatDkkLocal(selectedTotal) : "—"}
                   </p>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-[#1E3448]">Gyldig til</label>
+                  <label className="block text-sm font-medium text-[#0A1628]">Gyldig til</label>
                   <input
                     type="date"
                     value={validUntil}
                     onChange={(e) => setValidUntil(e.target.value)}
-                    className="mt-1.5 w-full rounded-xl border border-[#C8D8E4] px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-[#4A7FA5]"
+                    className="mt-1.5 w-full rounded-xl border border-[#CBD5E8] px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-[#2952A3]"
                   />
                 </div>
               </div>
               <div>
-                <label className="block text-sm font-medium text-[#1E3448]">Bemærkninger</label>
+                <label className="block text-sm font-medium text-[#0A1628]">Bemærkninger</label>
                 <textarea
                   value={needs}
                   onChange={(e) => setNeeds(e.target.value)}
                   rows={4}
-                  className="mt-1.5 w-full rounded-xl border border-[#C8D8E4] px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-[#4A7FA5]"
+                  className="mt-1.5 w-full rounded-xl border border-[#CBD5E8] px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-[#2952A3]"
                   placeholder="Kundens behov, tidsplan, særlige ønsker..."
                 />
               </div>
               {actionError ? <p className="text-sm text-red-600">{actionError}</p> : null}
-              {actionOk ? <p className="text-sm text-[#3A7A4A]">{actionOk}</p> : null}
+              {actionOk ? <p className="text-sm text-[#0A6A4A]">{actionOk}</p> : null}
               <button
                 type="submit"
                 disabled={generating || selected.size === 0}
-                className="w-full rounded-full bg-[#4A7FA5] py-3 text-sm font-semibold text-white transition hover:bg-[#3A6F95] disabled:opacity-50"
+                className="w-full rounded-full bg-[#2952A3] py-3 text-sm font-semibold text-white transition hover:bg-[#1E4490] disabled:opacity-50"
               >
                 {generating ? "Genererer…" : "Generér tilbud"}
               </button>
             </form>
           </div>
 
-          <div className="relative flex min-h-[420px] flex-col rounded-2xl border border-[#C8D8E4] bg-white shadow-sm">
+          <div className="relative flex min-h-[420px] flex-col rounded-2xl border border-[#CBD5E8] bg-white shadow-sm">
             {!hasQuote ? (
               <div className="flex flex-1 flex-col items-center justify-center px-8 py-16 text-center">
-                <span className="flex h-14 w-14 items-center justify-center rounded-2xl border border-[#C8D8E4] bg-[#F7F4EF] text-[#4A7FA5]">
+                <span className="flex h-14 w-14 items-center justify-center rounded-2xl border border-[#CBD5E8] bg-[#F2F5FA] text-[#2952A3]">
                   <FileSignature className="h-7 w-7" strokeWidth={1.5} />
                 </span>
-                <p className="mt-6 text-sm font-medium text-[#1E3448]">
+                <p className="mt-6 text-sm font-medium text-[#0A1628]">
                   Udfyld formularen for at generere dit første tilbud
                 </p>
               </div>
             ) : (
               <>
                 <div className="flex-1 overflow-y-auto p-8">
-                  <div className="border-b border-[#E0EAF0] pb-6">
+                  <div className="border-b border-[#E4EAF5] pb-6">
                     <SystemklarLogo size="sm" />
-                    <p className="mt-4 text-xs text-[#7A9AB0]">
+                    <p className="mt-4 text-xs text-[#6A82A8]">
                       {MARKETING_CONTACT_EMAIL} · systemklar.dk
                     </p>
                   </div>
                   <input
                     value={title}
                     onChange={(e) => setTitle(e.target.value)}
-                    className="mt-6 w-full border-0 bg-transparent text-lg font-semibold text-[#1E3448] outline-none"
+                    className="mt-6 w-full border-0 bg-transparent text-lg font-semibold text-[#0A1628] outline-none"
                     placeholder="Tilbudstitel"
                   />
                   <textarea
                     value={content}
                     onChange={(e) => setContent(e.target.value)}
                     rows={18}
-                    className="mt-4 w-full resize-none border-0 bg-transparent text-sm leading-relaxed text-[#4A6478] outline-none"
+                    className="mt-4 w-full resize-none border-0 bg-transparent text-sm leading-relaxed text-[#2A4868] outline-none"
                   />
                 </div>
-                <div className="flex flex-wrap gap-2 border-t border-[#E0EAF0] p-4">
+                <div className="flex flex-wrap gap-2 border-t border-[#E4EAF5] p-4">
                   <button
                     type="button"
                     onClick={() => void copyQuote()}
-                    className="inline-flex items-center gap-2 rounded-full border border-[#C8D8E4] px-4 py-2 text-sm font-medium text-[#4A6478] transition hover:bg-[#F7F4EF]"
+                    className="inline-flex items-center gap-2 rounded-full border border-[#CBD5E8] px-4 py-2 text-sm font-medium text-[#2A4868] transition hover:bg-[#F2F5FA]"
                   >
                     <Copy className="h-4 w-4" />
                     Kopiér
@@ -600,7 +600,7 @@ export default function PortalTilbudsgeneratorPage() {
                   <button
                     type="button"
                     onClick={downloadQuote}
-                    className="inline-flex items-center gap-2 rounded-full border border-[#C8D8E4] px-4 py-2 text-sm font-medium text-[#4A6478] transition hover:bg-[#F7F4EF]"
+                    className="inline-flex items-center gap-2 rounded-full border border-[#CBD5E8] px-4 py-2 text-sm font-medium text-[#2A4868] transition hover:bg-[#F2F5FA]"
                   >
                     <Download className="h-4 w-4" />
                     Download
@@ -617,7 +617,7 @@ export default function PortalTilbudsgeneratorPage() {
                         }
                       })();
                     }}
-                    className="inline-flex items-center gap-2 rounded-full border border-[#C8D8E4] px-4 py-2 text-sm font-medium text-[#4A6478] transition hover:bg-[#F7F4EF] disabled:opacity-50"
+                    className="inline-flex items-center gap-2 rounded-full border border-[#CBD5E8] px-4 py-2 text-sm font-medium text-[#2A4868] transition hover:bg-[#F2F5FA] disabled:opacity-50"
                   >
                     {savingQuote ? "Gemmer…" : "Gem kladde"}
                   </button>
@@ -625,14 +625,14 @@ export default function PortalTilbudsgeneratorPage() {
                     type="button"
                     disabled={savingQuote || sending}
                     onClick={() => void handleSend()}
-                    className="inline-flex items-center gap-2 rounded-full bg-[#4A7FA5] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#3A6F95] disabled:opacity-50"
+                    className="inline-flex items-center gap-2 rounded-full bg-[#2952A3] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#1E4490] disabled:opacity-50"
                   >
                     Send til kunde
                   </button>
                 </div>
               </>
             )}
-            <span className="pointer-events-none absolute bottom-3 right-4 rounded-full border border-[#C8D8E4] bg-[#F7F4EF] px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-[#7A9AB0]">
+            <span className="pointer-events-none absolute bottom-3 right-4 rounded-full border border-[#CBD5E8] bg-[#F2F5FA] px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-[#6A82A8]">
               Drevet af Claude AI
             </span>
           </div>
@@ -640,7 +640,7 @@ export default function PortalTilbudsgeneratorPage() {
 
         <section
           id="ydelser"
-          className="rounded-2xl border border-[#C8D8E4] bg-white p-6 shadow-sm md:p-8"
+          className="rounded-2xl border border-[#CBD5E8] bg-white p-6 shadow-sm md:p-8"
         >
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div>
@@ -650,14 +650,14 @@ export default function PortalTilbudsgeneratorPage() {
             <button
               type="button"
               onClick={openCreate}
-              className="rounded-full bg-[#4A7FA5] px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-[#3A6F95]"
+              className="rounded-full bg-[#2952A3] px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-[#1E4490]"
             >
               Tilføj ydelse
             </button>
           </div>
 
           {servicesLoading ? (
-            <p className="mt-8 text-sm text-slate-500">Henter ydelser...</p>
+            <p className="mt-8 text-sm text-[#6A82A8]">Henter ydelser...</p>
           ) : services.length === 0 ? (
             <p className="mt-8 text-sm text-[#78716C]">Ingen ydelser endnu. Tilføj den første med knappen ovenfor.</p>
           ) : (
@@ -700,11 +700,11 @@ export default function PortalTilbudsgeneratorPage() {
           )}
         </section>
 
-        <section className="rounded-2xl border border-[#C8D8E4] bg-white p-6 shadow-sm md:p-8">
-          <h2 className="text-lg font-semibold text-[#1E3448]">Mine tilbud</h2>
-          <p className="mt-1 text-sm text-[#4A6478]">Gemte kladder og sendte tilbud</p>
+        <section className="rounded-2xl border border-[#CBD5E8] bg-white p-6 shadow-sm md:p-8">
+          <h2 className="text-lg font-semibold text-[#0A1628]">Mine tilbud</h2>
+          <p className="mt-1 text-sm text-[#2A4868]">Gemte kladder og sendte tilbud</p>
             {quotesLoading ? (
-              <p className="mt-4 text-sm text-slate-500">Henter tilbud...</p>
+              <p className="mt-4 text-sm text-[#6A82A8]">Henter tilbud...</p>
             ) : quotes.length === 0 ? (
               <p className="mt-4 text-sm text-[#78716C]">Du har ingen tilbud endnu.</p>
             ) : (
@@ -717,7 +717,7 @@ export default function PortalTilbudsgeneratorPage() {
                     >
                       <p className="font-medium text-[#1C1917]">{q.title}</p>
                       <p className="mt-1 text-sm text-[#78716C]">{q.recipient_email || "Ingen modtager sat"}</p>
-                      <p className="mt-1 text-xs text-slate-500">Oprettet {formatDanishDateTime(q.created_at)}</p>
+                      <p className="mt-1 text-xs text-[#6A82A8]">Oprettet {formatDanishDateTime(q.created_at)}</p>
                       <p className="mt-1 text-xs font-semibold text-[#1C1917]">
                         {q.status === "sent" && q.sent_at
                           ? `Sendt ${formatDanishDateTime(q.sent_at)}`
@@ -747,7 +747,7 @@ export default function PortalTilbudsgeneratorPage() {
                   <input
                     value={name}
                     onChange={(e) => setName(e.target.value)}
-                    className="mt-1 w-full rounded-lg border border-[#E7E5E4] px-3 py-2 text-sm outline-none focus:border-[#4A7FA5] focus:ring-2 focus:ring-[#4A7FA5]"
+                    className="mt-1 w-full rounded-lg border border-[#E7E5E4] px-3 py-2 text-sm outline-none focus:border-[#2952A3] focus:ring-2 focus:ring-[#2952A3]"
                     required
                   />
                 </div>
@@ -757,7 +757,7 @@ export default function PortalTilbudsgeneratorPage() {
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
                     rows={3}
-                    className="mt-1 w-full rounded-lg border border-[#E7E5E4] px-3 py-2 text-sm outline-none focus:border-[#4A7FA5] focus:ring-2 focus:ring-[#4A7FA5]"
+                    className="mt-1 w-full rounded-lg border border-[#E7E5E4] px-3 py-2 text-sm outline-none focus:border-[#2952A3] focus:ring-2 focus:ring-[#2952A3]"
                   />
                 </div>
                 <div className="grid gap-4 sm:grid-cols-2">
@@ -768,7 +768,7 @@ export default function PortalTilbudsgeneratorPage() {
                       inputMode="decimal"
                       value={price}
                       onChange={(e) => setPrice(e.target.value)}
-                      className="mt-1 w-full rounded-lg border border-[#E7E5E4] px-3 py-2 text-sm outline-none focus:border-[#4A7FA5] focus:ring-2 focus:ring-[#4A7FA5]"
+                      className="mt-1 w-full rounded-lg border border-[#E7E5E4] px-3 py-2 text-sm outline-none focus:border-[#2952A3] focus:ring-2 focus:ring-[#2952A3]"
                       placeholder="fx 499"
                       required
                     />
@@ -778,7 +778,7 @@ export default function PortalTilbudsgeneratorPage() {
                     <select
                       value={unit}
                       onChange={(e) => setUnit(e.target.value)}
-                      className="mt-1 w-full rounded-lg border border-[#E7E5E4] px-3 py-2 text-sm outline-none focus:border-[#4A7FA5] focus:ring-2 focus:ring-[#4A7FA5]"
+                      className="mt-1 w-full rounded-lg border border-[#E7E5E4] px-3 py-2 text-sm outline-none focus:border-[#2952A3] focus:ring-2 focus:ring-[#2952A3]"
                     >
                       <option value="månedlig">Månedlig</option>
                       <option value="time">Time</option>
@@ -798,7 +798,7 @@ export default function PortalTilbudsgeneratorPage() {
                   <button
                     type="submit"
                     disabled={savingService}
-                    className="rounded-full bg-[#4A7FA5] px-5 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-[#3A6F95] disabled:opacity-50"
+                    className="rounded-full bg-[#2952A3] px-5 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-[#1E4490] disabled:opacity-50"
                   >
                     {savingService ? "Gemmer..." : "Gem"}
                   </button>

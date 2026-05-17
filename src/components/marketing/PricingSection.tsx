@@ -37,16 +37,16 @@ export function PricingSection({ sectionId = "priser", ctaHref = "/kontakt", cla
           <ScrollReveal key={plan.name} staggerMs={index * 100} className="h-full">
             <article
               className={`relative flex h-full flex-col rounded-2xl border bg-white p-8 md:p-10 ${
-                plan.highlighted ? "border-[#2563EB] bg-[#EAF1F7] shadow-sm ring-1 ring-[#2563EB]/10" : "border-gray-100"
+                plan.highlighted ? "border-[#2952A3] bg-[#E8EEFC] shadow-sm ring-1 ring-[#2952A3]/10" : "border-[#CBD5E8]"
               }`}
             >
               {plan.highlighted ? (
-                <p className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-[#2563EB] px-3 py-1 text-xs font-semibold text-white">
+                <p className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-[#2952A3] px-3 py-1 text-xs font-semibold text-white">
                   Mest populær
                 </p>
               ) : null}
-              <div className="mb-5 flex h-12 w-12 items-center justify-center rounded-xl bg-[#EAF1F7]">
-                <plan.icon className="h-6 w-6 text-[#4A7FA5]" aria-hidden />
+              <div className="mb-5 flex h-12 w-12 items-center justify-center rounded-xl bg-[#E8EEFC]">
+                <plan.icon className="h-6 w-6 text-[#2952A3]" aria-hidden />
               </div>
               <h3 className="text-xl font-semibold text-[#0A0A0A]">{plan.name}</h3>
               <p className={`mt-5 text-3xl font-bold tracking-tight md:text-4xl ${plan.highlighted ? "text-[#2563EB]" : "text-[#0A0A0A]"}`}>

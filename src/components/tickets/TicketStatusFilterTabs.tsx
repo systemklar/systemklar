@@ -14,7 +14,7 @@ type TicketStatusFilterTabsProps = {
 export function TicketStatusFilterTabs({ value, onChange }: TicketStatusFilterTabsProps) {
   return (
     <div
-      className="inline-flex rounded-full border border-[#C8D8E4] bg-[#EAF1F7]/80 p-0.5"
+      className="inline-flex rounded-full border border-[#CBD5E8] bg-[#E8EEFC]/80 p-0.5"
       role="tablist"
       aria-label="Filtrer sager efter status"
     >
@@ -27,8 +27,8 @@ export function TicketStatusFilterTabs({ value, onChange }: TicketStatusFilterTa
           onClick={() => onChange(opt.value)}
           className={`min-h-9 rounded-full px-3.5 py-1.5 text-sm font-semibold transition ${
             value === opt.value
-              ? "bg-white text-[#1E3448] shadow-sm"
-              : "text-[#4A6478] hover:text-[#1E3448]"
+              ? "bg-white text-[#0A1628] shadow-sm"
+              : "text-[#2A4868] hover:text-[#0A1628]"
           }`}
         >
           {opt.label}

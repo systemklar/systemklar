@@ -173,36 +173,36 @@ export default function PortalQuoteNewPage() {
 
   return (
       <div className="w-full p-6 md:p-8">
-        <Link href="/portal/tilbudsgenerator" className="text-sm font-semibold text-[#4A7FA5] hover:underline">
+        <Link href="/portal/tilbudsgenerator" className="text-sm font-semibold text-[#2952A3] hover:underline">
           ← Tilbage til AI Tilbudsgenerator
         </Link>
 
-        <h1 className="mt-6 text-2xl font-bold text-slate-900 md:text-3xl">Nyt tilbud</h1>
-        <p className="mt-2 text-sm text-slate-600">
+        <h1 className="mt-6 text-2xl font-bold text-[#0A1628] md:text-3xl">Nyt tilbud</h1>
+        <p className="mt-2 text-sm text-[#2A4868]">
           Beskriv din kundes behov, vælg tjenester og lad AI generere et professionelt dansk tilbud.
         </p>
 
         {loadError ? <p className="mt-4 text-sm text-red-600">{loadError}</p> : null}
 
         <form onSubmit={handleSaveDraft} className="mt-8 space-y-10">
-          <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-            <h2 className="text-lg font-semibold text-slate-900">Modtager</h2>
+          <section className="rounded-2xl border border-[#CBD5E8] bg-white p-6 shadow-sm">
+            <h2 className="text-lg font-semibold text-[#0A1628]">Modtager</h2>
             <input
               type="email"
               value={recipientEmail}
               onChange={(e) => setRecipientEmail(e.target.value)}
               placeholder="kunde@firma.dk"
-              className="mt-3 w-full max-w-md rounded-lg border border-slate-300 px-3 py-2 text-sm"
+              className="mt-3 w-full max-w-md rounded-lg border border-[#CBD5E8] px-3 py-2 text-sm"
               required
             />
           </section>
 
-          <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-            <h2 className="text-lg font-semibold text-slate-900">Vælg tjenester</h2>
+          <section className="rounded-2xl border border-[#CBD5E8] bg-white p-6 shadow-sm">
+            <h2 className="text-lg font-semibold text-[#0A1628]">Vælg tjenester</h2>
             {services.length === 0 ? (
-              <p className="mt-3 text-sm text-slate-600">
+              <p className="mt-3 text-sm text-[#2A4868]">
                 Ingen tjenester endnu.{" "}
-                <Link href="/portal/tilbudsgenerator#ydelser" className="font-semibold text-[#4A7FA5] hover:underline">
+                <Link href="/portal/tilbudsgenerator#ydelser" className="font-semibold text-[#2952A3] hover:underline">
                   Opret ydelser først
                 </Link>
                 .
@@ -211,7 +211,7 @@ export default function PortalQuoteNewPage() {
               <ul className="mt-4 space-y-3">
                 {services.map((s) => (
                   <li key={s.id}>
-                    <label className="flex cursor-pointer gap-3 rounded-lg border border-slate-100 p-3 hover:bg-slate-50">
+                    <label className="flex cursor-pointer gap-3 rounded-lg border border-[#E4EAF5] p-3 hover:bg-[#F2F5FA]">
                       <input
                         type="checkbox"
                         checked={selected.has(s.id)}
@@ -219,11 +219,11 @@ export default function PortalQuoteNewPage() {
                         className="mt-1"
                       />
                       <span className="min-w-0 flex-1">
-                        <span className="font-medium text-slate-900">{s.name}</span>
+                        <span className="font-medium text-[#0A1628]">{s.name}</span>
                         {s.description ? (
-                          <span className="mt-0.5 block text-sm text-slate-600">{s.description}</span>
+                          <span className="mt-0.5 block text-sm text-[#2A4868]">{s.description}</span>
                         ) : null}
-                        <span className="mt-1 block text-sm text-slate-800">
+                        <span className="mt-1 block text-sm text-[#0A1628]">
                           {formatDkk(s.price)} · {serviceUnitLabel(s.unit)}
                         </span>
                       </span>
@@ -234,39 +234,39 @@ export default function PortalQuoteNewPage() {
             )}
           </section>
 
-          <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-            <h2 className="text-lg font-semibold text-slate-900">Beskriv din kundes behov</h2>
+          <section className="rounded-2xl border border-[#CBD5E8] bg-white p-6 shadow-sm">
+            <h2 className="text-lg font-semibold text-[#0A1628]">Beskriv din kundes behov</h2>
             <textarea
               value={needs}
               onChange={(e) => setNeeds(e.target.value)}
               rows={5}
               placeholder="Skriv kort hvad kunden har brug for, ønsket tidsplan og eventuelle krav..."
-              className="mt-3 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+              className="mt-3 w-full rounded-lg border border-[#CBD5E8] px-3 py-2 text-sm"
             />
             <button
               type="button"
               disabled={generating}
               onClick={() => void handleGenerate()}
-              className="mt-4 rounded-full bg-[#4A7FA5] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[#3A6F95] focus:outline-none focus:ring-2 focus:ring-[#4A7FA5] disabled:opacity-50"
+              className="mt-4 rounded-full bg-[#2952A3] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[#1E4490] focus:outline-none focus:ring-2 focus:ring-[#2952A3] disabled:opacity-50"
             >
               {generating ? "Genererer..." : "Generer tilbud"}
             </button>
           </section>
 
-          <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-            <h2 className="text-lg font-semibold text-slate-900">Titel og tilbudstekst</h2>
+          <section className="rounded-2xl border border-[#CBD5E8] bg-white p-6 shadow-sm">
+            <h2 className="text-lg font-semibold text-[#0A1628]">Titel og tilbudstekst</h2>
             <input
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               placeholder="Fx Tilbud — [kunde] — dato"
-              className="mt-3 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+              className="mt-3 w-full rounded-lg border border-[#CBD5E8] px-3 py-2 text-sm"
             />
             <textarea
               value={content}
               onChange={(e) => setContent(e.target.value)}
               rows={18}
               placeholder="Det genererede tilbud vises her — redigér frit."
-              className="mt-4 w-full rounded-lg border border-slate-300 px-3 py-2 font-mono text-sm leading-relaxed"
+              className="mt-4 w-full rounded-lg border border-[#CBD5E8] px-3 py-2 font-mono text-sm leading-relaxed"
             />
           </section>
 
@@ -276,7 +276,7 @@ export default function PortalQuoteNewPage() {
             <button
               type="submit"
               disabled={saving || sending}
-              className="rounded-full bg-[#4A7FA5] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[#3A6F95] focus:outline-none focus:ring-2 focus:ring-[#4A7FA5] disabled:opacity-50"
+              className="rounded-full bg-[#2952A3] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[#1E4490] focus:outline-none focus:ring-2 focus:ring-[#2952A3] disabled:opacity-50"
             >
               {saving ? "Gemmer..." : "Gem som kladde"}
             </button>
@@ -284,7 +284,7 @@ export default function PortalQuoteNewPage() {
               type="button"
               disabled={saving || sending}
               onClick={() => void handleSend()}
-              className="rounded-full border border-slate-300 bg-white px-5 py-2.5 text-sm font-semibold text-slate-900 disabled:opacity-50"
+              className="rounded-full border border-[#CBD5E8] bg-white px-5 py-2.5 text-sm font-semibold text-[#0A1628] disabled:opacity-50"
             >
               {sending ? "Sender..." : "Send tilbud"}
             </button>

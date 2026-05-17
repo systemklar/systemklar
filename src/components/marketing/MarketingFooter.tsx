@@ -16,12 +16,12 @@ export function MarketingFooter() {
   const year = new Date().getFullYear();
 
   return (
-    <footer className="bg-[#1E3448] text-sm">
+    <footer className="bg-[#0A1628] text-sm">
       <div className="mx-auto max-w-6xl px-6 py-16 md:py-20">
         <div className="flex flex-col gap-10 md:flex-row md:items-start md:justify-between">
           <div className="max-w-sm">
             <SystemklarLogo href="/" variant="dark" size="md" />
-            <p className="mt-4 leading-relaxed text-[#7A9AB0]">
+            <p className="mt-4 leading-relaxed text-[#6A82A8]">
               IT-overvågning og support til danske SMV&apos;er — uden en IT-afdeling.
             </p>
           </div>
@@ -31,7 +31,7 @@ export function MarketingFooter() {
                 <li key={item.href}>
                   <Link
                     href={item.href}
-                    className="text-[#7A9AB0] transition-colors hover:text-white"
+                    className="text-[#6A82A8] transition-colors hover:text-white"
                   >
                     {item.label}
                   </Link>
@@ -40,7 +40,7 @@ export function MarketingFooter() {
             </ul>
           </nav>
         </div>
-        <p className="mt-12 border-t border-white/10 pt-8 text-[#7A9AB0]">
+        <p className="mt-12 border-t border-white/10 pt-8 text-[#6A82A8]">
           © {year} systemklar · CVR 46431596 ·{" "}
           <a
             href={`mailto:${MARKETING_CONTACT_EMAIL}`}

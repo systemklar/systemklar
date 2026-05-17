@@ -19,17 +19,17 @@ export function MarketingCtaSection({
   showNote = true,
 }: MarketingCtaSectionProps) {
   return (
-    <section className="bg-[#1E3448] px-6 py-20 md:py-28">
+    <section className="bg-[#0A1628] px-6 py-20 md:py-28">
       <ScrollReveal className="mx-auto max-w-2xl text-center">
         <h2 className="text-3xl font-light tracking-tight text-white md:text-4xl">{heading}</h2>
-        <p className="mt-4 text-base leading-relaxed text-[#7A9AB0]">{subtext}</p>
+        <p className="mt-4 text-base leading-relaxed text-[#6A82A8]">{subtext}</p>
         <Link
           href={buttonHref}
-          className="mt-8 inline-flex min-h-[52px] items-center justify-center rounded-full bg-[#4A7FA5] px-10 text-base font-medium text-white transition-colors hover:bg-[#3A6F95]"
+          className="mt-8 inline-flex min-h-[52px] items-center justify-center rounded-full bg-[#2952A3] px-10 text-base font-medium text-white transition-colors hover:bg-[#1E4490]"
         >
           {buttonLabel}
         </Link>
-        {showNote ? <MarketingCtaNote className="mt-4 text-[#7A9AB0]" /> : null}
+        {showNote ? <MarketingCtaNote className="mt-4 text-[#6A82A8]" /> : null}
       </ScrollReveal>
     </section>
   );

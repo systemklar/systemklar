@@ -1,23 +1,25 @@
 @import "tailwindcss";
 
 :root {
-  --color-primary: #4a7fa5;
-  --color-primary-hover: #3a6f95;
-  --color-primary-light: #eaf1f7;
-  --color-navy: #1e3448;
-  --color-navy-hover: #162a3a;
-  --color-bg-page: #f7f4ef;
+  --color-primary: #2952a3;
+  --color-primary-hover: #1e4490;
+  --color-primary-light: #e8eefc;
+  --color-sidebar: #0a1628;
+  --color-sidebar-hover: #071020;
+  --color-navy: #0a1628;
+  --color-navy-hover: #071020;
+  --color-bg-page: #f2f5fa;
   --color-bg-card: #ffffff;
-  --color-border: #c8d8e4;
-  --color-border-light: #e0eaf0;
-  --color-accent: #e8d8c4;
-  --color-text-primary: #1e3448;
-  --color-text-secondary: #4a6478;
-  --color-text-muted: #7a9ab0;
-  --color-status-ok: #5a9a6a;
-  --color-status-warning: #c4a84f;
-  --color-status-error: #b85c4a;
-  --color-status-pending: #9aa8b0;
+  --color-border: #cbd5e8;
+  --color-border-light: #e4eaf5;
+  --color-accent: #6a92d8;
+  --color-text-primary: #0a1628;
+  --color-text-secondary: #2a4868;
+  --color-text-muted: #6a82a8;
+  --color-status-ok: #22c78a;
+  --color-status-warning: #f0a030;
+  --color-status-error: #e05040;
+  --color-status-pending: #9aaac8;
 
   --background: var(--color-bg-page);
   --foreground: var(--color-text-primary);
@@ -26,21 +28,24 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-dm-sans);
+  --font-sans: var(--font-sans);
+  --font-serif: var(--font-serif);
 
-  --color-sk-primary: #4a7fa5;
-  --color-sk-primary-hover: #3a6f95;
-  --color-sk-primary-light: #eaf1f7;
-  --color-sk-navy: #1e3448;
-  --color-sk-navy-hover: #162a3a;
-  --color-sk-bg-page: #f7f4ef;
+  --color-sk-primary: #2952a3;
+  --color-sk-primary-hover: #1e4490;
+  --color-sk-primary-light: #e8eefc;
+  --color-sk-sidebar: #0a1628;
+  --color-sk-sidebar-hover: #071020;
+  --color-sk-navy: #0a1628;
+  --color-sk-navy-hover: #071020;
+  --color-sk-bg-page: #f2f5fa;
   --color-sk-bg-card: #ffffff;
-  --color-sk-border: #c8d8e4;
-  --color-sk-border-light: #e0eaf0;
-  --color-sk-accent: #e8d8c4;
-  --color-sk-text-primary: #1e3448;
-  --color-sk-text-secondary: #4a6478;
-  --color-sk-text-muted: #7a9ab0;
+  --color-sk-border: #cbd5e8;
+  --color-sk-border-light: #e4eaf5;
+  --color-sk-accent: #6a92d8;
+  --color-sk-text-primary: #0a1628;
+  --color-sk-text-secondary: #2a4868;
+  --color-sk-text-muted: #6a82a8;
 }
 
 body {
@@ -50,6 +55,55 @@ body {
 
 html {
   scroll-behavior: smooth;
+}
+
+/* Typography scale — Skandinavisk Is */
+h1,
+h2,
+h3 {
+  font-weight: 300;
+  letter-spacing: -0.02em;
+  color: #0a1628;
+}
+
+.label-caps {
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #6a82a8;
+}
+
+.metric-number {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum";
+}
+
+.marketing-serif,
+.marketing-hero-title {
+  font-family: var(--font-serif), Georgia, serif;
+  font-weight: 400;
+  color: #0a1628;
+}
+
+.marketing-hero-title {
+  font-size: clamp(2.5rem, 5vw, 4rem);
+  letter-spacing: -0.02em;
+}
+
+.marketing-section-label {
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #2952a3;
+}
+
+.marketing-section-heading {
+  font-family: var(--font-serif), Georgia, serif;
+  font-weight: 400;
+  color: #0a1628;
+  letter-spacing: -0.02em;
 }
 
 /* Marketing: hero load-in + scroll reveal */
@@ -112,8 +166,8 @@ html {
   height: 6px;
   appearance: none;
   border-radius: 9999px;
-  background: #e0eaf0;
-  accent-color: #4a7fa5;
+  background: #e4eaf5;
+  accent-color: #2952a3;
 }
 
 .marketing-range::-webkit-slider-thumb {
@@ -121,9 +175,9 @@ html {
   width: 18px;
   height: 18px;
   border-radius: 50%;
-  background: #4a7fa5;
+  background: #2952a3;
   border: 2px solid #fff;
-  box-shadow: 0 1px 4px rgba(30, 52, 72, 0.2);
+  box-shadow: 0 1px 4px rgba(10, 22, 40, 0.2);
   cursor: pointer;
 }
 
@@ -131,9 +185,9 @@ html {
   width: 18px;
   height: 18px;
   border-radius: 50%;
-  background: #4a7fa5;
+  background: #2952a3;
   border: 2px solid #fff;
-  box-shadow: 0 1px 4px rgba(30, 52, 72, 0.2);
+  box-shadow: 0 1px 4px rgba(10, 22, 40, 0.2);
   cursor: pointer;
 }
 
@@ -305,8 +359,8 @@ html {
   width: 14px;
   height: 14px;
   border-radius: 50%;
-  border: 2px solid #4a7fa5;
-  background: rgba(74, 127, 165, 0.15);
+  border: 2px solid #2952a3;
+  background: rgba(41, 82, 163, 0.15);
   animation: portalCursorMove 6s ease-in-out infinite;
   pointer-events: none;
 }
@@ -436,8 +490,8 @@ html {
 
 .card-hover:hover {
   transform: translateY(-2px);
-  background-image: linear-gradient(180deg, #ffffff 0%, #eaf1f7 100%);
-  box-shadow: 0 8px 24px rgba(30, 52, 72, 0.08);
+  background-image: linear-gradient(180deg, #ffffff 0%, #e8eefc 100%);
+  box-shadow: 0 8px 24px rgba(10, 22, 40, 0.08);
 }
 
 .surface-cards .rounded-2xl.border.bg-white,
@@ -448,8 +502,8 @@ html {
 .surface-cards .rounded-2xl.border.bg-white:hover,
 .surface-cards .rounded-xl.border.bg-white:hover {
   transform: translateY(-2px);
-  background-image: linear-gradient(180deg, #ffffff 0%, #eaf1f7 100%);
-  box-shadow: 0 8px 24px rgba(30, 52, 72, 0.08);
+  background-image: linear-gradient(180deg, #ffffff 0%, #e8eefc 100%);
+  box-shadow: 0 8px 24px rgba(10, 22, 40, 0.08);
 }
 
 .app-rhythm > div.space-y-6,
@@ -465,14 +519,83 @@ html {
   letter-spacing: -0.01em;
 }
 
-.app-rhythm .rounded-2xl.border.bg-white {
-  border-color: var(--color-border);
-  border-radius: 16px;
-  box-shadow: none;
+.app-rhythm .rounded-2xl.border.bg-white,
+.sk-card {
+  background: #ffffff;
+  border: 1px solid #cbd5e8;
+  border-radius: 20px;
+  box-shadow: 0 1px 3px rgba(10, 22, 40, 0.06);
+  padding: 24px;
 }
 
-.app-rhythm table thead {
-  background: #f0f4f7;
+.app-rhythm table thead,
+.sk-table thead {
+  background: #f2f5fa;
+}
+
+.sk-table th {
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #6a82a8;
+}
+
+.sk-table tbody tr {
+  border-bottom: 1px solid #e4eaf5;
+}
+
+.sk-table tbody tr:hover {
+  background: #f2f5fa;
+}
+
+.sk-tabs {
+  border-bottom: 1px solid #e4eaf5;
+}
+
+.sk-tab {
+  color: #6a82a8;
+  border-bottom: 2px solid transparent;
+  padding-bottom: 0.625rem;
+  font-weight: 400;
+  transition: color 0.2s ease, border-color 0.2s ease;
+}
+
+.sk-tab:hover {
+  color: #2a4868;
+}
+
+.sk-tab-active {
+  color: #0a1628;
+  border-bottom-color: #2952a3;
+  font-weight: 500;
+}
+
+.sk-input {
+  border: 1px solid #cbd5e8;
+  border-radius: 12px;
+  padding: 12px 16px;
+  font-size: 14px;
+  color: #0a1628;
+  background: #ffffff;
+}
+
+.sk-input::placeholder {
+  color: #9aaac8;
+}
+
+.sk-input:focus {
+  outline: none;
+  border-color: #2952a3;
+  box-shadow: 0 0 0 3px rgba(41, 82, 163, 0.15);
+}
+
+.sk-label {
+  font-size: 13px;
+  font-weight: 500;
+  color: #2a4868;
+  margin-bottom: 6px;
+  display: block;
 }
 
 .app-rhythm table th {
@@ -484,7 +607,7 @@ html {
   color: var(--color-text-primary);
 }
 
-.app-rhythm .text-slate-600 {
+.app-rhythm .text-\[\#2A4868\] {
   color: var(--color-text-secondary);
 }
 
@@ -494,14 +617,16 @@ button {
 }
 
 .btn-primary {
-  background-color: var(--color-primary);
+  background-color: #2952a3;
   color: #fff;
   border-radius: 9999px;
+  padding: 0.625rem 1.25rem;
+  font-weight: 500;
   transition: transform 0.1s ease, background-color 0.2s ease;
 }
 
 .btn-primary:hover {
-  background-color: var(--color-primary-hover);
+  background-color: #1e4490;
 }
 
 .btn-primary:active {
@@ -509,99 +634,112 @@ button {
 }
 
 .btn-primary:focus-visible {
-  outline: 2px solid rgba(74, 127, 165, 0.45);
+  outline: 2px solid rgba(41, 82, 163, 0.45);
   outline-offset: 2px;
 }
 
 .btn-secondary {
-  border: 1px solid var(--color-border);
-  color: var(--color-text-secondary);
+  border: 1px solid #cbd5e8;
+  color: #2a4868;
   border-radius: 9999px;
+  padding: 0.625rem 1.25rem;
+  font-weight: 500;
   background: transparent;
 }
 
 .btn-secondary:hover {
-  background: var(--color-bg-page);
+  background: #e8eefc;
 }
 
 .btn-navy {
-  background: var(--color-navy);
+  background: #0a1628;
   color: #fff;
   border-radius: 9999px;
+  padding: 0.625rem 1.25rem;
+  font-weight: 500;
 }
 
 .btn-navy:hover {
-  background: var(--color-navy-hover);
+  background: #071020;
 }
 
 .btn-danger {
-  background-color: #fdf0ee;
-  color: var(--color-status-error);
-  border: 1px solid #e8c4bc;
+  background-color: #fef0ee;
+  color: #e05040;
+  border: 1px solid #f0c0b8;
   border-radius: 9999px;
+  padding: 0.625rem 1.25rem;
+  font-weight: 500;
 }
 
 .btn-danger:hover {
-  background-color: #fbe8e4;
+  background-color: #fde8e4;
 }
 
 /* App shell sidebars (portal + admin) */
 .sk-sidebar {
-  background: var(--color-navy);
-  border-color: var(--color-navy-hover);
+  background: #0a1628;
+  border-color: #071020;
 }
 
 .sk-sidebar-logo {
-  background: var(--color-navy-hover);
+  background: #071020;
+  padding: 20px 16px;
   border-color: rgba(255, 255, 255, 0.08);
 }
 
 .sk-sidebar-nav-active {
-  background: rgba(74, 127, 165, 0.2);
-  color: #a8c8e0;
+  border-left: 3px solid #2952a3;
+  background: rgba(41, 82, 163, 0.15);
+  color: #6a92d8;
   font-weight: 500;
 }
 
 .sk-sidebar-nav-inactive {
-  color: #7a9ab0;
+  color: #2a4868;
 }
 
 .sk-sidebar-nav-inactive:hover {
-  background: rgba(255, 255, 255, 0.06);
-  color: #a8c8e0;
+  background: rgba(255, 255, 255, 0.04);
+  color: #6a92d8;
 }
 
 .sk-sidebar-section-label {
-  color: rgba(122, 154, 176, 0.85);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: #1a3050;
+  padding-left: 0.75rem;
+  margin-bottom: 0.25rem;
 }
 
 .sk-sidebar-user-muted {
-  color: #7a9ab0;
+  color: #6a82a8;
 }
 
 /* Status badges */
 .sk-status-ok {
-  background: #eef7f0;
-  color: #3a7a4a;
-  border: 1px solid #b8d8c0;
+  background: #e8faf4;
+  color: #0a6a4a;
+  border: 1px solid #b0e8d0;
 }
 
 .sk-status-warning {
-  background: #fbf6e4;
-  color: #8a6a1a;
-  border: 1px solid #e8d498;
+  background: #fef6e8;
+  color: #7a5010;
+  border: 1px solid #f0d898;
 }
 
 .sk-status-error {
-  background: #fbf0ee;
-  color: #8a3a2a;
-  border: 1px solid #e8c4bc;
+  background: #fef0ee;
+  color: #8a2a1a;
+  border: 1px solid #f0c0b8;
 }
 
 .sk-status-pending {
-  background: #f0f4f7;
-  color: #5a7a90;
-  border: 1px solid #c8d8e4;
+  background: #eef2fa;
+  color: #4a6888;
+  border: 1px solid #c8d5e8;
 }
 
 /* TicketMessageThread: bouncing typing dots */
@@ -693,10 +831,10 @@ button {
 @keyframes portal-hero-warning-icon-glow {
   0%,
   100% {
-    box-shadow: 0 0 0 0 rgba(196, 168, 79, 0.4);
+    box-shadow: 0 0 0 0 rgba(240, 160, 48, 0.4);
   }
   50% {
-    box-shadow: 0 0 0 16px rgba(196, 168, 79, 0);
+    box-shadow: 0 0 0 16px rgba(240, 160, 48, 0);
   }
 }
 
@@ -716,13 +854,13 @@ button {
 .portal-hero-warning-shimmer {
   background-image: linear-gradient(
     105deg,
-    #1e3448 0%,
-    #1e3448 42%,
-    #8a6a1a 48%,
-    #c4a84f 50%,
-    #8a6a1a 54%,
-    #1e3448 58%,
-    #1e3448 100%
+    #0a1628 0%,
+    #0a1628 42%,
+    #7a5010 48%,
+    #f0a030 50%,
+    #7a5010 54%,
+    #0a1628 58%,
+    #0a1628 100%
   );
   background-size: 220% 100%;
   -webkit-background-clip: text;
@@ -748,10 +886,10 @@ button {
 @keyframes portal-status-dot-fejl-glow {
   0%,
   100% {
-    box-shadow: 0 0 0 0 rgba(184, 92, 74, 0.4);
+    box-shadow: 0 0 0 0 rgba(224, 80, 64, 0.4);
   }
   50% {
-    box-shadow: 0 0 0 8px rgba(184, 92, 74, 0);
+    box-shadow: 0 0 0 8px rgba(224, 80, 64, 0);
   }
 }
 
@@ -812,19 +950,19 @@ button {
 }
 
 .group\/dash-row:hover .portal-dashboard-row-dot-ok {
-  box-shadow: 0 0 0 3px rgba(90, 154, 106, 0.35);
+  box-shadow: 0 0 0 3px rgba(34, 199, 138, 0.35);
 }
 
 .group\/dash-row:hover .portal-dashboard-row-dot-advarsel {
-  box-shadow: 0 0 0 3px rgba(196, 168, 79, 0.35);
+  box-shadow: 0 0 0 3px rgba(240, 160, 48, 0.35);
 }
 
 .group\/dash-row:hover .portal-dashboard-row-dot-fejl {
-  box-shadow: 0 0 0 3px rgba(184, 92, 74, 0.4);
+  box-shadow: 0 0 0 3px rgba(224, 80, 64, 0.4);
 }
 
 .group\/dash-row:hover .portal-dashboard-row-dot-afventer {
-  box-shadow: 0 0 0 3px rgba(154, 168, 176, 0.35);
+  box-shadow: 0 0 0 3px rgba(154, 170, 200, 0.35);
 }
 
 @keyframes portal-dash-row-enter {
@@ -861,11 +999,11 @@ button {
   0%,
   100% {
     transform: scale(1);
-    box-shadow: 0 0 0 0 rgba(184, 92, 74, 0.45);
+    box-shadow: 0 0 0 0 rgba(224, 80, 64, 0.45);
   }
   50% {
     transform: scale(1.25);
-    box-shadow: 0 0 0 6px rgba(184, 92, 74, 0);
+    box-shadow: 0 0 0 6px rgba(224, 80, 64, 0);
   }
 }
 

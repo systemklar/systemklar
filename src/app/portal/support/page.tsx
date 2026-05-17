@@ -118,23 +118,23 @@ function PortalSupportPageInner() {
 
   return (
     <div className="flex w-full flex-col gap-6 p-6 md:p-8">
-      <div className="flex flex-wrap items-center justify-between gap-4 border-b border-[#C8D8E4] pb-6">
+      <div className="flex flex-wrap items-center justify-between gap-4 border-b border-[#CBD5E8] pb-6">
         <div>
-          <h1 className="text-2xl font-bold text-[#1E3448]">Support & sager</h1>
-          <p className="mt-2 text-sm text-[#4A6478]">
+          <h1 className="text-2xl font-bold text-[#0A1628]">Support & sager</h1>
+          <p className="mt-2 text-sm text-[#2A4868]">
             Følg åbne sager og opret nye henvendelser til support.
           </p>
         </div>
         <Link
           href="/portal/support/new"
-          className="rounded-full bg-[#4A7FA5] px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-[#3A6F95]"
+          className="rounded-full bg-[#2952A3] px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-[#1E4490]"
         >
           Opret ny sag
         </Link>
       </div>
 
-      <div className="rounded-2xl border border-[#C8D8E4] bg-white p-5 shadow-sm">
-        <h2 className="text-base font-semibold text-[#1E3448]">Dine sager</h2>
+      <div className="rounded-2xl border border-[#CBD5E8] bg-white p-5 shadow-sm">
+        <h2 className="text-base font-semibold text-[#0A1628]">Dine sager</h2>
         <div className="mt-4">
           <TicketListFilters
             searchQuery={searchQuery}
@@ -150,21 +150,21 @@ function PortalSupportPageInner() {
           </p>
         ) : null}
         {listLoading ? (
-          <p className="mt-4 text-sm text-[#4A6478]">Henter sager…</p>
+          <p className="mt-4 text-sm text-[#2A4868]">Henter sager…</p>
         ) : tickets.length === 0 ? (
-          <div className="mt-4 rounded-2xl border border-[#C8D8E4] bg-[#F7F4EF] p-12 text-center">
-            <p className="text-sm text-[#4A6478]">
+          <div className="mt-4 rounded-2xl border border-[#CBD5E8] bg-[#F2F5FA] p-12 text-center">
+            <p className="text-sm text-[#2A4868]">
               Du har ingen sager endnu. Opret en sag for at komme i gang.
             </p>
             <Link
               href="/portal/support/new"
-              className="mt-5 inline-flex rounded-full bg-[#4A7FA5] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[#3A6F95]"
+              className="mt-5 inline-flex rounded-full bg-[#2952A3] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[#1E4490]"
             >
               Opret ny sag
             </Link>
           </div>
         ) : filteredTickets.length === 0 ? (
-          <p className="mt-6 text-center text-sm text-[#4A6478]">Ingen sager matcher din søgning.</p>
+          <p className="mt-6 text-center text-sm text-[#2A4868]">Ingen sager matcher din søgning.</p>
         ) : (
           <ul className="mt-4 space-y-3">
             {filteredTickets.map((ticket) => (
@@ -185,7 +185,7 @@ function PortalSupportPageInner() {
 
 export default function PortalSupportPage() {
   return (
-    <Suspense fallback={<div className="w-full p-6 text-sm text-slate-500 md:p-8">Indlæser…</div>}>
+    <Suspense fallback={<div className="w-full p-6 text-sm text-[#6A82A8] md:p-8">Indlæser…</div>}>
       <PortalSupportPageInner />
     </Suspense>
   );

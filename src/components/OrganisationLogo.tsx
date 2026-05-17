@@ -76,7 +76,7 @@ export function OrganisationLogo({
         />
       ) : (
         <div
-          className={`flex h-full w-full items-center justify-center bg-gradient-to-br from-[#4A7FA5] to-[#3A6F95] font-bold text-white ${text}`}
+          className={`flex h-full w-full items-center justify-center bg-gradient-to-br from-[#2952A3] to-[#1E4490] font-bold text-white ${text}`}
           aria-hidden
         >
           {initials}

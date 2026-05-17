@@ -5,10 +5,10 @@ import { useEffect, useState, type ReactNode } from "react";
 
 /** Full-viewport backdrop — portaled to avoid broken `fixed` inside `.page-transition-shell`. */
 export const PORTAL_OVERLAY_BACKDROP_CLASS =
-  "fixed inset-0 top-0 right-0 bottom-0 left-0 z-[100] bg-slate-900/50 backdrop-blur-sm";
+  "fixed inset-0 top-0 right-0 bottom-0 left-0 z-[100] bg-[#0A1628]/50 backdrop-blur-sm";
 
 export const PORTAL_OVERLAY_PANEL_CLASS =
-  "fixed inset-y-0 top-0 right-0 bottom-0 z-[101] flex h-screen min-h-dvh w-full max-w-md flex-col border-l border-[#C8D8E4] bg-white shadow-xl";
+  "fixed inset-y-0 top-0 right-0 bottom-0 z-[101] flex h-screen min-h-dvh w-full max-w-md flex-col border-l border-[#CBD5E8] bg-white shadow-xl";
 
 function usePortalOverlayMount() {
   const [mounted, setMounted] = useState(false);

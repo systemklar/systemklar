@@ -28,7 +28,7 @@ export function TicketListRow({
   const hasUnread = unreadCount > 0;
 
   return (
-    <li className="flex items-stretch gap-2 rounded-2xl border border-[#C8D8E4] bg-white shadow-sm transition-all hover:border-[#C8D8E4] hover:shadow-md">
+    <li className="flex items-stretch gap-2 rounded-2xl border border-[#CBD5E8] bg-white shadow-sm transition-all hover:border-[#CBD5E8] hover:shadow-md">
       <Link
         href={href}
         className="min-w-0 flex-1 p-4 md:p-5"
@@ -43,7 +43,7 @@ export function TicketListRow({
           </div>
 
           {customerName ? (
-            <p className="text-sm font-medium text-[#4A6478] md:max-w-[10rem] md:truncate lg:max-w-[12rem]">
+            <p className="text-sm font-medium text-[#2A4868] md:max-w-[10rem] md:truncate lg:max-w-[12rem]">
               {customerName}
             </p>
           ) : (
@@ -52,15 +52,15 @@ export function TicketListRow({
 
           <div className="min-w-0">
             <div className="flex flex-wrap items-center gap-2">
-              <p className="text-base font-semibold text-[#1E3448]">{ticket.title}</p>
+              <p className="text-base font-semibold text-[#0A1628]">{ticket.title}</p>
               <TicketPriorityDot priority={ticket.priority} />
             </div>
-            <div className="mt-1.5 flex flex-wrap gap-x-4 gap-y-0.5 text-xs text-[#4A6478]">
+            <div className="mt-1.5 flex flex-wrap gap-x-4 gap-y-0.5 text-xs text-[#2A4868]">
               <span>Oprettet {formatTicketListDate(ticket.created_at)}</span>
               {lastMessageAt ? (
                 <span>Seneste besked {formatTicketListDate(lastMessageAt)}</span>
               ) : (
-                <span className="text-[#9AA8B0]">Ingen beskeder endnu</span>
+                <span className="text-[#9AAAC8]">Ingen beskeder endnu</span>
               )}
             </div>
           </div>
@@ -72,7 +72,7 @@ export function TicketListRow({
       </Link>
 
       {trailing ? (
-        <div className="flex shrink-0 items-center border-l border-[#E0EAF0] px-3 md:px-4">
+        <div className="flex shrink-0 items-center border-l border-[#E4EAF5] px-3 md:px-4">
           {trailing}
         </div>
       ) : null}

@@ -19,9 +19,9 @@ export function PortalPageShell({
     <div className={`w-full space-y-8 p-6 md:p-8 ${className}`.trim()}>
       <header className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div>
-          <h1 className="text-2xl font-light tracking-tight text-[#1E3448] md:text-3xl">{title}</h1>
+          <h1 className="text-2xl font-light tracking-tight text-[#0A1628] md:text-3xl">{title}</h1>
           {subtitle ? (
-            <p className="mt-2 text-sm leading-relaxed text-[#4A6478]">{subtitle}</p>
+            <p className="mt-2 text-sm leading-relaxed text-[#2A4868]">{subtitle}</p>
           ) : null}
         </div>
         {action ? <div className="shrink-0">{action}</div> : null}

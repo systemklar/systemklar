@@ -34,7 +34,7 @@ export function SystemklarMark({ size = 24, variant = "plain", className = "" }:
   if (isAvatar) {
     return (
       <span
-        className={`inline-flex shrink-0 items-center justify-center rounded-full bg-[#1E3448] ${className}`.trim()}
+        className={`inline-flex shrink-0 items-center justify-center rounded-full bg-[#0A1628] ${className}`.trim()}
         style={{ width: size, height: size }}
         aria-hidden
       >

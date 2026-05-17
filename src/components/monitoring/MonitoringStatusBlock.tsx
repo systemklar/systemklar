@@ -62,7 +62,7 @@ export function MonitoringStatusBlock({ systemName, row }: MonitoringStatusBlock
       >
         {label}
       </span>
-      {checked ? <span className="text-[11px] text-slate-400">{checked}</span> : null}
+      {checked ? <span className="text-[11px] text-[#9AAAC8]">{checked}</span> : null}
     </div>
   );
 }
@@ -81,7 +81,7 @@ export function MonitoringStatusInline({ systemName, row }: MonitoringStatusBloc
       >
         {label}
       </span>
-      {checked ? <span className="max-w-[10rem] text-[11px] text-slate-400">{checked}</span> : null}
+      {checked ? <span className="max-w-[10rem] text-[11px] text-[#9AAAC8]">{checked}</span> : null}
     </div>
   );
 }

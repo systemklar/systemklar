@@ -46,13 +46,13 @@ export default function AdminTicketDetailClient() {
   }, [ticket?.id]);
 
   if (ticketLoading) {
-    return <p className="text-sm text-[#4A6478]">Indlæser sag…</p>;
+    return <p className="text-sm text-[#2A4868]">Indlæser sag…</p>;
   }
 
   if (!ticket) {
     return (
       <div>
-        <p className="text-sm text-[#4A6478]">Sag ikke fundet.</p>
+        <p className="text-sm text-[#2A4868]">Sag ikke fundet.</p>
       </div>
     );
   }

@@ -19,7 +19,7 @@ function interpolate(template: string, vars: Record<string, string>): string {
 }
 
 const PREVIEW_BTN =
-  '<a href="#" style="pointer-events:none;display:inline-block;background:#4A7FA5;color:white;padding:12px 28px;border-radius:999px;text-decoration:none;font-weight:600;font-size:14px;margin:16px 0;">Eksempel-knap</a>';
+  '<a href="#" style="pointer-events:none;display:inline-block;background:#2952A3;color:white;padding:12px 28px;border-radius:999px;text-decoration:none;font-weight:600;font-size:14px;margin:16px 0;">Eksempel-knap</a>';
 
 function buildPreviewVars(variableKeys: string[]): Record<string, string> {
   const samples: Record<string, string> = {
@@ -70,7 +70,7 @@ function TemplateEditor({ row, variableKeys, supabase, onApplied }: EditorProps)
     const vars = buildPreviewVars(variableKeys);
     const inner = interpolate(draftBody, vars);
     const outer = emailOuterHtml(inner);
-    return `<!DOCTYPE html><html><head><meta charset="utf-8"/></head><body style="margin:0;padding:16px;background:#F7F4EF;">${outer}</body></html>`;
+    return `<!DOCTYPE html><html><head><meta charset="utf-8"/></head><body style="margin:0;padding:16px;background:#F2F5FA;">${outer}</body></html>`;
   }, [previewOpen, draftBody, variableKeys]);
 
   const previewSubject = useMemo(() => {
@@ -136,13 +136,13 @@ function TemplateEditor({ row, variableKeys, supabase, onApplied }: EditorProps)
   };
 
   return (
-    <div className="rounded-2xl border border-[#C8D8E4] bg-white p-6 shadow-sm">
-      <h2 className="text-lg font-semibold text-[#1E3448]">{row.name}</h2>
-      <p className="mt-1 text-xs text-slate-500">Id: {row.id}</p>
+    <div className="rounded-2xl border border-[#CBD5E8] bg-white p-6 shadow-sm">
+      <h2 className="text-lg font-semibold text-[#0A1628]">{row.name}</h2>
+      <p className="mt-1 text-xs text-[#6A82A8]">Id: {row.id}</p>
 
       <div className="mt-6 space-y-4">
         <div>
-          <label htmlFor="tpl-subject" className="mb-1 block text-sm font-medium text-[#1E3448]">
+          <label htmlFor="tpl-subject" className="mb-1 block text-sm font-medium text-[#0A1628]">
             Emne
           </label>
           <input
@@ -150,18 +150,18 @@ function TemplateEditor({ row, variableKeys, supabase, onApplied }: EditorProps)
             type="text"
             value={draftSubject}
             onChange={(e) => setDraftSubject(e.target.value)}
-            className="w-full rounded-xl border border-[#C8D8E4] px-4 py-2 text-sm outline-none focus:border-[#E0EAF0]0"
+            className="w-full rounded-xl border border-[#CBD5E8] px-4 py-2 text-sm outline-none focus:border-[#E4EAF5]0"
           />
         </div>
         <div>
-          <label htmlFor="tpl-body" className="mb-1 block text-sm font-medium text-[#1E3448]">
+          <label htmlFor="tpl-body" className="mb-1 block text-sm font-medium text-[#0A1628]">
             Indhold (HTML)
           </label>
           <textarea
             id="tpl-body"
             value={draftBody}
             onChange={(e) => setDraftBody(e.target.value)}
-            className="min-h-[300px] w-full rounded-xl border border-[#C8D8E4] px-4 py-3 font-mono text-sm outline-none focus:border-[#E0EAF0]0"
+            className="min-h-[300px] w-full rounded-xl border border-[#CBD5E8] px-4 py-3 font-mono text-sm outline-none focus:border-[#E4EAF5]0"
           />
           <div className="mt-2 flex flex-wrap gap-2">
             {variableKeys.map((v) => (
@@ -169,7 +169,7 @@ function TemplateEditor({ row, variableKeys, supabase, onApplied }: EditorProps)
                 key={v}
                 type="button"
                 onClick={() => void copyVariable(v)}
-                className="rounded-full bg-[#EAF1F7] px-2 py-0.5 font-mono text-xs text-[#3A6F95]"
+                className="rounded-full bg-[#E8EEFC] px-2 py-0.5 font-mono text-xs text-[#1E4490]"
                 title="Kopier til udklipsholder"
               >
                 {`{{${v}}}`}
@@ -183,20 +183,20 @@ function TemplateEditor({ row, variableKeys, supabase, onApplied }: EditorProps)
         <button
           type="button"
           onClick={() => setPreviewOpen((o) => !o)}
-          className="rounded-full border border-[#C8D8E4] px-4 py-2 text-sm font-semibold text-[#3A6F95] hover:bg-[#EAF1F7]"
+          className="rounded-full border border-[#CBD5E8] px-4 py-2 text-sm font-semibold text-[#1E4490] hover:bg-[#E8EEFC]"
         >
           {previewOpen ? "Skjul preview" : "Se preview"}
         </button>
       </div>
 
       {previewOpen ? (
-        <div className="mt-4 space-y-2 rounded-xl border border-[#C8D8E4] bg-[#F7F4EF] p-4">
-          <p className="text-xs font-medium text-slate-600">Emne (preview)</p>
-          <p className="text-sm text-[#1E3448]">{previewSubject}</p>
+        <div className="mt-4 space-y-2 rounded-xl border border-[#CBD5E8] bg-[#F2F5FA] p-4">
+          <p className="text-xs font-medium text-[#2A4868]">Emne (preview)</p>
+          <p className="text-sm text-[#0A1628]">{previewSubject}</p>
           <iframe
             title="Email preview"
             sandbox=""
-            className="mt-2 h-[420px] w-full rounded-lg border border-[#C8D8E4] bg-white"
+            className="mt-2 h-[420px] w-full rounded-lg border border-[#CBD5E8] bg-white"
             srcDoc={previewHtmlDoc}
           />
         </div>
@@ -217,7 +217,7 @@ function TemplateEditor({ row, variableKeys, supabase, onApplied }: EditorProps)
           type="button"
           disabled={saving}
           onClick={() => void handleSave()}
-          className="rounded-full bg-[#4A7FA5] px-6 py-2 text-sm font-semibold text-white transition hover:bg-[#3A6F95] disabled:opacity-50"
+          className="rounded-full bg-[#2952A3] px-6 py-2 text-sm font-semibold text-white transition hover:bg-[#1E4490] disabled:opacity-50"
         >
           {saving ? "Gemmer..." : "Gem ændringer"}
         </button>
@@ -225,7 +225,7 @@ function TemplateEditor({ row, variableKeys, supabase, onApplied }: EditorProps)
           type="button"
           disabled={saving}
           onClick={() => void handleReset()}
-          className="rounded-full px-4 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100"
+          className="rounded-full px-4 py-2 text-sm font-medium text-[#2A4868] hover:bg-[#EEF2FA]"
         >
           Nulstil til standard
         </button>
@@ -289,8 +289,8 @@ export default function AdminEmailsClient() {
   return (
     <div className="space-y-8">
       <header>
-        <h1 className="text-2xl font-bold text-[#1E3448] md:text-3xl">Email-skabeloner</h1>
-        <p className="mt-2 text-sm text-[#4A6478]">Rediger de emails der sendes automatisk fra systemklar.</p>
+        <h1 className="text-2xl font-bold text-[#0A1628] md:text-3xl">Email-skabeloner</h1>
+        <p className="mt-2 text-sm text-[#2A4868]">Rediger de emails der sendes automatisk fra systemklar.</p>
       </header>
 
       {loadError ? (
@@ -298,15 +298,15 @@ export default function AdminEmailsClient() {
       ) : null}
 
       {loading ? (
-        <p className="text-sm text-slate-500">Henter skabeloner...</p>
+        <p className="text-sm text-[#6A82A8]">Henter skabeloner...</p>
       ) : rows.length === 0 ? (
-        <p className="rounded-2xl border border-[#C8D8E4] bg-white p-6 text-sm text-slate-600 shadow-sm">
+        <p className="rounded-2xl border border-[#CBD5E8] bg-white p-6 text-sm text-[#2A4868] shadow-sm">
           Ingen skabeloner fundet. Kør SQL-migrationen i Supabase (se <code className="text-xs">supabase/migrations/013_email_templates.sql</code>).
         </p>
       ) : (
         <div className="flex flex-col gap-6 lg:flex-row">
           <div className="w-full shrink-0 lg:w-1/3">
-            <nav className="space-y-2 rounded-2xl border border-[#C8D8E4] bg-white p-3 shadow-sm">
+            <nav className="space-y-2 rounded-2xl border border-[#CBD5E8] bg-white p-3 shadow-sm">
               {rows.map((row) => {
                 const isActive = row.id === selectedId;
                 return (
@@ -316,12 +316,12 @@ export default function AdminEmailsClient() {
                     onClick={() => setSelectedId(row.id)}
                     className={`w-full rounded-xl border px-4 py-3 text-left text-sm transition ${
                       isActive
-                        ? "border-[#C8D8E4] bg-[#EAF1F7] border-l-2 border-l-[#4A7FA5] pl-[14px]"
-                        : "border-transparent hover:bg-[#EAF1F7]/60"
+                        ? "border-[#CBD5E8] bg-[#E8EEFC] border-l-2 border-l-[#2952A3] pl-[14px]"
+                        : "border-transparent hover:bg-[#E8EEFC]/60"
                     }`}
                   >
-                    <p className="font-semibold text-[#1E3448]">{row.name}</p>
-                    <p className="mt-1 text-xs text-[#4A6478]">{getDescriptionForTemplateId(row.id)}</p>
+                    <p className="font-semibold text-[#0A1628]">{row.name}</p>
+                    <p className="mt-1 text-xs text-[#2A4868]">{getDescriptionForTemplateId(row.id)}</p>
                   </button>
                 );
               })}

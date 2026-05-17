@@ -22,11 +22,11 @@ export function CookieBanner() {
   if (!visible) return null;
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-50 bg-[#1E3448] text-white">
+    <div className="fixed bottom-0 left-0 right-0 z-50 bg-[#0A1628] text-white">
       <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-6 px-6 py-4">
-        <p className="text-sm text-[#EAF1F7]">
+        <p className="text-sm text-[#E8EEFC]">
           Vi bruger cookies for at forbedre din oplevelse og huske dine præferencer. Læs mere i vores{" "}
-          <Link href="/cookiepolitik" className="text-[#E8D8C4] hover:underline">
+          <Link href="/cookiepolitik" className="text-[#6A92D8] hover:underline">
             cookiepolitik
           </Link>
           .
@@ -42,7 +42,7 @@ export function CookieBanner() {
           <button
             type="button"
             onClick={() => setConsent("accepted")}
-            className="rounded-full bg-[#4A7FA5] px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-[#4A7FA5]"
+            className="rounded-full bg-[#2952A3] px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-[#2952A3]"
           >
             Accepter alle
           </button>

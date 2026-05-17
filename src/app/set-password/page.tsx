@@ -107,7 +107,7 @@ export default function SetPasswordPage() {
       <AuthPageHeading title="Vælg ny adgangskode" />
 
       {!sessionReady && !sessionError ? (
-        <p className="text-sm text-[#7A9AB0]">Indlæser...</p>
+        <p className="text-sm text-[#6A82A8]">Indlæser...</p>
       ) : null}
 
       {sessionError ? (

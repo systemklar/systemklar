@@ -14,7 +14,7 @@ import {
 } from "@/lib/marketing-contact";
 
 const inputClass =
-  "w-full rounded-xl border border-[#C8D8E4] bg-white px-4 py-3 text-base text-[#1E3448] outline-none transition placeholder:text-[#7A9AB0] focus:border-[#4A7FA5] focus:ring-2 focus:ring-[#EAF1F7] md:text-sm";
+  "w-full rounded-xl border border-[#CBD5E8] bg-white px-4 py-3 text-base text-[#0A1628] outline-none transition placeholder:text-[#6A82A8] focus:border-[#2952A3] focus:ring-2 focus:ring-[#E8EEFC] md:text-sm";
 
 export default function KontaktPage() {
   const [name, setName] = useState("");
@@ -66,10 +66,10 @@ export default function KontaktPage() {
 
   return (
     <MarketingShell>
-      <section className="bg-[#F7F4EF] px-6 py-16 md:py-20">
+      <section className="bg-[#F2F5FA] px-6 py-16 md:py-20">
         <ScrollReveal className="mx-auto max-w-3xl text-center">
-          <h1 className="text-4xl font-light tracking-tight text-[#1E3448] md:text-5xl">Kontakt os</h1>
-          <p className="mt-4 text-lg text-[#4A6478]">
+          <h1 className="text-4xl font-light tracking-tight text-[#0A1628] md:text-5xl">Kontakt os</h1>
+          <p className="mt-4 text-lg text-[#2A4868]">
             Book en demo eller skriv til os — vi svarer inden for 1 hverdag.
           </p>
         </ScrollReveal>
@@ -84,42 +84,42 @@ export default function KontaktPage() {
       <section className="bg-white px-6 py-20 md:py-28">
         <div className="mx-auto grid max-w-6xl gap-10 lg:grid-cols-5 lg:gap-12">
           <ScrollReveal className="lg:col-span-2">
-            <aside className="h-full rounded-2xl border border-[#C8D8E4] bg-[#F7F4EF] p-8">
-              <h2 className="text-lg font-medium text-[#1E3448]">Kontaktinformation</h2>
+            <aside className="h-full rounded-2xl border border-[#CBD5E8] bg-[#F2F5FA] p-8">
+              <h2 className="text-lg font-medium text-[#0A1628]">Kontaktinformation</h2>
               <ul className="mt-6 space-y-6">
                 <li className="flex gap-3">
-                  <Mail className="mt-0.5 h-5 w-5 shrink-0 text-[#4A7FA5]" aria-hidden />
+                  <Mail className="mt-0.5 h-5 w-5 shrink-0 text-[#2952A3]" aria-hidden />
                   <div>
-                    <p className="text-sm font-medium text-[#1E3448]">Email</p>
+                    <p className="text-sm font-medium text-[#0A1628]">Email</p>
                     <a
                       href={`mailto:${MARKETING_CONTACT_EMAIL}`}
-                      className="text-sm text-[#4A7FA5] hover:underline"
+                      className="text-sm text-[#2952A3] hover:underline"
                     >
                       {MARKETING_CONTACT_EMAIL}
                     </a>
                   </div>
                 </li>
                 <li className="flex gap-3">
-                  <Phone className="mt-0.5 h-5 w-5 shrink-0 text-[#4A7FA5]" aria-hidden />
+                  <Phone className="mt-0.5 h-5 w-5 shrink-0 text-[#2952A3]" aria-hidden />
                   <div>
-                    <p className="text-sm font-medium text-[#1E3448]">Telefon</p>
-                    <a href={`tel:${MARKETING_CONTACT_PHONE_TEL}`} className="text-sm text-[#4A7FA5] hover:underline">
+                    <p className="text-sm font-medium text-[#0A1628]">Telefon</p>
+                    <a href={`tel:${MARKETING_CONTACT_PHONE_TEL}`} className="text-sm text-[#2952A3] hover:underline">
                       {MARKETING_CONTACT_PHONE_DISPLAY}
                     </a>
                   </div>
                 </li>
                 <li className="flex gap-3">
-                  <Clock className="mt-0.5 h-5 w-5 shrink-0 text-[#4A7FA5]" aria-hidden />
+                  <Clock className="mt-0.5 h-5 w-5 shrink-0 text-[#2952A3]" aria-hidden />
                   <div>
-                    <p className="text-sm font-medium text-[#1E3448]">Svartid</p>
-                    <p className="text-sm text-[#4A6478]">Vi svarer inden for 1 hverdag</p>
+                    <p className="text-sm font-medium text-[#0A1628]">Svartid</p>
+                    <p className="text-sm text-[#2A4868]">Vi svarer inden for 1 hverdag</p>
                   </div>
                 </li>
                 <li className="flex gap-3">
-                  <MapPin className="mt-0.5 h-5 w-5 shrink-0 text-[#4A7FA5]" aria-hidden />
+                  <MapPin className="mt-0.5 h-5 w-5 shrink-0 text-[#2952A3]" aria-hidden />
                   <div>
-                    <p className="text-sm font-medium text-[#1E3448]">Lokation</p>
-                    <p className="text-sm text-[#4A6478]">Danmark — remote først</p>
+                    <p className="text-sm font-medium text-[#0A1628]">Lokation</p>
+                    <p className="text-sm text-[#2A4868]">Danmark — remote først</p>
                   </div>
                 </li>
               </ul>
@@ -127,12 +127,12 @@ export default function KontaktPage() {
           </ScrollReveal>
 
           <ScrollReveal staggerMs={100} className="lg:col-span-3">
-            <div className="rounded-2xl border border-[#C8D8E4] bg-white p-6 md:p-8">
-              <h2 className="text-lg font-medium text-[#1E3448]">Send en besked</h2>
-              <p className="mt-1 text-sm text-[#4A6478]">Udfyld formularen, så vender vi tilbage hurtigst muligt.</p>
+            <div className="rounded-2xl border border-[#CBD5E8] bg-white p-6 md:p-8">
+              <h2 className="text-lg font-medium text-[#0A1628]">Send en besked</h2>
+              <p className="mt-1 text-sm text-[#2A4868]">Udfyld formularen, så vender vi tilbage hurtigst muligt.</p>
               <form onSubmit={onSubmit} className="mt-6 space-y-4">
                 <div>
-                  <label htmlFor="contact-name" className="mb-1.5 block text-sm font-medium text-[#1E3448]">
+                  <label htmlFor="contact-name" className="mb-1.5 block text-sm font-medium text-[#0A1628]">
                     Navn
                   </label>
                   <input
@@ -144,7 +144,7 @@ export default function KontaktPage() {
                   />
                 </div>
                 <div>
-                  <label htmlFor="contact-email" className="mb-1.5 block text-sm font-medium text-[#1E3448]">
+                  <label htmlFor="contact-email" className="mb-1.5 block text-sm font-medium text-[#0A1628]">
                     Email
                   </label>
                   <input
@@ -157,7 +157,7 @@ export default function KontaktPage() {
                   />
                 </div>
                 <div>
-                  <label htmlFor="contact-company" className="mb-1.5 block text-sm font-medium text-[#1E3448]">
+                  <label htmlFor="contact-company" className="mb-1.5 block text-sm font-medium text-[#0A1628]">
                     Virksomhed
                   </label>
                   <input
@@ -168,7 +168,7 @@ export default function KontaktPage() {
                   />
                 </div>
                 <div>
-                  <label htmlFor="contact-message" className="mb-1.5 block text-sm font-medium text-[#1E3448]">
+                  <label htmlFor="contact-message" className="mb-1.5 block text-sm font-medium text-[#0A1628]">
                     Besked
                   </label>
                   <textarea
@@ -181,19 +181,19 @@ export default function KontaktPage() {
                   />
                 </div>
                 {error ? (
-                  <p className="rounded-lg border border-[#E8C4BC] bg-[#FBF0EE] px-3 py-2 text-sm text-[#8A3A2A]">
+                  <p className="rounded-lg border border-[#F0C0B8] bg-[#FEF0EE] px-3 py-2 text-sm text-[#8A2A1A]">
                     {error}
                   </p>
                 ) : null}
                 {success ? (
-                  <p className="rounded-lg border border-[#B8D8C0] bg-[#EEF7F0] px-3 py-2 text-sm text-[#3A7A4A]">
+                  <p className="rounded-lg border border-[#B0E8D0] bg-[#E8FAF4] px-3 py-2 text-sm text-[#0A6A4A]">
                     {success}
                   </p>
                 ) : null}
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="min-h-[48px] w-full rounded-full bg-[#4A7FA5] px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-[#3A6F95] disabled:opacity-60"
+                  className="min-h-[48px] w-full rounded-full bg-[#2952A3] px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-[#1E4490] disabled:opacity-60"
                 >
                   {submitting ? "Sender..." : "Send besked"}
                 </button>

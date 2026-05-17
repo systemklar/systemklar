@@ -37,7 +37,7 @@ function orgNameFromEmbed(embed: OrgEmbed): string {
 
 function statusBadge(s: string): { label: string; className: string } {
   if (s === "sent") return { label: "Sendt", className: "bg-emerald-100 text-emerald-900" };
-  if (s === "approved") return { label: "Godkendt", className: "bg-[#EAF1F7] text-[#1E3448]" };
+  if (s === "approved") return { label: "Godkendt", className: "bg-[#E8EEFC] text-[#0A1628]" };
   return { label: "Kladde", className: "bg-amber-100 text-amber-900" };
 }
 
@@ -151,7 +151,7 @@ export default function ItReportDetailClient() {
 
   if (loading) {
     return (
-      <div className="flex items-center gap-2 px-4 py-12 text-slate-600">
+      <div className="flex items-center gap-2 px-4 py-12 text-[#2A4868]">
         <Loader2 className="h-5 w-5 animate-spin" aria-hidden />
         Indlæser rapport…
       </div>
@@ -162,7 +162,7 @@ export default function ItReportDetailClient() {
     return (
       <div className="px-4 py-8">
         <p className="text-red-600">{error ?? "Rapporten kunne ikke indlæses."}</p>
-        <Link href="/admin/it-rapporter" className="mt-4 inline-block text-sm font-semibold text-[#3A6F95]">
+        <Link href="/admin/it-rapporter" className="mt-4 inline-block text-sm font-semibold text-[#1E4490]">
           ← Tilbage
         </Link>
       </div>
@@ -177,13 +177,13 @@ export default function ItReportDetailClient() {
     <div className="w-full max-w-[1200px]">
       <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div>
-          <Link href="/admin/it-rapporter" className="text-sm font-semibold text-[#4A7FA5] hover:underline">
+          <Link href="/admin/it-rapporter" className="text-sm font-semibold text-[#2952A3] hover:underline">
             ← Tilbage til IT-rapporter
           </Link>
-          <h1 className="mt-2 text-2xl font-bold text-[#1E3448]">
+          <h1 className="mt-2 text-2xl font-bold text-[#0A1628]">
             IT-rapport — {orgTitle}
           </h1>
-          <p className="mt-1 text-sm text-[#4A6478]">{periodLabel}</p>
+          <p className="mt-1 text-sm text-[#2A4868]">{periodLabel}</p>
           <span className={`mt-2 inline-flex rounded-full px-2.5 py-0.5 text-xs font-semibold ${badge.className}`}>
             {badge.label}
           </span>
@@ -193,7 +193,7 @@ export default function ItReportDetailClient() {
             href={`/api/portal/reports/${id}/pdf`}
             target="_blank"
             rel="noreferrer"
-            className="inline-flex min-h-11 w-full items-center justify-center rounded-full border border-[#C8D8E4] bg-white px-4 py-2 text-sm font-semibold text-[#1E3448] transition-colors hover:bg-[#EAF1F7] sm:w-auto"
+            className="inline-flex min-h-11 w-full items-center justify-center rounded-full border border-[#CBD5E8] bg-white px-4 py-2 text-sm font-semibold text-[#0A1628] transition-colors hover:bg-[#E8EEFC] sm:w-auto"
           >
             Download rapport (HTML)
           </a>
@@ -202,7 +202,7 @@ export default function ItReportDetailClient() {
               type="button"
               disabled={sending}
               onClick={() => void sendToCustomer()}
-              className="inline-flex min-h-11 w-full items-center justify-center rounded-full bg-[#4A7FA5] px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-[#3A6F95] disabled:opacity-50 sm:w-auto"
+              className="inline-flex min-h-11 w-full items-center justify-center rounded-full bg-[#2952A3] px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-[#1E4490] disabled:opacity-50 sm:w-auto"
             >
               {sending ? "Sender…" : "Godkend & send til kunde"}
             </button>
@@ -213,26 +213,26 @@ export default function ItReportDetailClient() {
       {error ? <p className="mb-4 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">{error}</p> : null}
 
       <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
-        <div className="space-y-4 rounded-2xl border border-[#C8D8E4] bg-white p-6 shadow-sm">
-          <h2 className="text-sm font-semibold uppercase tracking-wide text-[#7A9AB0]">Redigering</h2>
+        <div className="space-y-4 rounded-2xl border border-[#CBD5E8] bg-white p-6 shadow-sm">
+          <h2 className="text-sm font-semibold uppercase tracking-wide text-[#6A82A8]">Redigering</h2>
           <label className="block">
-            <span className="text-sm font-medium text-[#1E3448]">Sammenfatning</span>
+            <span className="text-sm font-medium text-[#0A1628]">Sammenfatning</span>
             <textarea
               value={summary}
               onChange={(e) => setSummary(e.target.value)}
               disabled={row.status === "sent"}
               rows={10}
-              className="mt-1 w-full rounded-xl border border-[#C8D8E4] px-3 py-2 text-base text-[#1E3448] md:text-sm disabled:bg-slate-50"
+              className="mt-1 w-full rounded-xl border border-[#CBD5E8] px-3 py-2 text-base text-[#0A1628] md:text-sm disabled:bg-[#F2F5FA]"
             />
           </label>
           <label className="block">
-            <span className="text-sm font-medium text-[#1E3448]">Anbefalinger</span>
+            <span className="text-sm font-medium text-[#0A1628]">Anbefalinger</span>
             <textarea
               value={recommendations}
               onChange={(e) => setRecommendations(e.target.value)}
               disabled={row.status === "sent"}
               rows={8}
-              className="mt-1 w-full rounded-xl border border-[#C8D8E4] px-3 py-2 text-base text-[#1E3448] md:text-sm disabled:bg-slate-50"
+              className="mt-1 w-full rounded-xl border border-[#CBD5E8] px-3 py-2 text-base text-[#0A1628] md:text-sm disabled:bg-[#F2F5FA]"
               placeholder="- Første anbefaling&#10;- Anden anbefaling"
             />
           </label>
@@ -241,18 +241,18 @@ export default function ItReportDetailClient() {
               type="button"
               disabled={saving}
               onClick={() => void save()}
-              className="rounded-full bg-[#1E3448] px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:opacity-95 disabled:opacity-50"
+              className="rounded-full bg-[#0A1628] px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:opacity-95 disabled:opacity-50"
             >
               {saving ? "Gemmer…" : "Gem ændringer"}
             </button>
           ) : (
-            <p className="text-sm text-slate-500">Rapporten er sendt og kan ikke længere redigeres.</p>
+            <p className="text-sm text-[#6A82A8]">Rapporten er sendt og kan ikke længere redigeres.</p>
           )}
         </div>
 
         <div>
-          <h2 className="mb-2 text-sm font-semibold uppercase tracking-wide text-[#7A9AB0]">Forhåndsvisning</h2>
-          <div className="overflow-hidden rounded-2xl border border-[#C8D8E4] bg-[#F7F4EF] shadow-inner">
+          <h2 className="mb-2 text-sm font-semibold uppercase tracking-wide text-[#6A82A8]">Forhåndsvisning</h2>
+          <div className="overflow-hidden rounded-2xl border border-[#CBD5E8] bg-[#F2F5FA] shadow-inner">
             <iframe
               ref={iframeRef}
               title="Rapport forhåndsvisning"

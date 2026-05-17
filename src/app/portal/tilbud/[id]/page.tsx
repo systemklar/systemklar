@@ -132,7 +132,7 @@ export default function PortalTilbudDetailPage() {
   if (loading) {
     return (
       <div className="w-full p-6 md:p-8">
-        <p className="text-sm text-slate-600">Indlæser tilbud...</p>
+        <p className="text-sm text-[#2A4868]">Indlæser tilbud...</p>
       </div>
     );
   }
@@ -140,24 +140,24 @@ export default function PortalTilbudDetailPage() {
   if (!quote) {
     return (
       <div className="w-full p-6 md:p-8">
-        <Link href="/portal/tilbudsgenerator" className="text-sm font-semibold text-[#4A7FA5] hover:underline">
+        <Link href="/portal/tilbudsgenerator" className="text-sm font-semibold text-[#2952A3] hover:underline">
           ← Tilbage til AI Tilbudsgenerator
         </Link>
-        <p className="mt-6 text-sm text-slate-600">Tilbud ikke fundet.</p>
+        <p className="mt-6 text-sm text-[#2A4868]">Tilbud ikke fundet.</p>
       </div>
     );
   }
 
   return (
     <div className="w-full p-6 md:p-8">
-      <Link href="/portal/tilbudsgenerator" className="text-sm font-semibold text-[#4A7FA5] hover:underline">
+      <Link href="/portal/tilbudsgenerator" className="text-sm font-semibold text-[#2952A3] hover:underline">
         ← Tilbage til AI Tilbudsgenerator
       </Link>
 
       <div className="mt-6 flex flex-wrap items-start justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900 md:text-3xl">Tilbud</h1>
-          <p className="mt-2 text-xs text-slate-500">Oprettet {formatDanishDateTime(quote.created_at)}</p>
+          <h1 className="text-2xl font-bold text-[#0A1628] md:text-3xl">Tilbud</h1>
+          <p className="mt-2 text-xs text-[#6A82A8]">Oprettet {formatDanishDateTime(quote.created_at)}</p>
           {quote.status === "sent" && quote.sent_at ? (
             <p className="mt-1 text-xs text-green-700">Sendt {formatDanishDateTime(quote.sent_at)}</p>
           ) : null}
@@ -176,31 +176,31 @@ export default function PortalTilbudDetailPage() {
       </div>
 
       <form onSubmit={(e) => void handleSave(e)} className="mt-8 space-y-4">
-        <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-          <label className="block text-sm font-medium text-slate-700">Modtager-email</label>
+        <div className="rounded-2xl border border-[#CBD5E8] bg-white p-6 shadow-sm">
+          <label className="block text-sm font-medium text-[#2A4868]">Modtager-email</label>
           <input
             type="email"
             value={recipientEmail}
             onChange={(e) => setRecipientEmail(e.target.value)}
-            className="mt-2 w-full max-w-md rounded-lg border border-slate-300 px-3 py-2 text-sm"
+            className="mt-2 w-full max-w-md rounded-lg border border-[#CBD5E8] px-3 py-2 text-sm"
             required
           />
         </div>
-        <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-          <label className="block text-sm font-medium text-slate-700">Titel</label>
+        <div className="rounded-2xl border border-[#CBD5E8] bg-white p-6 shadow-sm">
+          <label className="block text-sm font-medium text-[#2A4868]">Titel</label>
           <input
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            className="mt-2 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+            className="mt-2 w-full rounded-lg border border-[#CBD5E8] px-3 py-2 text-sm"
           />
         </div>
-        <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-          <label className="block text-sm font-medium text-slate-700">Indhold</label>
+        <div className="rounded-2xl border border-[#CBD5E8] bg-white p-6 shadow-sm">
+          <label className="block text-sm font-medium text-[#2A4868]">Indhold</label>
           <textarea
             value={content}
             onChange={(e) => setContent(e.target.value)}
             rows={20}
-            className="mt-2 w-full rounded-lg border border-slate-300 px-3 py-2 font-mono text-sm leading-relaxed"
+            className="mt-2 w-full rounded-lg border border-[#CBD5E8] px-3 py-2 font-mono text-sm leading-relaxed"
           />
         </div>
 
@@ -210,7 +210,7 @@ export default function PortalTilbudDetailPage() {
           <button
             type="submit"
             disabled={saving || sending}
-            className="rounded-full bg-[#4A7FA5] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[#3A6F95] focus:outline-none focus:ring-2 focus:ring-[#4A7FA5] disabled:opacity-50"
+            className="rounded-full bg-[#2952A3] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[#1E4490] focus:outline-none focus:ring-2 focus:ring-[#2952A3] disabled:opacity-50"
           >
             {saving ? "Gemmer..." : "Gem ændringer"}
           </button>
@@ -218,7 +218,7 @@ export default function PortalTilbudDetailPage() {
             type="button"
             disabled={sending || saving}
             onClick={() => void handleSend()}
-            className="rounded-full border border-slate-300 bg-white px-5 py-2.5 text-sm font-semibold text-slate-900 disabled:opacity-50"
+            className="rounded-full border border-[#CBD5E8] bg-white px-5 py-2.5 text-sm font-semibold text-[#0A1628] disabled:opacity-50"
           >
             {sending ? "Sender..." : quote.status === "sent" ? "Send igen" : "Send tilbud"}
           </button>

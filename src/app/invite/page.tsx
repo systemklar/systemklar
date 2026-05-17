@@ -209,7 +209,7 @@ function InviteContent() {
         subtitle={loading ? "Vi tjekker din invitation..." : undefined}
       />
 
-      {loading ? <p className="text-sm text-[#7A9AB0]">Indlæser invitation...</p> : null}
+      {loading ? <p className="text-sm text-[#6A82A8]">Indlæser invitation...</p> : null}
 
       {!loading && error && !invitation ? <AuthFormError>{error}</AuthFormError> : null}
 
@@ -262,7 +262,7 @@ export default function InvitePage() {
   return (
     <Suspense
       fallback={
-        <main className="flex min-h-screen items-center justify-center bg-white text-[#7A9AB0]">
+        <main className="flex min-h-screen items-center justify-center bg-white text-[#6A82A8]">
           Indlæser invitation...
         </main>
       }

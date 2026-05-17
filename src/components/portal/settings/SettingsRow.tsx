@@ -11,13 +11,13 @@ export function SettingsRow({ label, description, children, last }: SettingsRowP
   return (
     <div
       className={`flex flex-col gap-3 py-3 sm:flex-row sm:items-center sm:justify-between ${
-        last ? "" : "border-b border-[#E0EAF0]"
+        last ? "" : "border-b border-[#E4EAF5]"
       }`}
     >
       <div className="min-w-0 flex-1 pr-0 sm:pr-6">
-        <p className="text-sm font-medium text-[#1E3448]">{label}</p>
+        <p className="text-sm font-medium text-[#0A1628]">{label}</p>
         {description ? (
-          <p className="mt-0.5 text-xs leading-relaxed text-[#7A9AB0]">{description}</p>
+          <p className="mt-0.5 text-xs leading-relaxed text-[#6A82A8]">{description}</p>
         ) : null}
       </div>
       <div className="shrink-0 sm:text-right">{children}</div>

@@ -86,18 +86,18 @@ export function AttachmentList({
   return (
     <div className="flex flex-col">
       {error ? <p className="mb-2 text-xs text-red-600">{error}</p> : null}
-      <ul className="divide-y divide-[#E0EAF0]">
+      <ul className="divide-y divide-[#E4EAF5]">
         {attachments.map((a) => {
           const kind = fileKind(a.file_name, a.file_type);
           const Icon =
             kind === "pdf" ? (
               <FileText className="h-4 w-4 text-red-500" aria-hidden />
             ) : kind === "image" ? (
-              <ImageIcon className="h-4 w-4 text-[#4A7FA5]" aria-hidden />
+              <ImageIcon className="h-4 w-4 text-[#2952A3]" aria-hidden />
             ) : kind === "office" ? (
               <FileText className="h-4 w-4 text-emerald-600" aria-hidden />
             ) : (
-              <File className="h-4 w-4 text-slate-400" aria-hidden />
+              <File className="h-4 w-4 text-[#9AAAC8]" aria-hidden />
             );
 
           const busyDl = downloadingId === a.id;
@@ -106,15 +106,15 @@ export function AttachmentList({
           return (
             <li key={a.id} className="flex flex-wrap items-center gap-2 gap-y-2 py-2">
               {Icon}
-              <span className="min-w-0 flex-1 truncate text-sm text-[#1E3448]" title={a.file_name}>
+              <span className="min-w-0 flex-1 truncate text-sm text-[#0A1628]" title={a.file_name}>
                 {a.file_name}
               </span>
-              <span className="shrink-0 text-xs text-[#4A6478]">{formatFileSize(a.file_size)}</span>
+              <span className="shrink-0 text-xs text-[#2A4868]">{formatFileSize(a.file_size)}</span>
               <button
                 type="button"
                 disabled={busyDl}
                 onClick={() => void download(a)}
-                className="shrink-0 rounded-full px-3 py-1 text-xs font-medium text-[#3A6F95] hover:bg-[#EAF1F7] disabled:opacity-50"
+                className="shrink-0 rounded-full px-3 py-1 text-xs font-medium text-[#1E4490] hover:bg-[#E8EEFC] disabled:opacity-50"
               >
                 {busyDl ? <Loader2 className="h-3 w-3 animate-spin" aria-hidden /> : "Download"}
               </button>

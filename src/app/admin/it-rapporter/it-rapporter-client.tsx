@@ -250,13 +250,13 @@ export default function AdminItRapporterClient({
     <div className="mx-auto max-w-6xl px-4 py-8">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">Organisationers IT-rapporter</h1>
-          <p className="mt-2 text-sm text-slate-600">Rapporter genereret pr. kunde med AI og sendt til portalen.</p>
+          <h1 className="text-2xl font-bold text-[#0A1628]">Organisationers IT-rapporter</h1>
+          <p className="mt-2 text-sm text-[#2A4868]">Rapporter genereret pr. kunde med AI og sendt til portalen.</p>
         </div>
         <button
           type="button"
           onClick={openNewModal}
-          className="inline-flex shrink-0 items-center justify-center gap-2 self-start rounded-full bg-[#4A7FA5] px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-[#3A6F95] sm:self-center"
+          className="inline-flex shrink-0 items-center justify-center gap-2 self-start rounded-full bg-[#2952A3] px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-[#1E4490] sm:self-center"
         >
           <Plus className="h-4 w-4" aria-hidden />
           Ny rapport
@@ -266,16 +266,16 @@ export default function AdminItRapporterClient({
       {error ? <p className="mt-4 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">{error}</p> : null}
 
       {loading ? (
-        <p className="mt-10 flex items-center gap-2 text-sm text-slate-500">
+        <p className="mt-10 flex items-center gap-2 text-sm text-[#6A82A8]">
           <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
           Henter…
         </p>
       ) : rows.length === 0 ? (
-        <p className="mt-10 text-sm text-slate-600">Ingen IT-rapporter endnu.</p>
+        <p className="mt-10 text-sm text-[#2A4868]">Ingen IT-rapporter endnu.</p>
       ) : (
-        <div className="mt-8 overflow-x-auto rounded-lg border border-slate-200 bg-white shadow-sm">
+        <div className="mt-8 overflow-x-auto rounded-lg border border-[#CBD5E8] bg-white shadow-sm">
           <table className="min-w-full text-left text-sm">
-            <thead className="border-b border-slate-200 bg-slate-50 text-xs font-semibold uppercase tracking-wide text-slate-600">
+            <thead className="border-b border-[#CBD5E8] bg-[#F2F5FA] text-xs font-semibold uppercase tracking-wide text-[#2A4868]">
               <tr>
                 {multiOrg ? null : <th className="px-4 py-3">Organisation</th>}
                 <th className="px-4 py-3">Periode</th>
@@ -287,27 +287,27 @@ export default function AdminItRapporterClient({
             {multiOrg
               ? groupedReports.map((g) => (
                   <tbody key={g.key}>
-                    <tr className="border-b border-slate-200 bg-slate-100">
-                      <td colSpan={4} className="px-4 py-2.5 text-sm font-bold text-slate-900">
+                    <tr className="border-b border-[#CBD5E8] bg-[#EEF2FA]">
+                      <td colSpan={4} className="px-4 py-2.5 text-sm font-bold text-[#0A1628]">
                         {g.name}
                       </td>
                     </tr>
                     {g.reports.map((r) => (
-                      <tr key={r.id} className="border-b border-slate-100 last:border-0">
-                        <td className="px-4 py-3 text-slate-600">{periodDa(r.period_start, r.period_end)}</td>
+                      <tr key={r.id} className="border-b border-[#E4EAF5] last:border-0">
+                        <td className="px-4 py-3 text-[#2A4868]">{periodDa(r.period_start, r.period_end)}</td>
                         <td className="px-4 py-3">
-                          <span className="inline-flex rounded-full bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-700">
+                          <span className="inline-flex rounded-full bg-[#EEF2FA] px-2 py-0.5 text-xs font-medium text-[#2A4868]">
                             {statusLabel(r.status)}
                           </span>
                         </td>
-                        <td className="px-4 py-3 text-slate-500">
+                        <td className="px-4 py-3 text-[#6A82A8]">
                           {new Date(r.created_at).toLocaleString("da-DK", { dateStyle: "short", timeStyle: "short" })}
                         </td>
                         <td className="px-4 py-3 text-right">
                           <div className="flex flex-wrap items-center justify-end gap-2">
                             {deleteConfirmId === r.id ? (
                               <div className="flex flex-wrap items-center justify-end gap-2 text-xs">
-                                <span className="font-medium text-slate-700">Er du sikker?</span>
+                                <span className="font-medium text-[#2A4868]">Er du sikker?</span>
                                 <button
                                   type="button"
                                   disabled={deleteBusyId === r.id}
@@ -320,7 +320,7 @@ export default function AdminItRapporterClient({
                                   type="button"
                                   disabled={deleteBusyId === r.id}
                                   onClick={() => setDeleteConfirmId(null)}
-                                  className="rounded-md border border-slate-200 px-2.5 py-1 font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-50"
+                                  className="rounded-md border border-[#CBD5E8] px-2.5 py-1 font-semibold text-[#2A4868] hover:bg-[#F2F5FA] disabled:opacity-50"
                                 >
                                   Annuller
                                 </button>
@@ -329,7 +329,7 @@ export default function AdminItRapporterClient({
                               <>
                                 <Link
                                   href={`/admin/it-rapporter/${r.id}`}
-                                  className="rounded-md border border-slate-200 px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50"
+                                  className="rounded-md border border-[#CBD5E8] px-3 py-1.5 text-xs font-semibold text-[#2A4868] hover:bg-[#F2F5FA]"
                                 >
                                   Rediger
                                 </Link>
@@ -338,7 +338,7 @@ export default function AdminItRapporterClient({
                                     type="button"
                                     disabled={sendBusyId === r.id}
                                     onClick={() => void sendReport(r.id)}
-                                    className="rounded-md bg-[#4A7FA5] px-3 py-1.5 text-xs font-semibold text-white hover:bg-[#3A6F95] disabled:opacity-50"
+                                    className="rounded-md bg-[#2952A3] px-3 py-1.5 text-xs font-semibold text-white hover:bg-[#1E4490] disabled:opacity-50"
                                   >
                                     {sendBusyId === r.id ? "Sender…" : "Send"}
                                   </button>
@@ -362,22 +362,22 @@ export default function AdminItRapporterClient({
               : (
                   <tbody>
                     {groupedReports.flatMap((g) => g.reports).map((r) => (
-                      <tr key={r.id} className="border-b border-slate-100 last:border-0">
-                      <td className="px-4 py-3 font-medium text-slate-900">{orgNameFromEmbed(r.organisations)}</td>
-                      <td className="px-4 py-3 text-slate-600">{periodDa(r.period_start, r.period_end)}</td>
+                      <tr key={r.id} className="border-b border-[#E4EAF5] last:border-0">
+                      <td className="px-4 py-3 font-medium text-[#0A1628]">{orgNameFromEmbed(r.organisations)}</td>
+                      <td className="px-4 py-3 text-[#2A4868]">{periodDa(r.period_start, r.period_end)}</td>
                       <td className="px-4 py-3">
-                        <span className="inline-flex rounded-full bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-700">
+                        <span className="inline-flex rounded-full bg-[#EEF2FA] px-2 py-0.5 text-xs font-medium text-[#2A4868]">
                           {statusLabel(r.status)}
                         </span>
                       </td>
-                      <td className="px-4 py-3 text-slate-500">
+                      <td className="px-4 py-3 text-[#6A82A8]">
                         {new Date(r.created_at).toLocaleString("da-DK", { dateStyle: "short", timeStyle: "short" })}
                       </td>
                       <td className="px-4 py-3 text-right">
                         <div className="flex flex-wrap items-center justify-end gap-2">
                           {deleteConfirmId === r.id ? (
                             <div className="flex flex-wrap items-center justify-end gap-2 text-xs">
-                              <span className="font-medium text-slate-700">Er du sikker?</span>
+                              <span className="font-medium text-[#2A4868]">Er du sikker?</span>
                               <button
                                 type="button"
                                 disabled={deleteBusyId === r.id}
@@ -390,7 +390,7 @@ export default function AdminItRapporterClient({
                                 type="button"
                                 disabled={deleteBusyId === r.id}
                                 onClick={() => setDeleteConfirmId(null)}
-                                className="rounded-md border border-slate-200 px-2.5 py-1 font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-50"
+                                className="rounded-md border border-[#CBD5E8] px-2.5 py-1 font-semibold text-[#2A4868] hover:bg-[#F2F5FA] disabled:opacity-50"
                               >
                                 Annuller
                               </button>
@@ -399,7 +399,7 @@ export default function AdminItRapporterClient({
                             <>
                               <Link
                                 href={`/admin/it-rapporter/${r.id}`}
-                                className="rounded-md border border-slate-200 px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50"
+                                className="rounded-md border border-[#CBD5E8] px-3 py-1.5 text-xs font-semibold text-[#2A4868] hover:bg-[#F2F5FA]"
                               >
                                 Rediger
                               </Link>
@@ -408,7 +408,7 @@ export default function AdminItRapporterClient({
                                   type="button"
                                   disabled={sendBusyId === r.id}
                                   onClick={() => void sendReport(r.id)}
-                                  className="rounded-md bg-[#4A7FA5] px-3 py-1.5 text-xs font-semibold text-white hover:bg-[#3A6F95] disabled:opacity-50"
+                                  className="rounded-md bg-[#2952A3] px-3 py-1.5 text-xs font-semibold text-white hover:bg-[#1E4490] disabled:opacity-50"
                                 >
                                   {sendBusyId === r.id ? "Sender…" : "Send"}
                                 </button>
@@ -435,7 +435,7 @@ export default function AdminItRapporterClient({
 
       {newModalOpen ? (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 p-4"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-[#0A1628]/40 p-4"
           role="dialog"
           aria-modal="true"
           aria-labelledby="new-it-report-title"
@@ -444,16 +444,16 @@ export default function AdminItRapporterClient({
           }}
         >
           <div
-            className="w-full max-w-md rounded-2xl border border-slate-200 bg-white p-6 shadow-xl"
+            className="w-full max-w-md rounded-2xl border border-[#CBD5E8] bg-white p-6 shadow-xl"
             onClick={(e) => e.stopPropagation()}
           >
-            <h2 id="new-it-report-title" className="text-lg font-semibold text-slate-900">
+            <h2 id="new-it-report-title" className="text-lg font-semibold text-[#0A1628]">
               Ny IT-rapport
             </h2>
-            <p className="mt-1 text-sm text-slate-600">Vælg organisation og generér en kladde med data fra de seneste 30 dage.</p>
+            <p className="mt-1 text-sm text-[#2A4868]">Vælg organisation og generér en kladde med data fra de seneste 30 dage.</p>
 
             <div className="mt-5">
-              <label htmlFor="new-report-org" className="mb-1 block text-sm font-medium text-slate-700">
+              <label htmlFor="new-report-org" className="mb-1 block text-sm font-medium text-[#2A4868]">
                 Organisation
               </label>
               <select
@@ -461,7 +461,7 @@ export default function AdminItRapporterClient({
                 value={selectedOrgId}
                 onChange={(e) => setSelectedOrgId(e.target.value)}
                 disabled={orgsLoading || genBusy}
-                className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-[#E0EAF0]0 disabled:cursor-not-allowed disabled:bg-slate-100"
+                className="w-full rounded-lg border border-[#CBD5E8] px-3 py-2 text-sm outline-none focus:border-[#E4EAF5]0 disabled:cursor-not-allowed disabled:bg-[#EEF2FA]"
               >
                 <option value="">{orgsLoading ? "Henter organisationer…" : "Vælg organisation…"}</option>
                 {orgOptions.map((o) => (
@@ -479,7 +479,7 @@ export default function AdminItRapporterClient({
                 type="button"
                 disabled={genBusy}
                 onClick={closeNewModal}
-                className="rounded-full px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100 disabled:opacity-50"
+                className="rounded-full px-4 py-2 text-sm font-medium text-[#2A4868] hover:bg-[#EEF2FA] disabled:opacity-50"
               >
                 Annuller
               </button>
@@ -487,7 +487,7 @@ export default function AdminItRapporterClient({
                 type="button"
                 disabled={genBusy || orgsLoading || !selectedOrgId}
                 onClick={() => void handleGenerateNew()}
-                className="inline-flex items-center justify-center gap-2 rounded-full bg-[#4A7FA5] px-5 py-2 text-sm font-semibold text-white hover:bg-[#3A6F95] disabled:opacity-50"
+                className="inline-flex items-center justify-center gap-2 rounded-full bg-[#2952A3] px-5 py-2 text-sm font-semibold text-white hover:bg-[#1E4490] disabled:opacity-50"
               >
                 {genBusy ? (
                   <>

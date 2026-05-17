@@ -205,7 +205,7 @@ export function statusBadgeClasses(status: MonitoringStatusKey): string {
     case "fejl":
       return "border border-red-200 bg-red-50 text-red-900";
     default:
-      return "border border-slate-200 bg-slate-50 text-slate-700";
+      return "border border-[#CBD5E8] bg-[#F2F5FA] text-[#2A4868]";
   }
 }
 

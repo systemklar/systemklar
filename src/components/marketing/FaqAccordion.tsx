@@ -36,10 +36,10 @@ export function FaqAccordion() {
   const [openIndex, setOpenIndex] = useState<number | null>(0);
 
   return (
-    <section className="bg-[#F7F4EF] px-6 py-20 md:py-28">
+    <section className="bg-[#F2F5FA] px-6 py-20 md:py-28">
       <div className="mx-auto max-w-3xl">
         <ScrollReveal>
-          <h2 className="text-center text-2xl font-light tracking-tight text-[#1E3448] md:text-3xl">
+          <h2 className="marketing-section-heading text-center text-2xl md:text-3xl">
             Ofte stillede spørgsmål
           </h2>
         </ScrollReveal>
@@ -48,22 +48,22 @@ export function FaqAccordion() {
             const isOpen = openIndex === index;
             return (
               <ScrollReveal key={item.question} staggerMs={index * 80}>
-                <li className="overflow-hidden rounded-2xl border border-[#C8D8E4] bg-white">
+                <li className="overflow-hidden rounded-2xl border border-[#CBD5E8] bg-white">
                   <button
                     type="button"
                     onClick={() => setOpenIndex(isOpen ? null : index)}
                     className="flex w-full items-center justify-between gap-4 px-5 py-4 text-left"
                     aria-expanded={isOpen}
                   >
-                    <span className="text-sm font-medium text-[#1E3448] md:text-base">{item.question}</span>
+                    <span className="text-sm font-medium text-[#0A1628] md:text-base">{item.question}</span>
                     <ChevronDown
-                      className={`h-5 w-5 shrink-0 text-[#4A7FA5] transition-transform ${isOpen ? "rotate-180" : ""}`}
+                      className={`h-5 w-5 shrink-0 text-[#2952A3] transition-transform ${isOpen ? "rotate-180" : ""}`}
                       aria-hidden
                     />
                   </button>
                   {isOpen ? (
-                    <div className="border-t border-[#E0EAF0] px-5 pb-4 pt-2">
-                      <p className="text-sm leading-relaxed text-[#4A6478]">{item.answer}</p>
+                    <div className="border-t border-[#E4EAF5] px-5 pb-4 pt-2">
+                      <p className="text-sm leading-relaxed text-[#2A4868]">{item.answer}</p>
                     </div>
                   ) : null}
                 </li>

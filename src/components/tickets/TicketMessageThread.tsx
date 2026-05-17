@@ -416,14 +416,14 @@ export function TicketMessageThread({
 
   return (
     <div
-      className={`flex flex-col overflow-hidden rounded-2xl border border-[#C8D8E4] bg-white shadow-sm ${
+      className={`flex flex-col overflow-hidden rounded-2xl border border-[#CBD5E8] bg-white shadow-sm ${
         fullHeight
           ? "h-full min-h-0"
           : "mt-8 h-[min(28rem,calc(100vh-14rem))] min-h-[20rem] max-h-[32rem] sm:h-[32rem] sm:max-h-[36rem]"
       }`}
     >
-      <div className="flex shrink-0 items-center justify-between border-b border-[#E0EAF0] px-6 py-4">
-        <h2 className="text-base font-semibold text-[#1E3448]">Beskeder</h2>
+      <div className="flex shrink-0 items-center justify-between border-b border-[#E4EAF5] px-6 py-4">
+        <h2 className="text-base font-semibold text-[#0A1628]">Beskeder</h2>
       </div>
 
       {fetchError && (
@@ -435,9 +435,9 @@ export function TicketMessageThread({
 
       <div className="min-h-0 flex-1 space-y-4 overflow-y-auto p-6">
         {loading ? (
-          <p className="text-sm text-[#4A6478]">Indlæser beskeder...</p>
+          <p className="text-sm text-[#2A4868]">Indlæser beskeder...</p>
         ) : fetchError ? null : messages.length === 0 && !showTypingIndicator ? (
-          <p className="text-sm text-[#4A6478]">Ingen beskeder endnu.</p>
+          <p className="text-sm text-[#2A4868]">Ingen beskeder endnu.</p>
         ) : (
           <>
             {messages.map((m) => {
@@ -448,14 +448,14 @@ export function TicketMessageThread({
                 key={m.id}
                 className={`flex w-full flex-col ${fromCustomer ? "items-end" : "items-start"}`}
               >
-                <div className="mb-1 text-[10px] text-[#7A9AB0]">
+                <div className="mb-1 text-[10px] text-[#6A82A8]">
                   {senderLabel} · {formatDanishDateTime(m.created_at)}
                 </div>
                 <div
                   className={`max-w-[75%] rounded-2xl px-4 py-3 text-sm ${
                     fromCustomer
-                      ? "ml-auto rounded-tr-sm bg-[#4A7FA5] text-white"
-                      : "rounded-tl-sm bg-[#EAF1F7] text-[#4A6478]"
+                      ? "ml-auto rounded-tr-sm bg-[#2952A3] text-white"
+                      : "rounded-tl-sm bg-[#E8EEFC] text-[#2A4868]"
                   }`}
                 >
                   <p className="whitespace-pre-wrap leading-relaxed">{m.content}</p>
@@ -480,8 +480,8 @@ export function TicketMessageThread({
                 <span
                   className={`mb-1 block max-w-[14rem] truncate text-xs font-semibold ${
                     typingOnRight
-                      ? "uppercase tracking-wide text-slate-500"
-                      : "normal-case tracking-normal text-[#4A7FA5]"
+                      ? "uppercase tracking-wide text-[#6A82A8]"
+                      : "normal-case tracking-normal text-[#2952A3]"
                   }`}
                 >
                   {typingOnRight ? SYSTEMKLAR_SENDER_NAME : customerSenderLabel}
@@ -489,8 +489,8 @@ export function TicketMessageThread({
                 <div
                   className={`flex items-center gap-2 rounded-2xl px-4 py-3 text-sm ${
                     typingOnRight
-                      ? "rounded-tr-sm bg-[#4A7FA5] text-white"
-                      : "rounded-tl-sm bg-[#EAF1F7] text-[#4A6478]"
+                      ? "rounded-tr-sm bg-[#2952A3] text-white"
+                      : "rounded-tl-sm bg-[#E8EEFC] text-[#2A4868]"
                   }`}
                 >
                   <span>Skriver</span>
@@ -510,9 +510,9 @@ export function TicketMessageThread({
         </div>
       )}
 
-      <div className="flex shrink-0 flex-col gap-2 border-t border-[#E0EAF0] bg-white p-4">
+      <div className="flex shrink-0 flex-col gap-2 border-t border-[#E4EAF5] bg-white p-4">
         {pendingAttachments.length > 0 ? (
-          <div className="rounded-xl border border-[#C8D8E4] bg-[#EAF1F7] px-3 py-2">
+          <div className="rounded-xl border border-[#CBD5E8] bg-[#E8EEFC] px-3 py-2">
             <AttachmentList
               attachments={pendingAttachments}
               showDelete
@@ -540,13 +540,13 @@ export function TicketMessageThread({
               }
             }}
             placeholder="Skriv en besked..."
-            className="min-w-0 flex-1 rounded-xl border border-[#C8D8E4] px-4 py-3 text-base outline-none focus:ring-2 focus:ring-[#4A7FA5] md:text-sm"
+            className="min-w-0 flex-1 rounded-xl border border-[#CBD5E8] px-4 py-3 text-base outline-none focus:ring-2 focus:ring-[#2952A3] md:text-sm"
           />
           <button
             type="button"
             disabled={sending || !draft.trim()}
             onClick={() => void handleSend()}
-            className="rounded-full bg-[#4A7FA5] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[#3A6F95] focus:outline-none focus:ring-2 focus:ring-[#4A7FA5] disabled:opacity-50"
+            className="rounded-full bg-[#2952A3] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[#1E4490] focus:outline-none focus:ring-2 focus:ring-[#2952A3] disabled:opacity-50"
           >
             {sending ? "Sender..." : "Send"}
           </button>
