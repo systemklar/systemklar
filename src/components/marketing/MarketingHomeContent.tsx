@@ -15,8 +15,10 @@ import {
   UtensilsCrossed,
   Zap,
 } from "lucide-react";
+import { MarketingCtaSection } from "@/components/marketing/MarketingCtaSection";
 import { ScrollReveal } from "@/components/marketing/ScrollReveal";
 import { HeroStatusMockup } from "@/components/marketing/home/HeroStatusMockup";
+import { ItDowntimeCalculator } from "@/components/marketing/home/ItDowntimeCalculator";
 
 const FEATURES = [
   {
@@ -243,6 +245,8 @@ export function MarketingHomeContent() {
         </div>
       </section>
 
+      <ItDowntimeCalculator />
+
       {/* Pricing */}
       <section id="priser" className="scroll-mt-24 bg-white px-6 py-20 md:py-28">
         <div className="mx-auto max-w-4xl">
@@ -293,23 +297,7 @@ export function MarketingHomeContent() {
         </div>
       </section>
 
-      {/* CTA */}
-      <section className="bg-[#1E3448] px-6 py-20 md:py-24">
-        <ScrollReveal className="mx-auto max-w-2xl text-center">
-          <h2 className="text-3xl font-light tracking-tight text-white md:text-4xl">
-            Klar til at få styr på din IT?
-          </h2>
-          <p className="mt-4 text-base leading-relaxed text-[#7A9AB0]">
-            Kom i gang på få minutter — vi hjælper dig med opsætningen.
-          </p>
-          <Link
-            href="/login"
-            className="mt-8 inline-flex min-h-[52px] items-center justify-center rounded-full bg-[#4A7FA5] px-10 text-base font-medium text-white transition-colors hover:bg-[#3A6F95]"
-          >
-            Kom i gang i dag
-          </Link>
-        </ScrollReveal>
-      </section>
+      <MarketingCtaSection />
     </>
   );
 }

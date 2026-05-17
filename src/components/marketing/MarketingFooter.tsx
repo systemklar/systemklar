@@ -4,6 +4,7 @@ import { MARKETING_CONTACT_EMAIL } from "@/lib/marketing-contact";
 
 const FOOTER_LINKS = [
   { href: "/#funktioner", label: "Funktioner" },
+  { href: "/#it-beregner", label: "IT-beregner" },
   { href: "/#priser", label: "Priser" },
   { href: "/kontakt", label: "Kontakt" },
   { href: "/login", label: "Log ind" },

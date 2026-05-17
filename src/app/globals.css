@@ -108,6 +108,35 @@ html {
   animation-delay: 1.05s;
 }
 
+.marketing-range {
+  height: 6px;
+  appearance: none;
+  border-radius: 9999px;
+  background: #e0eaf0;
+  accent-color: #4a7fa5;
+}
+
+.marketing-range::-webkit-slider-thumb {
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #4a7fa5;
+  border: 2px solid #fff;
+  box-shadow: 0 1px 4px rgba(30, 52, 72, 0.2);
+  cursor: pointer;
+}
+
+.marketing-range::-moz-range-thumb {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #4a7fa5;
+  border: 2px solid #fff;
+  box-shadow: 0 1px 4px rgba(30, 52, 72, 0.2);
+  cursor: pointer;
+}
+
 .fade-in-up {
   opacity: 0;
   animation: fadeInUp 0.7s ease-out forwards;

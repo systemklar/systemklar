@@ -1,20 +1,28 @@
 "use client";
 
-import { CalendarDays, Clock, Mail, Phone } from "lucide-react";
+import { Clock, Mail, MapPin, Phone } from "lucide-react";
 import { FormEvent, useState } from "react";
-import { DemoModal } from "@/components/ui/DemoModal";
+import { FaqAccordion } from "@/components/marketing/FaqAccordion";
+import { MarketingCtaSection } from "@/components/marketing/MarketingCtaSection";
 import { MarketingShell } from "@/components/marketing/MarketingShell";
+import { ScrollReveal } from "@/components/marketing/ScrollReveal";
+import {
+  MARKETING_CONTACT_EMAIL,
+  MARKETING_CONTACT_PHONE_DISPLAY,
+  MARKETING_CONTACT_PHONE_TEL,
+} from "@/lib/marketing-contact";
+
+const inputClass =
+  "w-full rounded-xl border border-[#C8D8E4] bg-white px-4 py-3 text-base text-[#1E3448] outline-none transition placeholder:text-[#7A9AB0] focus:border-[#4A7FA5] focus:ring-2 focus:ring-[#EAF1F7] md:text-sm";
 
 export default function KontaktPage() {
   const [name, setName] = useState("");
   const [company, setCompany] = useState("");
   const [email, setEmail] = useState("");
-  const [phone, setPhone] = useState("");
   const [message, setMessage] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [success, setSuccess] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [showDemoModal, setShowDemoModal] = useState(false);
 
   const onSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -30,7 +38,7 @@ export default function KontaktPage() {
           name: name.trim(),
           company: company.trim(),
           email: email.trim(),
-          phone: phone.trim(),
+          phone: "",
           message: message.trim(),
         }),
       });
@@ -42,11 +50,10 @@ export default function KontaktPage() {
       if (!res.ok || !payload?.ok) {
         setError(payload?.error ?? "Beskeden kunne ikke sendes. Prøv igen.");
       } else {
-        setSuccess(payload.message ?? "Tak! Din besked er sendt – vi vender tilbage hurtigst muligt.");
+        setSuccess(payload.message ?? "Tak — vi vender tilbage inden for 1 hverdag.");
         setName("");
         setCompany("");
         setEmail("");
-        setPhone("");
         setMessage("");
       }
     } catch {
@@ -58,184 +65,143 @@ export default function KontaktPage() {
 
   return (
     <MarketingShell>
-      <main>
-        <section className="relative overflow-hidden bg-gradient-to-br from-[#4A7FA5] to-[#1E3448] py-20 pt-32 md:py-32 md:pt-40">
-          <div
-            className="absolute inset-0 opacity-10"
-            style={{
-              backgroundImage: "radial-gradient(circle, white 1px, transparent 1px)",
-              backgroundSize: "32px 32px",
-            }}
-            aria-hidden
-          />
-          <div className="relative mx-auto max-w-3xl px-6 text-center">
-            <p className="inline-flex rounded-full border border-white/30 bg-white/20 px-4 py-1.5 text-xs font-semibold uppercase tracking-wide text-white">
-              Kontakt
-            </p>
-            <h1 className="mt-6 text-3xl font-extrabold tracking-tight text-white md:text-5xl">
-              Vi sidder klar til at hjælpe
-            </h1>
-            <p className="mx-auto mt-4 max-w-xl text-base text-white/80 md:text-lg">
-              Book en demo, stil et spørgsmål, eller hør hvad systemklar kan gøre for jer.
-            </p>
-          </div>
-        </section>
+      <section className="bg-[#F7F4EF] px-6 py-16 md:py-20">
+        <ScrollReveal className="mx-auto max-w-3xl text-center">
+          <h1 className="text-4xl font-light tracking-tight text-[#1E3448] md:text-5xl">Kontakt os</h1>
+          <p className="mt-4 text-lg text-[#4A6478]">
+            Spørgsmål om systemklar? Skriv til os — vi svarer gerne.
+          </p>
+        </ScrollReveal>
+      </section>
 
-        <section className="bg-white py-16 md:py-24">
-          <div className="mx-auto grid max-w-5xl gap-10 px-6 lg:grid-cols-2">
-            <div className="rounded-2xl border border-[#C8D8E4] bg-white p-6 shadow-sm md:p-8">
-              <h2 className="text-xl font-semibold text-[#1E3448]">Skriv til os</h2>
-              <p className="mt-2 text-sm text-[#4A6478]">
-                Udfyld formularen, så vender vi tilbage inden for én hverdag.
-              </p>
+      <section className="bg-white px-6 py-20 md:py-28">
+        <div className="mx-auto grid max-w-6xl gap-10 lg:grid-cols-5 lg:gap-12">
+          <ScrollReveal className="lg:col-span-2">
+            <aside className="h-full rounded-2xl border border-[#C8D8E4] bg-[#F7F4EF] p-8">
+              <h2 className="text-lg font-medium text-[#1E3448]">Kontaktinformation</h2>
+              <ul className="mt-6 space-y-6">
+                <li className="flex gap-3">
+                  <Mail className="mt-0.5 h-5 w-5 shrink-0 text-[#4A7FA5]" aria-hidden />
+                  <div>
+                    <p className="text-sm font-medium text-[#1E3448]">Email</p>
+                    <a
+                      href={`mailto:${MARKETING_CONTACT_EMAIL}`}
+                      className="text-sm text-[#4A7FA5] hover:underline"
+                    >
+                      {MARKETING_CONTACT_EMAIL}
+                    </a>
+                  </div>
+                </li>
+                <li className="flex gap-3">
+                  <Phone className="mt-0.5 h-5 w-5 shrink-0 text-[#4A7FA5]" aria-hidden />
+                  <div>
+                    <p className="text-sm font-medium text-[#1E3448]">Telefon</p>
+                    <a href={`tel:${MARKETING_CONTACT_PHONE_TEL}`} className="text-sm text-[#4A7FA5] hover:underline">
+                      {MARKETING_CONTACT_PHONE_DISPLAY}
+                    </a>
+                  </div>
+                </li>
+                <li className="flex gap-3">
+                  <Clock className="mt-0.5 h-5 w-5 shrink-0 text-[#4A7FA5]" aria-hidden />
+                  <div>
+                    <p className="text-sm font-medium text-[#1E3448]">Svartid</p>
+                    <p className="text-sm text-[#4A6478]">Vi svarer inden for 1 hverdag</p>
+                  </div>
+                </li>
+                <li className="flex gap-3">
+                  <MapPin className="mt-0.5 h-5 w-5 shrink-0 text-[#4A7FA5]" aria-hidden />
+                  <div>
+                    <p className="text-sm font-medium text-[#1E3448]">Lokation</p>
+                    <p className="text-sm text-[#4A6478]">Danmark — remote først</p>
+                  </div>
+                </li>
+              </ul>
+            </aside>
+          </ScrollReveal>
+
+          <ScrollReveal staggerMs={100} className="lg:col-span-3">
+            <div className="rounded-2xl border border-[#C8D8E4] bg-white p-6 md:p-8">
+              <h2 className="text-lg font-medium text-[#1E3448]">Send en besked</h2>
+              <p className="mt-1 text-sm text-[#4A6478]">Udfyld formularen, så vender vi tilbage hurtigst muligt.</p>
               <form onSubmit={onSubmit} className="mt-6 space-y-4">
-                <input
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  placeholder="Navn"
-                  required
-                  className="w-full rounded-xl border border-[#C8D8E4] px-4 py-3 text-base outline-none focus:ring-2 focus:ring-[#4A7FA5] md:text-sm"
-                />
-                <input
-                  value={company}
-                  onChange={(e) => setCompany(e.target.value)}
-                  placeholder="Virksomhed"
-                  required
-                  className="w-full rounded-xl border border-[#C8D8E4] px-4 py-3 text-base outline-none focus:ring-2 focus:ring-[#4A7FA5] md:text-sm"
-                />
-                <input
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="Email"
-                  required
-                  className="w-full rounded-xl border border-[#C8D8E4] px-4 py-3 text-base outline-none focus:ring-2 focus:ring-[#4A7FA5] md:text-sm"
-                />
-                <input
-                  value={phone}
-                  onChange={(e) => setPhone(e.target.value)}
-                  placeholder="Telefon (valgfrit)"
-                  className="w-full rounded-xl border border-[#C8D8E4] px-4 py-3 text-base outline-none focus:ring-2 focus:ring-[#4A7FA5] md:text-sm"
-                />
-                <textarea
-                  value={message}
-                  onChange={(e) => setMessage(e.target.value)}
-                  placeholder="Besked"
-                  required
-                  rows={5}
-                  className="w-full rounded-xl border border-[#C8D8E4] px-4 py-3 text-base outline-none focus:ring-2 focus:ring-[#4A7FA5] md:text-sm"
-                />
+                <div>
+                  <label htmlFor="contact-name" className="mb-1.5 block text-sm font-medium text-[#1E3448]">
+                    Navn
+                  </label>
+                  <input
+                    id="contact-name"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    required
+                    className={inputClass}
+                  />
+                </div>
+                <div>
+                  <label htmlFor="contact-email" className="mb-1.5 block text-sm font-medium text-[#1E3448]">
+                    Email
+                  </label>
+                  <input
+                    id="contact-email"
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    required
+                    className={inputClass}
+                  />
+                </div>
+                <div>
+                  <label htmlFor="contact-company" className="mb-1.5 block text-sm font-medium text-[#1E3448]">
+                    Virksomhed
+                  </label>
+                  <input
+                    id="contact-company"
+                    value={company}
+                    onChange={(e) => setCompany(e.target.value)}
+                    className={inputClass}
+                  />
+                </div>
+                <div>
+                  <label htmlFor="contact-message" className="mb-1.5 block text-sm font-medium text-[#1E3448]">
+                    Besked
+                  </label>
+                  <textarea
+                    id="contact-message"
+                    value={message}
+                    onChange={(e) => setMessage(e.target.value)}
+                    required
+                    rows={5}
+                    className={inputClass}
+                  />
+                </div>
                 {error ? (
-                  <p className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
+                  <p className="rounded-lg border border-[#E8C4BC] bg-[#FBF0EE] px-3 py-2 text-sm text-[#8A3A2A]">
                     {error}
                   </p>
                 ) : null}
                 {success ? (
-                  <p className="rounded-lg border border-green-200 bg-green-50 px-3 py-2 text-sm text-green-700">
+                  <p className="rounded-lg border border-[#B8D8C0] bg-[#EEF7F0] px-3 py-2 text-sm text-[#3A7A4A]">
                     {success}
                   </p>
                 ) : null}
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="min-h-[44px] w-full rounded-full bg-[#4A7FA5] px-6 py-3 font-semibold text-white transition hover:bg-[#3A6F95] disabled:opacity-60"
+                  className="min-h-[48px] w-full rounded-full bg-[#4A7FA5] px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-[#3A6F95] disabled:opacity-60"
                 >
                   {submitting ? "Sender..." : "Send besked"}
                 </button>
               </form>
             </div>
+          </ScrollReveal>
+        </div>
+      </section>
 
-            <div className="space-y-6">
-              <aside className="rounded-2xl border border-[#C8D8E4] bg-white p-6 shadow-sm md:p-8">
-                <div>
-                  <div className="flex items-center gap-3">
-                    <CalendarDays className="h-5 w-5 text-[#4A7FA5]" />
-                    <h3 className="font-semibold text-[#1E3448]">Book en gratis demo</h3>
-                  </div>
-                  <p className="mt-2 text-sm text-[#4A6478]">
-                    Få en kort gennemgang af systemklar – tilpasset jeres virksomhed.
-                  </p>
-                  <button
-                    type="button"
-                    onClick={() => setShowDemoModal(true)}
-                    className="mt-4 inline-flex rounded-full bg-[#4A7FA5] px-5 py-2.5 text-sm font-semibold text-white hover:bg-[#3A6F95]"
-                  >
-                    Book demo
-                  </button>
-                </div>
-                <div className="my-6 h-px bg-[#EAF1F7]" />
-                <div className="mb-4 flex items-start gap-3">
-                  <div className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-xl bg-[#EAF1F7]">
-                    <Phone className="h-4 w-4 text-[#4A7FA5]" />
-                  </div>
-                  <div>
-                    <p className="text-sm font-semibold text-[#1E3448]">Ring til os</p>
-                    <a href="tel:+4522631013" className="text-sm text-[#4A7FA5] hover:underline">
-                      +45 22 63 10 13
-                    </a>
-                    <p className="mt-0.5 text-xs text-[#4A6478]">Man–fre kl. 9–17</p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-3 text-sm text-[#4A6478]">
-                  <Mail className="h-4 w-4 text-[#4A7FA5]" />
-                  <a href="mailto:kontakt@systemklar.dk" className="text-[#4A7FA5] hover:underline">
-                    kontakt@systemklar.dk
-                  </a>
-                </div>
-                <div className="my-6 h-px bg-[#EAF1F7]" />
-                <div className="flex items-start gap-3">
-                  <Clock className="mt-0.5 h-4 w-4 text-[#4A7FA5]" />
-                  <p className="text-sm text-[#4A6478]">Vi svarer normalt inden for én hverdag.</p>
-                </div>
-              </aside>
-
-              <div className="rounded-2xl border border-[#C8D8E4] bg-[#EAF1F7] p-6">
-                <div className="mb-4 flex items-center gap-4">
-                  <div className="flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-full bg-[#4A7FA5] text-xl font-bold text-white">
-                    BS
-                  </div>
-                  <div>
-                    <p className="font-semibold text-[#1E3448]">Benjamin Sørensen</p>
-                    <p className="text-sm text-[#4A6478]">Grundlægger, systemklar</p>
-                  </div>
-                </div>
-                <p className="text-sm leading-relaxed text-[#4A6478]">
-                  &quot;Jeg sidder personligt klar til at hjælpe. Skriv til mig direkte eller ring – jeg svarer
-                  samme dag.&quot;
-                </p>
-                <div className="mt-4 flex flex-col gap-2">
-                  <a
-                    href="mailto:benjamin@systemklar.dk"
-                    className="flex items-center gap-2 text-sm text-[#4A7FA5] hover:underline"
-                  >
-                    <Mail className="h-4 w-4" /> benjamin@systemklar.dk
-                  </a>
-                  <a
-                    href="tel:+4522631013"
-                    className="flex items-center gap-2 text-sm text-[#4A7FA5] hover:underline"
-                  >
-                    <Phone className="h-4 w-4" /> +45 22 63 10 13
-                  </a>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <section className="bg-[#1E3448] py-16 md:py-24">
-          <div className="mx-auto max-w-5xl px-6 text-center">
-            <h2 className="text-2xl font-bold text-white md:text-4xl">Klar til at komme i gang?</h2>
-            <button
-              type="button"
-              onClick={() => setShowDemoModal(true)}
-              className="mt-8 inline-flex min-h-[44px] rounded-full bg-[#4A7FA5] px-6 py-3 font-semibold text-white transition hover:bg-[#4A7FA5]"
-            >
-              Book gratis demo
-            </button>
-          </div>
-        </section>
-      </main>
-      <DemoModal isOpen={showDemoModal} onClose={() => setShowDemoModal(false)} subject="Demo" />
+      <FaqAccordion />
+      <MarketingCtaSection
+        heading="Vil du prøve systemklar?"
+        subtext="Opret en konto og kom i gang på under 10 minutter."
+        buttonLabel="Kom i gang gratis"
+      />
     </MarketingShell>
   );
 }

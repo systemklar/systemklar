@@ -9,6 +9,7 @@ import { StableNavLink } from "./StableNavLink";
 
 const NAV = [
   { href: "/#funktioner", label: "Funktioner", match: () => false },
+  { href: "/#it-beregner", label: "IT-beregner", match: () => false },
   { href: "/#priser", label: "Priser", match: (p: string) => p === "/priser" },
   { href: "/om-os", label: "Om os", match: (p: string) => p === "/om-os" },
   { href: "/kontakt", label: "Kontakt", match: (p: string) => p === "/kontakt" },
@@ -48,7 +49,7 @@ export function MarketingNav() {
         <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-4 px-6">
           <SystemklarLogo href="/" variant="light" size="sm" />
 
-          <nav className="hidden items-center justify-center gap-8 md:flex" aria-label="Hovednavigation">
+          <nav className="hidden items-center justify-center gap-5 lg:gap-6 xl:gap-8 md:flex" aria-label="Hovednavigation">
             {NAV.map((item) => (
               <StableNavLink
                 key={item.href}
