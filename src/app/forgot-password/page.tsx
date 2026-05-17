@@ -1,8 +1,18 @@
 "use client";
 
 import { FormEvent, useMemo, useState } from "react";
-import Link from "next/link";
-import { AuthSplitLayout } from "@/components/auth/AuthSplitLayout";
+import {
+  AuthBackLink,
+  AuthPageHeading,
+  AuthSplitLayout,
+} from "@/components/auth/AuthSplitLayout";
+import {
+  AuthField,
+  AuthFormError,
+  AuthInput,
+  AuthSubmitButton,
+  AuthSuccessMessage,
+} from "@/components/auth/auth-ui";
 import { createClient } from "@/lib/supabase";
 
 export default function ForgotPasswordPage() {
@@ -18,9 +28,7 @@ export default function ForgotPasswordPage() {
     setErrorMessage(null);
 
     const redirectTo =
-      typeof window === "undefined"
-        ? undefined
-        : `${window.location.origin}/set-password`;
+      typeof window === "undefined" ? undefined : `${window.location.origin}/set-password`;
 
     const { error } = await supabase.auth.resetPasswordForEmail(email.trim(), {
       redirectTo,
@@ -36,46 +44,38 @@ export default function ForgotPasswordPage() {
   };
 
   return (
-    <AuthSplitLayout
-      title="Glemt adgangskode"
-      subtitle="Indtast din e-mail og vi sender dig et link til at nulstille din adgangskode."
-    >
+    <AuthSplitLayout>
+      <AuthPageHeading
+        title="Nulstil adgangskode"
+        subtitle="Indtast din email og vi sender dig et link"
+      />
 
       {sent ? (
-        <p className="mt-8 rounded-lg border border-[#B8D8C0] bg-[#EEF7F0] px-3 py-2 text-sm text-[#3A7A4A]">
-          Vi har sendt et nulstillingslink til din e-mail.
-        </p>
+        <AuthSuccessMessage>Vi har sendt et nulstillingslink til din e-mail.</AuthSuccessMessage>
       ) : (
-        <form onSubmit={handleSubmit} className="mt-8 space-y-4">
-            <div>
-              <label htmlFor="email" className="mb-1 block text-sm font-medium">
-                E-mail
-              </label>
-              <input
-                id="email"
-                type="email"
-                value={email}
-                onChange={(event) => setEmail(event.target.value)}
-                required
-                className="w-full rounded-lg border border-[#E7E5E4] px-3 py-2 outline-none transition focus:border-[#4A7FA5] focus:ring-2 focus:ring-[#EAF1F7]"
-                placeholder="dig@firma.dk"
-                autoComplete="email"
-              />
-            </div>
+        <form onSubmit={handleSubmit} className="space-y-5">
+          <AuthField id="email" label="E-mail">
+            <AuthInput
+              id="email"
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              hasError={Boolean(errorMessage)}
+              placeholder="dig@firma.dk"
+              autoComplete="email"
+            />
+          </AuthField>
 
-            {errorMessage ? (
-              <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">{errorMessage}</p>
-            ) : null}
+          {errorMessage ? <AuthFormError>{errorMessage}</AuthFormError> : null}
 
-            <button type="submit" disabled={isLoading} className="btn-primary w-full px-5 py-2.5 disabled:opacity-60">
-              {isLoading ? "Sender..." : "Send reset-link"}
-            </button>
+          <AuthSubmitButton loading={isLoading} loadingLabel="Sender...">
+            Send nulstilningslink
+          </AuthSubmitButton>
         </form>
       )}
 
-      <Link href="/login" className="mt-6 inline-block text-sm font-semibold text-[#4A7FA5] hover:underline">
-        Tilbage til login
-      </Link>
+      <AuthBackLink href="/login">← Tilbage til login</AuthBackLink>
     </AuthSplitLayout>
   );
 }

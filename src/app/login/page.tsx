@@ -4,7 +4,17 @@ import { FormEvent, Suspense, useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { AuthSplitLayout } from "@/components/auth/AuthSplitLayout";
+import {
+  AuthBackLink,
+  AuthPageHeading,
+  AuthSplitLayout,
+} from "@/components/auth/AuthSplitLayout";
+import {
+  AuthField,
+  AuthFormError,
+  AuthInput,
+  AuthSubmitButton,
+} from "@/components/auth/auth-ui";
 import { createClient } from "@/lib/supabase";
 
 function safeInternalPath(raw: string | null): string | null {
@@ -52,10 +62,6 @@ function LoginForm() {
     });
 
     if (error) {
-      console.error("[login] signInWithPassword failed", {
-        email: normalizedEmail,
-        error,
-      });
       setErrorMessage(toDanishAuthError(error.message));
       setIsLoading(false);
       return;
@@ -65,97 +71,90 @@ function LoginForm() {
     const next = safeInternalPath(nextRaw);
     const dest = next && next.startsWith("/portal") ? next : "/portal";
     router.push(dest);
-
     router.refresh();
   };
 
   return (
     <AuthSplitLayout
-      title="Log ind"
-      subtitle="Velkommen tilbage"
+      topRight={
+        <p className="text-sm text-[#7A9AB0]">
+          Ikke oprettet endnu?{" "}
+          <Link href="/kontakt" className="font-medium text-[#4A7FA5] hover:text-[#3A6F95]">
+            Kontakt os →
+          </Link>
+        </p>
+      }
     >
-      <form onSubmit={handleSubmit} className="mt-8 space-y-4">
-          <div>
-            <label htmlFor="email" className="mb-1 block text-sm font-medium">
-              E-mail
-            </label>
-            <input
-              id="email"
-              type="email"
-              value={email}
-              onChange={(event) => setEmail(event.target.value)}
+      <AuthPageHeading title="Velkommen tilbage" subtitle="Log ind på din Systemklar konto" />
+
+      <form onSubmit={handleSubmit} className="space-y-5">
+        <AuthField id="email" label="E-mail">
+          <AuthInput
+            id="email"
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+            placeholder="dig@firma.dk"
+            autoComplete="email"
+          />
+        </AuthField>
+
+        <AuthField id="password" label="Adgangskode">
+          <div className="relative">
+            <AuthInput
+              id="password"
+              type={showPassword ? "text" : "password"}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
               required
-              className="w-full rounded-xl border border-[#C8D8E4] px-4 py-3 text-base outline-none transition focus:ring-2 focus:ring-[#4A7FA5] md:text-sm"
-              placeholder="dig@firma.dk"
-              autoComplete="email"
+              placeholder="••••••••"
+              autoComplete="current-password"
+              className="pr-11"
             />
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-[#9AA8B0] hover:text-[#4A6478]"
+              aria-label={showPassword ? "Skjul adgangskode" : "Vis adgangskode"}
+            >
+              {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+            </button>
           </div>
+        </AuthField>
 
-          <div>
-            <label htmlFor="password" className="mb-1 block text-sm font-medium">
-              Adgangskode
-            </label>
-            <div className="relative">
-              <input
-                id="password"
-                type={showPassword ? "text" : "password"}
-                value={password}
-                onChange={(event) => setPassword(event.target.value)}
-                required
-                className="w-full rounded-xl border border-[#C8D8E4] px-4 py-3 text-base outline-none transition focus:ring-2 focus:ring-[#4A7FA5] md:text-sm"
-                placeholder="••••••••"
-                autoComplete="current-password"
-              />
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
-              >
-                {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-              </button>
-            </div>
-          </div>
-
-          <label className="flex items-center gap-2 text-sm text-[#78716C]">
+        <div className="flex items-center justify-between gap-4">
+          <label className="flex items-center gap-2 text-sm text-[#4A6478]">
             <input
               type="checkbox"
               checked={rememberMe}
-              onChange={(event) => setRememberMe(event.target.checked)}
+              onChange={(e) => setRememberMe(e.target.checked)}
+              className="rounded border-[#C8D8E4] text-[#4A7FA5] focus:ring-[#4A7FA5]"
             />
             Husk mig
           </label>
-
-          <Link href="/forgot-password" className="block text-sm font-semibold text-[#4A7FA5] hover:underline">
+          <Link href="/forgot-password" className="text-sm text-[#4A7FA5] hover:text-[#3A6F95]">
             Glemt adgangskode?
           </Link>
+        </div>
 
-          {errorMessage && (
-            <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">
-              {errorMessage}
-            </p>
-          )}
+        {errorMessage ? <AuthFormError>{errorMessage}</AuthFormError> : null}
 
-          <button
-            type="submit"
-            disabled={isLoading}
-            className="w-full rounded-full bg-[#4A7FA5] py-3 font-semibold text-white transition hover:bg-[#3A6F95] disabled:opacity-60"
-          >
-            {isLoading ? "Logger ind..." : "Log ind"}
-          </button>
-          <p className="mt-4 text-center text-xs text-[#4A6478]">
-            Ved at logge ind accepterer du vores{" "}
-            <a href="/vilkaar" className="text-[#4A7FA5] hover:underline">
-              vilkår
-            </a>{" "}
-            og{" "}
-            <a href="/privatlivspolitik" className="text-[#4A7FA5] hover:underline">
-              privatlivspolitik
-            </a>
-          </p>
+        <AuthSubmitButton loading={isLoading} loadingLabel="Logger ind...">
+          Log ind
+        </AuthSubmitButton>
+
+        <p className="text-center text-xs text-[#7A9AB0]">
+          Ved at logge ind accepterer du vores{" "}
+          <Link href="/vilkaar" className="text-[#4A7FA5] hover:underline">
+            vilkår
+          </Link>{" "}
+          og{" "}
+          <Link href="/privatlivspolitik" className="text-[#4A7FA5] hover:underline">
+            privatlivspolitik
+          </Link>
+        </p>
       </form>
-      <Link href="/" className="mt-6 inline-block text-sm font-semibold text-[#4A7FA5] hover:underline">
-        Tilbage til forsiden
-      </Link>
     </AuthSplitLayout>
   );
 }
@@ -164,8 +163,8 @@ export default function LoginPage() {
   return (
     <Suspense
       fallback={
-        <main className="min-h-screen bg-white px-6 py-20 text-[#78716C]">
-          <div className="mx-auto max-w-md text-center">Indlæser...</div>
+        <main className="flex min-h-screen items-center justify-center bg-white text-[#7A9AB0]">
+          Indlæser...
         </main>
       }
     >

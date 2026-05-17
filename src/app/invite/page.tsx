@@ -3,7 +3,16 @@
 import { FormEvent, useEffect, useMemo, useState } from "react";
 import { Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { AuthSplitLayout } from "@/components/auth/AuthSplitLayout";
+import {
+  AuthPageHeading,
+  AuthSplitLayout,
+} from "@/components/auth/AuthSplitLayout";
+import {
+  AuthField,
+  AuthFormError,
+  AuthInput,
+  AuthSubmitButton,
+} from "@/components/auth/auth-ui";
 import { createClient } from "@/lib/supabase";
 
 type InvitationRow = {
@@ -57,9 +66,7 @@ function InviteContent() {
       } else {
         setInvitation(data as InvitationRow);
         const inviteContactName = ((data as InvitationRow).contact_name ?? "").trim();
-        if (inviteContactName) {
-          setFullName(inviteContactName);
-        }
+        if (inviteContactName) setFullName(inviteContactName);
         setError(null);
       }
       setLoading(false);
@@ -98,7 +105,6 @@ function InviteContent() {
     if (signUpError) {
       const isExistingUser = signUpError.message.toLowerCase().includes("already registered");
       if (!isExistingUser) {
-        console.error("[invite] signUp fejlede", signUpError);
         setError("Kunne ikke oprette brugeren. Prøv igen eller kontakt support.");
         setSubmitting(false);
         return;
@@ -110,12 +116,8 @@ function InviteContent() {
       });
 
       if (signInError || !signInData.user) {
-        console.error("[invite] signInWithPassword fejlede for eksisterende bruger", {
-          signUpError,
-          signInError,
-        });
         setError(
-          "Emailen findes allerede, men adgangskoden matcher ikke. Log ind med den korrekte adgangskode eller nulstil adgangskoden."
+          "Emailen findes allerede, men adgangskoden matcher ikke. Log ind med den korrekte adgangskode eller nulstil adgangskoden.",
         );
         setSubmitting(false);
         return;
@@ -130,7 +132,6 @@ function InviteContent() {
         password,
       });
       if (signInError || !signInData.user) {
-        console.error("[invite] signInWithPassword fejlede efter signUp", signInError);
         setError(signInError?.message ?? "Kunne ikke logge ind efter oprettelse.");
         setSubmitting(false);
         return;
@@ -139,8 +140,7 @@ function InviteContent() {
     }
 
     if (!authUserId) {
-      console.error("[invite] manglende auth user id efter signUp/signIn");
-      setError("Kunne ikke fastslå brugerens auth-id efter oprettelse.");
+      setError("Kunne ikke fastslå brugerens id efter oprettelse.");
       setSubmitting(false);
       return;
     }
@@ -153,7 +153,7 @@ function InviteContent() {
       .toUpperCase()
       .slice(0, 2);
 
-    const orgName = Array.isArray(invitation.organisations)
+    const resolvedOrgName = Array.isArray(invitation.organisations)
       ? invitation.organisations[0]?.name ?? ""
       : invitation.organisations?.name ?? "";
 
@@ -163,23 +163,14 @@ function InviteContent() {
       role: invitation.role,
       full_name: fullName.trim(),
       avatar_initials: initials,
-      company_name: orgName,
+      company_name: resolvedOrgName,
       email: invitation.email,
     });
 
-    if (profileError) {
-      // 23505 = unique_violation — profilen findes allerede (fx fra trigger), så vi fortsætter.
-      if (profileError.code === "23505") {
-        console.warn("[invite] profile findes allerede, fortsætter", {
-          authUserId,
-          detail: profileError.message,
-        });
-      } else {
-        console.error("[invite] profile insert fejlede", profileError);
-        setError(profileError.message);
-        setSubmitting(false);
-        return;
-      }
+    if (profileError && profileError.code !== "23505") {
+      setError(profileError.message);
+      setSubmitting(false);
+      return;
     }
 
     const { error: acceptError } = await supabase
@@ -200,72 +191,67 @@ function InviteContent() {
         body: JSON.stringify({
           email: invitation.email,
           name: fullName.trim(),
-          orgName: orgName || "systemklar",
+          orgName: resolvedOrgName || "systemklar",
         }),
       });
-    } catch (welcomeError) {
-      console.error("[invite] welcome email", welcomeError);
+    } catch {
+      /* non-blocking */
     }
 
     router.replace("/portal");
   };
 
   return (
-    <AuthSplitLayout
-      title="Opret din profil"
-      subtitle={invitation ? `Du er inviteret med ${invitation.email}` : "Vi tjekker din invitation..."}
-      sideTitle={`Velkommen til ${orgName}`}
-    >
-      {loading ? <p className="mt-8 text-sm text-[#4A6478]">Indlæser invitation...</p> : null}
-      {!loading && error ? <p className="mt-8 rounded-lg bg-amber-50 px-3 py-2 text-sm text-amber-900">{error}</p> : null}
+    <AuthSplitLayout>
+      <AuthPageHeading
+        title="Opret din profil"
+        badge={invitation ? `Du er inviteret til ${orgName}` : undefined}
+        subtitle={loading ? "Vi tjekker din invitation..." : undefined}
+      />
+
+      {loading ? <p className="text-sm text-[#7A9AB0]">Indlæser invitation...</p> : null}
+
+      {!loading && error && !invitation ? <AuthFormError>{error}</AuthFormError> : null}
 
       {!loading && invitation ? (
-        <form className="mt-8 space-y-4" onSubmit={(e) => void handleSubmit(e)}>
-          <div>
-            <label htmlFor="full_name" className="mb-1 block text-sm font-medium">
-              Fuldt navn
-            </label>
-            <input
+        <form className="space-y-5" onSubmit={(e) => void handleSubmit(e)}>
+          <AuthField id="full_name" label="Fuldt navn">
+            <AuthInput
               id="full_name"
               type="text"
               required
               value={fullName}
               onChange={(e) => setFullName(e.target.value)}
-              className="w-full rounded-lg border border-[#E7E5E4] px-3 py-3 text-base outline-none transition focus:border-[#4A7FA5] focus:ring-2 focus:ring-[#EAF1F7] md:py-2 md:text-sm"
             />
-          </div>
-          <div>
-            <label htmlFor="password" className="mb-1 block text-sm font-medium">
-              Adgangskode
-            </label>
-            <input
+          </AuthField>
+          <AuthField id="password" label="Adgangskode">
+            <AuthInput
               id="password"
               type="password"
               minLength={8}
               required
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full rounded-lg border border-[#E7E5E4] px-3 py-3 text-base outline-none transition focus:border-[#4A7FA5] focus:ring-2 focus:ring-[#EAF1F7] md:py-2 md:text-sm"
+              autoComplete="new-password"
             />
-          </div>
-          <div>
-            <label htmlFor="confirm_password" className="mb-1 block text-sm font-medium">
-              Bekræft adgangskode
-            </label>
-            <input
+          </AuthField>
+          <AuthField id="confirm_password" label="Bekræft adgangskode">
+            <AuthInput
               id="confirm_password"
               type="password"
               minLength={8}
               required
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
-              className="w-full rounded-lg border border-[#E7E5E4] px-3 py-3 text-base outline-none transition focus:border-[#4A7FA5] focus:ring-2 focus:ring-[#EAF1F7] md:py-2 md:text-sm"
+              autoComplete="new-password"
             />
-          </div>
+          </AuthField>
 
-          <button type="submit" disabled={submitting} className="btn-primary w-full min-h-[44px] px-5 py-3 disabled:opacity-60">
-            {submitting ? "Opretter..." : "Opret profil"}
-          </button>
+          {error ? <AuthFormError>{error}</AuthFormError> : null}
+
+          <AuthSubmitButton loading={submitting} loadingLabel="Opretter...">
+            Opret profil
+          </AuthSubmitButton>
         </form>
       ) : null}
     </AuthSplitLayout>
@@ -276,9 +262,9 @@ export default function InvitePage() {
   return (
     <Suspense
       fallback={
-        <div className="min-h-screen flex items-center justify-center bg-[#F7F4EF]">
-          <div className="text-[#4A6478] text-sm">Indlæser invitation...</div>
-        </div>
+        <main className="flex min-h-screen items-center justify-center bg-white text-[#7A9AB0]">
+          Indlæser invitation...
+        </main>
       }
     >
       <InviteContent />

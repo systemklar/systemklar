@@ -64,7 +64,7 @@ export function SystemklarLogo({
         style={imgStyle}
       />
       <span
-        className={isDark ? "font-bold text-white" : "font-bold text-[#4A7FA5]"}
+        className={isDark ? "font-medium text-white" : "font-bold text-[#4A7FA5]"}
         style={{ fontSize: textPx, lineHeight: 1.1 }}
       >
         systemklar

@@ -137,6 +137,24 @@ html {
   cursor: pointer;
 }
 
+/* Auth split layout */
+.auth-panel-enter {
+  opacity: 0;
+  transform: translateX(20px);
+  animation: authPanelEnter 0.4s ease-out forwards;
+}
+
+@keyframes authPanelEnter {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
 .fade-in-up {
   opacity: 0;
   animation: fadeInUp 0.7s ease-out forwards;

@@ -2,7 +2,16 @@
 
 import { FormEvent, Suspense, useEffect, useState } from "react";
 import Link from "next/link";
-import { AuthSplitLayout } from "@/components/auth/AuthSplitLayout";
+import {
+  AuthPageHeading,
+  AuthSplitLayout,
+} from "@/components/auth/AuthSplitLayout";
+import {
+  AuthField,
+  AuthFormError,
+  AuthInput,
+  AuthSubmitButton,
+} from "@/components/auth/auth-ui";
 import { createClient } from "@/lib/supabase";
 
 function toDanishAuthError(message: string): string {
@@ -42,10 +51,6 @@ function AdminLoginForm() {
     });
 
     if (error) {
-      console.error("[admin/login] signInWithPassword failed", {
-        email: normalizedEmail,
-        error,
-      });
       setErrorMessage(toDanishAuthError(error.message));
       setIsLoading(false);
       return;
@@ -69,7 +74,6 @@ function AdminLoginForm() {
       .maybeSingle();
 
     if (adminError) {
-      console.error("[admin/login] admins lookup failed", adminError);
       await supabase.auth.signOut();
       setErrorMessage("Kunne ikke verificere admin-adgang. Prøv igen.");
       setIsLoading(false);
@@ -88,71 +92,62 @@ function AdminLoginForm() {
   };
 
   return (
-    <AuthSplitLayout
-      title="Admin login"
-      subtitle="Velkommen tilbage"
-      sideTitle="Admin – systemklar"
-      sideBullets={["Se kundeoverblik og aktivitet", "Håndter supportssager centralt", "Følg rapporter og systemstatus"]}
-    >
+    <AuthSplitLayout>
+      <AuthPageHeading title="Admin login" subtitle="Log ind på Systemklar admin" />
 
-      <form onSubmit={handleSubmit} className="mt-8 space-y-4">
-          <div>
-            <label htmlFor="email" className="mb-1 block text-sm font-medium">
-              E-mail
-            </label>
-            <input
-              id="email"
-              type="email"
-              value={email}
-              onChange={(event) => setEmail(event.target.value)}
-              required
-              className="w-full rounded-xl border border-[#C8D8E4] px-4 py-3 text-base outline-none transition focus:ring-2 focus:ring-[#4A7FA5] md:text-sm"
-              placeholder="din@email.dk"
-              autoComplete="email"
-            />
-          </div>
+      <form onSubmit={handleSubmit} className="space-y-5">
+        <AuthField id="email" label="E-mail">
+          <AuthInput
+            id="email"
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+            placeholder="din@email.dk"
+            autoComplete="email"
+          />
+        </AuthField>
 
-          <div>
-            <label htmlFor="password" className="mb-1 block text-sm font-medium">
-              Adgangskode
-            </label>
-            <input
-              id="password"
-              type="password"
-              value={password}
-              onChange={(event) => setPassword(event.target.value)}
-              required
-              className="w-full rounded-xl border border-[#C8D8E4] px-4 py-3 text-base outline-none transition focus:ring-2 focus:ring-[#4A7FA5] md:text-sm"
-              placeholder="••••••••"
-              autoComplete="current-password"
-            />
-          </div>
+        <AuthField id="password" label="Adgangskode">
+          <AuthInput
+            id="password"
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+            placeholder="••••••••"
+            autoComplete="current-password"
+          />
+        </AuthField>
 
-          <label className="flex items-center gap-2 text-sm text-[#78716C]">
-            <input
-              type="checkbox"
-              checked={rememberMe}
-              onChange={(event) => setRememberMe(event.target.checked)}
-            />
-            Husk mig
-          </label>
+        <label className="flex items-center gap-2 text-sm text-[#4A6478]">
+          <input
+            type="checkbox"
+            checked={rememberMe}
+            onChange={(e) => setRememberMe(e.target.checked)}
+            className="rounded border-[#C8D8E4] text-[#4A7FA5] focus:ring-[#4A7FA5]"
+          />
+          Husk mig
+        </label>
 
-          {errorMessage ? (
-            <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">{errorMessage}</p>
-          ) : null}
+        <div className="flex justify-end">
+          <Link href="/admin/forgot-password" className="text-sm text-[#4A7FA5] hover:text-[#3A6F95]">
+            Glemt adgangskode?
+          </Link>
+        </div>
 
-          <button
-            type="submit"
-            disabled={isLoading}
-            className="w-full rounded-full bg-[#4A7FA5] py-3 font-semibold text-white transition hover:bg-[#3A6F95] disabled:opacity-60"
-          >
-            {isLoading ? "Logger ind..." : "Log ind"}
-          </button>
+        {errorMessage ? <AuthFormError>{errorMessage}</AuthFormError> : null}
+
+        <AuthSubmitButton loading={isLoading} loadingLabel="Logger ind...">
+          Log ind
+        </AuthSubmitButton>
       </form>
 
-      <Link href="/login" className="mt-6 inline-block text-sm font-semibold text-[#4A7FA5] hover:underline">
-        Gå til kunde-login
-      </Link>
+      <p className="mt-6 text-center text-sm text-[#7A9AB0]">
+        <Link href="/login" className="text-[#4A7FA5] hover:text-[#3A6F95]">
+          Gå til kunde-login
+        </Link>
+      </p>
     </AuthSplitLayout>
   );
 }
@@ -161,8 +156,8 @@ export default function AdminLoginPage() {
   return (
     <Suspense
       fallback={
-        <main className="min-h-screen bg-white px-6 py-20 text-[#78716C]">
-          <div className="mx-auto max-w-md text-center">Indlæser...</div>
+        <main className="flex min-h-screen items-center justify-center bg-white text-[#7A9AB0]">
+          Indlæser...
         </main>
       }
     >
