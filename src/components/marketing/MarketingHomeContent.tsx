@@ -18,7 +18,7 @@ import {
 import { MarketingCtaSection } from "@/components/marketing/MarketingCtaSection";
 import { ScrollReveal } from "@/components/marketing/ScrollReveal";
 import { HeroStatusMockup } from "@/components/marketing/home/HeroStatusMockup";
-import { ItDowntimeCalculator } from "@/components/marketing/home/ItDowntimeCalculator";
+import { PortalPreviewShowcase } from "@/components/marketing/home/PortalPreviewShowcase";
 
 const FEATURES = [
   {
@@ -178,6 +178,8 @@ export function MarketingHomeContent() {
         </div>
       </section>
 
+      <PortalPreviewShowcase />
+
       {/* Trust bar */}
       <section className="border-y border-[#E0EAF0] bg-white px-6 py-12">
         <ScrollReveal className="mx-auto max-w-6xl text-center">
@@ -244,8 +246,6 @@ export function MarketingHomeContent() {
           </ol>
         </div>
       </section>
-
-      <ItDowntimeCalculator />
 
       {/* Pricing */}
       <section id="priser" className="scroll-mt-24 bg-white px-6 py-20 md:py-28">

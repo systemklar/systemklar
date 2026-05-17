@@ -9,7 +9,6 @@ import { StableNavLink } from "./StableNavLink";
 
 const NAV = [
   { href: "/#funktioner", label: "Funktioner", match: () => false },
-  { href: "/#it-beregner", label: "IT-beregner", match: () => false },
   { href: "/#priser", label: "Priser", match: (p: string) => p === "/priser" },
   { href: "/om-os", label: "Om os", match: (p: string) => p === "/om-os" },
   { href: "/kontakt", label: "Kontakt", match: (p: string) => p === "/kontakt" },
