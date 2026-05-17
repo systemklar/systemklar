@@ -5,11 +5,15 @@ import { Eye, EyeOff } from "lucide-react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
-  AuthBackLink,
   AuthPageHeading,
   AuthSplitLayout,
 } from "@/components/auth/AuthSplitLayout";
-import { AuthFloatingField, AuthFormError, AuthSubmitButton } from "@/components/auth/auth-ui";
+import {
+  AuthField,
+  AuthFormError,
+  AuthInput,
+  AuthSubmitButton,
+} from "@/components/auth/auth-ui";
 import { createClient } from "@/lib/supabase";
 
 function safeInternalPath(raw: string | null): string | null {
@@ -43,7 +47,6 @@ function LoginForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const [rememberMe, setRememberMe] = useState(true);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -56,11 +59,9 @@ function LoginForm() {
     const { error } = await (supabase.auth.signInWithPassword as unknown as (args: {
       email: string;
       password: string;
-      options?: { persistSession?: boolean };
     }) => Promise<{ error: { message: string } | null }>)({
       email: normalizedEmail,
       password,
-      options: { persistSession: rememberMe },
     });
 
     if (error) {
@@ -77,61 +78,46 @@ function LoginForm() {
   };
 
   return (
-    <AuthSplitLayout
-      topRight={
-        <p className="text-sm text-[#6A82A8]">
-          Ikke oprettet endnu?{" "}
-          <Link href="/kontakt" className="font-medium text-[#2952A3] hover:text-[#1E4490]">
-            Kontakt os →
-          </Link>
-        </p>
-      }
-    >
-      <p className="mb-2 text-sm text-[#6A82A8]">{getTimeGreeting()}</p>
+    <AuthSplitLayout>
+      <p className="mb-2 text-sm text-[#9AAAC8]">{getTimeGreeting()}</p>
       <AuthPageHeading title="Velkommen tilbage" subtitle="Log ind på din Systemklar konto" />
 
       <form onSubmit={handleSubmit} className="space-y-5">
-        <AuthFloatingField
-          id="email"
-          label="E-mail"
-          type="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-          autoComplete="email"
-        />
-
-        <div className="relative">
-          <AuthFloatingField
-            id="password"
-            label="Adgangskode"
-            type={showPassword ? "text" : "password"}
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
+        <AuthField id="email" label="E-mail">
+          <AuthInput
+            id="email"
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
             required
-            autoComplete="current-password"
-            className="pr-11"
+            autoComplete="email"
+            placeholder="dig@firma.dk"
           />
-          <button
-            type="button"
-            onClick={() => setShowPassword(!showPassword)}
-            className="absolute right-3 top-1/2 z-10 -translate-y-1/2 text-[#9AAAC8] hover:text-[#2A4868]"
-            aria-label={showPassword ? "Skjul adgangskode" : "Vis adgangskode"}
-          >
-            {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-          </button>
-        </div>
+        </AuthField>
 
-        <div className="flex items-center justify-between gap-4">
-          <label className="flex items-center gap-2 text-sm text-[#2A4868]">
-            <input
-              type="checkbox"
-              checked={rememberMe}
-              onChange={(e) => setRememberMe(e.target.checked)}
-              className="rounded border-[#CBD5E8] text-[#2952A3] focus:ring-[#2952A3]"
+        <AuthField id="password" label="Adgangskode">
+          <div className="relative">
+            <AuthInput
+              id="password"
+              type={showPassword ? "text" : "password"}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              autoComplete="current-password"
+              className="pr-11"
             />
-            Husk mig
-          </label>
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute right-3 top-1/2 z-10 -translate-y-1/2 text-[#9AAAC8] hover:text-[#2A4868]"
+              aria-label={showPassword ? "Skjul adgangskode" : "Vis adgangskode"}
+            >
+              {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+            </button>
+          </div>
+        </AuthField>
+
+        <div className="flex justify-end">
           <Link href="/forgot-password" className="text-sm text-[#2952A3] hover:text-[#1E4490]">
             Glemt adgangskode?
           </Link>
@@ -142,18 +128,14 @@ function LoginForm() {
         <AuthSubmitButton loading={isLoading} loadingLabel="Logger ind...">
           Log ind
         </AuthSubmitButton>
-
-        <p className="text-center text-xs text-[#6A82A8]">
-          Ved at logge ind accepterer du vores{" "}
-          <Link href="/vilkaar" className="text-[#2952A3] hover:underline">
-            vilkår
-          </Link>{" "}
-          og{" "}
-          <Link href="/privatlivspolitik" className="text-[#2952A3] hover:underline">
-            privatlivspolitik
-          </Link>
-        </p>
       </form>
+
+      <p className="mt-8 text-center text-sm text-[#6A82A8]">
+        Ikke oprettet endnu?{" "}
+        <Link href="/kontakt" className="font-medium text-[#2952A3] hover:text-[#1E4490]">
+          Book en demo →
+        </Link>
+      </p>
     </AuthSplitLayout>
   );
 }

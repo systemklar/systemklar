@@ -47,7 +47,7 @@ export default function ForgotPasswordPage() {
     <AuthSplitLayout>
       <AuthPageHeading
         title="Nulstil adgangskode"
-        subtitle="Indtast din email og vi sender dig et link"
+        subtitle="Vi sender dig et link på din email"
       />
 
       {sent ? (

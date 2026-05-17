@@ -9,7 +9,8 @@ import { MARKETING_DEMO_HREF, MARKETING_DEMO_LABEL } from "@/lib/marketing-cta";
 import { StableNavLink } from "./StableNavLink";
 
 const NAV = [
-  { href: "/funktioner", label: "Funktioner", match: (p: string) => p === "/funktioner" },
+  { href: "/#it-support", label: "Support", match: (p: string) => p === "/" },
+  { href: "/#overblik", label: "Overblik", match: (p: string) => p === "/" },
   { href: "/priser", label: "Priser", match: (p: string) => p === "/priser" },
   { href: "/om-os", label: "Om os", match: (p: string) => p === "/om-os" },
   { href: "/kontakt", label: "Kontakt", match: (p: string) => p === "/kontakt" },
@@ -49,7 +50,10 @@ export function MarketingNav() {
         <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-4 px-6">
           <SystemklarLogo href="/" variant="light" size="sm" />
 
-          <nav className="hidden items-center justify-center gap-5 lg:gap-6 xl:gap-8 md:flex" aria-label="Hovednavigation">
+          <nav
+            className="hidden flex-1 items-center justify-center gap-6 md:flex lg:gap-8"
+            aria-label="Hovednavigation"
+          >
             {NAV.map((item) => (
               <StableNavLink
                 key={item.href}
@@ -64,13 +68,13 @@ export function MarketingNav() {
           <div className="hidden shrink-0 items-center gap-3 md:flex">
             <Link
               href="/login"
-              className="rounded-full px-4 py-2 text-sm font-normal text-[#2A4868] transition-colors hover:text-[#0A1628]"
+              className="rounded-full px-4 py-2 text-sm font-medium text-[#2A4868] transition-colors hover:bg-[#E8EEFC] hover:text-[#0A1628]"
             >
               Log ind
             </Link>
             <Link
               href={MARKETING_DEMO_HREF}
-              className="rounded-full bg-[#2952A3] px-5 py-2 text-sm font-medium text-white transition-colors hover:bg-[#1E4490]"
+              className="rounded-full bg-[#2952A3] px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-[#1E4490]"
             >
               {MARKETING_DEMO_LABEL}
             </Link>
@@ -117,7 +121,7 @@ export function MarketingNav() {
               <Link
                 href="/login"
                 onClick={() => setMobileOpen(false)}
-                className="flex min-h-[44px] items-center justify-center rounded-full border border-[#CBD5E8] text-sm font-medium text-[#2A4868]"
+                className="flex min-h-[44px] items-center justify-center rounded-full border border-[#CBD5E8] text-sm font-medium text-[#2A4868] hover:bg-[#E8EEFC]"
               >
                 Log ind
               </Link>

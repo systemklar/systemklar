@@ -5,10 +5,10 @@ import { useId, useState } from "react";
 import { Loader2 } from "lucide-react";
 
 export const authInputClass =
-  "peer w-full rounded-xl border border-[#CBD5E8] bg-white px-4 pb-3 pt-6 text-base text-[#0A1628] outline-none transition placeholder:text-transparent focus:border-[#2952A3] focus:ring-2 focus:ring-[rgba(74,127,165,0.2)] md:text-sm";
+  "w-full rounded-xl border border-[#CBD5E8] bg-white px-4 py-3 text-sm text-[#0A1628] outline-none transition placeholder:text-[#9AAAC8] focus:border-[#2952A3] focus:ring-[3px] focus:ring-[rgba(41,82,163,0.15)]";
 
 export const authInputErrorClass =
-  "peer w-full rounded-xl border border-[#E05040] bg-white px-4 pb-3 pt-6 text-base text-[#0A1628] outline-none transition placeholder:text-transparent focus:border-[#E05040] focus:ring-2 focus:ring-[rgba(184,92,74,0.15)] md:text-sm";
+  "w-full rounded-xl border border-[#E05040] bg-white px-4 py-3 text-sm text-[#0A1628] outline-none transition placeholder:text-[#9AAAC8] focus:border-[#E05040] focus:ring-[3px] focus:ring-[rgba(224,80,64,0.15)]";
 
 type AuthFieldProps = {
   id: string;
