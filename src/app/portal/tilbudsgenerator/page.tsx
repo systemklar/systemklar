@@ -1,7 +1,10 @@
 "use client";
 
 import Link from "next/link";
+import { Copy, Download, FileSignature } from "lucide-react";
 import { type FormEvent, useCallback, useEffect, useMemo, useState } from "react";
+import { SystemklarLogo } from "@/components/SystemklarLogo";
+import { MARKETING_CONTACT_EMAIL } from "@/lib/marketing-contact";
 import { fetchCurrentProfile } from "@/lib/current-profile";
 import { formatDanishDateTime } from "@/components/tickets/StatusBadge";
 import { formatDkk, serviceUnitLabel } from "@/lib/service-units";
@@ -68,7 +71,9 @@ export default function PortalTilbudsgeneratorPage() {
   const [deletingId, setDeletingId] = useState<string | null>(null);
 
   const [selected, setSelected] = useState<Set<string>>(new Set());
+  const [customerName, setCustomerName] = useState("");
   const [needs, setNeeds] = useState("");
+  const [validUntil, setValidUntil] = useState("");
   const [recipientEmail, setRecipientEmail] = useState("");
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
@@ -284,13 +289,19 @@ export default function PortalTilbudsgeneratorPage() {
     setGenerating(true);
     setActionError(null);
     setActionOk(null);
+    const needsParts = [
+      customerName.trim() ? `Kunde: ${customerName.trim()}` : "",
+      needs.trim(),
+      validUntil ? `Gyldigt til: ${validUntil}` : "",
+    ].filter(Boolean);
+
     const res = await fetch("/api/portal/quotes/generate", {
       method: "POST",
       credentials: "same-origin",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         serviceIds: [...selected],
-        needsDescription: needs,
+        needsDescription: needsParts.join("\n\n"),
       }),
     });
     const payload = (await res.json().catch(() => ({}))) as {
@@ -408,18 +419,228 @@ export default function PortalTilbudsgeneratorPage() {
     void loadQuotes();
   };
 
+  const selectedTotal = useMemo(() => {
+    let sum = 0;
+    for (const s of services) {
+      if (!selected.has(s.id)) continue;
+      const n = typeof s.price === "string" ? parseFloat(s.price) : s.price;
+      if (Number.isFinite(n)) sum += n;
+    }
+    return sum;
+  }, [services, selected]);
+
+  const copyQuote = async () => {
+    if (!content.trim()) return;
+    try {
+      await navigator.clipboard.writeText(content);
+      setActionOk("Kopieret til udklipsholder.");
+    } catch {
+      setActionError("Kunne ikke kopiere.");
+    }
+  };
+
+  const downloadQuote = () => {
+    if (!content.trim()) return;
+    const blob = new Blob([content], { type: "text/plain;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `${(title.trim() || "tilbud").replace(/\s+/g, "-")}.txt`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const hasQuote = content.trim().length > 0;
+
   return (
-      <div className="w-full space-y-10 p-6 md:p-8">
-        <header>
-          <h1 className="text-2xl font-bold tracking-tight text-[#1C1917] md:text-3xl">AI Tilbudsgenerator</h1>
-          <p className="mt-2 text-sm text-[#78716C]">
-            Administrer dine ydelser og generér professionelle tilbud med AI — på én side.
-          </p>
+      <div className="w-full space-y-8 p-6 md:p-8">
+        <header className="border-b border-[#E0EAF0] pb-8">
+          <SystemklarLogo size="sm" />
+          <h1 className="mt-4 text-2xl font-light tracking-tight text-[#1E3448] md:text-3xl">
+            AI Tilbudsgenerator
+          </h1>
+          <p className="mt-2 text-sm text-[#4A6478]">Generér professionelle IT-tilbud på sekunder</p>
         </header>
+
+        <div className="grid gap-8 lg:grid-cols-[2fr_3fr]">
+          <div className="rounded-2xl border border-[#C8D8E4] bg-white p-6 shadow-sm">
+            <h2 className="text-sm font-semibold text-[#1E3448]">Tilbudsoplysninger</h2>
+            <form
+              className="mt-6 space-y-5"
+              onSubmit={(e) => {
+                e.preventDefault();
+                void handleGenerate();
+              }}
+            >
+              <div>
+                <label className="block text-sm font-medium text-[#1E3448]">Kundenavn</label>
+                <input
+                  value={customerName}
+                  onChange={(e) => setCustomerName(e.target.value)}
+                  className="mt-1.5 w-full rounded-xl border border-[#C8D8E4] px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-[#4A7FA5]"
+                  placeholder="Fx Acme ApS"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-[#1E3448]">Modtager-email</label>
+                <input
+                  type="email"
+                  value={recipientEmail}
+                  onChange={(e) => setRecipientEmail(e.target.value)}
+                  className="mt-1.5 w-full rounded-xl border border-[#C8D8E4] px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-[#4A7FA5]"
+                  placeholder="kunde@firma.dk"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-[#1E3448]">Ydelser</label>
+                {services.length === 0 ? (
+                  <p className="mt-2 text-sm text-[#7A9AB0]">Tilføj ydelser i sektionen nedenfor først.</p>
+                ) : (
+                  <div className="mt-2 flex flex-wrap gap-2">
+                    {services.map((s) => {
+                      const on = selected.has(s.id);
+                      return (
+                        <button
+                          key={s.id}
+                          type="button"
+                          onClick={() => toggleService(s.id)}
+                          className={`rounded-full border px-3 py-1.5 text-xs font-medium transition ${
+                            on
+                              ? "border-[#4A7FA5] bg-[#EAF1F7] text-[#1E3448]"
+                              : "border-[#C8D8E4] text-[#4A6478] hover:border-[#4A7FA5]"
+                          }`}
+                        >
+                          {s.name}
+                        </button>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div>
+                  <label className="block text-sm font-medium text-[#1E3448]">Pris (estimat)</label>
+                  <p className="mt-1.5 rounded-xl border border-[#E0EAF0] bg-[#F7F4EF] px-3 py-2.5 text-sm font-medium text-[#1E3448]">
+                    {selected.size > 0 ? formatDkkLocal(selectedTotal) : "—"}
+                  </p>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-[#1E3448]">Gyldig til</label>
+                  <input
+                    type="date"
+                    value={validUntil}
+                    onChange={(e) => setValidUntil(e.target.value)}
+                    className="mt-1.5 w-full rounded-xl border border-[#C8D8E4] px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-[#4A7FA5]"
+                  />
+                </div>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-[#1E3448]">Bemærkninger</label>
+                <textarea
+                  value={needs}
+                  onChange={(e) => setNeeds(e.target.value)}
+                  rows={4}
+                  className="mt-1.5 w-full rounded-xl border border-[#C8D8E4] px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-[#4A7FA5]"
+                  placeholder="Kundens behov, tidsplan, særlige ønsker..."
+                />
+              </div>
+              {actionError ? <p className="text-sm text-red-600">{actionError}</p> : null}
+              {actionOk ? <p className="text-sm text-[#3A7A4A]">{actionOk}</p> : null}
+              <button
+                type="submit"
+                disabled={generating || selected.size === 0}
+                className="w-full rounded-full bg-[#4A7FA5] py-3 text-sm font-semibold text-white transition hover:bg-[#3A6F95] disabled:opacity-50"
+              >
+                {generating ? "Genererer…" : "Generér tilbud"}
+              </button>
+            </form>
+          </div>
+
+          <div className="relative flex min-h-[420px] flex-col rounded-2xl border border-[#C8D8E4] bg-white shadow-sm">
+            {!hasQuote ? (
+              <div className="flex flex-1 flex-col items-center justify-center px-8 py-16 text-center">
+                <span className="flex h-14 w-14 items-center justify-center rounded-2xl border border-[#C8D8E4] bg-[#F7F4EF] text-[#4A7FA5]">
+                  <FileSignature className="h-7 w-7" strokeWidth={1.5} />
+                </span>
+                <p className="mt-6 text-sm font-medium text-[#1E3448]">
+                  Udfyld formularen for at generere dit første tilbud
+                </p>
+              </div>
+            ) : (
+              <>
+                <div className="flex-1 overflow-y-auto p-8">
+                  <div className="border-b border-[#E0EAF0] pb-6">
+                    <SystemklarLogo size="sm" />
+                    <p className="mt-4 text-xs text-[#7A9AB0]">
+                      {MARKETING_CONTACT_EMAIL} · systemklar.dk
+                    </p>
+                  </div>
+                  <input
+                    value={title}
+                    onChange={(e) => setTitle(e.target.value)}
+                    className="mt-6 w-full border-0 bg-transparent text-lg font-semibold text-[#1E3448] outline-none"
+                    placeholder="Tilbudstitel"
+                  />
+                  <textarea
+                    value={content}
+                    onChange={(e) => setContent(e.target.value)}
+                    rows={18}
+                    className="mt-4 w-full resize-none border-0 bg-transparent text-sm leading-relaxed text-[#4A6478] outline-none"
+                  />
+                </div>
+                <div className="flex flex-wrap gap-2 border-t border-[#E0EAF0] p-4">
+                  <button
+                    type="button"
+                    onClick={() => void copyQuote()}
+                    className="inline-flex items-center gap-2 rounded-full border border-[#C8D8E4] px-4 py-2 text-sm font-medium text-[#4A6478] transition hover:bg-[#F7F4EF]"
+                  >
+                    <Copy className="h-4 w-4" />
+                    Kopiér
+                  </button>
+                  <button
+                    type="button"
+                    onClick={downloadQuote}
+                    className="inline-flex items-center gap-2 rounded-full border border-[#C8D8E4] px-4 py-2 text-sm font-medium text-[#4A6478] transition hover:bg-[#F7F4EF]"
+                  >
+                    <Download className="h-4 w-4" />
+                    Download
+                  </button>
+                  <button
+                    type="button"
+                    disabled={savingQuote || sending}
+                    onClick={() => {
+                      void (async () => {
+                        const id = await saveDraft();
+                        if (id) {
+                          setActionOk("Kladde gemt.");
+                          void loadQuotes();
+                        }
+                      })();
+                    }}
+                    className="inline-flex items-center gap-2 rounded-full border border-[#C8D8E4] px-4 py-2 text-sm font-medium text-[#4A6478] transition hover:bg-[#F7F4EF] disabled:opacity-50"
+                  >
+                    {savingQuote ? "Gemmer…" : "Gem kladde"}
+                  </button>
+                  <button
+                    type="button"
+                    disabled={savingQuote || sending}
+                    onClick={() => void handleSend()}
+                    className="inline-flex items-center gap-2 rounded-full bg-[#4A7FA5] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#3A6F95] disabled:opacity-50"
+                  >
+                    Send til kunde
+                  </button>
+                </div>
+              </>
+            )}
+            <span className="pointer-events-none absolute bottom-3 right-4 rounded-full border border-[#C8D8E4] bg-[#F7F4EF] px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-[#7A9AB0]">
+              Drevet af Claude AI
+            </span>
+          </div>
+        </div>
 
         <section
           id="ydelser"
-          className="rounded-2xl border border-[#E7E5E4] bg-white p-6 shadow-sm md:p-8"
+          className="rounded-2xl border border-[#C8D8E4] bg-white p-6 shadow-sm md:p-8"
         >
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div>
@@ -479,158 +700,9 @@ export default function PortalTilbudsgeneratorPage() {
           )}
         </section>
 
-        <section
-          id="generator"
-          className="rounded-2xl border border-[#E7E5E4] bg-white p-6 shadow-sm md:p-8"
-        >
-          <h2 className="text-lg font-semibold text-[#1C1917]">Generer tilbud med AI</h2>
-          <p className="mt-1 text-sm text-[#78716C]">Vælg ydelser, beskriv behovet og generér — redigér teksten før du gemmer eller sender.</p>
-
-          <form onSubmit={handleSaveDraft} className="mt-8 space-y-8">
-            <div>
-              <label className="block text-sm font-medium text-[#1C1917]">Modtagerens email</label>
-              <input
-                type="email"
-                value={recipientEmail}
-                onChange={(e) => setRecipientEmail(e.target.value)}
-                placeholder="kunde@firma.dk"
-                className="mt-2 w-full max-w-md rounded-lg border border-[#E7E5E4] px-3 py-2 text-sm outline-none focus:border-[#4A7FA5] focus:ring-2 focus:ring-[#4A7FA5]"
-                required
-              />
-            </div>
-
-            <div>
-              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                <h3 className="text-sm font-semibold text-[#1C1917]">Vælg ydelser</h3>
-                {services.length > 0 ? (
-                  <div className="flex flex-wrap items-center gap-2">
-                    <button
-                      type="button"
-                      onClick={selectAllServices}
-                      className="rounded-full border border-[#E7E5E4] bg-white px-3 py-1.5 text-xs font-semibold text-[#1C1917] shadow-sm transition hover:bg-stone-50"
-                    >
-                      Vælg alle
-                    </button>
-                    <button
-                      type="button"
-                      onClick={clearServiceSelection}
-                      className="rounded-full border border-[#E7E5E4] bg-white px-3 py-1.5 text-xs font-semibold text-[#78716C] shadow-sm transition hover:bg-stone-50"
-                    >
-                      Ryd valg
-                    </button>
-                    <span className="text-xs font-medium text-[#78716C] sm:ml-1">
-                      {selected.size === 1 ? "1 ydelse valgt" : `${selected.size} ydelser valgt`}
-                    </span>
-                  </div>
-                ) : null}
-              </div>
-              {services.length === 0 ? (
-                <p className="mt-3 text-sm text-[#78716C]">
-                  Tilføj ydelser i sektionen ovenfor først.
-                </p>
-              ) : (
-                <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
-                  {services.map((s) => {
-                    const isOn = selected.has(s.id);
-                    return (
-                      <button
-                        key={s.id}
-                        type="button"
-                        onClick={() => toggleService(s.id)}
-                        className={`relative rounded-xl px-3 py-3 text-left shadow-sm transition focus:outline-none focus:ring-2 focus:ring-[#4A7FA5] focus:ring-offset-1 ${
-                          isOn
-                            ? "border-2 border-[#4A7FA5] bg-white ring-1 ring-[#EAF1F7]"
-                            : "border border-stone-200 bg-white text-stone-600 hover:border-stone-300"
-                        }`}
-                      >
-                        {isOn ? (
-                          <span
-                            className="absolute right-2 top-2 flex h-6 w-6 items-center justify-center rounded-full bg-[#4A7FA5] shadow-sm"
-                            aria-hidden
-                          >
-                            <CardCheckIcon />
-                          </span>
-                        ) : null}
-                        <p
-                          className={`pr-9 text-sm font-semibold leading-snug ${
-                            isOn ? "text-[#1C1917]" : "text-stone-700"
-                          }`}
-                        >
-                          {s.name}
-                        </p>
-                        <p className={`mt-2 text-xs ${isOn ? "text-[#78716C]" : "text-stone-500"}`}>
-                          <span className="font-medium text-stone-700">{formatDkk(s.price)}</span>
-                          <span> · {serviceUnitLabel(s.unit)}</span>
-                        </p>
-                      </button>
-                    );
-                  })}
-                </div>
-              )}
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-[#1C1917]">Beskriv kundens behov</label>
-              <textarea
-                value={needs}
-                onChange={(e) => setNeeds(e.target.value)}
-                rows={5}
-                placeholder="Skriv kort hvad kunden har brug for, ønsket tidsplan og eventuelle krav..."
-                className="mt-2 w-full rounded-lg border border-[#E7E5E4] px-3 py-2 text-sm outline-none focus:border-[#4A7FA5] focus:ring-2 focus:ring-[#4A7FA5]"
-              />
-              <button
-                type="button"
-                disabled={generating}
-                onClick={() => void handleGenerate()}
-                className="mt-4 rounded-full bg-[#4A7FA5] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[#3A6F95] focus:outline-none focus:ring-2 focus:ring-[#4A7FA5] disabled:opacity-50"
-              >
-                {generating ? "Genererer..." : "Generer tilbud med AI"}
-              </button>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-[#1C1917]">Titel</label>
-              <input
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-                placeholder="Fx Tilbud — [kunde] — dato"
-                className="mt-2 w-full rounded-lg border border-[#E7E5E4] px-3 py-2 text-sm outline-none focus:border-[#4A7FA5] focus:ring-2 focus:ring-[#4A7FA5]"
-              />
-              <label className="mt-4 block text-sm font-medium text-[#1C1917]">Tilbudstekst</label>
-              <textarea
-                value={content}
-                onChange={(e) => setContent(e.target.value)}
-                rows={16}
-                placeholder="Det genererede tilbud vises her — redigér frit."
-                className="mt-2 w-full rounded-lg border border-[#E7E5E4] px-3 py-2 font-mono text-sm leading-relaxed outline-none focus:border-[#4A7FA5] focus:ring-2 focus:ring-[#4A7FA5]"
-              />
-            </div>
-
-            {actionError ? <p className="text-sm text-red-600">{actionError}</p> : null}
-            {actionOk ? <p className="text-sm text-green-700">{actionOk}</p> : null}
-
-            <div className="flex flex-wrap gap-3">
-              <button
-                type="submit"
-                disabled={savingQuote || sending}
-                className="rounded-full bg-[#4A7FA5] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[#3A6F95] focus:outline-none focus:ring-2 focus:ring-[#4A7FA5] disabled:opacity-50"
-              >
-                {savingQuote ? "Gemmer..." : "Gem som kladde"}
-              </button>
-              <button
-                type="button"
-                disabled={savingQuote || sending}
-                onClick={() => void handleSend()}
-                className="rounded-full border border-[#E7E5E4] bg-white px-5 py-2.5 text-sm font-semibold text-[#1C1917] shadow-sm transition hover:bg-stone-50 disabled:opacity-50"
-              >
-                {sending ? "Sender..." : "Send tilbud"}
-              </button>
-            </div>
-          </form>
-
-          <div className="mt-10 border-t border-[#E7E5E4] pt-8">
-            <h3 className="text-sm font-semibold text-[#1C1917]">Mine tilbud</h3>
-            <p className="mt-1 text-sm text-[#78716C]">Åbn et tidligere tilbud for at redigere eller sende igen.</p>
+        <section className="rounded-2xl border border-[#C8D8E4] bg-white p-6 shadow-sm md:p-8">
+          <h2 className="text-lg font-semibold text-[#1E3448]">Mine tilbud</h2>
+          <p className="mt-1 text-sm text-[#4A6478]">Gemte kladder og sendte tilbud</p>
             {quotesLoading ? (
               <p className="mt-4 text-sm text-slate-500">Henter tilbud...</p>
             ) : quotes.length === 0 ? (
@@ -656,7 +728,6 @@ export default function PortalTilbudsgeneratorPage() {
                 ))}
               </ul>
             )}
-          </div>
         </section>
 
         {modalMode ? (

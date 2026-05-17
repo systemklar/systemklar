@@ -37,6 +37,25 @@ export function PortalDashboardSystemRowSkeleton() {
   );
 }
 
+export function PortalSystemsOverviewCardSkeleton() {
+  return (
+    <div className="min-h-[160px] animate-pulse rounded-2xl border border-[#C8D8E4] bg-white p-5">
+      <div className="flex items-center justify-between gap-3">
+        <div className="flex items-center gap-3">
+          <div className="h-6 w-6 rounded bg-[#EAF1F7]" />
+          <div className="h-4 w-28 rounded bg-[#EAF1F7]" />
+        </div>
+        <div className="h-5 w-10 rounded-full bg-[#EAF1F7]" />
+      </div>
+      <div className="mt-4 h-4 w-36 rounded bg-[#EAF1F7]" />
+      <div className="mt-8 flex justify-between">
+        <div className="h-3 w-24 rounded bg-[#EAF1F7]/90" />
+        <div className="h-3 w-16 rounded bg-[#EAF1F7]/90" />
+      </div>
+    </div>
+  );
+}
+
 export function PortalSystemsOverviewRowSkeleton() {
   return (
     <div className="border-b border-[#C8D8E4]/80 py-2.5 last:border-b-0">

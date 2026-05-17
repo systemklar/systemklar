@@ -404,35 +404,36 @@ export default function PortalTeamPage() {
     return (
       <li
         key={member.id}
-        className="flex w-[min(100%,220px)] shrink-0 flex-col items-center gap-2 rounded-2xl border border-[#C8D8E4] bg-white p-5 text-center shadow-sm"
+        className="flex flex-col gap-4 rounded-2xl border border-[#C8D8E4] bg-white p-5 shadow-sm transition hover:shadow-[0_8px_24px_rgba(30,52,72,0.06)] sm:flex-row sm:items-center"
       >
-        <ProfileAvatar avatarUrl={member.avatar_url} initials={initials} className="h-16 w-16 text-lg" />
-        <div className="min-w-0 w-full">
-          <p className="truncate text-sm font-semibold text-[#1E3448]">
-            {member.full_name || "Ukendt navn"}
-            {member.id === authUserId ? (
-              <span className="block text-[11px] font-normal text-[#7A9AB0]">(dig)</span>
-            ) : null}
-          </p>
-          <span
-            className={`mt-2 inline-flex rounded-full px-2.5 py-0.5 text-[11px] font-semibold ${
-              member.role === "org_admin"
-                ? "bg-[#EAF1F7] text-[#1E3448]"
-                : "bg-[#F7F4EF] text-[#4A6478]"
-            }`}
-          >
-            {member.role === "org_admin" ? "Administrator" : "Medlem"}
-          </span>
-          <p className="mt-2 truncate text-xs text-[#7A9AB0]">{member.email || "—"}</p>
-          {joined ? <p className="mt-1 text-[11px] text-[#7A9AB0]">Tilføjet {joined}</p> : null}
+        <ProfileAvatar avatarUrl={member.avatar_url} initials={initials} className="h-12 w-12 shrink-0 text-base" />
+        <div className="min-w-0 flex-1">
+          <div className="flex flex-wrap items-center gap-2">
+            <p className="text-sm font-semibold text-[#1E3448]">
+              {member.full_name || "Ukendt navn"}
+              {member.id === authUserId ? (
+                <span className="ml-1 text-xs font-normal text-[#7A9AB0]">(dig)</span>
+              ) : null}
+            </p>
+            <span
+              className={`inline-flex rounded-full px-2.5 py-0.5 text-[10px] font-semibold ${
+                member.role === "org_admin"
+                  ? "bg-[#EAF1F7] text-[#1E3448]"
+                  : "bg-[#F7F4EF] text-[#4A6478]"
+              }`}
+            >
+              {member.role === "org_admin" ? "Administrator" : "Medlem"}
+            </span>
+          </div>
+          <p className="mt-1 truncate text-sm text-[#4A6478]">{member.email || "—"}</p>
+          {joined ? <p className="mt-1 text-xs text-[#7A9AB0]">Tilføjet {joined}</p> : null}
         </div>
         {!readOnly && canRemove ? (
           <button
             type="button"
             onClick={() => setRemoveTarget(member)}
-            className="mt-1 inline-flex items-center gap-1 rounded-full border border-red-200 px-3 py-1 text-[11px] font-semibold text-red-700 transition hover:bg-red-50"
+            className="shrink-0 text-xs font-medium text-red-700 transition hover:underline"
           >
-            <UserMinus className="h-3 w-3" />
             Fjern
           </button>
         ) : null}
@@ -447,7 +448,7 @@ export default function PortalTeamPage() {
           <OrganisationLogo
             logoUrl={orgLogoUrl}
             initials={orgInitials}
-            className="h-20 w-20 shrink-0 text-2xl"
+            className="h-24 w-24 shrink-0 text-2xl"
           />
           <div className="min-w-0 space-y-3">
             <h2 className="text-2xl font-bold tracking-tight text-[#1E3448] sm:text-3xl">
@@ -494,20 +495,17 @@ export default function PortalTeamPage() {
             ) : null}
           </div>
         ) : (
-          <ul className="-mx-1 flex gap-4 overflow-x-auto px-1 pb-2">
+          <ul className="space-y-3">
             {members.map((member) => renderMemberCard(member, true))}
-            {members.length === 1 && isOrgAdmin ? (
-              <li className="w-[min(100%,220px)] shrink-0">
+            {isOrgAdmin ? (
+              <li>
                 <button
                   type="button"
                   onClick={() => setActiveTab("invitationer")}
-                  className="flex h-full min-h-[220px] w-full flex-col items-center justify-center gap-3 rounded-2xl border-2 border-dashed border-[#C8D8E4] bg-[#FAFCFE] p-5 text-center transition hover:border-[#4A7FA5] hover:bg-[#EAF1F7]/50"
+                  className="flex w-full items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-[#C8D8E4] bg-[#F7F4EF]/40 px-6 py-8 text-sm font-semibold text-[#4A7FA5] transition hover:border-[#4A7FA5] hover:bg-[#EAF1F7]/50"
                 >
-                  <span className="flex h-14 w-14 items-center justify-center rounded-full border border-[#C8D8E4] bg-white text-[#4A7FA5] shadow-sm">
-                    <Plus className="h-7 w-7" strokeWidth={2} />
-                  </span>
-                  <span className="text-sm font-semibold text-[#4A7FA5]">+ Tilføj kollega</span>
-                  <span className="text-xs text-[#7A9AB0]">Gå til invitationer</span>
+                  <Plus className="h-5 w-5" strokeWidth={2} />
+                  Inviter en kollega +
                 </button>
               </li>
             ) : null}
@@ -665,7 +663,7 @@ export default function PortalTeamPage() {
                 <button
                   type="button"
                   onClick={() => void cancelInvite(invite.id)}
-                  className="rounded-full border border-red-200 px-3 py-1.5 text-xs font-semibold text-red-700 transition hover:bg-red-50"
+                  className="text-xs font-semibold text-[#4A6478] underline-offset-2 transition hover:text-red-700 hover:underline"
                 >
                   Annuller
                 </button>

@@ -1,6 +1,11 @@
 "use client";
 
 import { FormEvent, useEffect, useMemo, useRef, useState } from "react";
+import { Send } from "lucide-react";
+import { ProfileAvatar } from "@/components/ProfileAvatar";
+import { usePortalSession } from "@/components/portal/PortalLayout";
+import { PortalPageShell } from "@/components/portal/PortalPageShell";
+import { SystemklarMark } from "@/components/SystemklarMark";
 import { createClient } from "@/lib/supabase";
 
 type ChatRole = "user" | "assistant";
@@ -10,42 +15,44 @@ type ChatMessage = {
   content: string;
 };
 
-const QUICK_QUESTIONS = [
-  "Hvad er status på mine systemer?",
-  "Hvad stod der i min seneste IT-rapport?",
-  "Jeg har et problem med et system",
-  "Opret en ny sag",
-];
+const SUGGESTIONS = [
+  "Hvad overvåger I?",
+  "Hvordan opsætter jeg e-conomic?",
+  "Hvad er min systemstatus?",
+  "Hjælp mig med en IT-sag",
+] as const;
 
-function RobotIcon() {
+function TypingDots() {
   return (
-    <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-slate-200" aria-hidden>
-      <svg viewBox="0 0 20 20" fill="none" className="h-4 w-4 text-slate-600">
-        <rect x="4" y="6" width="12" height="10" rx="2" stroke="currentColor" strokeWidth="1.5" />
-        <path d="M10 4v2M7.5 10h.01M12.5 10h.01" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-      </svg>
+    <span className="inline-flex items-center gap-1" aria-hidden>
+      <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-[#7A9AB0] [animation-delay:-0.2s]" />
+      <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-[#7A9AB0] [animation-delay:-0.1s]" />
+      <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-[#7A9AB0]" />
     </span>
   );
 }
 
-function TypingDots() {
+function ClaudeBadge({ className = "" }: { className?: string }) {
   return (
-    <span className="inline-flex items-center gap-1 align-middle" aria-hidden>
-      <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-slate-500 [animation-delay:-0.2s]" />
-      <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-slate-500 [animation-delay:-0.1s]" />
-      <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-slate-500" />
+    <span
+      className={`inline-flex rounded-full border border-[#C8D8E4] bg-[#F7F4EF] px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-[#7A9AB0] ${className}`.trim()}
+    >
+      Drevet af Claude
     </span>
   );
 }
 
 export default function PortalAiAssistantPage() {
   const supabase = useMemo(() => createClient(), []);
+  const session = usePortalSession();
   const bottomRef = useRef<HTMLDivElement>(null);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
-  const [companyName, setCompanyName] = useState<string>("kunde");
   const [draft, setDraft] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [bootstrapped, setBootstrapped] = useState(false);
+
+  const showWelcome = messages.length === 0 && !loading;
 
   useEffect(() => {
     queueMicrotask(() => {
@@ -57,28 +64,10 @@ export default function PortalAiAssistantPage() {
     let cancelled = false;
     const run = async () => {
       const {
-        data: { session },
+        data: { session: authSession },
       } = await supabase.auth.getSession();
-      const user = session?.user;
-      if (!user || cancelled) return;
-
-      const { data } = await supabase
-        .from("profiles")
-        .select("company_name")
-        .eq("user_id", user.id)
-        .maybeSingle();
-
-      const name = data?.company_name?.trim() || "kunde";
-      if (cancelled) return;
-
-      setCompanyName(name);
-      setMessages([
-        {
-          id: crypto.randomUUID(),
-          role: "assistant",
-          content: `Hej ${name}! Jeg er din IT-assistent. Hvad kan jeg hjælpe dig med?`,
-        },
-      ]);
+      if (!authSession?.user || cancelled) return;
+      setBootstrapped(true);
     };
     void run();
     return () => {
@@ -125,12 +114,14 @@ export default function PortalAiAssistantPage() {
         return;
       }
 
-      const nextAssistant: ChatMessage = {
-        id: crypto.randomUUID(),
-        role: "assistant",
-        content: payload.answer.trim(),
-      };
-      setMessages((prev) => [...prev, nextAssistant]);
+      setMessages((prev) => [
+        ...prev,
+        {
+          id: crypto.randomUUID(),
+          role: "assistant",
+          content: payload.answer!.trim(),
+        },
+      ]);
     } finally {
       setLoading(false);
     }
@@ -141,90 +132,124 @@ export default function PortalAiAssistantPage() {
     await sendMessage(draft);
   };
 
+  const userInitials = session?.avatarInitials ?? "DU";
+
   return (
-    <div className="w-full p-6 md:p-8">
-      <div className="flex h-[min(calc(100dvh-11rem),52rem)] w-full flex-col rounded-2xl border border-[#C8D8E4] bg-white shadow-sm">
-        <header className="shrink-0 border-b border-[#E7E5E4] px-5 py-4">
-          <h1 className="text-xl font-bold text-[#1C1917]">AI-assistent</h1>
-          <p className="mt-1 text-sm text-[#78716C]">
-            Stil spørgsmål om dine systemer, sager og seneste rapport.
-          </p>
-          <div className="mt-3 flex flex-wrap gap-2">
-            {QUICK_QUESTIONS.map((question) => (
-              <button
-                key={question}
-                type="button"
-                onClick={() => void sendMessage(question)}
-                disabled={loading}
-                className="rounded-full border border-[#C8D8E4] bg-[#EAF1F7] px-3 py-1.5 text-xs font-semibold text-[#3A6F95] transition hover:bg-[#E0EAF0] disabled:opacity-50"
-              >
-                {question}
-              </button>
-            ))}
+    <PortalPageShell
+      title="AI-assistent"
+      subtitle="Din IT-rådgiver — spørgsmål om systemer, support og rapporter"
+      action={<ClaudeBadge />}
+    >
+      <div className="flex h-[min(calc(100dvh-12rem),52rem)] flex-col overflow-hidden rounded-2xl border border-[#C8D8E4] bg-white shadow-sm">
+        <header className="flex shrink-0 items-center gap-3 border-b border-[#C8D8E4] bg-white px-5 py-4">
+          <SystemklarMark size={36} variant="avatar" />
+          <div>
+            <p className="text-sm font-semibold text-[#1E3448]">Systemklar AI</p>
+            <p className="text-xs text-[#7A9AB0]">Online</p>
           </div>
         </header>
 
-        <section className="min-h-0 flex-1 space-y-4 overflow-y-auto bg-slate-50/60 px-5 py-4">
-          {messages.map((message) => (
-            <div
-              key={message.id}
-              className={`flex ${message.role === "user" ? "justify-end" : "justify-start"}`}
-            >
-              <div
-                className={`max-w-[85%] rounded-2xl px-4 py-3 text-sm shadow-sm ${
-                  message.role === "user"
-                    ? "rounded-br-md bg-[#4A7FA5] text-white"
-                    : "rounded-bl-md border border-slate-200 bg-white text-slate-900"
-                }`}
-              >
-                {message.role === "assistant" ? (
-                  <div className="mb-1 flex items-center gap-2 text-xs font-semibold text-slate-600">
-                    <RobotIcon />
-                    AI-assistent
+        <section className="relative min-h-0 flex-1 overflow-y-auto bg-[#F7F4EF]/50 px-4 py-6 md:px-6">
+          {showWelcome && bootstrapped ? (
+            <div className="flex h-full min-h-[280px] flex-col items-center justify-center text-center">
+              <SystemklarMark size={48} />
+              <h2 className="mt-6 text-xl font-light text-[#1E3448]">Hej, jeg er din IT-assistent</h2>
+              <p className="mt-2 max-w-md text-sm text-[#4A6478]">
+                Stil mig spørgsmål om din IT, systemer eller support
+              </p>
+              <div className="mt-8 flex max-w-lg flex-wrap justify-center gap-2">
+                {SUGGESTIONS.map((q) => (
+                  <button
+                    key={q}
+                    type="button"
+                    onClick={() => void sendMessage(q)}
+                    disabled={loading}
+                    className="rounded-full border border-[#C8D8E4] bg-white px-4 py-2 text-xs font-medium text-[#4A6478] transition hover:border-[#4A7FA5] hover:text-[#1E3448] disabled:opacity-50"
+                  >
+                    {q}
+                  </button>
+                ))}
+              </div>
+            </div>
+          ) : (
+            <ul className="space-y-4">
+              {messages.map((message) => (
+                <li
+                  key={message.id}
+                  className={`flex gap-3 ${message.role === "user" ? "flex-row-reverse" : ""}`}
+                >
+                  {message.role === "assistant" ? (
+                    <SystemklarMark size={32} variant="avatar" className="mt-1" />
+                  ) : (
+                    <ProfileAvatar
+                      avatarUrl={session?.avatarUrl}
+                      initials={userInitials}
+                      className="mt-1 h-8 w-8 shrink-0 text-xs"
+                      variant="brand"
+                    />
+                  )}
+                  <div
+                    className={`max-w-[85%] ${message.role === "user" ? "items-end" : "items-start"}`}
+                  >
+                    <p className="mb-1 text-[10px] font-semibold uppercase tracking-wide text-[#7A9AB0]">
+                      {message.role === "user" ? "Dig" : "Systemklar AI"}
+                    </p>
+                    <div
+                      className={`rounded-2xl px-4 py-3 text-sm leading-relaxed shadow-sm ${
+                        message.role === "user"
+                          ? "rounded-br-md bg-[#4A7FA5] text-white"
+                          : "rounded-bl-md border border-[#C8D8E4] bg-white text-[#1E3448]"
+                      }`}
+                    >
+                      <p className="whitespace-pre-wrap">{message.content}</p>
+                    </div>
                   </div>
-                ) : null}
-                <p className="whitespace-pre-wrap leading-relaxed">{message.content}</p>
-              </div>
-            </div>
-          ))}
-
-          {loading ? (
-            <div className="flex justify-start">
-              <div className="rounded-2xl rounded-bl-md border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 shadow-sm">
-                <div className="mb-1 flex items-center gap-2 text-xs font-semibold text-slate-600">
-                  <RobotIcon />
-                  AI-assistent
-                </div>
-                <span>
-                  AI-assistenten skriver... <TypingDots />
-                </span>
-              </div>
-            </div>
-          ) : null}
-          <div ref={bottomRef} className="h-px w-full shrink-0 scroll-mt-4" aria-hidden />
+                </li>
+              ))}
+              {loading ? (
+                <li className="flex gap-3">
+                  <SystemklarMark size={32} variant="avatar" className="mt-1" />
+                  <div>
+                    <p className="mb-1 text-[10px] font-semibold text-[#7A9AB0]">Systemklar AI</p>
+                    <div className="rounded-2xl rounded-bl-md border border-[#C8D8E4] bg-white px-4 py-3 shadow-sm">
+                      <TypingDots />
+                    </div>
+                  </div>
+                </li>
+              ) : null}
+            </ul>
+          )}
+          <div ref={bottomRef} className="h-px w-full shrink-0" aria-hidden />
         </section>
 
-        <footer className="shrink-0 border-t border-[#E7E5E4] bg-white px-4 py-3">
+        <footer className="shrink-0 border-t border-[#C8D8E4] bg-white px-4 py-4 md:px-5">
           {error ? <p className="mb-2 text-sm text-red-700">{error}</p> : null}
-          <form onSubmit={(e) => void handleSubmit(e)} className="flex gap-2">
-            <input
-              type="text"
+          <form onSubmit={(e) => void handleSubmit(e)} className="flex items-end gap-2">
+            <textarea
               value={draft}
               onChange={(e) => setDraft(e.target.value)}
-              placeholder={`Skriv til AI-assistenten hos ${companyName}...`}
-              className="min-w-0 flex-1 rounded-lg border border-[#E7E5E4] px-3 py-2 outline-none focus:border-[#4A7FA5] focus:ring-2 focus:ring-[#4A7FA5]"
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && !e.shiftKey) {
+                  e.preventDefault();
+                  void sendMessage(draft);
+                }
+              }}
+              rows={1}
+              placeholder="Skriv din besked..."
+              className="max-h-32 min-h-[44px] min-w-0 flex-1 resize-none rounded-xl border border-[#C8D8E4] px-4 py-2.5 text-sm text-[#1E3448] outline-none transition focus:border-[#4A7FA5] focus:ring-2 focus:ring-[#4A7FA5]/20"
               disabled={loading}
             />
             <button
               type="submit"
               disabled={loading || !draft.trim()}
-              className="rounded-full bg-[#4A7FA5] px-5 py-2 text-sm font-semibold text-white transition hover:bg-[#3A6F95] focus:outline-none focus:ring-2 focus:ring-[#4A7FA5] disabled:opacity-50"
+              className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[#4A7FA5] text-white transition hover:bg-[#3A6F95] disabled:opacity-50"
+              aria-label="Send besked"
             >
-              Send
+              <Send className="h-4 w-4" aria-hidden />
             </button>
           </form>
         </footer>
       </div>
-    </div>
+    </PortalPageShell>
   );
 }

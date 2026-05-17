@@ -23,7 +23,7 @@ export function SettingsTabs({
   activeId,
   onChange,
   ariaLabel = "Sektioner",
-  className = "mt-6 mb-8",
+  className = "mt-8 mb-10",
 }: SettingsTabsProps) {
   if (tabs.length <= 1) return null;
 
@@ -32,7 +32,7 @@ export function SettingsTabs({
       className={`border-b border-[#C8D8E4] ${className}`.trim()}
       aria-label={ariaLabel}
     >
-      <div className="-mb-px flex flex-wrap gap-8 gap-y-1">
+      <div className="-mb-px flex flex-wrap gap-10 gap-y-1">
         {tabs.map((tab) => {
           const isActive = tab.id === activeId;
           return (

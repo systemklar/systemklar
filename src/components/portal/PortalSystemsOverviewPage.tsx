@@ -1,8 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Info, Package, Plus, X } from "lucide-react";
-import type { ReactNode } from "react";
+import { Info, Package, Plus, Search, X } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { usePortalSession } from "@/components/portal/PortalLayout";
 import {
@@ -12,18 +11,22 @@ import {
 } from "@/components/monitoring/MonitoringStatusBlock";
 import { fetchCurrentProfile, normalizeOnboardingSystemsFromDb } from "@/lib/current-profile";
 import {
+  monitoringCustomerExplanation,
   normalizeMonitoringStatus,
   type MonitoringStatusKey,
 } from "@/lib/monitoring/monitoring-dashboard-copy";
 import { isAutoMonitoredCustomerSystem } from "@/lib/monitoring/monitoring-system-names";
 import { isSelfServiceCredentialSystem } from "@/lib/system-self-service-setup";
 import { SystemCredentialSetupModal } from "@/components/portal/SystemCredentialSetupModal";
-import { PortalSystemsOverviewRowSkeleton } from "@/components/portal/PortalMonitoringSkeletons";
-import { PortalModalOverlay } from "@/components/portal/PortalOverlay";
+import {
+  PortalSystemsOverviewCardSkeleton,
+} from "@/components/portal/PortalMonitoringSkeletons";
+import { PortalSlideInPanel } from "@/components/portal/PortalOverlay";
+import { PortalPageShell } from "@/components/portal/PortalPageShell";
+import { PortalSystemCard } from "@/components/portal/PortalSystemCard";
 import {
   buildOnboardingDashboardGroups,
   ONBOARDING_SYSTEM_GROUPS,
-  type OnboardingDashboardGroup,
   type OnboardingSystem,
   type ResolvedOnboardingEntry,
 } from "@/lib/onboarding-systems";
@@ -42,41 +45,16 @@ function friendlyLabel(storedName: string): string {
   return FRIENDLY[storedName] ?? storedName;
 }
 
-function customerStatusLabel(status: MonitoringStatusKey): string {
-  switch (status) {
-    case "ok":
-      return "OK";
-    case "advarsel":
-      return "Kræver opmærksomhed";
-    case "fejl":
-      return "Virker ikke";
-    default:
-      return "Afventer opsætning";
-  }
-}
-
-const REMOVE_BLOCKED_TOOLTIP = "Kontakt os for at fjerne et aktivt overvåget system.";
-
-function monitoringBlocksRemove(status: MonitoringStatusKey): boolean {
-  return status === "ok" || status === "advarsel" || status === "fejl";
-}
-
-function statusPillClass(status: MonitoringStatusKey): string {
-  switch (status) {
-    case "ok":
-      return "border border-[#5A9A6A]/35 bg-[#5A9A6A]/10 text-[#5A9A6A]";
-    case "advarsel":
-      return "border border-[#C4A84F]/35 bg-[#C4A84F]/10 text-[#C4A84F]";
-    case "fejl":
-      return "border border-[#B85C4A]/35 bg-[#B85C4A]/10 text-[#B85C4A]";
-    default:
-      return "border border-[#C8D8E4] bg-[#F7F4EF] text-[#4A6478]";
-  }
-}
-
 type SetupModal =
   | { kind: "manual"; storedName: string; friendlyName: string }
   | { kind: "auto"; friendlyName: string };
+
+type DetailPanel = {
+  storedName: string;
+  friendlyName: string;
+  status: MonitoringStatusKey;
+  checkedAgo: string | null;
+};
 
 function entryMeta(entry: ResolvedOnboardingEntry): {
   storedName: string;
@@ -97,131 +75,6 @@ function entryMeta(entry: ResolvedOnboardingEntry): {
   };
 }
 
-function SystemRow({
-  storedName,
-  friendlyName,
-  Icon,
-  status,
-  checkedAgo,
-  onStartSetup,
-  showRemove,
-  removeBlocked,
-  removeConfirmOpen,
-  onRemoveClick,
-  onRemoveConfirm,
-  onRemoveCancel,
-  removeBusy,
-}: {
-  storedName: string;
-  friendlyName: string;
-  Icon: OnboardingSystem["icon"];
-  status: MonitoringStatusKey;
-  checkedAgo: string | null;
-  onStartSetup?: () => void;
-  showRemove?: boolean;
-  removeBlocked?: boolean;
-  removeConfirmOpen?: boolean;
-  onRemoveClick?: () => void;
-  onRemoveConfirm?: () => void;
-  onRemoveCancel?: () => void;
-  removeBusy?: boolean;
-}) {
-  return (
-    <div className="border-b border-[#C8D8E4]/80 last:border-b-0">
-      <div className="flex flex-wrap items-center gap-x-3 gap-y-2 py-2.5 sm:flex-nowrap">
-        <span className="flex h-5 w-5 shrink-0 items-center justify-center text-[#4A7FA5]">
-          <Icon className="h-5 w-5" aria-hidden />
-        </span>
-        <span className="min-w-0 flex-1 text-sm font-medium text-[#1E3448]">{friendlyName}</span>
-        <span
-          className={`shrink-0 rounded-full px-2.5 py-0.5 text-xs font-semibold ${statusPillClass(status)}`}
-        >
-          {customerStatusLabel(status)}
-        </span>
-        <span className="hidden shrink-0 text-xs text-[#7A9AB0] md:inline md:w-36 md:text-right">
-          {checkedAgo ?? "Ingen seneste tjek"}
-        </span>
-        {status === "afventer" && onStartSetup ? (
-          <button
-            type="button"
-            onClick={onStartSetup}
-            className="shrink-0 rounded-full bg-[#4A7FA5] px-3 py-1 text-xs font-semibold text-white transition-colors hover:bg-[#3A6F95]"
-          >
-            Start opsætning
-          </button>
-        ) : null}
-        {showRemove ? (
-          removeBlocked ? (
-            <span title={REMOVE_BLOCKED_TOOLTIP} className="inline-flex shrink-0">
-              <button
-                type="button"
-                disabled
-                className="cursor-not-allowed text-xs font-medium text-[#7A9AB0]/50"
-                aria-label={REMOVE_BLOCKED_TOOLTIP}
-              >
-                Fjern
-              </button>
-            </span>
-          ) : (
-            <button
-              type="button"
-              onClick={onRemoveClick}
-              disabled={Boolean(removeConfirmOpen)}
-              className="shrink-0 text-xs font-medium text-[#7A9AB0] transition-colors hover:text-red-600 disabled:opacity-60"
-            >
-              Fjern
-            </button>
-          )
-        ) : null}
-      </div>
-      {removeConfirmOpen ? (
-        <div className="pb-2.5 pl-8 text-sm text-[#4A6478]">
-          Fjern dette system?{" "}
-          <button
-            type="button"
-            disabled={removeBusy}
-            onClick={onRemoveConfirm}
-            className="font-semibold text-[#4A7FA5] underline-offset-2 hover:underline disabled:opacity-50"
-          >
-            Ja
-          </button>
-          {" · "}
-          <button
-            type="button"
-            disabled={removeBusy}
-            onClick={onRemoveCancel}
-            className="font-semibold text-[#4A6478] underline-offset-2 hover:underline disabled:opacity-50"
-          >
-            Annuller
-          </button>
-        </div>
-      ) : null}
-    </div>
-  );
-}
-
-function SystemsListSection({
-  groups,
-  renderRow,
-}: {
-  groups: OnboardingDashboardGroup[];
-  renderRow: (entry: ResolvedOnboardingEntry) => ReactNode;
-}) {
-  if (!groups.length) return null;
-  return (
-    <div className="overflow-hidden rounded-xl border border-[#C8D8E4] bg-white shadow-sm">
-      {groups.map((group) => (
-        <section key={group.shortLabel}>
-          <h3 className="border-b border-[#C8D8E4] bg-[#F7F4EF] px-4 py-2 text-xs font-semibold uppercase tracking-wide text-[#7A9AB0]">
-            {group.groupLabel}
-          </h3>
-          <div className="px-4">{group.items.map((e) => renderRow(e))}</div>
-        </section>
-      ))}
-    </div>
-  );
-}
-
 export function PortalSystemsOverviewPage() {
   const portalSession = usePortalSession();
   const supabase = useMemo(() => createClient(), []);
@@ -238,10 +91,9 @@ export function PortalSystemsOverviewPage() {
   const [addingName, setAddingName] = useState<string | null>(null);
   const [addError, setAddError] = useState<string | null>(null);
   const [addOpen, setAddOpen] = useState(false);
+  const [addSearch, setAddSearch] = useState("");
   const addMenuRef = useRef<HTMLDivElement>(null);
-  const [removeConfirmFor, setRemoveConfirmFor] = useState<string | null>(null);
-  const [removeBusy, setRemoveBusy] = useState(false);
-  const [removeError, setRemoveError] = useState<string | null>(null);
+  const [detailPanel, setDetailPanel] = useState<DetailPanel | null>(null);
 
   const reloadUnion = useCallback(async () => {
     const userId = portalSession?.userId?.trim();
@@ -334,15 +186,22 @@ export function PortalSystemsOverviewPage() {
 
   const unionSet = useMemo(() => new Set(unionNames), [unionNames]);
   const activeGroups = useMemo(() => buildOnboardingDashboardGroups(unionNames), [unionNames]);
-
-  const availableGroups = useMemo(
-    () =>
-      ONBOARDING_SYSTEM_GROUPS.map((g) => ({
-        ...g,
-        systems: g.systems.filter((s) => !unionSet.has(s.name)),
-      })).filter((g) => g.systems.length > 0),
-    [unionSet],
+  const activeEntries = useMemo(
+    () => activeGroups.flatMap((g) => g.items),
+    [activeGroups],
   );
+
+  const availableGroups = useMemo(() => {
+    const q = addSearch.trim().toLowerCase();
+    return ONBOARDING_SYSTEM_GROUPS.map((g) => ({
+      ...g,
+      systems: g.systems.filter((s) => {
+        if (unionSet.has(s.name)) return false;
+        if (!q) return true;
+        return friendlyLabel(s.name).toLowerCase().includes(q);
+      }),
+    })).filter((g) => g.systems.length > 0);
+  }, [unionSet, addSearch]);
 
   const openSetupModal = (storedName: string, friendlyName: string) => {
     if (isAutoMonitoredCustomerSystem(storedName)) {
@@ -381,7 +240,6 @@ export function PortalSystemsOverviewPage() {
 
   const handleAdd = async (system: OnboardingSystem) => {
     setAddError(null);
-    setRemoveError(null);
     setAddingName(system.name);
     try {
       const res = await fetch("/api/portal/profile/onboarding-systems", {
@@ -398,6 +256,7 @@ export function PortalSystemsOverviewPage() {
       await reloadUnion();
       if (orgId) await refreshMonitoring();
       setAddOpen(false);
+      setAddSearch("");
     } catch {
       setAddError("Netværksfejl. Prøv igen.");
     } finally {
@@ -410,125 +269,62 @@ export function PortalSystemsOverviewPage() {
     return `/portal/support/new?${new URLSearchParams({ subject }).toString()}`;
   };
 
-  const handleRemoveConfirm = useCallback(
-    async (storedName: string) => {
-      setRemoveBusy(true);
-      setRemoveError(null);
-      try {
-        const res = await fetch("/api/portal/profile/onboarding-systems/remove", {
-          method: "PATCH",
-          credentials: "include",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ systemName: storedName }),
-        });
-        const json = (await res.json().catch(() => ({}))) as { error?: string };
-        if (!res.ok) {
-          setRemoveError(json.error ?? "Kunne ikke fjerne systemet.");
-          return;
-        }
-        setRemoveConfirmFor(null);
-        await reloadUnion();
-        await refreshMonitoring();
-      } catch {
-        setRemoveError("Netværksfejl. Prøv igen.");
-      } finally {
-        setRemoveBusy(false);
-      }
-    },
-    [reloadUnion, refreshMonitoring],
-  );
-
-  const renderRow = (entry: ResolvedOnboardingEntry) => {
-    const { storedName, friendlyName, Icon } = entryMeta(entry);
-    const key = entry.kind === "known" ? entry.system.id : `u-${storedName}`;
-    if (monitoringLoading) {
-      return <PortalSystemsOverviewRowSkeleton key={key} />;
-    }
-    const row = monitoringByName.get(storedName);
-    const status = normalizeMonitoringStatus(row?.status);
-    const checkedAgo =
-      row?.checked_at && !Number.isNaN(new Date(row.checked_at).getTime())
-        ? formatCheckedAgoDa(row.checked_at)
-        : null;
-    const blocked = monitoringBlocksRemove(status);
-    return (
-      <SystemRow
-        key={key}
-        storedName={storedName}
-        friendlyName={friendlyName}
-        Icon={Icon}
-        status={status}
-        checkedAgo={checkedAgo}
-        onStartSetup={() => openSetupModal(storedName, friendlyName)}
-        showRemove
-        removeBlocked={blocked}
-        removeConfirmOpen={removeConfirmFor === storedName}
-        onRemoveClick={() => {
-          setRemoveError(null);
-          setRemoveConfirmFor(storedName);
-        }}
-        onRemoveConfirm={() => void handleRemoveConfirm(storedName)}
-        onRemoveCancel={() => setRemoveConfirmFor(null)}
-        removeBusy={removeBusy}
-      />
-    );
-  };
-
-  if (loading) {
-    return (
-      <div className="w-full p-6 md:p-8">
-        <p className="text-sm text-[#7A9AB0]">Indlæser systemer…</p>
-      </div>
-    );
-  }
-
-  return (
-    <div className="w-full space-y-6 p-6 md:p-8">
-      <header className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight text-[#1E3448] md:text-3xl">Dine IT-systemer</h1>
-          <p className="mt-2 text-sm leading-relaxed text-[#4A6478]">
-            Overblik over overvågning og status for de systemer, I bruger.
-          </p>
-        </div>
-        {availableGroups.length > 0 ? (
-          <div ref={addMenuRef} className="relative shrink-0">
-            <button
-              type="button"
-              onClick={() => setAddOpen((o) => !o)}
-              className="inline-flex items-center gap-2 rounded-full border border-[#C8D8E4] bg-white px-4 py-2 text-sm font-semibold text-[#4A7FA5] shadow-sm transition hover:bg-[#F7F4EF]"
-              aria-expanded={addOpen}
-              aria-haspopup="true"
-            >
-              <Plus className="h-4 w-4" aria-hidden />
-              Tilføj system
-            </button>
-            {addOpen ? (
-              <div
-                className="absolute right-0 z-40 mt-2 max-h-[min(24rem,70vh)] w-[min(100vw-2rem,22rem)] overflow-y-auto rounded-xl border border-[#C8D8E4] bg-white py-2 shadow-lg"
-                role="menu"
-              >
-                {availableGroups.map((group) => (
+  const addButton = (
+      <div ref={addMenuRef} className="relative">
+        <button
+          type="button"
+          onClick={() => setAddOpen((o) => !o)}
+          className="inline-flex items-center gap-2 rounded-full bg-[#4A7FA5] px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-[#3A6F95]"
+          aria-expanded={addOpen}
+          aria-haspopup="true"
+        >
+          <Plus className="h-4 w-4" aria-hidden />
+          Tilføj system
+        </button>
+        {addOpen ? (
+          <div
+            className="absolute right-0 z-40 mt-2 w-[min(100vw-2rem,24rem)] overflow-hidden rounded-2xl border border-[#C8D8E4] bg-white shadow-[0_16px_48px_rgba(30,52,72,0.12)]"
+            role="menu"
+          >
+            <div className="border-b border-[#E0EAF0] p-3">
+              <div className="flex items-center gap-2 rounded-xl border border-[#C8D8E4] bg-[#F7F4EF] px-3 py-2">
+                <Search className="h-4 w-4 shrink-0 text-[#7A9AB0]" aria-hidden />
+                <input
+                  type="search"
+                  value={addSearch}
+                  onChange={(e) => setAddSearch(e.target.value)}
+                  placeholder="Søg efter system..."
+                  className="min-w-0 flex-1 bg-transparent text-sm text-[#1E3448] outline-none placeholder:text-[#7A9AB0]"
+                />
+              </div>
+            </div>
+            <div className="max-h-[400px] overflow-y-auto py-2">
+              {availableGroups.length === 0 ? (
+                <p className="px-4 py-6 text-center text-sm text-[#7A9AB0]">Ingen systemer matcher søgningen.</p>
+              ) : (
+                availableGroups.map((group) => (
                   <div key={group.label} className="px-2 py-1">
-                    <p className="px-2 py-1.5 text-xs font-semibold uppercase tracking-wide text-[#7A9AB0]">
+                    <p className="px-2 py-1.5 text-xs font-semibold uppercase tracking-wider text-[#7A9AB0]">
                       {group.label}
                     </p>
                     <ul className="space-y-0.5">
                       {group.systems.map((system) => {
                         const busy = addingName === system.name;
+                        const Icon = system.icon;
                         return (
                           <li
                             key={system.id}
-                            className="flex items-center justify-between gap-2 rounded-lg px-2 py-1.5 hover:bg-[#F7F4EF]"
+                            className="flex items-center justify-between gap-2 rounded-lg px-2 py-2 hover:bg-[#F7F4EF]"
                           >
-                            <span className="min-w-0 flex-1 text-sm text-[#1E3448]">
-                              {friendlyLabel(system.name)}
+                            <span className="flex min-w-0 flex-1 items-center gap-2">
+                              <Icon className="h-5 w-5 shrink-0 text-[#4A7FA5]" aria-hidden />
+                              <span className="text-sm text-[#1E3448]">{friendlyLabel(system.name)}</span>
                             </span>
                             <button
                               type="button"
                               disabled={busy}
                               onClick={() => void handleAdd(system)}
-                              className="shrink-0 rounded-full border border-[#4A7FA5]/30 px-2.5 py-0.5 text-xs font-semibold text-[#4A7FA5] transition hover:bg-[#F7F4EF] disabled:opacity-50"
+                              className="shrink-0 rounded-full bg-[#4A7FA5] px-3 py-1 text-xs font-semibold text-white transition hover:bg-[#3A6F95] disabled:opacity-50"
                             >
                               {busy ? "…" : "Tilføj"}
                             </button>
@@ -537,26 +333,91 @@ export function PortalSystemsOverviewPage() {
                       })}
                     </ul>
                   </div>
-                ))}
-              </div>
-            ) : null}
+                ))
+              )}
+            </div>
           </div>
         ) : null}
-      </header>
+      </div>
+  );
 
+  if (loading) {
+    return (
+      <PortalPageShell title="Dine IT-systemer" subtitle="Overblik over overvågning og status">
+        <p className="text-sm text-[#7A9AB0]">Indlæser systemer…</p>
+      </PortalPageShell>
+    );
+  }
+
+  const detailRow = detailPanel ? monitoringByName.get(detailPanel.storedName) : undefined;
+
+  return (
+    <PortalPageShell
+      title="Dine IT-systemer"
+      subtitle="Overblik over overvågning og status"
+      action={addButton}
+    >
       {addError ? (
-        <p className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">{addError}</p>
-      ) : null}
-      {removeError ? (
-        <p className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">{removeError}</p>
+        <p className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">{addError}</p>
       ) : null}
 
-      {activeGroups.length > 0 ? (
-        <SystemsListSection groups={activeGroups} renderRow={renderRow} />
+      {activeEntries.length > 0 ? (
+        <ul className="grid grid-cols-1 gap-4 md:grid-cols-2">
+          {activeEntries.map((entry) => {
+            const { storedName, friendlyName, Icon } = entryMeta(entry);
+            const key = entry.kind === "known" ? entry.system.id : `u-${storedName}`;
+            if (monitoringLoading) {
+              return (
+                <li key={key}>
+                  <PortalSystemsOverviewCardSkeleton />
+                </li>
+              );
+            }
+            const row = monitoringByName.get(storedName);
+            const status = normalizeMonitoringStatus(row?.status);
+            const checkedAgo =
+              row?.checked_at && !Number.isNaN(new Date(row.checked_at).getTime())
+                ? formatCheckedAgoDa(row.checked_at)
+                : null;
+            return (
+              <li key={key}>
+                <PortalSystemCard
+                  friendlyName={friendlyName}
+                  Icon={Icon}
+                  status={status}
+                  checkedAgo={checkedAgo}
+                  onSetup={
+                    status === "afventer"
+                      ? () => openSetupModal(storedName, friendlyName)
+                      : undefined
+                  }
+                  onDetails={
+                    status !== "afventer"
+                      ? () => setDetailPanel({ storedName, friendlyName, status, checkedAgo })
+                      : undefined
+                  }
+                />
+              </li>
+            );
+          })}
+        </ul>
       ) : (
-        <p className="rounded-xl border border-[#C8D8E4] bg-white px-5 py-8 text-center text-sm text-[#4A6478] shadow-sm">
-          Ingen systemer endnu. Brug <strong className="text-[#4A7FA5]">+ Tilføj system</strong> for at komme i gang.
-        </p>
+        <div className="rounded-2xl border border-[#C8D8E4] bg-white px-6 py-14 text-center shadow-sm">
+          <p className="text-sm font-medium text-[#1E3448]">Ingen systemer endnu</p>
+          <p className="mt-2 text-sm text-[#4A6478]">
+            Tilføj dit første system for at starte overvågning.
+          </p>
+          {availableGroups.length > 0 ? (
+            <button
+              type="button"
+              onClick={() => setAddOpen(true)}
+              className="mt-6 inline-flex items-center gap-2 rounded-full bg-[#4A7FA5] px-5 py-2.5 text-sm font-medium text-white hover:bg-[#3A6F95]"
+            >
+              <Plus className="h-4 w-4" />
+              Tilføj system
+            </button>
+          ) : null}
+        </div>
       )}
 
       {credentialModal && orgId ? (
@@ -569,56 +430,104 @@ export function PortalSystemsOverviewPage() {
         />
       ) : null}
 
-      {modal ? (
-        <PortalModalOverlay open onClose={() => setModal(null)} position="bottom-sheet">
-          <div
-            className="w-full max-w-lg rounded-2xl border border-[#C8D8E4] bg-white p-6 shadow-xl"
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="setup-modal-title"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="flex items-start justify-between gap-4">
-              <h2 id="setup-modal-title" className="text-lg font-semibold text-[#1E3448]">
-                Opsætning af {modal.friendlyName}
-              </h2>
+      <PortalSlideInPanel open={modal != null} onClose={() => setModal(null)} panelClassName="max-w-lg">
+        {modal ? (
+          <div className="flex h-full flex-col">
+            <div className="flex items-start justify-between gap-4 border-b border-[#C8D8E4] px-6 py-5">
+              <div>
+                <h2 className="text-lg font-semibold text-[#1E3448]">Opsætning af {modal.friendlyName}</h2>
+                <p className="mt-1 text-xs text-[#7A9AB0]">Trin 1 af 1</p>
+              </div>
               <button
                 type="button"
                 onClick={() => setModal(null)}
-                className="rounded-full p-1 text-[#7A9AB0] transition-colors hover:bg-[#F7F4EF] hover:text-[#1E3448]"
+                className="rounded-full p-1 text-[#7A9AB0] transition hover:bg-[#F7F4EF] hover:text-[#1E3448]"
                 aria-label="Luk"
               >
                 <X className="h-5 w-5" />
               </button>
             </div>
-            {modal.kind === "auto" ? (
-              <p className="mt-5 flex gap-3 text-sm leading-relaxed text-[#4A6478]">
-                <Info className="h-5 w-5 shrink-0 text-[#7A9AB0]" aria-hidden />
-                <span>Dette system overvåges automatisk. Ingen opsætning kræves.</span>
-              </p>
-            ) : (
-              <>
-                <p className="mt-5 text-sm leading-relaxed text-[#4A6478]">
-                  Denne integration kræver at vi hjælper dig med opsætningen. Opret en sag og vi sørger for resten.
+            <div className="flex gap-1.5 px-6 pt-4">
+              <span className="h-1 flex-1 rounded-full bg-[#4A7FA5]" />
+            </div>
+            <div className="flex-1 overflow-y-auto px-6 py-6">
+              {modal.kind === "auto" ? (
+                <p className="flex gap-3 text-sm leading-relaxed text-[#4A6478]">
+                  <Info className="h-5 w-5 shrink-0 text-[#7A9AB0]" aria-hidden />
+                  <span>Dette system overvåges automatisk. Ingen opsætning kræves.</span>
                 </p>
-                <Link
-                  href={supportSetupHref(modal.storedName)}
-                  className="mt-6 inline-flex w-full items-center justify-center rounded-full bg-[#4A7FA5] px-5 py-3 text-sm font-semibold text-white transition-colors hover:bg-[#3A6F95] sm:w-auto"
-                >
-                  Opret sag
-                </Link>
-              </>
-            )}
-            <button
-              type="button"
-              onClick={() => setModal(null)}
-              className="mt-6 w-full rounded-full border border-[#C8D8E4] py-2.5 text-sm font-semibold text-[#1E3448] transition-colors hover:bg-[#EAF1F7] sm:w-auto sm:px-6"
-            >
-              Luk
-            </button>
+              ) : (
+                <>
+                  <p className="text-sm leading-relaxed text-[#4A6478]">
+                    Denne integration kræver hjælp fra vores team. Opret en sag, så klarer vi opsætningen.
+                  </p>
+                  <ol className="mt-6 space-y-3 text-sm text-[#4A6478]">
+                    <li className="flex gap-3">
+                      <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[#EAF1F7] text-xs font-semibold text-[#4A7FA5]">
+                        1
+                      </span>
+                      Opret en support-sag med systemnavnet
+                    </li>
+                    <li className="flex gap-3">
+                      <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[#EAF1F7] text-xs font-semibold text-[#4A7FA5]">
+                        2
+                      </span>
+                      Vi kontakter dig med næste skridt
+                    </li>
+                  </ol>
+                  <Link
+                    href={supportSetupHref(modal.storedName)}
+                    className="mt-8 inline-flex w-full items-center justify-center rounded-full bg-[#4A7FA5] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#3A6F95]"
+                  >
+                    Opret sag
+                  </Link>
+                </>
+              )}
+            </div>
           </div>
-        </PortalModalOverlay>
-      ) : null}
-    </div>
+        ) : null}
+      </PortalSlideInPanel>
+
+      <PortalSlideInPanel open={detailPanel != null} onClose={() => setDetailPanel(null)} panelClassName="max-w-md">
+        {detailPanel ? (
+          <div className="flex h-full flex-col">
+            <div className="flex items-start justify-between gap-4 border-b border-[#C8D8E4] px-6 py-5">
+              <div>
+                <h2 className="text-lg font-semibold text-[#1E3448]">{detailPanel.friendlyName}</h2>
+                <p className="mt-1 text-xs text-[#7A9AB0]">Systemstatus</p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setDetailPanel(null)}
+                className="rounded-full p-1 text-[#7A9AB0] transition hover:bg-[#F7F4EF]"
+                aria-label="Luk"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+            <div className="flex-1 overflow-y-auto px-6 py-6">
+              <p className="text-sm text-[#4A6478]">
+                {monitoringCustomerExplanation(
+                  detailPanel.storedName,
+                  detailPanel.status,
+                  detailRow?.details,
+                )}
+              </p>
+              {detailPanel.checkedAgo ? (
+                <p className="mt-4 text-xs text-[#7A9AB0]">Tjekket for {detailPanel.checkedAgo}</p>
+              ) : null}
+              {(detailPanel.status === "advarsel" || detailPanel.status === "fejl") && (
+                <Link
+                  href="/portal/support/new"
+                  className="mt-8 inline-flex rounded-full bg-[#4A7FA5] px-5 py-2.5 text-sm font-semibold text-white hover:bg-[#3A6F95]"
+                >
+                  Opret support-sag
+                </Link>
+              )}
+            </div>
+          </div>
+        ) : null}
+      </PortalSlideInPanel>
+    </PortalPageShell>
   );
 }

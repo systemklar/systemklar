@@ -350,7 +350,7 @@ export default function PortalProfilePage() {
           onClick={onAvatarPick}
           disabled={uploadingAvatar}
           aria-label="Skift profilbillede"
-          className="group relative h-16 w-16 shrink-0 overflow-hidden rounded-full focus:outline-none focus-visible:ring-2 focus-visible:ring-[#4A7FA5]"
+          className="group relative h-20 w-20 shrink-0 overflow-hidden rounded-full focus:outline-none focus-visible:ring-2 focus-visible:ring-[#4A7FA5]"
         >
           <ProfileAvatar
             avatarUrl={avatarUrl ?? profile?.avatar_url}
@@ -454,11 +454,12 @@ export default function PortalProfilePage() {
       <div className="mt-4 flex items-center justify-between gap-4 border-t border-[#E0EAF0] pt-4">
         <div>
           <p className="text-sm font-medium text-[#1E3448]">To-faktor godkendelse</p>
-          <div className="mt-1 flex items-center gap-2">
-            <ComingSoonBadge />
-          </div>
+          <p className="mt-1 text-xs text-[#7A9AB0]">Ekstra sikkerhed ved login</p>
         </div>
-        <SettingsToggle checked={false} onChange={() => {}} disabled />
+        <div className="flex items-center gap-3">
+          <ComingSoonBadge />
+          <SettingsToggle checked={false} onChange={() => {}} disabled />
+        </div>
       </div>
     </SettingsSection>
   );
@@ -474,25 +475,38 @@ export default function PortalProfilePage() {
         />
       }
     >
-      <SettingsRow label="Send mig email når en IT-sag opdateres">
+      <SettingsRow
+        label="Sagsopdateringer"
+        description="Email når en support-sag får nyt svar eller skifter status"
+      >
         <SettingsToggle
           checked={notifPrefs.ticket_updated}
           onChange={(v) => setNotifPrefs((p) => ({ ...p, ticket_updated: v }))}
         />
       </SettingsRow>
-      <SettingsRow label="Send mig email når et system fejler">
+      <SettingsRow
+        label="Systemfejl"
+        description="Email med det samme hvis et overvåget system går ned"
+      >
         <SettingsToggle
           checked={notifPrefs.system_failure}
           onChange={(v) => setNotifPrefs((p) => ({ ...p, system_failure: v }))}
         />
       </SettingsRow>
-      <SettingsRow label="Send mig email når en IT-rapport er klar">
+      <SettingsRow
+        label="IT-rapport klar"
+        description="Email når en ny månedlig rapport er tilgængelig"
+      >
         <SettingsToggle
           checked={notifPrefs.report_ready}
           onChange={(v) => setNotifPrefs((p) => ({ ...p, report_ready: v }))}
         />
       </SettingsRow>
-      <SettingsRow label="Send mig ugentligt overblik over systemstatus" last>
+      <SettingsRow
+        label="Ugentligt overblik"
+        description="Kort statusmail hver uge — også når alt fungerer"
+        last
+      >
         <SettingsToggle
           checked={notifPrefs.weekly_status}
           onChange={(v) => setNotifPrefs((p) => ({ ...p, weekly_status: v }))}

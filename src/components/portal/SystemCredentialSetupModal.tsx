@@ -2,7 +2,7 @@
 
 import { Check, X } from "lucide-react";
 import { useMemo, useState } from "react";
-import { PortalModalOverlay } from "@/components/portal/PortalOverlay";
+import { PortalSlideInPanel } from "@/components/portal/PortalOverlay";
 import {
   getSelfServiceSetupConfig,
   totalSetupSteps,
@@ -104,13 +104,12 @@ export function SystemCredentialSetupModal({
   };
 
   return (
-    <PortalModalOverlay open onClose={onClose} position="bottom-sheet">
+    <PortalSlideInPanel open onClose={onClose} panelClassName="max-w-lg">
       <div
-        className="flex max-h-[min(90vh,640px)] w-full max-w-lg flex-col rounded-2xl border border-[#C8D8E4] bg-white shadow-xl"
+        className="flex h-full min-h-0 flex-col"
         role="dialog"
         aria-modal="true"
         aria-labelledby="credential-setup-title"
-        onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-start justify-between gap-4 border-b border-[#C8D8E4] px-6 py-4">
           <div>
@@ -246,6 +245,6 @@ export function SystemCredentialSetupModal({
           </div>
         ) : null}
       </div>
-    </PortalModalOverlay>
+    </PortalSlideInPanel>
   );
 }
