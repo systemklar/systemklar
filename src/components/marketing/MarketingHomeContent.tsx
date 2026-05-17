@@ -13,7 +13,6 @@ import { MarketingCtaSection } from "@/components/marketing/MarketingCtaSection"
 import { ScrollReveal } from "@/components/marketing/ScrollReveal";
 import { HeroStatusMockup } from "@/components/marketing/home/HeroStatusMockup";
 import { HomeTeaserSections } from "@/components/marketing/home/HomeTeaserSections";
-import { ItCostCalculator } from "@/components/marketing/home/ItCostCalculator";
 
 const TRUST_ICONS = [
   { icon: Store, label: "Butik" },
@@ -83,8 +82,6 @@ export function MarketingHomeContent() {
       </section>
 
       <HomeTeaserSections />
-
-      <ItCostCalculator />
 
       <MarketingCtaSection
         heading="Klar til at komme i gang?"
