@@ -173,7 +173,7 @@ export default function PortalQuoteNewPage() {
 
   return (
       <div className="w-full p-6 md:p-8">
-        <Link href="/portal/tilbudsgenerator" className="text-sm font-semibold text-[#8B9E6B] hover:underline">
+        <Link href="/portal/tilbudsgenerator" className="text-sm font-semibold text-[#4A7FA5] hover:underline">
           ← Tilbage til AI Tilbudsgenerator
         </Link>
 
@@ -202,7 +202,7 @@ export default function PortalQuoteNewPage() {
             {services.length === 0 ? (
               <p className="mt-3 text-sm text-slate-600">
                 Ingen tjenester endnu.{" "}
-                <Link href="/portal/tilbudsgenerator#ydelser" className="font-semibold text-[#8B9E6B] hover:underline">
+                <Link href="/portal/tilbudsgenerator#ydelser" className="font-semibold text-[#4A7FA5] hover:underline">
                   Opret ydelser først
                 </Link>
                 .
@@ -247,7 +247,7 @@ export default function PortalQuoteNewPage() {
               type="button"
               disabled={generating}
               onClick={() => void handleGenerate()}
-              className="mt-4 rounded-full bg-[#8B9E6B] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[#7A8A5A] focus:outline-none focus:ring-2 focus:ring-[#8B9E6B] disabled:opacity-50"
+              className="mt-4 rounded-full bg-[#4A7FA5] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[#3A6F95] focus:outline-none focus:ring-2 focus:ring-[#4A7FA5] disabled:opacity-50"
             >
               {generating ? "Genererer..." : "Generer tilbud"}
             </button>
@@ -276,7 +276,7 @@ export default function PortalQuoteNewPage() {
             <button
               type="submit"
               disabled={saving || sending}
-              className="rounded-full bg-[#8B9E6B] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[#7A8A5A] focus:outline-none focus:ring-2 focus:ring-[#8B9E6B] disabled:opacity-50"
+              className="rounded-full bg-[#4A7FA5] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[#3A6F95] focus:outline-none focus:ring-2 focus:ring-[#4A7FA5] disabled:opacity-50"
             >
               {saving ? "Gemmer..." : "Gem som kladde"}
             </button>

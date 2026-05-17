@@ -9,8 +9,8 @@ export const TICKET_FORM_MAX_FILES = 5;
 export const TICKET_FORM_MAX_FILE_BYTES = 10 * 1024 * 1024;
 
 const fieldClass =
-  "w-full rounded-xl border border-[#D4C9A8] bg-white px-4 py-3 text-base text-[#2C3020] outline-none transition focus:border-[#8B9E6B] focus:ring-2 focus:ring-[#8B9E6B]/20 md:text-sm";
-const labelClass = "mb-1 block text-sm font-medium text-[#2C3020]";
+  "w-full rounded-xl border border-[#C8D8E4] bg-white px-4 py-3 text-base text-[#1E3448] outline-none transition focus:border-[#4A7FA5] focus:ring-2 focus:ring-[#4A7FA5]/20 md:text-sm";
+const labelClass = "mb-1 block text-sm font-medium text-[#1E3448]";
 
 export type TicketFormOrganisationOption = {
   id: string;
@@ -62,26 +62,26 @@ function PendingFilePreviewItem({
   }, [file, isImage]);
 
   return (
-    <div className="flex items-center gap-3 rounded-lg border border-[#D4C9A8] bg-[#EEF2E6] p-2">
+    <div className="flex items-center gap-3 rounded-lg border border-[#C8D8E4] bg-[#EAF1F7] p-2">
       {isImage && previewUrl ? (
         // eslint-disable-next-line @next/next/no-img-element
         <img src={previewUrl} alt="" className="h-20 w-20 shrink-0 rounded-lg object-cover" />
       ) : (
-        <div className="flex h-20 w-20 shrink-0 flex-col items-center justify-center rounded-lg border border-[#D4C9A8] bg-white px-1">
+        <div className="flex h-20 w-20 shrink-0 flex-col items-center justify-center rounded-lg border border-[#C8D8E4] bg-white px-1">
           <FileText className="h-8 w-8 text-emerald-600" aria-hidden />
         </div>
       )}
       <div className="min-w-0 flex-1">
-        <p className="truncate text-sm font-medium text-[#5C5A48]" title={file.name}>
+        <p className="truncate text-sm font-medium text-[#4A6478]" title={file.name}>
           {file.name}
         </p>
-        <p className="text-xs text-[#5C5A48]">{formatFileSize(file.size)}</p>
+        <p className="text-xs text-[#4A6478]">{formatFileSize(file.size)}</p>
       </div>
       <button
         type="button"
         onClick={onRemove}
         disabled={disabled}
-        className="ml-auto shrink-0 text-[#A8A090] transition hover:text-red-500 disabled:opacity-50"
+        className="ml-auto shrink-0 text-[#9AA8B0] transition hover:text-red-500 disabled:opacity-50"
         aria-label={`Fjern ${file.name}`}
       >
         <X className="h-4 w-4" aria-hidden />
@@ -245,7 +245,7 @@ export function TicketForm({
           type="button"
           onClick={() => fileInputRef.current?.click()}
           disabled={busy || pendingFiles.length >= TICKET_FORM_MAX_FILES}
-          className="inline-flex items-center gap-1.5 rounded-full border border-[#D4C9A8] px-4 py-2 text-sm font-medium text-[#8B9E6B] transition hover:bg-[#EEF2E6] disabled:opacity-50"
+          className="inline-flex items-center gap-1.5 rounded-full border border-[#C8D8E4] px-4 py-2 text-sm font-medium text-[#4A7FA5] transition hover:bg-[#EAF1F7] disabled:opacity-50"
         >
           <Paperclip className="h-4 w-4" aria-hidden />
           Vedhæft filer
@@ -266,7 +266,7 @@ export function TicketForm({
       </div>
 
       {uploadingFiles ? (
-        <p className="flex items-center gap-2 text-sm text-[#5C5A48]">
+        <p className="flex items-center gap-2 text-sm text-[#4A6478]">
           <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
           Uploader filer…
         </p>
@@ -280,7 +280,7 @@ export function TicketForm({
         <button
           type="submit"
           disabled={busy || (showOrganisationSelect && !organisationId)}
-          className="rounded-full bg-[#8B9E6B] px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-[#7A8A5A] disabled:cursor-not-allowed disabled:opacity-60"
+          className="rounded-full bg-[#4A7FA5] px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-[#3A6F95] disabled:cursor-not-allowed disabled:opacity-60"
         >
           {busy ? (
             <span className="inline-flex items-center gap-2">
@@ -296,7 +296,7 @@ export function TicketForm({
             type="button"
             onClick={onCancel}
             disabled={busy}
-            className="rounded-full border border-[#D4C9A8] px-5 py-2.5 text-sm font-semibold text-[#8B9E6B] transition hover:bg-[#EEF2E6] disabled:opacity-50"
+            className="rounded-full border border-[#C8D8E4] px-5 py-2.5 text-sm font-semibold text-[#4A7FA5] transition hover:bg-[#EAF1F7] disabled:opacity-50"
           >
             Annuller
           </button>

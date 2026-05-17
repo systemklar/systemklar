@@ -42,7 +42,7 @@ export default function AdminForgotPasswordPage() {
     >
 
       {sent ? (
-        <p className="mt-8 rounded-lg border border-[#C4D8B8] bg-[#EEF4EA] px-3 py-2 text-sm text-[#4A7A3A]">
+        <p className="mt-8 rounded-lg border border-[#B8D8C0] bg-[#EEF7F0] px-3 py-2 text-sm text-[#3A7A4A]">
           Vi har sendt et nulstillingslink til din e-mail.
         </p>
       ) : (
@@ -57,7 +57,7 @@ export default function AdminForgotPasswordPage() {
                 value={email}
                 onChange={(event) => setEmail(event.target.value)}
                 required
-                className="w-full rounded-lg border border-[#E7E5E4] px-3 py-2 outline-none transition focus:border-[#8B9E6B] focus:ring-2 focus:ring-[#EEF2E6]"
+                className="w-full rounded-lg border border-[#E7E5E4] px-3 py-2 outline-none transition focus:border-[#4A7FA5] focus:ring-2 focus:ring-[#EAF1F7]"
                 placeholder="kontakt@systemklar.dk"
                 autoComplete="email"
               />
@@ -73,7 +73,7 @@ export default function AdminForgotPasswordPage() {
         </form>
       )}
 
-      <Link href="/admin/login" className="mt-6 inline-block text-sm font-semibold text-[#8B9E6B] hover:underline">
+      <Link href="/admin/login" className="mt-6 inline-block text-sm font-semibold text-[#4A7FA5] hover:underline">
         Tilbage til admin login
       </Link>
     </AuthSplitLayout>

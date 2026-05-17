@@ -33,7 +33,7 @@ const TYPE_OPTS: { value: GuideRow["type"]; label: string }[] = [
 ];
 
 function typeBadgeClasses(t: GuideRow["type"]): string {
-  if (t === "video") return "bg-[#EEF2E6] text-[#2C3020] border border-[#D4C9A8]";
+  if (t === "video") return "bg-[#EAF1F7] text-[#1E3448] border border-[#C8D8E4]";
   if (t === "faq") return "bg-purple-100 text-purple-900 border border-purple-200";
   return "bg-emerald-100 text-emerald-900 border border-emerald-200";
 }
@@ -232,8 +232,8 @@ export default function AdminVejledningerClient() {
     <div className="space-y-8">
       <header className="flex flex-wrap items-start justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-[#2C3020] md:text-3xl">Vejledninger &amp; FAQ</h1>
-          <p className="mt-1 text-sm text-[#5C5A48]">
+          <h1 className="text-2xl font-bold text-[#1E3448] md:text-3xl">Vejledninger &amp; FAQ</h1>
+          <p className="mt-1 text-sm text-[#4A6478]">
             Opsæt hjælpetekster og guides som kunderne ser i portalen (kun publiceret).
           </p>
         </div>
@@ -241,7 +241,7 @@ export default function AdminVejledningerClient() {
           type="button"
           onClick={() => openNewGuide()}
           disabled={categories.length === 0}
-          className="rounded-full bg-[#8B9E6B] px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-[#7A8A5A] disabled:cursor-not-allowed disabled:opacity-50"
+          className="rounded-full bg-[#4A7FA5] px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-[#3A6F95] disabled:cursor-not-allowed disabled:opacity-50"
           title={categories.length === 0 ? "Opret først en kategori" : undefined}
         >
           Ny vejledning
@@ -257,17 +257,17 @@ export default function AdminVejledningerClient() {
       ) : (
         <div className="flex flex-col gap-6 lg:flex-row">
           <div className="w-full shrink-0 lg:w-1/3">
-            <nav className="space-y-2 rounded-2xl border border-[#D4C9A8] bg-white p-3 shadow-sm">
+            <nav className="space-y-2 rounded-2xl border border-[#C8D8E4] bg-white p-3 shadow-sm">
               <button
                 type="button"
                 onClick={() => setFilterCategoryId(null)}
                 className={`flex w-full items-center rounded-xl border px-4 py-3 text-left text-sm transition ${
                   filterCategoryId === null
-                    ? "border-[#D4C9A8] bg-[#EEF2E6] border-l-2 border-l-[#8B9E6B] pl-[14px]"
-                    : "border-transparent hover:bg-[#EEF2E6]/60"
+                    ? "border-[#C8D8E4] bg-[#EAF1F7] border-l-2 border-l-[#4A7FA5] pl-[14px]"
+                    : "border-transparent hover:bg-[#EAF1F7]/60"
                 }`}
               >
-                <span className="font-semibold text-[#2C3020]">Alle</span>
+                <span className="font-semibold text-[#1E3448]">Alle</span>
               </button>
               {categories.map((c) => {
                 const Icon = getGuideCategoryIcon(c.icon_key);
@@ -279,19 +279,19 @@ export default function AdminVejledningerClient() {
                     onClick={() => setFilterCategoryId(c.id)}
                     className={`flex w-full items-center gap-2 rounded-xl border px-4 py-3 text-left text-sm transition ${
                       active
-                        ? "border-[#D4C9A8] bg-[#EEF2E6] border-l-2 border-l-[#8B9E6B] pl-[14px]"
-                        : "border-transparent hover:bg-[#EEF2E6]/60"
+                        ? "border-[#C8D8E4] bg-[#EAF1F7] border-l-2 border-l-[#4A7FA5] pl-[14px]"
+                        : "border-transparent hover:bg-[#EAF1F7]/60"
                     }`}
                   >
-                    <Icon className="h-4 w-4 shrink-0 text-[#8B9E6B]" aria-hidden />
-                    <span className="font-semibold text-[#2C3020]">{c.name}</span>
+                    <Icon className="h-4 w-4 shrink-0 text-[#4A7FA5]" aria-hidden />
+                    <span className="font-semibold text-[#1E3448]">{c.name}</span>
                   </button>
                 );
               })}
               <button
                 type="button"
                 onClick={() => openCategoryModal()}
-                className="mt-2 w-full rounded-xl border border-dashed border-[#D4C9A8] py-2 text-sm font-medium text-[#7A8A5A] hover:bg-[#EEF2E6]"
+                className="mt-2 w-full rounded-xl border border-dashed border-[#C8D8E4] py-2 text-sm font-medium text-[#3A6F95] hover:bg-[#EAF1F7]"
               >
                 Ny kategori
               </button>
@@ -300,14 +300,14 @@ export default function AdminVejledningerClient() {
 
           <div className="min-w-0 flex-1 space-y-4 lg:w-2/3">
             {filteredGuides.length === 0 ? (
-              <p className="rounded-2xl border border-[#D4C9A8] bg-white p-6 text-sm text-slate-600 shadow-sm">
+              <p className="rounded-2xl border border-[#C8D8E4] bg-white p-6 text-sm text-slate-600 shadow-sm">
                 Ingen vejledninger i denne visning. Opret en kategori og en vejledning for at komme i gang.
               </p>
             ) : (
               filteredGuides.map((g) => (
                 <div
                   key={g.id}
-                  className="rounded-2xl border border-[#D4C9A8] bg-white p-5 shadow-sm"
+                  className="rounded-2xl border border-[#C8D8E4] bg-white p-5 shadow-sm"
                 >
                   <div className="flex flex-wrap items-start justify-between gap-3">
                     <div className="min-w-0 space-y-2">
@@ -325,8 +325,8 @@ export default function AdminVejledningerClient() {
                           {g.published ? "Publiceret" : "Kladde"}
                         </span>
                       </div>
-                      <h2 className="text-lg font-semibold text-[#2C3020]">{g.title}</h2>
-                      <p className="text-xs text-[#5C5A48]">
+                      <h2 className="text-lg font-semibold text-[#1E3448]">{g.title}</h2>
+                      <p className="text-xs text-[#4A6478]">
                         Kategori:{" "}
                         <span className="font-medium">{categories.find((c) => c.id === g.category_id)?.name ?? "—"}</span>
                       </p>
@@ -335,14 +335,14 @@ export default function AdminVejledningerClient() {
                       <button
                         type="button"
                         onClick={() => void togglePublished(g)}
-                        className="rounded-full border border-[#D4C9A8] px-3 py-1.5 text-xs font-semibold text-[#7A8A5A] hover:bg-[#EEF2E6]"
+                        className="rounded-full border border-[#C8D8E4] px-3 py-1.5 text-xs font-semibold text-[#3A6F95] hover:bg-[#EAF1F7]"
                       >
                         {g.published ? "Afpublicer" : "Publicer"}
                       </button>
                       <button
                         type="button"
                         onClick={() => openEditGuide(g)}
-                        className="rounded-full bg-[#8B9E6B] px-3 py-1.5 text-xs font-semibold text-white hover:bg-[#7A8A5A]"
+                        className="rounded-full bg-[#4A7FA5] px-3 py-1.5 text-xs font-semibold text-white hover:bg-[#3A6F95]"
                       >
                         Rediger
                       </button>
@@ -364,26 +364,26 @@ export default function AdminVejledningerClient() {
 
       {guideModalOpen ? (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4" role="dialog">
-          <div className="max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-2xl border border-[#D4C9A8] bg-white p-6 shadow-xl">
-            <h2 className="text-lg font-semibold text-[#2C3020]">
+          <div className="max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-2xl border border-[#C8D8E4] bg-white p-6 shadow-xl">
+            <h2 className="text-lg font-semibold text-[#1E3448]">
               {editingGuide ? "Rediger vejledning" : "Ny vejledning"}
             </h2>
             <div className="mt-4 space-y-3">
               <div>
-                <label className="mb-1 block text-sm font-medium text-[#2C3020]">Titel</label>
+                <label className="mb-1 block text-sm font-medium text-[#1E3448]">Titel</label>
                 <input
                   value={gTitle}
                   onChange={(e) => setGTitle(e.target.value)}
                   required
-                  className="w-full rounded-xl border border-[#D4C9A8] px-4 py-2 text-sm outline-none focus:border-[#E8E2D0]0"
+                  className="w-full rounded-xl border border-[#C8D8E4] px-4 py-2 text-sm outline-none focus:border-[#E0EAF0]0"
                 />
               </div>
               <div>
-                <label className="mb-1 block text-sm font-medium text-[#2C3020]">Type</label>
+                <label className="mb-1 block text-sm font-medium text-[#1E3448]">Type</label>
                 <select
                   value={gType}
                   onChange={(e) => setGType(e.target.value as GuideRow["type"])}
-                  className="w-full rounded-xl border border-[#D4C9A8] px-4 py-2 text-sm outline-none focus:border-[#E8E2D0]0"
+                  className="w-full rounded-xl border border-[#C8D8E4] px-4 py-2 text-sm outline-none focus:border-[#E0EAF0]0"
                 >
                   {TYPE_OPTS.map((o) => (
                     <option key={o.value} value={o.value}>
@@ -393,11 +393,11 @@ export default function AdminVejledningerClient() {
                 </select>
               </div>
               <div>
-                <label className="mb-1 block text-sm font-medium text-[#2C3020]">Kategori</label>
+                <label className="mb-1 block text-sm font-medium text-[#1E3448]">Kategori</label>
                 <select
                   value={gCategoryId}
                   onChange={(e) => setGCategoryId(e.target.value)}
-                  className="w-full rounded-xl border border-[#D4C9A8] px-4 py-2 text-sm outline-none focus:border-[#E8E2D0]0"
+                  className="w-full rounded-xl border border-[#C8D8E4] px-4 py-2 text-sm outline-none focus:border-[#E0EAF0]0"
                 >
                   {categories.map((c) => (
                     <option key={c.id} value={c.id}>
@@ -408,24 +408,24 @@ export default function AdminVejledningerClient() {
               </div>
               {gType === "video" ? (
                 <div>
-                  <label className="mb-1 block text-sm font-medium text-[#2C3020]">Video-URL (YouTube / Vimeo)</label>
+                  <label className="mb-1 block text-sm font-medium text-[#1E3448]">Video-URL (YouTube / Vimeo)</label>
                   <input
                     value={gVideoUrl}
                     onChange={(e) => setGVideoUrl(e.target.value)}
-                    className="w-full rounded-xl border border-[#D4C9A8] px-4 py-2 text-sm outline-none focus:border-[#E8E2D0]0"
+                    className="w-full rounded-xl border border-[#C8D8E4] px-4 py-2 text-sm outline-none focus:border-[#E0EAF0]0"
                     placeholder="https://..."
                   />
                 </div>
               ) : (
                 <div>
-                  <label className="mb-1 block text-sm font-medium text-[#2C3020]">
+                  <label className="mb-1 block text-sm font-medium text-[#1E3448]">
                     Indhold (ren tekst, linjeskift tilladt)
                   </label>
                   <textarea
                     value={gContent}
                     onChange={(e) => setGContent(e.target.value)}
                     rows={10}
-                    className="w-full rounded-xl border border-[#D4C9A8] px-4 py-3 text-sm outline-none focus:border-[#E8E2D0]0"
+                    className="w-full rounded-xl border border-[#C8D8E4] px-4 py-3 text-sm outline-none focus:border-[#E0EAF0]0"
                   />
                 </div>
               )}
@@ -435,21 +435,21 @@ export default function AdminVejledningerClient() {
                   type="checkbox"
                   checked={gPublished}
                   onChange={(e) => setGPublished(e.target.checked)}
-                  className="rounded border-[#D4C9A8] text-[#8B9E6B]"
+                  className="rounded border-[#C8D8E4] text-[#4A7FA5]"
                 />
-                <label htmlFor="g-pub" className="text-sm text-[#2C3020]">
+                <label htmlFor="g-pub" className="text-sm text-[#1E3448]">
                   Publiceret
                 </label>
               </div>
               <div>
-                <label className="mb-1 block text-sm font-medium text-[#2C3020]">
+                <label className="mb-1 block text-sm font-medium text-[#1E3448]">
                   Sorteringsrækkefølge
                 </label>
                 <input
                   type="number"
                   value={gSort}
                   onChange={(e) => setGSort(Number(e.target.value) || 0)}
-                  className="w-full rounded-xl border border-[#D4C9A8] px-4 py-2 text-sm outline-none focus:border-[#E8E2D0]0"
+                  className="w-full rounded-xl border border-[#C8D8E4] px-4 py-2 text-sm outline-none focus:border-[#E0EAF0]0"
                 />
               </div>
               {guideErr ? <p className="text-sm text-red-600">{guideErr}</p> : null}
@@ -458,7 +458,7 @@ export default function AdminVejledningerClient() {
                   type="button"
                   disabled={guideSaving}
                   onClick={() => void saveGuide()}
-                  className="rounded-full bg-[#8B9E6B] px-5 py-2 text-sm font-semibold text-white hover:bg-[#7A8A5A] disabled:opacity-60"
+                  className="rounded-full bg-[#4A7FA5] px-5 py-2 text-sm font-semibold text-white hover:bg-[#3A6F95] disabled:opacity-60"
                 >
                   {guideSaving ? "Gemmer..." : "Gem"}
                 </button>
@@ -477,23 +477,23 @@ export default function AdminVejledningerClient() {
 
       {categoryModalOpen ? (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4" role="dialog">
-          <div className="w-full max-w-md rounded-2xl border border-[#D4C9A8] bg-white p-6 shadow-xl">
-            <h2 className="text-lg font-semibold text-[#2C3020]">Ny kategori</h2>
+          <div className="w-full max-w-md rounded-2xl border border-[#C8D8E4] bg-white p-6 shadow-xl">
+            <h2 className="text-lg font-semibold text-[#1E3448]">Ny kategori</h2>
             <div className="mt-4 space-y-3">
               <div>
-                <label className="mb-1 block text-sm font-medium text-[#2C3020]">Navn</label>
+                <label className="mb-1 block text-sm font-medium text-[#1E3448]">Navn</label>
                 <input
                   value={cName}
                   onChange={(e) => setCName(e.target.value)}
-                  className="w-full rounded-xl border border-[#D4C9A8] px-4 py-2 text-sm outline-none focus:border-[#E8E2D0]0"
+                  className="w-full rounded-xl border border-[#C8D8E4] px-4 py-2 text-sm outline-none focus:border-[#E0EAF0]0"
                 />
               </div>
               <div>
-                <label className="mb-1 block text-sm font-medium text-[#2C3020]">Ikon</label>
+                <label className="mb-1 block text-sm font-medium text-[#1E3448]">Ikon</label>
                 <select
                   value={cIcon}
                   onChange={(e) => setCIcon(e.target.value as GuideCategoryIconKey)}
-                  className="w-full rounded-xl border border-[#D4C9A8] px-4 py-2 text-sm outline-none focus:border-[#E8E2D0]0"
+                  className="w-full rounded-xl border border-[#C8D8E4] px-4 py-2 text-sm outline-none focus:border-[#E0EAF0]0"
                 >
                   {GUIDE_CATEGORY_ICON_KEYS.map((k) => (
                     <option key={k} value={k}>
@@ -503,14 +503,14 @@ export default function AdminVejledningerClient() {
                 </select>
               </div>
               <div>
-                <label className="mb-1 block text-sm font-medium text-[#2C3020]">
+                <label className="mb-1 block text-sm font-medium text-[#1E3448]">
                   Sorteringsrækkefølge
                 </label>
                 <input
                   type="number"
                   value={cSort}
                   onChange={(e) => setCSort(Number(e.target.value) || 0)}
-                  className="w-full rounded-xl border border-[#D4C9A8] px-4 py-2 text-sm outline-none focus:border-[#E8E2D0]0"
+                  className="w-full rounded-xl border border-[#C8D8E4] px-4 py-2 text-sm outline-none focus:border-[#E0EAF0]0"
                 />
               </div>
               {categoryErr ? <p className="text-sm text-red-600">{categoryErr}</p> : null}
@@ -519,7 +519,7 @@ export default function AdminVejledningerClient() {
                   type="button"
                   disabled={categorySaving}
                   onClick={() => void saveCategory()}
-                  className="rounded-full bg-[#8B9E6B] px-5 py-2 text-sm font-semibold text-white hover:bg-[#7A8A5A] disabled:opacity-60"
+                  className="rounded-full bg-[#4A7FA5] px-5 py-2 text-sm font-semibold text-white hover:bg-[#3A6F95] disabled:opacity-60"
                 >
                   {categorySaving ? "Gemmer..." : "Gem kategori"}
                 </button>

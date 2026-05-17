@@ -31,7 +31,7 @@ insert into public.email_templates (id, name, subject, body, variables) values
 <p>Du er blevet inviteret til at få adgang til <strong>{{orgName}}</strong> på systemklar – en IT-platform der samler support, overblik og dokumentation ét sted.</p>
 <p>Klik på knappen nedenfor for at oprette din profil. Det tager under 2 minutter.</p>
 <p>{{inviteButton}}</p>
-<p style="color:#5C5A48; font-size:13px;">Linket udløber om 7 dage. Har du spørgsmål? Skriv til os på kontakt@systemklar.dk</p>',
+<p style="color:#4A6478; font-size:13px;">Linket udløber om 7 dage. Har du spørgsmål? Skriv til os på kontakt@systemklar.dk</p>',
   ARRAY['contactName', 'orgName', 'inviteButton']
 ),
 (
@@ -42,7 +42,7 @@ insert into public.email_templates (id, name, subject, body, variables) values
 <p>Hej {{name}},</p>
 <p>Din profil for <strong>{{orgName}}</strong> er nu klar. Du kan logge ind og komme i gang med det samme.</p>
 <p>{{portalButton}}</p>
-<p style="color:#5C5A48; font-size:13px;">Har du spørgsmål? Skriv til os på kontakt@systemklar.dk</p>',
+<p style="color:#4A6478; font-size:13px;">Har du spørgsmål? Skriv til os på kontakt@systemklar.dk</p>',
   ARRAY['name', 'orgName', 'portalButton']
 ),
 (
@@ -52,7 +52,7 @@ insert into public.email_templates (id, name, subject, body, variables) values
   '<h2 style="margin-top:0;">Du har fået et svar</h2>
 <p>Hej {{name}},</p>
 <p>Vi har svaret på din sag <strong>{{ticketTitle}}</strong>:</p>
-<div style="background:#EEF2E6; border-left:3px solid #8B9E6B; padding:12px 16px; border-radius:0 8px 8px 0; margin:16px 0; color:#5C5A48; font-size:14px;">{{messagePreview}}</div>
+<div style="background:#EAF1F7; border-left:3px solid #4A7FA5; padding:12px 16px; border-radius:0 8px 8px 0; margin:16px 0; color:#4A6478; font-size:14px;">{{messagePreview}}</div>
 <p>{{ticketButton}}</p>',
   ARRAY['name', 'ticketTitle', 'messagePreview', 'ticketButton']
 ),
@@ -99,7 +99,7 @@ insert into public.email_templates (id, name, subject, body, variables) values
 <p><strong>Email:</strong> {{email}}</p>
 <p><strong>Telefon:</strong> {{phone}}</p>
 <p><strong>Besked:</strong></p>
-<div style="background:#EEF2E6; border-left:3px solid #8B9E6B; padding:12px 16px; border-radius:0 8px 8px 0; margin:16px 0; color:#5C5A48; font-size:14px;">{{message}}</div>
+<div style="background:#EAF1F7; border-left:3px solid #4A7FA5; padding:12px 16px; border-radius:0 8px 8px 0; margin:16px 0; color:#4A6478; font-size:14px;">{{message}}</div>
 <p>{{replyButton}}</p>',
   ARRAY['name', 'company', 'email', 'phone', 'message', 'replyButton']
 ),
@@ -112,7 +112,7 @@ insert into public.email_templates (id, name, subject, body, variables) values
 <p><strong>Virksomhed:</strong> {{company}}</p>
 <p><strong>Email:</strong> {{email}}</p>
 <p><strong>Besked:</strong></p>
-<div style="background:#EEF2E6; border-left:3px solid #8B9E6B; padding:12px 16px; border-radius:0 8px 8px 0; margin:16px 0; color:#5C5A48; font-size:14px;">{{message}}</div>
+<div style="background:#EAF1F7; border-left:3px solid #4A7FA5; padding:12px 16px; border-radius:0 8px 8px 0; margin:16px 0; color:#4A6478; font-size:14px;">{{message}}</div>
 <p>{{replyButton}}</p>',
   ARRAY['name', 'company', 'email', 'message', 'replyButton']
 )

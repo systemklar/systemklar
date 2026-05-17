@@ -63,7 +63,7 @@ function buildInitials(name: string) {
 }
 
 const inputClass =
-  "w-full max-w-xs rounded-xl border border-[#D4C9A8] px-3 py-2 text-sm text-[#2C3020] outline-none focus:ring-2 focus:ring-[#8B9E6B] sm:text-right";
+  "w-full max-w-xs rounded-xl border border-[#C8D8E4] px-3 py-2 text-sm text-[#1E3448] outline-none focus:ring-2 focus:ring-[#4A7FA5] sm:text-right";
 
 export default function PortalProfilePage() {
   const supabase = useMemo(() => createClient(), []);
@@ -326,7 +326,7 @@ export default function PortalProfilePage() {
   if (!profile && !loading) {
     return (
       <div className="w-full p-6 text-center md:p-8">
-        <h1 className="mb-3 text-xl font-bold text-[#2C3020]">Kunne ikke hente profil</h1>
+        <h1 className="mb-3 text-xl font-bold text-[#1E3448]">Kunne ikke hente profil</h1>
         <p className="rounded-lg bg-red-50 px-4 py-3 text-sm text-red-700">
           {error ?? "Der opstod en ukendt fejl."}
         </p>
@@ -344,13 +344,13 @@ export default function PortalProfilePage() {
         />
       }
     >
-      <div className="mb-4 flex items-center gap-4 border-b border-[#E8E2D0] pb-4">
+      <div className="mb-4 flex items-center gap-4 border-b border-[#E0EAF0] pb-4">
         <button
           type="button"
           onClick={onAvatarPick}
           disabled={uploadingAvatar}
           aria-label="Skift profilbillede"
-          className="group relative h-16 w-16 shrink-0 overflow-hidden rounded-full focus:outline-none focus-visible:ring-2 focus-visible:ring-[#8B9E6B]"
+          className="group relative h-16 w-16 shrink-0 overflow-hidden rounded-full focus:outline-none focus-visible:ring-2 focus-visible:ring-[#4A7FA5]"
         >
           <ProfileAvatar
             avatarUrl={avatarUrl ?? profile?.avatar_url}
@@ -377,7 +377,7 @@ export default function PortalProfilePage() {
           className="hidden"
           onChange={(e) => void onAvatarFileChange(e)}
         />
-        <p className="text-sm text-[#8C8A78]">Klik på billedet for at uploade et nyt profilbillede</p>
+        <p className="text-sm text-[#7A9AB0]">Klik på billedet for at uploade et nyt profilbillede</p>
       </div>
 
       <SettingsRow label="Fuldt navn">
@@ -391,7 +391,7 @@ export default function PortalProfilePage() {
       </SettingsRow>
 
       <SettingsRow label="Email" description="Kontakt os for at ændre din email">
-        <span className="text-sm text-[#5C5A48]">{displayEmail}</span>
+        <span className="text-sm text-[#4A6478]">{displayEmail}</span>
       </SettingsRow>
 
       <SettingsRow label="Telefonnummer" last>
@@ -439,11 +439,11 @@ export default function PortalProfilePage() {
           />
         </SettingsRow>
         {passwordDirty ? (
-          <div className="mt-4 flex justify-end border-t border-[#E8E2D0] pt-4">
+          <div className="mt-4 flex justify-end border-t border-[#E0EAF0] pt-4">
             <button
               type="submit"
               disabled={savingPassword}
-              className="rounded-full bg-[#8B9E6B] px-5 py-2 text-sm font-semibold text-white hover:bg-[#7A8A5A] disabled:opacity-60"
+              className="rounded-full bg-[#4A7FA5] px-5 py-2 text-sm font-semibold text-white hover:bg-[#3A6F95] disabled:opacity-60"
             >
               {savingPassword ? "Gemmer…" : "Gem adgangskode"}
             </button>
@@ -451,9 +451,9 @@ export default function PortalProfilePage() {
         ) : null}
       </form>
 
-      <div className="mt-4 flex items-center justify-between gap-4 border-t border-[#E8E2D0] pt-4">
+      <div className="mt-4 flex items-center justify-between gap-4 border-t border-[#E0EAF0] pt-4">
         <div>
-          <p className="text-sm font-medium text-[#2C3020]">To-faktor godkendelse</p>
+          <p className="text-sm font-medium text-[#1E3448]">To-faktor godkendelse</p>
           <div className="mt-1 flex items-center gap-2">
             <ComingSoonBadge />
           </div>
@@ -504,8 +504,8 @@ export default function PortalProfilePage() {
   return (
     <div className="w-full p-6 md:p-8">
       <div>
-        <h1 className="text-2xl font-bold text-[#2C3020]">Profil</h1>
-        <p className="mt-1 text-sm text-[#8C8A78]">Personlige indstillinger og sikkerhed</p>
+        <h1 className="text-2xl font-bold text-[#1E3448]">Profil</h1>
+        <p className="mt-1 text-sm text-[#7A9AB0]">Personlige indstillinger og sikkerhed</p>
       </div>
 
       {error ? (
@@ -516,7 +516,7 @@ export default function PortalProfilePage() {
       ) : null}
 
       {loading || !profile ? (
-        <p className="mt-6 text-sm text-[#8C8A78]">Indlæser profil…</p>
+        <p className="mt-6 text-sm text-[#7A9AB0]">Indlæser profil…</p>
       ) : (
         <>
           <SettingsTabs
@@ -536,7 +536,7 @@ export default function PortalProfilePage() {
             <button
               type="button"
               onClick={() => setDeleteModalOpen(true)}
-              className="text-[#8C8A78] underline-offset-2 hover:text-[#5C5A48] hover:underline"
+              className="text-[#7A9AB0] underline-offset-2 hover:text-[#4A6478] hover:underline"
             >
               Privatliv
             </button>
@@ -545,13 +545,13 @@ export default function PortalProfilePage() {
       )}
 
       <Modal open={deleteModalOpen} onClose={() => setDeleteModalOpen(false)} titleId="delete-account-title">
-        <h3 id="delete-account-title" className="text-lg font-semibold text-[#2C3020]">
+        <h3 id="delete-account-title" className="text-lg font-semibold text-[#1E3448]">
           Slet min konto?
         </h3>
-        <p className="mt-3 text-sm leading-relaxed text-[#5C5A48]">
+        <p className="mt-3 text-sm leading-relaxed text-[#4A6478]">
           Dette vil permanent fjerne din adgang til portalen og alle tilknyttede data. Handlingen kan
           ikke fortrydes. Kontakt os på{" "}
-          <Link href="mailto:kontakt@systemklar.dk" className="text-[#8B9E6B] hover:underline">
+          <Link href="mailto:kontakt@systemklar.dk" className="text-[#4A7FA5] hover:underline">
             kontakt@systemklar.dk
           </Link>{" "}
           hvis du ønsker at slette din konto.
@@ -560,7 +560,7 @@ export default function PortalProfilePage() {
           <button
             type="button"
             onClick={() => setDeleteModalOpen(false)}
-            className="rounded-full px-4 py-2 text-sm font-medium text-[#5C5A48] hover:bg-[#EEF2E6]"
+            className="rounded-full px-4 py-2 text-sm font-medium text-[#4A6478] hover:bg-[#EAF1F7]"
           >
             Luk
           </button>

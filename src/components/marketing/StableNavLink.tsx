@@ -22,7 +22,7 @@ export function StableNavLink({
   return (
     <Link
       href={href}
-      className={`relative inline-grid min-w-max shrink-0 place-items-center whitespace-nowrap text-sm transition-colors after:absolute after:-bottom-1 after:left-0 after:h-0.5 after:w-0 after:bg-[#8B9E6B] after:transition-all after:duration-200 hover:after:w-full ${colorClasses}`}
+      className={`relative inline-grid min-w-max shrink-0 place-items-center whitespace-nowrap text-sm transition-colors after:absolute after:-bottom-1 after:left-0 after:h-0.5 after:w-0 after:bg-[#4A7FA5] after:transition-all after:duration-200 hover:after:w-full ${colorClasses}`}
     >
       <span aria-hidden className="invisible col-start-1 row-start-1 px-px font-semibold">
         {label}

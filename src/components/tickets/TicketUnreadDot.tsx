@@ -7,7 +7,7 @@ export function TicketUnreadDot({ hasUnread }: TicketUnreadDotProps) {
   if (!hasUnread) return null;
   return (
     <span
-      className="h-2 w-2 shrink-0 rounded-full bg-[#8B9E6B]"
+      className="h-2 w-2 shrink-0 rounded-full bg-[#4A7FA5]"
       aria-label="Nye beskeder"
       title="Nye beskeder"
     />

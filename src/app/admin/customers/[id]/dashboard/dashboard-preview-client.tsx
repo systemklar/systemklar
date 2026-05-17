@@ -89,7 +89,7 @@ export default function AdminCustomerPortalDashboardPreview() {
   if (error || !org) {
     return (
       <div className="space-y-4">
-        <Link href={`/admin/customers/${id || ""}`} className="text-sm font-semibold text-[#7A8A5A] hover:underline">
+        <Link href={`/admin/customers/${id || ""}`} className="text-sm font-semibold text-[#3A6F95] hover:underline">
           ← Tilbage til kunde
         </Link>
         <p className="text-sm text-red-700">{error ?? "Kunde ikke fundet."}</p>
@@ -100,7 +100,7 @@ export default function AdminCustomerPortalDashboardPreview() {
   return (
     <div className="space-y-8">
       <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-        <Link href={`/admin/customers/${org.id}`} className="text-sm font-semibold text-[#7A8A5A] hover:underline">
+        <Link href={`/admin/customers/${org.id}`} className="text-sm font-semibold text-[#3A6F95] hover:underline">
           ← Tilbage til kunde
         </Link>
       </div>

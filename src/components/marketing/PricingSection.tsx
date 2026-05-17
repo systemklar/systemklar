@@ -37,7 +37,7 @@ export function PricingSection({ sectionId = "priser", ctaHref = "/kontakt", cla
           <ScrollReveal key={plan.name} staggerMs={index * 100} className="h-full">
             <article
               className={`relative flex h-full flex-col rounded-2xl border bg-white p-8 md:p-10 ${
-                plan.highlighted ? "border-[#2563EB] bg-[#EEF2E6] shadow-sm ring-1 ring-[#2563EB]/10" : "border-gray-100"
+                plan.highlighted ? "border-[#2563EB] bg-[#EAF1F7] shadow-sm ring-1 ring-[#2563EB]/10" : "border-gray-100"
               }`}
             >
               {plan.highlighted ? (
@@ -45,8 +45,8 @@ export function PricingSection({ sectionId = "priser", ctaHref = "/kontakt", cla
                   Mest populær
                 </p>
               ) : null}
-              <div className="mb-5 flex h-12 w-12 items-center justify-center rounded-xl bg-[#EEF2E6]">
-                <plan.icon className="h-6 w-6 text-[#8B9E6B]" aria-hidden />
+              <div className="mb-5 flex h-12 w-12 items-center justify-center rounded-xl bg-[#EAF1F7]">
+                <plan.icon className="h-6 w-6 text-[#4A7FA5]" aria-hidden />
               </div>
               <h3 className="text-xl font-semibold text-[#0A0A0A]">{plan.name}</h3>
               <p className={`mt-5 text-3xl font-bold tracking-tight md:text-4xl ${plan.highlighted ? "text-[#2563EB]" : "text-[#0A0A0A]"}`}>

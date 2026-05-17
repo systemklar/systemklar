@@ -90,7 +90,7 @@ const mobileBottomNav: { key: PortalNavKey; href: string; label: string; icon: L
 function NavIcon({ icon: Icon, active }: { icon: LucideIcon; active: boolean }) {
   return (
     <Icon
-      className={`${navIconClass} ${active ? "text-[#C8D4A8]" : "text-[#A8B898] group-hover:text-[#C8D4A8]"}`}
+      className={`${navIconClass} ${active ? "text-[#A8C8E0]" : "text-[#7A9AB0] group-hover:text-[#A8C8E0]"}`}
       aria-hidden
     />
   );
@@ -275,8 +275,8 @@ export function PortalLayout({ children, activeNav }: PortalLayoutProps) {
 
   if (isLoading) {
     return (
-      <main className="min-h-screen overflow-x-hidden bg-[#F5F0E8] px-6 py-20 text-[#2C3020]">
-        <div className="mx-auto max-w-3xl rounded-2xl border border-[#D4C9A8] bg-white p-8 text-center shadow-sm">
+      <main className="min-h-screen overflow-x-hidden bg-[#F7F4EF] px-6 py-20 text-[#1E3448]">
+        <div className="mx-auto max-w-3xl rounded-2xl border border-[#C8D8E4] bg-white p-8 text-center shadow-sm">
           Indlæser portal...
         </div>
       </main>
@@ -294,7 +294,7 @@ export function PortalLayout({ children, activeNav }: PortalLayoutProps) {
     <PortalSessionContext.Provider
       value={{ email: userEmail, userId, organisationId, role, fullName, avatarUrl, avatarInitials }}
     >
-      <main className="surface-cards h-dvh overflow-x-hidden bg-[#F5F0E8] text-[#2C3020]">
+      <main className="surface-cards h-dvh overflow-x-hidden bg-[#F7F4EF] text-[#1E3448]">
         <NavigationProgress />
         <div className="flex h-full min-h-0 w-full overflow-hidden">
           {sidebarOpen ? (
@@ -320,7 +320,7 @@ export function PortalLayout({ children, activeNav }: PortalLayoutProps) {
               <button
                 type="button"
                 onClick={closeSidebar}
-                className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-lg text-[#C8D4A8] hover:bg-white/10 lg:hidden"
+                className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-lg text-[#A8C8E0] hover:bg-white/10 lg:hidden"
                 aria-label="Luk menu"
               >
                 <X className="h-5 w-5" />
@@ -369,7 +369,7 @@ export function PortalLayout({ children, activeNav }: PortalLayoutProps) {
                   className="h-9 w-9 text-xs"
                 />
                 <div className="min-w-0 flex-1">
-                  <p className="truncate text-sm font-medium text-[#C8D4A8]">
+                  <p className="truncate text-sm font-medium text-[#A8C8E0]">
                     {fullName?.trim() || "Min profil"}
                   </p>
                   <p className="sk-sidebar-user-muted truncate text-xs">{userEmail}</p>
@@ -380,18 +380,18 @@ export function PortalLayout({ children, activeNav }: PortalLayoutProps) {
                 onClick={handleLogout}
                 className="sk-sidebar-nav-inactive group flex min-h-11 w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition-colors"
               >
-                <LogOut className={`${navIconClass} text-[#A8B898] group-hover:text-[#C8D4A8]`} aria-hidden />
+                <LogOut className={`${navIconClass} text-[#7A9AB0] group-hover:text-[#A8C8E0]`} aria-hidden />
                 Log ud
               </button>
             </div>
           </aside>
 
-          <section className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden bg-[#F5F0E8]">
-            <header className="sticky top-0 z-30 flex flex-shrink-0 items-center gap-3 border-b border-[#D4C9A8] bg-white px-3 py-2 lg:hidden">
+          <section className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden bg-[#F7F4EF]">
+            <header className="sticky top-0 z-30 flex flex-shrink-0 items-center gap-3 border-b border-[#C8D8E4] bg-white px-3 py-2 lg:hidden">
               <button
                 type="button"
                 onClick={() => setSidebarOpen(true)}
-                className="inline-flex min-h-11 min-w-11 shrink-0 items-center justify-center rounded-lg text-[#5C5A48] hover:bg-[#EEF2E6]"
+                className="inline-flex min-h-11 min-w-11 shrink-0 items-center justify-center rounded-lg text-[#4A6478] hover:bg-[#EAF1F7]"
                 aria-label="Åbn menu"
               >
                 <Menu className="h-5 w-5" />
@@ -415,7 +415,7 @@ export function PortalLayout({ children, activeNav }: PortalLayoutProps) {
         </div>
 
         <nav
-          className="fixed inset-x-0 bottom-0 z-30 grid grid-cols-5 border-t border-[#D4C9A8] bg-white pb-[env(safe-area-inset-bottom)] shadow-[0_-2px_12px_rgba(0,0,0,0.06)] lg:hidden"
+          className="fixed inset-x-0 bottom-0 z-30 grid grid-cols-5 border-t border-[#C8D8E4] bg-white pb-[env(safe-area-inset-bottom)] shadow-[0_-2px_12px_rgba(0,0,0,0.06)] lg:hidden"
           aria-label="Hovednavigation mobil"
         >
           {mobileBottomNav.map((item) => {
@@ -426,7 +426,7 @@ export function PortalLayout({ children, activeNav }: PortalLayoutProps) {
                 key={item.key}
                 href={item.href}
                 className={`flex min-h-[52px] flex-col items-center justify-center gap-0.5 px-1 py-2 transition-colors ${
-                  isActive ? "text-[#7A8A5A]" : "text-[#8C8A78] hover:text-[#5C5A48]"
+                  isActive ? "text-[#3A6F95]" : "text-[#7A9AB0] hover:text-[#4A6478]"
                 }`}
               >
                 <Icon className="h-5 w-5 shrink-0" aria-hidden />

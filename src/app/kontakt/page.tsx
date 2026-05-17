@@ -59,7 +59,7 @@ export default function KontaktPage() {
   return (
     <MarketingShell>
       <main>
-        <section className="relative overflow-hidden bg-gradient-to-br from-[#8B9E6B] to-[#2C3E2A] py-20 pt-32 md:py-32 md:pt-40">
+        <section className="relative overflow-hidden bg-gradient-to-br from-[#4A7FA5] to-[#1E3448] py-20 pt-32 md:py-32 md:pt-40">
           <div
             className="absolute inset-0 opacity-10"
             style={{
@@ -83,9 +83,9 @@ export default function KontaktPage() {
 
         <section className="bg-white py-16 md:py-24">
           <div className="mx-auto grid max-w-5xl gap-10 px-6 lg:grid-cols-2">
-            <div className="rounded-2xl border border-[#D4C9A8] bg-white p-6 shadow-sm md:p-8">
-              <h2 className="text-xl font-semibold text-[#2C3020]">Skriv til os</h2>
-              <p className="mt-2 text-sm text-[#5C5A48]">
+            <div className="rounded-2xl border border-[#C8D8E4] bg-white p-6 shadow-sm md:p-8">
+              <h2 className="text-xl font-semibold text-[#1E3448]">Skriv til os</h2>
+              <p className="mt-2 text-sm text-[#4A6478]">
                 Udfyld formularen, så vender vi tilbage inden for én hverdag.
               </p>
               <form onSubmit={onSubmit} className="mt-6 space-y-4">
@@ -94,14 +94,14 @@ export default function KontaktPage() {
                   onChange={(e) => setName(e.target.value)}
                   placeholder="Navn"
                   required
-                  className="w-full rounded-xl border border-[#D4C9A8] px-4 py-3 text-base outline-none focus:ring-2 focus:ring-[#8B9E6B] md:text-sm"
+                  className="w-full rounded-xl border border-[#C8D8E4] px-4 py-3 text-base outline-none focus:ring-2 focus:ring-[#4A7FA5] md:text-sm"
                 />
                 <input
                   value={company}
                   onChange={(e) => setCompany(e.target.value)}
                   placeholder="Virksomhed"
                   required
-                  className="w-full rounded-xl border border-[#D4C9A8] px-4 py-3 text-base outline-none focus:ring-2 focus:ring-[#8B9E6B] md:text-sm"
+                  className="w-full rounded-xl border border-[#C8D8E4] px-4 py-3 text-base outline-none focus:ring-2 focus:ring-[#4A7FA5] md:text-sm"
                 />
                 <input
                   type="email"
@@ -109,13 +109,13 @@ export default function KontaktPage() {
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="Email"
                   required
-                  className="w-full rounded-xl border border-[#D4C9A8] px-4 py-3 text-base outline-none focus:ring-2 focus:ring-[#8B9E6B] md:text-sm"
+                  className="w-full rounded-xl border border-[#C8D8E4] px-4 py-3 text-base outline-none focus:ring-2 focus:ring-[#4A7FA5] md:text-sm"
                 />
                 <input
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
                   placeholder="Telefon (valgfrit)"
-                  className="w-full rounded-xl border border-[#D4C9A8] px-4 py-3 text-base outline-none focus:ring-2 focus:ring-[#8B9E6B] md:text-sm"
+                  className="w-full rounded-xl border border-[#C8D8E4] px-4 py-3 text-base outline-none focus:ring-2 focus:ring-[#4A7FA5] md:text-sm"
                 />
                 <textarea
                   value={message}
@@ -123,7 +123,7 @@ export default function KontaktPage() {
                   placeholder="Besked"
                   required
                   rows={5}
-                  className="w-full rounded-xl border border-[#D4C9A8] px-4 py-3 text-base outline-none focus:ring-2 focus:ring-[#8B9E6B] md:text-sm"
+                  className="w-full rounded-xl border border-[#C8D8E4] px-4 py-3 text-base outline-none focus:ring-2 focus:ring-[#4A7FA5] md:text-sm"
                 />
                 {error ? (
                   <p className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
@@ -138,7 +138,7 @@ export default function KontaktPage() {
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="min-h-[44px] w-full rounded-full bg-[#8B9E6B] px-6 py-3 font-semibold text-white transition hover:bg-[#7A8A5A] disabled:opacity-60"
+                  className="min-h-[44px] w-full rounded-full bg-[#4A7FA5] px-6 py-3 font-semibold text-white transition hover:bg-[#3A6F95] disabled:opacity-60"
                 >
                   {submitting ? "Sender..." : "Send besked"}
                 </button>
@@ -146,73 +146,73 @@ export default function KontaktPage() {
             </div>
 
             <div className="space-y-6">
-              <aside className="rounded-2xl border border-[#D4C9A8] bg-white p-6 shadow-sm md:p-8">
+              <aside className="rounded-2xl border border-[#C8D8E4] bg-white p-6 shadow-sm md:p-8">
                 <div>
                   <div className="flex items-center gap-3">
-                    <CalendarDays className="h-5 w-5 text-[#8B9E6B]" />
-                    <h3 className="font-semibold text-[#2C3020]">Book en gratis demo</h3>
+                    <CalendarDays className="h-5 w-5 text-[#4A7FA5]" />
+                    <h3 className="font-semibold text-[#1E3448]">Book en gratis demo</h3>
                   </div>
-                  <p className="mt-2 text-sm text-[#5C5A48]">
+                  <p className="mt-2 text-sm text-[#4A6478]">
                     Få en kort gennemgang af systemklar – tilpasset jeres virksomhed.
                   </p>
                   <button
                     type="button"
                     onClick={() => setShowDemoModal(true)}
-                    className="mt-4 inline-flex rounded-full bg-[#8B9E6B] px-5 py-2.5 text-sm font-semibold text-white hover:bg-[#7A8A5A]"
+                    className="mt-4 inline-flex rounded-full bg-[#4A7FA5] px-5 py-2.5 text-sm font-semibold text-white hover:bg-[#3A6F95]"
                   >
                     Book demo
                   </button>
                 </div>
-                <div className="my-6 h-px bg-[#EEF2E6]" />
+                <div className="my-6 h-px bg-[#EAF1F7]" />
                 <div className="mb-4 flex items-start gap-3">
-                  <div className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-xl bg-[#EEF2E6]">
-                    <Phone className="h-4 w-4 text-[#8B9E6B]" />
+                  <div className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-xl bg-[#EAF1F7]">
+                    <Phone className="h-4 w-4 text-[#4A7FA5]" />
                   </div>
                   <div>
-                    <p className="text-sm font-semibold text-[#2C3020]">Ring til os</p>
-                    <a href="tel:+4522631013" className="text-sm text-[#8B9E6B] hover:underline">
+                    <p className="text-sm font-semibold text-[#1E3448]">Ring til os</p>
+                    <a href="tel:+4522631013" className="text-sm text-[#4A7FA5] hover:underline">
                       +45 22 63 10 13
                     </a>
-                    <p className="mt-0.5 text-xs text-[#5C5A48]">Man–fre kl. 9–17</p>
+                    <p className="mt-0.5 text-xs text-[#4A6478]">Man–fre kl. 9–17</p>
                   </div>
                 </div>
-                <div className="flex items-center gap-3 text-sm text-[#5C5A48]">
-                  <Mail className="h-4 w-4 text-[#8B9E6B]" />
-                  <a href="mailto:kontakt@systemklar.dk" className="text-[#8B9E6B] hover:underline">
+                <div className="flex items-center gap-3 text-sm text-[#4A6478]">
+                  <Mail className="h-4 w-4 text-[#4A7FA5]" />
+                  <a href="mailto:kontakt@systemklar.dk" className="text-[#4A7FA5] hover:underline">
                     kontakt@systemklar.dk
                   </a>
                 </div>
-                <div className="my-6 h-px bg-[#EEF2E6]" />
+                <div className="my-6 h-px bg-[#EAF1F7]" />
                 <div className="flex items-start gap-3">
-                  <Clock className="mt-0.5 h-4 w-4 text-[#8B9E6B]" />
-                  <p className="text-sm text-[#5C5A48]">Vi svarer normalt inden for én hverdag.</p>
+                  <Clock className="mt-0.5 h-4 w-4 text-[#4A7FA5]" />
+                  <p className="text-sm text-[#4A6478]">Vi svarer normalt inden for én hverdag.</p>
                 </div>
               </aside>
 
-              <div className="rounded-2xl border border-[#D4C9A8] bg-[#EEF2E6] p-6">
+              <div className="rounded-2xl border border-[#C8D8E4] bg-[#EAF1F7] p-6">
                 <div className="mb-4 flex items-center gap-4">
-                  <div className="flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-full bg-[#8B9E6B] text-xl font-bold text-white">
+                  <div className="flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-full bg-[#4A7FA5] text-xl font-bold text-white">
                     BS
                   </div>
                   <div>
-                    <p className="font-semibold text-[#2C3020]">Benjamin Sørensen</p>
-                    <p className="text-sm text-[#5C5A48]">Grundlægger, systemklar</p>
+                    <p className="font-semibold text-[#1E3448]">Benjamin Sørensen</p>
+                    <p className="text-sm text-[#4A6478]">Grundlægger, systemklar</p>
                   </div>
                 </div>
-                <p className="text-sm leading-relaxed text-[#5C5A48]">
+                <p className="text-sm leading-relaxed text-[#4A6478]">
                   &quot;Jeg sidder personligt klar til at hjælpe. Skriv til mig direkte eller ring – jeg svarer
                   samme dag.&quot;
                 </p>
                 <div className="mt-4 flex flex-col gap-2">
                   <a
                     href="mailto:benjamin@systemklar.dk"
-                    className="flex items-center gap-2 text-sm text-[#8B9E6B] hover:underline"
+                    className="flex items-center gap-2 text-sm text-[#4A7FA5] hover:underline"
                   >
                     <Mail className="h-4 w-4" /> benjamin@systemklar.dk
                   </a>
                   <a
                     href="tel:+4522631013"
-                    className="flex items-center gap-2 text-sm text-[#8B9E6B] hover:underline"
+                    className="flex items-center gap-2 text-sm text-[#4A7FA5] hover:underline"
                   >
                     <Phone className="h-4 w-4" /> +45 22 63 10 13
                   </a>
@@ -222,13 +222,13 @@ export default function KontaktPage() {
           </div>
         </section>
 
-        <section className="bg-[#2C3E2A] py-16 md:py-24">
+        <section className="bg-[#1E3448] py-16 md:py-24">
           <div className="mx-auto max-w-5xl px-6 text-center">
             <h2 className="text-2xl font-bold text-white md:text-4xl">Klar til at komme i gang?</h2>
             <button
               type="button"
               onClick={() => setShowDemoModal(true)}
-              className="mt-8 inline-flex min-h-[44px] rounded-full bg-[#8B9E6B] px-6 py-3 font-semibold text-white transition hover:bg-[#8B9E6B]"
+              className="mt-8 inline-flex min-h-[44px] rounded-full bg-[#4A7FA5] px-6 py-3 font-semibold text-white transition hover:bg-[#4A7FA5]"
             >
               Book gratis demo
             </button>

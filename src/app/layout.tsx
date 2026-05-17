@@ -1,12 +1,13 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { DM_Sans } from "next/font/google";
 import { CookieBanner } from "@/components/ui/CookieBanner";
 import CrispChat from "@/components/ui/CrispChat";
 import "./globals.css";
 
-const inter = Inter({
+const dmSans = DM_Sans({
   subsets: ["latin"],
-  variable: "--font-inter",
+  weight: ["300", "400", "500", "600"],
+  variable: "--font-dm-sans",
 });
 
 export const metadata: Metadata = {
@@ -28,8 +29,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="da" className={`${inter.variable} h-full antialiased`}>
-      <body className={`${inter.className} min-h-full flex flex-col`}>
+    <html lang="da" className={`${dmSans.variable} h-full antialiased`}>
+      <body className={`${dmSans.className} min-h-full flex flex-col font-sans`}>
         {children}
         <CookieBanner />
         <CrispChat />

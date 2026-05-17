@@ -256,7 +256,7 @@ export default function AdminItRapporterClient({
         <button
           type="button"
           onClick={openNewModal}
-          className="inline-flex shrink-0 items-center justify-center gap-2 self-start rounded-full bg-[#8B9E6B] px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-[#7A8A5A] sm:self-center"
+          className="inline-flex shrink-0 items-center justify-center gap-2 self-start rounded-full bg-[#4A7FA5] px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-[#3A6F95] sm:self-center"
         >
           <Plus className="h-4 w-4" aria-hidden />
           Ny rapport
@@ -338,7 +338,7 @@ export default function AdminItRapporterClient({
                                     type="button"
                                     disabled={sendBusyId === r.id}
                                     onClick={() => void sendReport(r.id)}
-                                    className="rounded-md bg-[#8B9E6B] px-3 py-1.5 text-xs font-semibold text-white hover:bg-[#7A8A5A] disabled:opacity-50"
+                                    className="rounded-md bg-[#4A7FA5] px-3 py-1.5 text-xs font-semibold text-white hover:bg-[#3A6F95] disabled:opacity-50"
                                   >
                                     {sendBusyId === r.id ? "Sender…" : "Send"}
                                   </button>
@@ -408,7 +408,7 @@ export default function AdminItRapporterClient({
                                   type="button"
                                   disabled={sendBusyId === r.id}
                                   onClick={() => void sendReport(r.id)}
-                                  className="rounded-md bg-[#8B9E6B] px-3 py-1.5 text-xs font-semibold text-white hover:bg-[#7A8A5A] disabled:opacity-50"
+                                  className="rounded-md bg-[#4A7FA5] px-3 py-1.5 text-xs font-semibold text-white hover:bg-[#3A6F95] disabled:opacity-50"
                                 >
                                   {sendBusyId === r.id ? "Sender…" : "Send"}
                                 </button>
@@ -461,7 +461,7 @@ export default function AdminItRapporterClient({
                 value={selectedOrgId}
                 onChange={(e) => setSelectedOrgId(e.target.value)}
                 disabled={orgsLoading || genBusy}
-                className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-[#E8E2D0]0 disabled:cursor-not-allowed disabled:bg-slate-100"
+                className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-[#E0EAF0]0 disabled:cursor-not-allowed disabled:bg-slate-100"
               >
                 <option value="">{orgsLoading ? "Henter organisationer…" : "Vælg organisation…"}</option>
                 {orgOptions.map((o) => (
@@ -487,7 +487,7 @@ export default function AdminItRapporterClient({
                 type="button"
                 disabled={genBusy || orgsLoading || !selectedOrgId}
                 onClick={() => void handleGenerateNew()}
-                className="inline-flex items-center justify-center gap-2 rounded-full bg-[#8B9E6B] px-5 py-2 text-sm font-semibold text-white hover:bg-[#7A8A5A] disabled:opacity-50"
+                className="inline-flex items-center justify-center gap-2 rounded-full bg-[#4A7FA5] px-5 py-2 text-sm font-semibold text-white hover:bg-[#3A6F95] disabled:opacity-50"
               >
                 {genBusy ? (
                   <>

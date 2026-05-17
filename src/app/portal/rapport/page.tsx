@@ -82,16 +82,16 @@ export default function PortalRapportPage() {
 
   return (
     <div className="w-full p-6 md:p-8">
-      <h1 className="text-2xl font-bold text-[#2C3020]">IT-rapport</h1>
-      <p className="mt-2 text-sm text-[#5C5A48]">
+      <h1 className="text-2xl font-bold text-[#1E3448]">IT-rapport</h1>
+      <p className="mt-2 text-sm text-[#4A6478]">
         Dine månedlige IT-statusrapporter — åbn og læs dem her i portalen.
       </p>
 
       {loading ? (
-        <p className="mt-10 text-sm text-[#5C5A48]">Henter rapporter...</p>
+        <p className="mt-10 text-sm text-[#4A6478]">Henter rapporter...</p>
       ) : reports.length === 0 ? (
-        <p className="mt-10 rounded-2xl border border-[#D4C9A8] bg-white px-5 py-8 text-center text-sm text-[#5C5A48] shadow-sm">
-          <span className="font-medium text-[#2C3020]">Ingen rapporter endnu.</span>
+        <p className="mt-10 rounded-2xl border border-[#C8D8E4] bg-white px-5 py-8 text-center text-sm text-[#4A6478] shadow-sm">
+          <span className="font-medium text-[#1E3448]">Ingen rapporter endnu.</span>
           <span className="mt-2 block">
             Din første rapport genereres af Systemklar hver måned.
           </span>
@@ -101,15 +101,15 @@ export default function PortalRapportPage() {
           {reports.map((r) => (
             <li
               key={r.id}
-              className="flex flex-col gap-3 rounded-2xl border border-[#D4C9A8] bg-white p-6 shadow-sm sm:flex-row sm:items-center sm:justify-between"
+              className="flex flex-col gap-3 rounded-2xl border border-[#C8D8E4] bg-white p-6 shadow-sm sm:flex-row sm:items-center sm:justify-between"
             >
               <div>
-                <p className="text-base font-semibold text-[#2C3020]">{r.title}</p>
-                <p className="mt-1 text-sm text-[#5C5A48]">{periodLabel(r.period_start, r.period_end)}</p>
+                <p className="text-base font-semibold text-[#1E3448]">{r.title}</p>
+                <p className="mt-1 text-sm text-[#4A6478]">{periodLabel(r.period_start, r.period_end)}</p>
               </div>
               <Link
                 href={`/portal/rapport/${r.id}`}
-                className="inline-flex shrink-0 items-center justify-center gap-2 rounded-xl bg-[#8B9E6B] px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-[#7A8A5A]"
+                className="inline-flex shrink-0 items-center justify-center gap-2 rounded-xl bg-[#4A7FA5] px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-[#3A6F95]"
               >
                 Se rapport
                 <ChevronRight className="h-4 w-4" aria-hidden />

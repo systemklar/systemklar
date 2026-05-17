@@ -64,13 +64,13 @@ function monitoringBlocksRemove(status: MonitoringStatusKey): boolean {
 function statusPillClass(status: MonitoringStatusKey): string {
   switch (status) {
     case "ok":
-      return "border border-[#6A8F5A]/35 bg-[#6A8F5A]/10 text-[#6A8F5A]";
+      return "border border-[#5A9A6A]/35 bg-[#5A9A6A]/10 text-[#5A9A6A]";
     case "advarsel":
       return "border border-[#C4A84F]/35 bg-[#C4A84F]/10 text-[#C4A84F]";
     case "fejl":
       return "border border-[#B85C4A]/35 bg-[#B85C4A]/10 text-[#B85C4A]";
     default:
-      return "border border-[#D4C9A8] bg-[#F5F0E8] text-[#5C5A48]";
+      return "border border-[#C8D8E4] bg-[#F7F4EF] text-[#4A6478]";
   }
 }
 
@@ -127,25 +127,25 @@ function SystemRow({
   removeBusy?: boolean;
 }) {
   return (
-    <div className="border-b border-[#D4C9A8]/80 last:border-b-0">
+    <div className="border-b border-[#C8D8E4]/80 last:border-b-0">
       <div className="flex flex-wrap items-center gap-x-3 gap-y-2 py-2.5 sm:flex-nowrap">
-        <span className="flex h-5 w-5 shrink-0 items-center justify-center text-[#8B9E6B]">
+        <span className="flex h-5 w-5 shrink-0 items-center justify-center text-[#4A7FA5]">
           <Icon className="h-5 w-5" aria-hidden />
         </span>
-        <span className="min-w-0 flex-1 text-sm font-medium text-[#2C3020]">{friendlyName}</span>
+        <span className="min-w-0 flex-1 text-sm font-medium text-[#1E3448]">{friendlyName}</span>
         <span
           className={`shrink-0 rounded-full px-2.5 py-0.5 text-xs font-semibold ${statusPillClass(status)}`}
         >
           {customerStatusLabel(status)}
         </span>
-        <span className="hidden shrink-0 text-xs text-[#8C8A78] md:inline md:w-36 md:text-right">
+        <span className="hidden shrink-0 text-xs text-[#7A9AB0] md:inline md:w-36 md:text-right">
           {checkedAgo ?? "Ingen seneste tjek"}
         </span>
         {status === "afventer" && onStartSetup ? (
           <button
             type="button"
             onClick={onStartSetup}
-            className="shrink-0 rounded-full bg-[#8B9E6B] px-3 py-1 text-xs font-semibold text-white transition-colors hover:bg-[#7A8A5A]"
+            className="shrink-0 rounded-full bg-[#4A7FA5] px-3 py-1 text-xs font-semibold text-white transition-colors hover:bg-[#3A6F95]"
           >
             Start opsætning
           </button>
@@ -156,7 +156,7 @@ function SystemRow({
               <button
                 type="button"
                 disabled
-                className="cursor-not-allowed text-xs font-medium text-[#8C8A78]/50"
+                className="cursor-not-allowed text-xs font-medium text-[#7A9AB0]/50"
                 aria-label={REMOVE_BLOCKED_TOOLTIP}
               >
                 Fjern
@@ -167,7 +167,7 @@ function SystemRow({
               type="button"
               onClick={onRemoveClick}
               disabled={Boolean(removeConfirmOpen)}
-              className="shrink-0 text-xs font-medium text-[#8C8A78] transition-colors hover:text-red-600 disabled:opacity-60"
+              className="shrink-0 text-xs font-medium text-[#7A9AB0] transition-colors hover:text-red-600 disabled:opacity-60"
             >
               Fjern
             </button>
@@ -175,13 +175,13 @@ function SystemRow({
         ) : null}
       </div>
       {removeConfirmOpen ? (
-        <div className="pb-2.5 pl-8 text-sm text-[#5C5A48]">
+        <div className="pb-2.5 pl-8 text-sm text-[#4A6478]">
           Fjern dette system?{" "}
           <button
             type="button"
             disabled={removeBusy}
             onClick={onRemoveConfirm}
-            className="font-semibold text-[#8B9E6B] underline-offset-2 hover:underline disabled:opacity-50"
+            className="font-semibold text-[#4A7FA5] underline-offset-2 hover:underline disabled:opacity-50"
           >
             Ja
           </button>
@@ -190,7 +190,7 @@ function SystemRow({
             type="button"
             disabled={removeBusy}
             onClick={onRemoveCancel}
-            className="font-semibold text-[#5C5A48] underline-offset-2 hover:underline disabled:opacity-50"
+            className="font-semibold text-[#4A6478] underline-offset-2 hover:underline disabled:opacity-50"
           >
             Annuller
           </button>
@@ -209,10 +209,10 @@ function SystemsListSection({
 }) {
   if (!groups.length) return null;
   return (
-    <div className="overflow-hidden rounded-xl border border-[#D4C9A8] bg-white shadow-sm">
+    <div className="overflow-hidden rounded-xl border border-[#C8D8E4] bg-white shadow-sm">
       {groups.map((group) => (
         <section key={group.shortLabel}>
-          <h3 className="border-b border-[#D4C9A8] bg-[#F5F0E8] px-4 py-2 text-xs font-semibold uppercase tracking-wide text-[#8C8A78]">
+          <h3 className="border-b border-[#C8D8E4] bg-[#F7F4EF] px-4 py-2 text-xs font-semibold uppercase tracking-wide text-[#7A9AB0]">
             {group.groupLabel}
           </h3>
           <div className="px-4">{group.items.map((e) => renderRow(e))}</div>
@@ -477,7 +477,7 @@ export function PortalSystemsOverviewPage() {
   if (loading) {
     return (
       <div className="w-full p-6 md:p-8">
-        <p className="text-sm text-[#8C8A78]">Indlæser systemer…</p>
+        <p className="text-sm text-[#7A9AB0]">Indlæser systemer…</p>
       </div>
     );
   }
@@ -486,8 +486,8 @@ export function PortalSystemsOverviewPage() {
     <div className="w-full space-y-6 p-6 md:p-8">
       <header className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-[#2C3020] md:text-3xl">Dine IT-systemer</h1>
-          <p className="mt-2 text-sm leading-relaxed text-[#5C5A48]">
+          <h1 className="text-2xl font-bold tracking-tight text-[#1E3448] md:text-3xl">Dine IT-systemer</h1>
+          <p className="mt-2 text-sm leading-relaxed text-[#4A6478]">
             Overblik over overvågning og status for de systemer, I bruger.
           </p>
         </div>
@@ -496,7 +496,7 @@ export function PortalSystemsOverviewPage() {
             <button
               type="button"
               onClick={() => setAddOpen((o) => !o)}
-              className="inline-flex items-center gap-2 rounded-full border border-[#D4C9A8] bg-white px-4 py-2 text-sm font-semibold text-[#8B9E6B] shadow-sm transition hover:bg-[#F5F0E8]"
+              className="inline-flex items-center gap-2 rounded-full border border-[#C8D8E4] bg-white px-4 py-2 text-sm font-semibold text-[#4A7FA5] shadow-sm transition hover:bg-[#F7F4EF]"
               aria-expanded={addOpen}
               aria-haspopup="true"
             >
@@ -505,12 +505,12 @@ export function PortalSystemsOverviewPage() {
             </button>
             {addOpen ? (
               <div
-                className="absolute right-0 z-40 mt-2 max-h-[min(24rem,70vh)] w-[min(100vw-2rem,22rem)] overflow-y-auto rounded-xl border border-[#D4C9A8] bg-white py-2 shadow-lg"
+                className="absolute right-0 z-40 mt-2 max-h-[min(24rem,70vh)] w-[min(100vw-2rem,22rem)] overflow-y-auto rounded-xl border border-[#C8D8E4] bg-white py-2 shadow-lg"
                 role="menu"
               >
                 {availableGroups.map((group) => (
                   <div key={group.label} className="px-2 py-1">
-                    <p className="px-2 py-1.5 text-xs font-semibold uppercase tracking-wide text-[#8C8A78]">
+                    <p className="px-2 py-1.5 text-xs font-semibold uppercase tracking-wide text-[#7A9AB0]">
                       {group.label}
                     </p>
                     <ul className="space-y-0.5">
@@ -519,16 +519,16 @@ export function PortalSystemsOverviewPage() {
                         return (
                           <li
                             key={system.id}
-                            className="flex items-center justify-between gap-2 rounded-lg px-2 py-1.5 hover:bg-[#F5F0E8]"
+                            className="flex items-center justify-between gap-2 rounded-lg px-2 py-1.5 hover:bg-[#F7F4EF]"
                           >
-                            <span className="min-w-0 flex-1 text-sm text-[#2C3020]">
+                            <span className="min-w-0 flex-1 text-sm text-[#1E3448]">
                               {friendlyLabel(system.name)}
                             </span>
                             <button
                               type="button"
                               disabled={busy}
                               onClick={() => void handleAdd(system)}
-                              className="shrink-0 rounded-full border border-[#8B9E6B]/30 px-2.5 py-0.5 text-xs font-semibold text-[#8B9E6B] transition hover:bg-[#F5F0E8] disabled:opacity-50"
+                              className="shrink-0 rounded-full border border-[#4A7FA5]/30 px-2.5 py-0.5 text-xs font-semibold text-[#4A7FA5] transition hover:bg-[#F7F4EF] disabled:opacity-50"
                             >
                               {busy ? "…" : "Tilføj"}
                             </button>
@@ -554,8 +554,8 @@ export function PortalSystemsOverviewPage() {
       {activeGroups.length > 0 ? (
         <SystemsListSection groups={activeGroups} renderRow={renderRow} />
       ) : (
-        <p className="rounded-xl border border-[#D4C9A8] bg-white px-5 py-8 text-center text-sm text-[#5C5A48] shadow-sm">
-          Ingen systemer endnu. Brug <strong className="text-[#8B9E6B]">+ Tilføj system</strong> for at komme i gang.
+        <p className="rounded-xl border border-[#C8D8E4] bg-white px-5 py-8 text-center text-sm text-[#4A6478] shadow-sm">
+          Ingen systemer endnu. Brug <strong className="text-[#4A7FA5]">+ Tilføj system</strong> for at komme i gang.
         </p>
       )}
 
@@ -572,38 +572,38 @@ export function PortalSystemsOverviewPage() {
       {modal ? (
         <PortalModalOverlay open onClose={() => setModal(null)} position="bottom-sheet">
           <div
-            className="w-full max-w-lg rounded-2xl border border-[#D4C9A8] bg-white p-6 shadow-xl"
+            className="w-full max-w-lg rounded-2xl border border-[#C8D8E4] bg-white p-6 shadow-xl"
             role="dialog"
             aria-modal="true"
             aria-labelledby="setup-modal-title"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-start justify-between gap-4">
-              <h2 id="setup-modal-title" className="text-lg font-semibold text-[#2C3020]">
+              <h2 id="setup-modal-title" className="text-lg font-semibold text-[#1E3448]">
                 Opsætning af {modal.friendlyName}
               </h2>
               <button
                 type="button"
                 onClick={() => setModal(null)}
-                className="rounded-full p-1 text-[#8C8A78] transition-colors hover:bg-[#F5F0E8] hover:text-[#2C3020]"
+                className="rounded-full p-1 text-[#7A9AB0] transition-colors hover:bg-[#F7F4EF] hover:text-[#1E3448]"
                 aria-label="Luk"
               >
                 <X className="h-5 w-5" />
               </button>
             </div>
             {modal.kind === "auto" ? (
-              <p className="mt-5 flex gap-3 text-sm leading-relaxed text-[#5C5A48]">
-                <Info className="h-5 w-5 shrink-0 text-[#8C8A78]" aria-hidden />
+              <p className="mt-5 flex gap-3 text-sm leading-relaxed text-[#4A6478]">
+                <Info className="h-5 w-5 shrink-0 text-[#7A9AB0]" aria-hidden />
                 <span>Dette system overvåges automatisk. Ingen opsætning kræves.</span>
               </p>
             ) : (
               <>
-                <p className="mt-5 text-sm leading-relaxed text-[#5C5A48]">
+                <p className="mt-5 text-sm leading-relaxed text-[#4A6478]">
                   Denne integration kræver at vi hjælper dig med opsætningen. Opret en sag og vi sørger for resten.
                 </p>
                 <Link
                   href={supportSetupHref(modal.storedName)}
-                  className="mt-6 inline-flex w-full items-center justify-center rounded-full bg-[#8B9E6B] px-5 py-3 text-sm font-semibold text-white transition-colors hover:bg-[#7A8A5A] sm:w-auto"
+                  className="mt-6 inline-flex w-full items-center justify-center rounded-full bg-[#4A7FA5] px-5 py-3 text-sm font-semibold text-white transition-colors hover:bg-[#3A6F95] sm:w-auto"
                 >
                   Opret sag
                 </Link>
@@ -612,7 +612,7 @@ export function PortalSystemsOverviewPage() {
             <button
               type="button"
               onClick={() => setModal(null)}
-              className="mt-6 w-full rounded-full border border-[#D4C9A8] py-2.5 text-sm font-semibold text-[#2C3020] transition-colors hover:bg-[#EEF2E6] sm:w-auto sm:px-6"
+              className="mt-6 w-full rounded-full border border-[#C8D8E4] py-2.5 text-sm font-semibold text-[#1E3448] transition-colors hover:bg-[#EAF1F7] sm:w-auto sm:px-6"
             >
               Luk
             </button>

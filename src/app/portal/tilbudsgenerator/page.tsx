@@ -429,7 +429,7 @@ export default function PortalTilbudsgeneratorPage() {
             <button
               type="button"
               onClick={openCreate}
-              className="rounded-full bg-[#8B9E6B] px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-[#7A8A5A]"
+              className="rounded-full bg-[#4A7FA5] px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-[#3A6F95]"
             >
               Tilføj ydelse
             </button>
@@ -494,7 +494,7 @@ export default function PortalTilbudsgeneratorPage() {
                 value={recipientEmail}
                 onChange={(e) => setRecipientEmail(e.target.value)}
                 placeholder="kunde@firma.dk"
-                className="mt-2 w-full max-w-md rounded-lg border border-[#E7E5E4] px-3 py-2 text-sm outline-none focus:border-[#8B9E6B] focus:ring-2 focus:ring-[#8B9E6B]"
+                className="mt-2 w-full max-w-md rounded-lg border border-[#E7E5E4] px-3 py-2 text-sm outline-none focus:border-[#4A7FA5] focus:ring-2 focus:ring-[#4A7FA5]"
                 required
               />
             </div>
@@ -537,15 +537,15 @@ export default function PortalTilbudsgeneratorPage() {
                         key={s.id}
                         type="button"
                         onClick={() => toggleService(s.id)}
-                        className={`relative rounded-xl px-3 py-3 text-left shadow-sm transition focus:outline-none focus:ring-2 focus:ring-[#8B9E6B] focus:ring-offset-1 ${
+                        className={`relative rounded-xl px-3 py-3 text-left shadow-sm transition focus:outline-none focus:ring-2 focus:ring-[#4A7FA5] focus:ring-offset-1 ${
                           isOn
-                            ? "border-2 border-[#8B9E6B] bg-white ring-1 ring-[#EEF2E6]"
+                            ? "border-2 border-[#4A7FA5] bg-white ring-1 ring-[#EAF1F7]"
                             : "border border-stone-200 bg-white text-stone-600 hover:border-stone-300"
                         }`}
                       >
                         {isOn ? (
                           <span
-                            className="absolute right-2 top-2 flex h-6 w-6 items-center justify-center rounded-full bg-[#8B9E6B] shadow-sm"
+                            className="absolute right-2 top-2 flex h-6 w-6 items-center justify-center rounded-full bg-[#4A7FA5] shadow-sm"
                             aria-hidden
                           >
                             <CardCheckIcon />
@@ -576,13 +576,13 @@ export default function PortalTilbudsgeneratorPage() {
                 onChange={(e) => setNeeds(e.target.value)}
                 rows={5}
                 placeholder="Skriv kort hvad kunden har brug for, ønsket tidsplan og eventuelle krav..."
-                className="mt-2 w-full rounded-lg border border-[#E7E5E4] px-3 py-2 text-sm outline-none focus:border-[#8B9E6B] focus:ring-2 focus:ring-[#8B9E6B]"
+                className="mt-2 w-full rounded-lg border border-[#E7E5E4] px-3 py-2 text-sm outline-none focus:border-[#4A7FA5] focus:ring-2 focus:ring-[#4A7FA5]"
               />
               <button
                 type="button"
                 disabled={generating}
                 onClick={() => void handleGenerate()}
-                className="mt-4 rounded-full bg-[#8B9E6B] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[#7A8A5A] focus:outline-none focus:ring-2 focus:ring-[#8B9E6B] disabled:opacity-50"
+                className="mt-4 rounded-full bg-[#4A7FA5] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[#3A6F95] focus:outline-none focus:ring-2 focus:ring-[#4A7FA5] disabled:opacity-50"
               >
                 {generating ? "Genererer..." : "Generer tilbud med AI"}
               </button>
@@ -594,7 +594,7 @@ export default function PortalTilbudsgeneratorPage() {
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 placeholder="Fx Tilbud — [kunde] — dato"
-                className="mt-2 w-full rounded-lg border border-[#E7E5E4] px-3 py-2 text-sm outline-none focus:border-[#8B9E6B] focus:ring-2 focus:ring-[#8B9E6B]"
+                className="mt-2 w-full rounded-lg border border-[#E7E5E4] px-3 py-2 text-sm outline-none focus:border-[#4A7FA5] focus:ring-2 focus:ring-[#4A7FA5]"
               />
               <label className="mt-4 block text-sm font-medium text-[#1C1917]">Tilbudstekst</label>
               <textarea
@@ -602,7 +602,7 @@ export default function PortalTilbudsgeneratorPage() {
                 onChange={(e) => setContent(e.target.value)}
                 rows={16}
                 placeholder="Det genererede tilbud vises her — redigér frit."
-                className="mt-2 w-full rounded-lg border border-[#E7E5E4] px-3 py-2 font-mono text-sm leading-relaxed outline-none focus:border-[#8B9E6B] focus:ring-2 focus:ring-[#8B9E6B]"
+                className="mt-2 w-full rounded-lg border border-[#E7E5E4] px-3 py-2 font-mono text-sm leading-relaxed outline-none focus:border-[#4A7FA5] focus:ring-2 focus:ring-[#4A7FA5]"
               />
             </div>
 
@@ -613,7 +613,7 @@ export default function PortalTilbudsgeneratorPage() {
               <button
                 type="submit"
                 disabled={savingQuote || sending}
-                className="rounded-full bg-[#8B9E6B] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[#7A8A5A] focus:outline-none focus:ring-2 focus:ring-[#8B9E6B] disabled:opacity-50"
+                className="rounded-full bg-[#4A7FA5] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[#3A6F95] focus:outline-none focus:ring-2 focus:ring-[#4A7FA5] disabled:opacity-50"
               >
                 {savingQuote ? "Gemmer..." : "Gem som kladde"}
               </button>
@@ -676,7 +676,7 @@ export default function PortalTilbudsgeneratorPage() {
                   <input
                     value={name}
                     onChange={(e) => setName(e.target.value)}
-                    className="mt-1 w-full rounded-lg border border-[#E7E5E4] px-3 py-2 text-sm outline-none focus:border-[#8B9E6B] focus:ring-2 focus:ring-[#8B9E6B]"
+                    className="mt-1 w-full rounded-lg border border-[#E7E5E4] px-3 py-2 text-sm outline-none focus:border-[#4A7FA5] focus:ring-2 focus:ring-[#4A7FA5]"
                     required
                   />
                 </div>
@@ -686,7 +686,7 @@ export default function PortalTilbudsgeneratorPage() {
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
                     rows={3}
-                    className="mt-1 w-full rounded-lg border border-[#E7E5E4] px-3 py-2 text-sm outline-none focus:border-[#8B9E6B] focus:ring-2 focus:ring-[#8B9E6B]"
+                    className="mt-1 w-full rounded-lg border border-[#E7E5E4] px-3 py-2 text-sm outline-none focus:border-[#4A7FA5] focus:ring-2 focus:ring-[#4A7FA5]"
                   />
                 </div>
                 <div className="grid gap-4 sm:grid-cols-2">
@@ -697,7 +697,7 @@ export default function PortalTilbudsgeneratorPage() {
                       inputMode="decimal"
                       value={price}
                       onChange={(e) => setPrice(e.target.value)}
-                      className="mt-1 w-full rounded-lg border border-[#E7E5E4] px-3 py-2 text-sm outline-none focus:border-[#8B9E6B] focus:ring-2 focus:ring-[#8B9E6B]"
+                      className="mt-1 w-full rounded-lg border border-[#E7E5E4] px-3 py-2 text-sm outline-none focus:border-[#4A7FA5] focus:ring-2 focus:ring-[#4A7FA5]"
                       placeholder="fx 499"
                       required
                     />
@@ -707,7 +707,7 @@ export default function PortalTilbudsgeneratorPage() {
                     <select
                       value={unit}
                       onChange={(e) => setUnit(e.target.value)}
-                      className="mt-1 w-full rounded-lg border border-[#E7E5E4] px-3 py-2 text-sm outline-none focus:border-[#8B9E6B] focus:ring-2 focus:ring-[#8B9E6B]"
+                      className="mt-1 w-full rounded-lg border border-[#E7E5E4] px-3 py-2 text-sm outline-none focus:border-[#4A7FA5] focus:ring-2 focus:ring-[#4A7FA5]"
                     >
                       <option value="månedlig">Månedlig</option>
                       <option value="time">Time</option>
@@ -727,7 +727,7 @@ export default function PortalTilbudsgeneratorPage() {
                   <button
                     type="submit"
                     disabled={savingService}
-                    className="rounded-full bg-[#8B9E6B] px-5 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-[#7A8A5A] disabled:opacity-50"
+                    className="rounded-full bg-[#4A7FA5] px-5 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-[#3A6F95] disabled:opacity-50"
                   >
                     {savingService ? "Gemmer..." : "Gem"}
                   </button>

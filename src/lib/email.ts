@@ -28,8 +28,8 @@ export function btn(text: string, url: string) {
   return `
     <table cellpadding="0" cellspacing="0" border="0" style="margin:16px 0;">
       <tr>
-        <td style="background:#8B9E6B; border-radius:999px; padding:12px 28px;">
-          <a href="${url}" style="color:#ffffff; text-decoration:none; font-weight:600; font-size:14px; font-family:Inter,Arial,sans-serif; display:inline-block;">${text}</a>
+        <td style="background:#4A7FA5; border-radius:999px; padding:12px 28px;">
+          <a href="${url}" style="color:#ffffff; text-decoration:none; font-weight:600; font-size:14px; font-family:'DM Sans',Arial,sans-serif; display:inline-block;">${text}</a>
         </td>
       </tr>
     </table>

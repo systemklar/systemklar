@@ -143,7 +143,7 @@ export default function PortalAiAssistantPage() {
 
   return (
     <div className="w-full p-6 md:p-8">
-      <div className="flex h-[min(calc(100dvh-11rem),52rem)] w-full flex-col rounded-2xl border border-[#D4C9A8] bg-white shadow-sm">
+      <div className="flex h-[min(calc(100dvh-11rem),52rem)] w-full flex-col rounded-2xl border border-[#C8D8E4] bg-white shadow-sm">
         <header className="shrink-0 border-b border-[#E7E5E4] px-5 py-4">
           <h1 className="text-xl font-bold text-[#1C1917]">AI-assistent</h1>
           <p className="mt-1 text-sm text-[#78716C]">
@@ -156,7 +156,7 @@ export default function PortalAiAssistantPage() {
                 type="button"
                 onClick={() => void sendMessage(question)}
                 disabled={loading}
-                className="rounded-full border border-[#D4C9A8] bg-[#EEF2E6] px-3 py-1.5 text-xs font-semibold text-[#7A8A5A] transition hover:bg-[#E8E2D0] disabled:opacity-50"
+                className="rounded-full border border-[#C8D8E4] bg-[#EAF1F7] px-3 py-1.5 text-xs font-semibold text-[#3A6F95] transition hover:bg-[#E0EAF0] disabled:opacity-50"
               >
                 {question}
               </button>
@@ -173,7 +173,7 @@ export default function PortalAiAssistantPage() {
               <div
                 className={`max-w-[85%] rounded-2xl px-4 py-3 text-sm shadow-sm ${
                   message.role === "user"
-                    ? "rounded-br-md bg-[#8B9E6B] text-white"
+                    ? "rounded-br-md bg-[#4A7FA5] text-white"
                     : "rounded-bl-md border border-slate-200 bg-white text-slate-900"
                 }`}
               >
@@ -212,13 +212,13 @@ export default function PortalAiAssistantPage() {
               value={draft}
               onChange={(e) => setDraft(e.target.value)}
               placeholder={`Skriv til AI-assistenten hos ${companyName}...`}
-              className="min-w-0 flex-1 rounded-lg border border-[#E7E5E4] px-3 py-2 outline-none focus:border-[#8B9E6B] focus:ring-2 focus:ring-[#8B9E6B]"
+              className="min-w-0 flex-1 rounded-lg border border-[#E7E5E4] px-3 py-2 outline-none focus:border-[#4A7FA5] focus:ring-2 focus:ring-[#4A7FA5]"
               disabled={loading}
             />
             <button
               type="submit"
               disabled={loading || !draft.trim()}
-              className="rounded-full bg-[#8B9E6B] px-5 py-2 text-sm font-semibold text-white transition hover:bg-[#7A8A5A] focus:outline-none focus:ring-2 focus:ring-[#8B9E6B] disabled:opacity-50"
+              className="rounded-full bg-[#4A7FA5] px-5 py-2 text-sm font-semibold text-white transition hover:bg-[#3A6F95] focus:outline-none focus:ring-2 focus:ring-[#4A7FA5] disabled:opacity-50"
             >
               Send
             </button>

@@ -126,7 +126,7 @@ export default function PriserPage() {
   return (
     <MarketingShell>
       <main>
-        <section className="relative overflow-hidden bg-gradient-to-br from-[#8B9E6B] to-[#2C3E2A] py-20 pt-32 md:py-32 md:pt-40">
+        <section className="relative overflow-hidden bg-gradient-to-br from-[#4A7FA5] to-[#1E3448] py-20 pt-32 md:py-32 md:pt-40">
           <div
             className="absolute inset-0 opacity-10"
             style={{
@@ -155,12 +155,12 @@ export default function PriserPage() {
         <section className="bg-white py-16 md:py-24">
           <div className="mx-auto max-w-7xl px-6">
             <div className="mb-10 flex min-h-8 items-center justify-center gap-3">
-              <span className={`text-sm font-medium ${!yearly ? "text-[#2C3020]" : "text-[#5C5A48]"}`}>Månedlig</span>
+              <span className={`text-sm font-medium ${!yearly ? "text-[#1E3448]" : "text-[#4A6478]"}`}>Månedlig</span>
               <button
                 onClick={() => setYearly(!yearly)}
                 aria-label={yearly ? "Skift til månedlig" : "Skift til årlig"}
                 className={`relative h-6 w-12 rounded-full transition-colors duration-200 ${
-                  yearly ? "bg-[#8B9E6B]" : "bg-slate-200"
+                  yearly ? "bg-[#4A7FA5]" : "bg-slate-200"
                 }`}
               >
                 <div
@@ -169,7 +169,7 @@ export default function PriserPage() {
                   }`}
                 />
               </button>
-              <span className={`text-sm font-medium ${yearly ? "text-[#2C3020]" : "text-[#5C5A48]"}`}>Årlig</span>
+              <span className={`text-sm font-medium ${yearly ? "text-[#1E3448]" : "text-[#4A6478]"}`}>Årlig</span>
               <span
                 className={`min-w-[110px] rounded-full bg-green-100 px-2 py-0.5 text-center text-xs font-semibold text-green-700 transition-opacity duration-200 ${
                   yearly ? "opacity-100" : "pointer-events-none opacity-0"
@@ -189,36 +189,36 @@ export default function PriserPage() {
                   <div className="relative h-full">
                     {plan.highlight ? (
                       <div
-                        className="pointer-events-none absolute -inset-0.5 animate-pulse rounded-[18px] bg-[#8B9E6B]/20 blur-sm"
+                        className="pointer-events-none absolute -inset-0.5 animate-pulse rounded-[18px] bg-[#4A7FA5]/20 blur-sm"
                         aria-hidden
                       />
                     ) : null}
                     <article
                       className={`relative flex h-full flex-col rounded-2xl bg-white p-8 ${
                         plan.highlight
-                          ? "border-2 border-[#7A8A5A] shadow-xl"
-                          : "border border-[#D4C9A8] shadow-sm"
+                          ? "border-2 border-[#3A6F95] shadow-xl"
+                          : "border border-[#C8D8E4] shadow-sm"
                       }`}
                     >
                       {plan.highlight ? (
-                        <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-[#8B9E6B] px-3 py-1 text-xs font-semibold text-white shadow-sm">
+                        <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-[#4A7FA5] px-3 py-1 text-xs font-semibold text-white shadow-sm">
                           Mest populær
                         </span>
                       ) : null}
-                      <h3 className="text-xl font-semibold uppercase tracking-wide text-[#2C3020]">{plan.name}</h3>
+                      <h3 className="text-xl font-semibold uppercase tracking-wide text-[#1E3448]">{plan.name}</h3>
                       <p
-                        className={`mt-2 text-3xl font-bold text-[#2C3020] transition-opacity duration-200 ${
+                        className={`mt-2 text-3xl font-bold text-[#1E3448] transition-opacity duration-200 ${
                           priceFading ? "opacity-0" : "opacity-100"
                         }`}
                       >
                         {yearly ? plan.yearly : plan.monthly}
                       </p>
-                      {yearly ? <p className="mt-1 text-xs text-[#5C5A48]">faktureres årligt</p> : null}
-                      <p className="mt-3 text-xs text-[#5C5A48]">{plan.fits}</p>
-                      <ul className="mt-6 space-y-3 text-sm text-[#5C5A48]">
+                      {yearly ? <p className="mt-1 text-xs text-[#4A6478]">faktureres årligt</p> : null}
+                      <p className="mt-3 text-xs text-[#4A6478]">{plan.fits}</p>
+                      <ul className="mt-6 space-y-3 text-sm text-[#4A6478]">
                         {plan.features.map((feature) => (
                           <li key={feature} className="flex items-start gap-2">
-                            <CheckCircle className="mt-0.5 h-4 w-4 shrink-0 text-[#8B9E6B]" />
+                            <CheckCircle className="mt-0.5 h-4 w-4 shrink-0 text-[#4A7FA5]" />
                             <span>{feature}</span>
                           </li>
                         ))}
@@ -228,8 +228,8 @@ export default function PriserPage() {
                         onClick={() => setModalSubject(`${plan.name} – ${plan.monthly}`)}
                         className={`mt-8 inline-flex min-h-[44px] w-full justify-center rounded-full px-5 py-3 font-semibold transition-colors ${
                           plan.buttonStyle === "primary"
-                            ? "bg-[#8B9E6B] text-white hover:bg-[#7A8A5A]"
-                            : "border border-[#D4C9A8] text-[#7A8A5A] hover:bg-[#EEF2E6]"
+                            ? "bg-[#4A7FA5] text-white hover:bg-[#3A6F95]"
+                            : "border border-[#C8D8E4] text-[#3A6F95] hover:bg-[#EAF1F7]"
                         }`}
                       >
                         Vælg {plan.name}
@@ -239,9 +239,9 @@ export default function PriserPage() {
                 </AnimatedSection>
               ))}
             </div>
-            <p className="mt-8 text-center text-sm text-[#5C5A48]">
+            <p className="mt-8 text-center text-sm text-[#4A6478]">
               Ikke sikker på hvilken plan?{" "}
-              <Link href="/#roi-beregner" className="font-medium text-[#8B9E6B] hover:underline">
+              <Link href="/#roi-beregner" className="font-medium text-[#4A7FA5] hover:underline">
                 Beregn hvad IT-rod koster jer →
               </Link>
             </p>
@@ -251,10 +251,10 @@ export default function PriserPage() {
         <section className="bg-white py-16 md:py-20">
           <div className="mx-auto max-w-5xl px-6">
             <AnimatedSection direction="up">
-              <h2 className="text-center text-2xl font-bold tracking-tight text-[#2C3020] md:text-4xl">
+              <h2 className="text-center text-2xl font-bold tracking-tight text-[#1E3448] md:text-4xl">
                 Prøv uden risiko
               </h2>
-              <p className="mx-auto mt-4 max-w-2xl text-center text-base text-[#5C5A48]">
+              <p className="mx-auto mt-4 max-w-2xl text-center text-base text-[#4A6478]">
                 Vi gør det enkelt at komme i gang – og endnu nemmere at stoppe igen, hvis det ikke passer.
               </p>
             </AnimatedSection>
@@ -265,12 +265,12 @@ export default function PriserPage() {
                   direction="up"
                   delay={(i * 100) as 0 | 100 | 200}
                 >
-                  <div className="h-full rounded-2xl border border-[#D4C9A8] bg-[#EEF2E6] p-6">
-                    <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-[#EEF2E6]">
-                      <Icon className="h-6 w-6 text-[#8B9E6B]" />
+                  <div className="h-full rounded-2xl border border-[#C8D8E4] bg-[#EAF1F7] p-6">
+                    <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-[#EAF1F7]">
+                      <Icon className="h-6 w-6 text-[#4A7FA5]" />
                     </div>
-                    <h3 className="text-lg font-semibold text-[#2C3020]">{title}</h3>
-                    <p className="mt-2 text-sm leading-relaxed text-[#5C5A48]">{desc}</p>
+                    <h3 className="text-lg font-semibold text-[#1E3448]">{title}</h3>
+                    <p className="mt-2 text-sm leading-relaxed text-[#4A6478]">{desc}</p>
                   </div>
                 </AnimatedSection>
               ))}
@@ -278,10 +278,10 @@ export default function PriserPage() {
           </div>
         </section>
 
-        <section className="bg-[#EEF2E6] py-16 md:py-20">
+        <section className="bg-[#EAF1F7] py-16 md:py-20">
           <div className="mx-auto max-w-2xl px-6">
             <AnimatedSection direction="up">
-              <h2 className="text-center text-2xl font-bold tracking-tight text-[#2C3020] md:text-4xl">
+              <h2 className="text-center text-2xl font-bold tracking-tight text-[#1E3448] md:text-4xl">
                 Ofte stillede spørgsmål
               </h2>
             </AnimatedSection>
@@ -294,15 +294,15 @@ export default function PriserPage() {
                     direction="up"
                     delay={(Math.min(i, 3) * 100) as 0 | 100 | 200 | 300}
                   >
-                    <div className="overflow-hidden rounded-2xl border border-[#D4C9A8] bg-white">
+                    <div className="overflow-hidden rounded-2xl border border-[#C8D8E4] bg-white">
                       <button
                         onClick={() => setOpenFaq(isOpen ? null : i)}
                         aria-expanded={isOpen}
                         className="flex w-full items-center justify-between gap-4 px-6 py-4 text-left"
                       >
-                        <span className="font-semibold text-[#2C3020]">{item.q}</span>
+                        <span className="font-semibold text-[#1E3448]">{item.q}</span>
                         <ChevronDown
-                          className={`h-5 w-5 shrink-0 text-[#8B9E6B] transition-transform duration-300 ${
+                          className={`h-5 w-5 shrink-0 text-[#4A7FA5] transition-transform duration-300 ${
                             isOpen ? "rotate-180" : "rotate-0"
                           }`}
                           aria-hidden
@@ -314,7 +314,7 @@ export default function PriserPage() {
                         }`}
                       >
                         <div className="overflow-hidden">
-                          <p className="px-6 pb-5 text-sm leading-relaxed text-[#5C5A48]">{item.a}</p>
+                          <p className="px-6 pb-5 text-sm leading-relaxed text-[#4A6478]">{item.a}</p>
                         </div>
                       </div>
                     </div>
@@ -328,14 +328,14 @@ export default function PriserPage() {
         <section className="bg-white py-16 md:py-20">
           <div className="mx-auto max-w-2xl px-6 text-center">
             <AnimatedSection direction="up">
-              <h2 className="text-2xl font-bold tracking-tight text-[#2C3020] md:text-3xl">Vil du se det i praksis?</h2>
-              <p className="mx-auto mt-4 max-w-xl text-base text-[#5C5A48]">
+              <h2 className="text-2xl font-bold tracking-tight text-[#1E3448] md:text-3xl">Vil du se det i praksis?</h2>
+              <p className="mx-auto mt-4 max-w-xl text-base text-[#4A6478]">
                 Book en gratis snak, så gennemgår vi hvilken plan der passer bedst til jer.
               </p>
               <button
                 type="button"
                 onClick={() => setModalSubject("Demo")}
-                className="mt-8 min-h-[44px] rounded-full bg-[#8B9E6B] px-7 py-3 font-semibold text-white transition-colors hover:bg-[#7A8A5A]"
+                className="mt-8 min-h-[44px] rounded-full bg-[#4A7FA5] px-7 py-3 font-semibold text-white transition-colors hover:bg-[#3A6F95]"
               >
                 Book en gratis snak
               </button>

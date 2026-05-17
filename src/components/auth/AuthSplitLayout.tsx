@@ -20,9 +20,9 @@ export function AuthSplitLayout({
   sideBullets,
 }: AuthSplitLayoutProps) {
   return (
-    <main className="min-h-screen bg-white text-[#2C3020]">
+    <main className="min-h-screen bg-white text-[#1E3448]">
       <div className="grid min-h-screen md:grid-cols-2">
-        <aside className="relative hidden overflow-hidden bg-gradient-to-br from-[#8B9E6B] to-[#2C3E2A] px-10 py-12 md:flex md:flex-col md:justify-center">
+        <aside className="relative hidden overflow-hidden bg-gradient-to-br from-[#4A7FA5] to-[#1E3448] px-10 py-12 md:flex md:flex-col md:justify-center">
           <div
             className="absolute inset-0 opacity-10"
             style={{ backgroundImage: "radial-gradient(circle, white 1px, transparent 1px)", backgroundSize: "32px 32px" }}
@@ -32,7 +32,7 @@ export function AuthSplitLayout({
             <SystemklarLogo href="/" variant="dark" size="sm" />
             <h2 className="mt-10 max-w-md text-4xl font-bold tracking-tight text-white">{sideTitle}</h2>
             {sideBullets ? (
-              <ul className="mt-8 space-y-4 text-[#EEF2E6]">
+              <ul className="mt-8 space-y-4 text-[#EAF1F7]">
                 {sideBullets.map((bullet) => (
                   <li key={bullet} className="flex items-start gap-3">
                     <CheckCircle className="mt-0.5 h-5 w-5 shrink-0 text-white" />
@@ -45,13 +45,13 @@ export function AuthSplitLayout({
             )}
           </AnimatedSection>
         </aside>
-        <section className="flex items-center justify-center bg-[#F5F0E8] px-6 py-12 md:px-10">
-          <AnimatedSection direction="right" delay={0} className="w-full max-w-md rounded-2xl border border-[#D4C9A8] bg-white p-8 shadow-sm">
+        <section className="flex items-center justify-center bg-[#F7F4EF] px-6 py-12 md:px-10">
+          <AnimatedSection direction="right" delay={0} className="w-full max-w-md rounded-2xl border border-[#C8D8E4] bg-white p-8 shadow-sm">
             <div className="mb-5 flex justify-center">
               <SystemklarLogo href="/" variant="light" size="sm" />
             </div>
-            <h1 className="text-3xl font-bold tracking-tight text-[#2C3020]">{title}</h1>
-            <p className="mt-3 text-sm text-[#5C5A48]">{subtitle}</p>
+            <h1 className="text-3xl font-bold tracking-tight text-[#1E3448]">{title}</h1>
+            <p className="mt-3 text-sm text-[#4A6478]">{subtitle}</p>
             {children}
           </AnimatedSection>
         </section>

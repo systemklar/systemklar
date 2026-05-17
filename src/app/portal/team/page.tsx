@@ -61,10 +61,10 @@ type Organisation = {
 const dateFmt = new Intl.DateTimeFormat("da-DK", { dateStyle: "medium" });
 
 const selectClass =
-  "w-full max-w-xs rounded-xl border border-[#D4C9A8] px-3 py-2 text-sm text-[#2C3020] outline-none focus:ring-2 focus:ring-[#8B9E6B] sm:text-right";
+  "w-full max-w-xs rounded-xl border border-[#C8D8E4] px-3 py-2 text-sm text-[#1E3448] outline-none focus:ring-2 focus:ring-[#4A7FA5] sm:text-right";
 
 const inputClass =
-  "w-full max-w-xs rounded-xl border border-[#D4C9A8] px-3 py-2 text-sm text-[#2C3020] outline-none focus:ring-2 focus:ring-[#8B9E6B] sm:text-right";
+  "w-full max-w-xs rounded-xl border border-[#C8D8E4] px-3 py-2 text-sm text-[#1E3448] outline-none focus:ring-2 focus:ring-[#4A7FA5] sm:text-right";
 
 function buildInitials(name: string) {
   return name
@@ -404,27 +404,27 @@ export default function PortalTeamPage() {
     return (
       <li
         key={member.id}
-        className="flex w-[min(100%,220px)] shrink-0 flex-col items-center gap-2 rounded-2xl border border-[#D4C9A8] bg-white p-5 text-center shadow-sm"
+        className="flex w-[min(100%,220px)] shrink-0 flex-col items-center gap-2 rounded-2xl border border-[#C8D8E4] bg-white p-5 text-center shadow-sm"
       >
         <ProfileAvatar avatarUrl={member.avatar_url} initials={initials} className="h-16 w-16 text-lg" />
         <div className="min-w-0 w-full">
-          <p className="truncate text-sm font-semibold text-[#2C3020]">
+          <p className="truncate text-sm font-semibold text-[#1E3448]">
             {member.full_name || "Ukendt navn"}
             {member.id === authUserId ? (
-              <span className="block text-[11px] font-normal text-[#8C8A78]">(dig)</span>
+              <span className="block text-[11px] font-normal text-[#7A9AB0]">(dig)</span>
             ) : null}
           </p>
           <span
             className={`mt-2 inline-flex rounded-full px-2.5 py-0.5 text-[11px] font-semibold ${
               member.role === "org_admin"
-                ? "bg-[#EEF2E6] text-[#2C3020]"
-                : "bg-[#F5F0E8] text-[#5C5A48]"
+                ? "bg-[#EAF1F7] text-[#1E3448]"
+                : "bg-[#F7F4EF] text-[#4A6478]"
             }`}
           >
             {member.role === "org_admin" ? "Administrator" : "Medlem"}
           </span>
-          <p className="mt-2 truncate text-xs text-[#8C8A78]">{member.email || "—"}</p>
-          {joined ? <p className="mt-1 text-[11px] text-[#8C8A78]">Tilføjet {joined}</p> : null}
+          <p className="mt-2 truncate text-xs text-[#7A9AB0]">{member.email || "—"}</p>
+          {joined ? <p className="mt-1 text-[11px] text-[#7A9AB0]">Tilføjet {joined}</p> : null}
         </div>
         {!readOnly && canRemove ? (
           <button
@@ -442,7 +442,7 @@ export default function PortalTeamPage() {
 
   const renderOversigt = () => (
     <div className="space-y-10">
-      <section className="rounded-2xl border border-[#D4C9A8] bg-white px-8 py-10 shadow-sm">
+      <section className="rounded-2xl border border-[#C8D8E4] bg-white px-8 py-10 shadow-sm">
         <div className="flex flex-col items-start gap-6 sm:flex-row sm:items-center">
           <OrganisationLogo
             logoUrl={orgLogoUrl}
@@ -450,17 +450,17 @@ export default function PortalTeamPage() {
             className="h-20 w-20 shrink-0 text-2xl"
           />
           <div className="min-w-0 space-y-3">
-            <h2 className="text-2xl font-bold tracking-tight text-[#2C3020] sm:text-3xl">
+            <h2 className="text-2xl font-bold tracking-tight text-[#1E3448] sm:text-3xl">
               {orgName || "Din organisation"}
             </h2>
             <div className="flex flex-wrap gap-2">
               {industry ? (
-                <span className="rounded-full border border-[#D4C9A8] bg-[#F5F0E8] px-3 py-1 text-xs font-medium text-[#5C5A48]">
+                <span className="rounded-full border border-[#C8D8E4] bg-[#F7F4EF] px-3 py-1 text-xs font-medium text-[#4A6478]">
                   {industry}
                 </span>
               ) : null}
               {employeeCount ? (
-                <span className="rounded-full border border-[#D4C9A8] bg-[#F5F0E8] px-3 py-1 text-xs font-medium text-[#5C5A48]">
+                <span className="rounded-full border border-[#C8D8E4] bg-[#F7F4EF] px-3 py-1 text-xs font-medium text-[#4A6478]">
                   {employeeCount} ansatte
                 </span>
               ) : null}
@@ -471,23 +471,23 @@ export default function PortalTeamPage() {
 
       <div>
         <div className="mb-4 flex flex-wrap items-center gap-2">
-          <h3 className="text-lg font-semibold text-[#2C3020]">Teammedlemmer</h3>
-          <span className="rounded-full bg-[#EEF2E6] px-2.5 py-0.5 text-xs font-semibold tabular-nums text-[#2C3020]">
+          <h3 className="text-lg font-semibold text-[#1E3448]">Teammedlemmer</h3>
+          <span className="rounded-full bg-[#EAF1F7] px-2.5 py-0.5 text-xs font-semibold tabular-nums text-[#1E3448]">
             {members.length}
           </span>
         </div>
 
         {members.length === 0 ? (
-          <div className="flex flex-col items-center gap-3 rounded-2xl border border-[#D4C9A8] bg-white py-14 text-center shadow-sm">
-            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[#EEF2E6] text-[#8B9E6B]">
+          <div className="flex flex-col items-center gap-3 rounded-2xl border border-[#C8D8E4] bg-white py-14 text-center shadow-sm">
+            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[#EAF1F7] text-[#4A7FA5]">
               <Users className="h-6 w-6" />
             </div>
-            <p className="text-sm font-medium text-[#2C3020]">Dit team er tomt</p>
+            <p className="text-sm font-medium text-[#1E3448]">Dit team er tomt</p>
             {isOrgAdmin ? (
               <button
                 type="button"
                 onClick={() => setActiveTab("invitationer")}
-                className="text-sm font-semibold text-[#8B9E6B] hover:underline"
+                className="text-sm font-semibold text-[#4A7FA5] hover:underline"
               >
                 Gå til invitationer for at tilføje kolleger
               </button>
@@ -501,13 +501,13 @@ export default function PortalTeamPage() {
                 <button
                   type="button"
                   onClick={() => setActiveTab("invitationer")}
-                  className="flex h-full min-h-[220px] w-full flex-col items-center justify-center gap-3 rounded-2xl border-2 border-dashed border-[#D4C9A8] bg-[#FAFCFE] p-5 text-center transition hover:border-[#8B9E6B] hover:bg-[#EEF2E6]/50"
+                  className="flex h-full min-h-[220px] w-full flex-col items-center justify-center gap-3 rounded-2xl border-2 border-dashed border-[#C8D8E4] bg-[#FAFCFE] p-5 text-center transition hover:border-[#4A7FA5] hover:bg-[#EAF1F7]/50"
                 >
-                  <span className="flex h-14 w-14 items-center justify-center rounded-full border border-[#D4C9A8] bg-white text-[#8B9E6B] shadow-sm">
+                  <span className="flex h-14 w-14 items-center justify-center rounded-full border border-[#C8D8E4] bg-white text-[#4A7FA5] shadow-sm">
                     <Plus className="h-7 w-7" strokeWidth={2} />
                   </span>
-                  <span className="text-sm font-semibold text-[#8B9E6B]">+ Tilføj kollega</span>
-                  <span className="text-xs text-[#8C8A78]">Gå til invitationer</span>
+                  <span className="text-sm font-semibold text-[#4A7FA5]">+ Tilføj kollega</span>
+                  <span className="text-xs text-[#7A9AB0]">Gå til invitationer</span>
                 </button>
               </li>
             ) : null}
@@ -525,7 +525,7 @@ export default function PortalTeamPage() {
           <SaveButton visible={orgDirty} saving={savingOrg} onClick={() => void saveOrganisation()} />
         }
       >
-        <div className="mb-4 flex items-center gap-4 border-b border-[#E8E2D0] pb-4">
+        <div className="mb-4 flex items-center gap-4 border-b border-[#E0EAF0] pb-4">
           <button
             type="button"
             onClick={onOrgAvatarPick}
@@ -553,7 +553,7 @@ export default function PortalTeamPage() {
             className="hidden"
             onChange={(e) => void onOrgAvatarFileChange(e)}
           />
-          <p className="text-sm text-[#8C8A78]">Klik på logoet for at uploade et nyt</p>
+          <p className="text-sm text-[#7A9AB0]">Klik på logoet for at uploade et nyt</p>
         </div>
 
         <SettingsRow label="Virksomhedsnavn">
@@ -622,14 +622,14 @@ export default function PortalTeamPage() {
     <div className="space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
-          <h3 className="text-lg font-semibold text-[#2C3020]">Invitationer</h3>
-          <p className="mt-1 text-sm text-[#8C8A78]">Inviter kolleger til organisationen</p>
+          <h3 className="text-lg font-semibold text-[#1E3448]">Invitationer</h3>
+          <p className="mt-1 text-sm text-[#7A9AB0]">Inviter kolleger til organisationen</p>
         </div>
         {isOrgAdmin ? (
           <button
             type="button"
             onClick={() => setModalOpen(true)}
-            className="rounded-full bg-[#8B9E6B] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[#7A8A5A]"
+            className="rounded-full bg-[#4A7FA5] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[#3A6F95]"
           >
             Inviter kollega
           </button>
@@ -637,17 +637,17 @@ export default function PortalTeamPage() {
       </div>
     <SettingsSection title="Afventende invitationer">
       {pending.length === 0 ? (
-        <p className="py-6 text-center text-sm text-[#8C8A78]">Ingen afventende invitationer.</p>
+        <p className="py-6 text-center text-sm text-[#7A9AB0]">Ingen afventende invitationer.</p>
       ) : (
-        <ul className="divide-y divide-[#E8E2D0]">
+        <ul className="divide-y divide-[#E0EAF0]">
           {pending.map((invite) => (
             <li
               key={invite.id}
               className="flex flex-wrap items-center justify-between gap-3 py-4 first:pt-0 last:pb-0"
             >
               <div className="min-w-0">
-                <p className="truncate text-sm font-semibold text-[#2C3020]">{invite.email}</p>
-                <p className="text-xs text-[#8C8A78]">
+                <p className="truncate text-sm font-semibold text-[#1E3448]">{invite.email}</p>
+                <p className="text-xs text-[#7A9AB0]">
                   {invite.role === "org_admin" ? "Administrator" : "Medlem"} · inviteret{" "}
                   {dateFmt.format(new Date(invite.created_at))}
                 </p>
@@ -657,7 +657,7 @@ export default function PortalTeamPage() {
                   type="button"
                   disabled={resendingId === invite.id}
                   onClick={() => void resendInvite(invite.id)}
-                  className="inline-flex items-center gap-1 rounded-full border border-[#D4C9A8] px-3 py-1.5 text-xs font-semibold text-[#8B9E6B] transition hover:bg-[#EEF2E6] disabled:opacity-50"
+                  className="inline-flex items-center gap-1 rounded-full border border-[#C8D8E4] px-3 py-1.5 text-xs font-semibold text-[#4A7FA5] transition hover:bg-[#EAF1F7] disabled:opacity-50"
                 >
                   <Mail className="h-3.5 w-3.5" />
                   {resendingId === invite.id ? "Sender…" : "Send igen"}
@@ -682,8 +682,8 @@ export default function PortalTeamPage() {
     <>
       <div className="w-full p-6 md:p-8">
         <div>
-          <h1 className="text-2xl font-bold text-[#2C3020]">Team</h1>
-          <p className="mt-1 text-sm text-[#8C8A78]">Organisation og teammedlemmer</p>
+          <h1 className="text-2xl font-bold text-[#1E3448]">Team</h1>
+          <p className="mt-1 text-sm text-[#7A9AB0]">Organisation og teammedlemmer</p>
         </div>
 
         {error ? (
@@ -694,7 +694,7 @@ export default function PortalTeamPage() {
         ) : null}
 
         {loading ? (
-          <p className="mt-6 text-sm text-[#8C8A78]">Indlæser team…</p>
+          <p className="mt-6 text-sm text-[#7A9AB0]">Indlæser team…</p>
         ) : (
           <>
             {isOrgAdmin ? (
@@ -717,28 +717,28 @@ export default function PortalTeamPage() {
 
       <Modal open={modalOpen} onClose={() => setModalOpen(false)} titleId="invite-title">
         <div className="mb-4 flex items-center gap-2">
-          <Users className="h-5 w-5 text-[#8B9E6B]" />
-          <h3 id="invite-title" className="text-lg font-semibold text-[#2C3020]">
+          <Users className="h-5 w-5 text-[#4A7FA5]" />
+          <h3 id="invite-title" className="text-lg font-semibold text-[#1E3448]">
             Inviter kollega
           </h3>
         </div>
         <form className="space-y-4" onSubmit={(e) => void handleInvite(e)}>
           <div>
-            <label className="mb-1 block text-sm font-medium text-[#2C3020]">E-mail</label>
+            <label className="mb-1 block text-sm font-medium text-[#1E3448]">E-mail</label>
             <input
               type="email"
               required
               value={inviteEmail}
               onChange={(e) => setInviteEmail(e.target.value)}
-              className="w-full rounded-xl border border-[#D4C9A8] px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[#8B9E6B]"
+              className="w-full rounded-xl border border-[#C8D8E4] px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[#4A7FA5]"
             />
           </div>
           <div>
-            <label className="mb-1 block text-sm font-medium text-[#2C3020]">Rolle</label>
+            <label className="mb-1 block text-sm font-medium text-[#1E3448]">Rolle</label>
             <select
               value={inviteRole}
               onChange={(e) => setInviteRole(e.target.value)}
-              className="w-full rounded-xl border border-[#D4C9A8] px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[#8B9E6B]"
+              className="w-full rounded-xl border border-[#C8D8E4] px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[#4A7FA5]"
             >
               <option value="member">Medlem</option>
               <option value="org_admin">Administrator</option>
@@ -748,14 +748,14 @@ export default function PortalTeamPage() {
             <button
               type="button"
               onClick={() => setModalOpen(false)}
-              className="rounded-full px-4 py-2 text-sm text-[#5C5A48] hover:bg-[#EEF2E6]"
+              className="rounded-full px-4 py-2 text-sm text-[#4A6478] hover:bg-[#EAF1F7]"
             >
               Annuller
             </button>
             <button
               type="submit"
               disabled={savingInvite}
-              className="rounded-full bg-[#8B9E6B] px-5 py-2 text-sm font-semibold text-white hover:bg-[#7A8A5A] disabled:opacity-60"
+              className="rounded-full bg-[#4A7FA5] px-5 py-2 text-sm font-semibold text-white hover:bg-[#3A6F95] disabled:opacity-60"
             >
               {savingInvite ? "Sender…" : "Send invitation"}
             </button>
@@ -768,10 +768,10 @@ export default function PortalTeamPage() {
         onClose={() => !removing && setRemoveTarget(null)}
         titleId="remove-member-title"
       >
-        <h3 id="remove-member-title" className="text-lg font-semibold text-[#2C3020]">
+        <h3 id="remove-member-title" className="text-lg font-semibold text-[#1E3448]">
           Fjern teammedlem?
         </h3>
-        <p className="mt-3 text-sm leading-relaxed text-[#5C5A48]">
+        <p className="mt-3 text-sm leading-relaxed text-[#4A6478]">
           {removeTarget?.full_name || removeTarget?.email} mister adgang til organisationens portal.
           Handlingen kan ikke fortrydes.
         </p>
@@ -780,7 +780,7 @@ export default function PortalTeamPage() {
             type="button"
             disabled={removing}
             onClick={() => setRemoveTarget(null)}
-            className="rounded-full px-4 py-2 text-sm text-[#5C5A48] hover:bg-[#EEF2E6] disabled:opacity-50"
+            className="rounded-full px-4 py-2 text-sm text-[#4A6478] hover:bg-[#EAF1F7] disabled:opacity-50"
           >
             Annuller
           </button>

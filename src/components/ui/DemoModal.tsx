@@ -11,7 +11,7 @@ type DemoModalProps = {
 };
 
 const fieldClass =
-  "w-full rounded-xl border border-[#D4C9A8] px-4 py-3 text-sm outline-none focus:border-transparent focus:ring-2 focus:ring-[#8B9E6B]";
+  "w-full rounded-xl border border-[#C8D8E4] px-4 py-3 text-sm outline-none focus:border-transparent focus:ring-2 focus:ring-[#4A7FA5]";
 
 export function DemoModal({ isOpen, onClose, subject }: DemoModalProps) {
   const [name, setName] = useState("");
@@ -98,10 +98,10 @@ export function DemoModal({ isOpen, onClose, subject }: DemoModalProps) {
         </button>
 
         <SystemklarLogo href="/" variant="light" size="md" />
-        <h2 id="demo-modal-title" className="mt-6 text-xl font-bold text-[#2C3020]">
+        <h2 id="demo-modal-title" className="mt-6 text-xl font-bold text-[#1E3448]">
           Book en gratis snak
         </h2>
-        <p className="mt-1 text-sm text-[#5C5A48]">30 min · gratis · uforpligtende</p>
+        <p className="mt-1 text-sm text-[#4A6478]">30 min · gratis · uforpligtende</p>
 
         {success ? (
           <div className="mt-6 rounded-2xl border border-green-100 bg-green-50 p-5 text-center">
@@ -158,11 +158,11 @@ export function DemoModal({ isOpen, onClose, subject }: DemoModalProps) {
             <button
               type="submit"
               disabled={loading}
-              className="w-full rounded-full bg-[#8B9E6B] py-3 font-semibold text-white transition-colors hover:bg-[#7A8A5A] disabled:cursor-not-allowed disabled:opacity-60"
+              className="w-full rounded-full bg-[#4A7FA5] py-3 font-semibold text-white transition-colors hover:bg-[#3A6F95] disabled:cursor-not-allowed disabled:opacity-60"
             >
               {loading ? "Sender..." : "Send forespørgsel"}
             </button>
-            <p className="mt-3 text-center text-xs text-[#5C5A48]">Ingen binding · Opsig når som helst</p>
+            <p className="mt-3 text-center text-xs text-[#4A6478]">Ingen binding · Opsig når som helst</p>
           </form>
         )}
       </div>

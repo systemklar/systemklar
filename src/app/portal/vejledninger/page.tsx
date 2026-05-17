@@ -24,11 +24,11 @@ type GuideRow = {
   sort_order: number;
 };
 
-const panelClass = "rounded-2xl border border-[#D4C9A8] bg-white p-6 shadow-sm";
+const panelClass = "rounded-2xl border border-[#C8D8E4] bg-white p-6 shadow-sm";
 const guideCardClass =
-  "flex min-w-0 flex-col rounded-2xl border border-[#D4C9A8] bg-white p-6 shadow-sm transition-shadow hover:shadow-md";
+  "flex min-w-0 flex-col rounded-2xl border border-[#C8D8E4] bg-white p-6 shadow-sm transition-shadow hover:shadow-md";
 const inputClass =
-  "w-full rounded-xl border border-[#D4C9A8] bg-white px-4 py-2.5 text-sm text-[#2C3020] outline-none placeholder:text-[#8C8A78] focus:border-[#8B9E6B] focus:ring-2 focus:ring-[#EEF2E6]";
+  "w-full rounded-xl border border-[#C8D8E4] bg-white px-4 py-2.5 text-sm text-[#1E3448] outline-none placeholder:text-[#7A9AB0] focus:border-[#4A7FA5] focus:ring-2 focus:ring-[#EAF1F7]";
 
 function previewText(s: string, max: number): string {
   const t = s.replace(/\s+/g, " ").trim();
@@ -51,8 +51,8 @@ function CategoryPill({
       onClick={onClick}
       className={`inline-flex shrink-0 items-center gap-2 rounded-full px-4 py-2 text-sm transition-colors ${
         active
-          ? "bg-[#EEF2E6] font-medium text-[#2C3020] ring-2 ring-[#D4C9A8]"
-          : "text-[#5C5A48] hover:bg-[#EEF2E6] hover:text-[#2C3020]"
+          ? "bg-[#EAF1F7] font-medium text-[#1E3448] ring-2 ring-[#C8D8E4]"
+          : "text-[#4A6478] hover:bg-[#EAF1F7] hover:text-[#1E3448]"
       }`}
     >
       {children}
@@ -127,8 +127,8 @@ export default function PortalVejledningerPage() {
   return (
     <div className="flex w-full min-w-0 flex-col gap-6 p-6 md:p-8">
       <header>
-        <h1 className="text-2xl font-bold text-[#2C3020]">Vejledninger & FAQ</h1>
-        <p className="mt-1 text-sm text-[#8C8A78]">Find svar og guides til Systemklar.</p>
+        <h1 className="text-2xl font-bold text-[#1E3448]">Vejledninger & FAQ</h1>
+        <p className="mt-1 text-sm text-[#7A9AB0]">Find svar og guides til Systemklar.</p>
       </header>
 
       {error ? (
@@ -153,10 +153,10 @@ export default function PortalVejledningerPage() {
 
       {loading ? (
         <div className={`${panelClass} space-y-3`} aria-busy>
-          <div className="h-10 w-full max-w-md animate-pulse rounded-xl bg-[#EEF2E6]" />
+          <div className="h-10 w-full max-w-md animate-pulse rounded-xl bg-[#EAF1F7]" />
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             {[0, 1, 2, 3].map((i) => (
-              <div key={i} className="h-40 animate-pulse rounded-2xl bg-[#EEF2E6]" />
+              <div key={i} className="h-40 animate-pulse rounded-2xl bg-[#EAF1F7]" />
             ))}
           </div>
         </div>
@@ -164,7 +164,7 @@ export default function PortalVejledningerPage() {
         <>
           {categories.length > 0 ? (
             <section className={panelClass}>
-              <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-[#8C8A78]">
+              <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-[#7A9AB0]">
                 Kategorier
               </p>
               <div className="-mx-1 flex gap-2 overflow-x-auto px-1 pb-1 md:flex-wrap md:overflow-x-visible md:pb-0">
@@ -179,7 +179,7 @@ export default function PortalVejledningerPage() {
                       active={filterCategoryId === c.id}
                       onClick={() => setFilterCategoryId(c.id)}
                     >
-                      <Icon className="h-4 w-4 text-[#8B9E6B]" aria-hidden />
+                      <Icon className="h-4 w-4 text-[#4A7FA5]" aria-hidden />
                       {c.name}
                     </CategoryPill>
                   );
@@ -190,7 +190,7 @@ export default function PortalVejledningerPage() {
 
           <div className="grid min-w-0 grid-cols-1 gap-4 md:grid-cols-2">
             {filteredGuides.length === 0 ? (
-              <p className={`col-span-full ${panelClass} text-center text-sm text-[#5C5A48]`}>
+              <p className={`col-span-full ${panelClass} text-center text-sm text-[#4A6478]`}>
                 Ingen vejledninger matcher dit valg endnu.
               </p>
             ) : (
@@ -203,15 +203,15 @@ export default function PortalVejledningerPage() {
                   return (
                     <article key={g.id} className={guideCardClass}>
                       <div className="flex justify-center">
-                        <span className="inline-flex h-12 w-12 items-center justify-center rounded-full bg-[#EEF2E6] text-[#8B9E6B]">
+                        <span className="inline-flex h-12 w-12 items-center justify-center rounded-full bg-[#EAF1F7] text-[#4A7FA5]">
                           <Play className="h-6 w-6" aria-hidden />
                         </span>
                       </div>
-                      <h2 className="mt-4 text-base font-semibold text-[#2C3020]">{g.title}</h2>
+                      <h2 className="mt-4 text-base font-semibold text-[#1E3448]">{g.title}</h2>
                       {!embedUrl ? (
                         <p className="mt-2 text-xs text-amber-700">Video-URL kan ikke vises.</p>
                       ) : showPlayer ? (
-                        <div className="mt-4 aspect-video w-full overflow-hidden rounded-xl border border-[#D4C9A8] bg-black">
+                        <div className="mt-4 aspect-video w-full overflow-hidden rounded-xl border border-[#C8D8E4] bg-black">
                           <iframe
                             title={g.title}
                             src={embedUrl}
@@ -224,7 +224,7 @@ export default function PortalVejledningerPage() {
                         <button
                           type="button"
                           onClick={() => setExpandedVideoId(g.id)}
-                          className="mt-3 text-left text-xs font-medium text-[#8B9E6B] hover:text-[#7A8A5A] hover:underline"
+                          className="mt-3 text-left text-xs font-medium text-[#4A7FA5] hover:text-[#3A6F95] hover:underline"
                         >
                           Klik for at afspille
                         </button>
@@ -233,7 +233,7 @@ export default function PortalVejledningerPage() {
                         <button
                           type="button"
                           onClick={() => setExpandedVideoId(null)}
-                          className="mt-3 text-left text-xs font-medium text-[#8C8A78] hover:text-[#8B9E6B]"
+                          className="mt-3 text-left text-xs font-medium text-[#7A9AB0] hover:text-[#4A7FA5]"
                         >
                           Skjul video
                         </button>
@@ -249,11 +249,11 @@ export default function PortalVejledningerPage() {
                       <span className="inline-flex rounded-full bg-amber-50 p-3 text-amber-600">
                         <HelpCircle className="h-6 w-6" aria-hidden />
                       </span>
-                      <h2 className="mt-4 text-base font-semibold text-[#2C3020]">{g.title}</h2>
+                      <h2 className="mt-4 text-base font-semibold text-[#1E3448]">{g.title}</h2>
                       <button
                         type="button"
                         onClick={() => setOpenFaqId((id) => (id === g.id ? null : g.id))}
-                        className="mt-3 flex w-full items-center justify-between gap-2 text-left text-xs font-medium text-[#8B9E6B] hover:text-[#7A8A5A]"
+                        className="mt-3 flex w-full items-center justify-between gap-2 text-left text-xs font-medium text-[#4A7FA5] hover:text-[#3A6F95]"
                         aria-expanded={open}
                       >
                         {open ? "Skjul svar" : "Vis svar"}
@@ -268,7 +268,7 @@ export default function PortalVejledningerPage() {
                         }`}
                       >
                         <div className="min-h-0 overflow-hidden">
-                          <p className="mt-3 whitespace-pre-wrap text-sm leading-relaxed text-[#5C5A48]">
+                          <p className="mt-3 whitespace-pre-wrap text-sm leading-relaxed text-[#4A6478]">
                             {g.content}
                           </p>
                         </div>
@@ -280,15 +280,15 @@ export default function PortalVejledningerPage() {
                 const prev = previewText(g.content, 150);
                 return (
                   <article key={g.id} className={guideCardClass}>
-                    <span className="inline-flex rounded-full bg-emerald-50 p-3 text-[#6A8F5A]">
+                    <span className="inline-flex rounded-full bg-emerald-50 p-3 text-[#5A9A6A]">
                       <FileText className="h-6 w-6" aria-hidden />
                     </span>
-                    <h2 className="mt-4 text-base font-semibold text-[#2C3020]">{g.title}</h2>
-                    <p className="mt-3 line-clamp-4 text-sm text-[#5C5A48]">{prev}</p>
+                    <h2 className="mt-4 text-base font-semibold text-[#1E3448]">{g.title}</h2>
+                    <p className="mt-3 line-clamp-4 text-sm text-[#4A6478]">{prev}</p>
                     <button
                       type="button"
                       onClick={() => setArticleModal(g)}
-                      className="mt-4 text-left text-xs font-medium text-[#8B9E6B] hover:text-[#7A8A5A] hover:underline"
+                      className="mt-4 text-left text-xs font-medium text-[#4A7FA5] hover:text-[#3A6F95] hover:underline"
                     >
                       Læs mere
                     </button>
@@ -303,26 +303,26 @@ export default function PortalVejledningerPage() {
       {articleModal ? (
         <PortalModalOverlay open onClose={() => setArticleModal(null)}>
           <div
-            className="max-h-[85vh] w-full max-w-lg overflow-y-auto rounded-2xl border border-[#D4C9A8] bg-white p-6 shadow-xl"
+            className="max-h-[85vh] w-full max-w-lg overflow-y-auto rounded-2xl border border-[#C8D8E4] bg-white p-6 shadow-xl"
             role="dialog"
             aria-modal="true"
             aria-labelledby="guide-article-title"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-start justify-between gap-4">
-              <h2 id="guide-article-title" className="text-lg font-semibold text-[#2C3020]">
+              <h2 id="guide-article-title" className="text-lg font-semibold text-[#1E3448]">
                 {articleModal.title}
               </h2>
               <button
                 type="button"
                 onClick={() => setArticleModal(null)}
-                className="shrink-0 rounded-full p-1.5 text-[#8C8A78] transition hover:bg-[#EEF2E6] hover:text-[#2C3020]"
+                className="shrink-0 rounded-full p-1.5 text-[#7A9AB0] transition hover:bg-[#EAF1F7] hover:text-[#1E3448]"
                 aria-label="Luk"
               >
                 <X className="h-5 w-5" aria-hidden />
               </button>
             </div>
-            <p className="mt-4 whitespace-pre-wrap text-sm leading-relaxed text-[#5C5A48]">
+            <p className="mt-4 whitespace-pre-wrap text-sm leading-relaxed text-[#4A6478]">
               {articleModal.content}
             </p>
           </div>

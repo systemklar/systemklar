@@ -38,7 +38,7 @@ export default function OmOsPage() {
   return (
     <MarketingShell>
       <main>
-        <section className="relative overflow-hidden bg-gradient-to-br from-[#8B9E6B] to-[#2C3E2A] py-20 pt-32 md:py-32 md:pt-40">
+        <section className="relative overflow-hidden bg-gradient-to-br from-[#4A7FA5] to-[#1E3448] py-20 pt-32 md:py-32 md:pt-40">
           <div
             className="absolute inset-0 opacity-10"
             style={{
@@ -68,9 +68,9 @@ export default function OmOsPage() {
           <div className="mx-auto max-w-4xl px-6">
             <div className="grid grid-cols-1 items-center gap-12 md:grid-cols-2">
               <AnimatedSection direction="left">
-                <p className="mb-3 text-xs font-semibold uppercase tracking-widest text-[#8B9E6B]">Grundlægger</p>
-                <h2 className="mb-4 text-2xl font-bold text-[#2C3020]">Hej, jeg er Benjamin</h2>
-                <div className="space-y-4 leading-relaxed text-[#5C5A48]">
+                <p className="mb-3 text-xs font-semibold uppercase tracking-widest text-[#4A7FA5]">Grundlægger</p>
+                <h2 className="mb-4 text-2xl font-bold text-[#1E3448]">Hej, jeg er Benjamin</h2>
+                <div className="space-y-4 leading-relaxed text-[#4A6478]">
                   <p>
                     Jeg har arbejdet med IT-support til små virksomheder i mange år. Gang på gang mødte jeg de
                     samme frustrationer: adgangskoder der forsvandt, systemer der fejlede uden varsel, og ejere
@@ -86,14 +86,14 @@ export default function OmOsPage() {
                 <div className="mt-6 flex flex-col gap-2">
                   <a
                     href="mailto:benjamin@systemklar.dk"
-                    className="flex items-center gap-2 text-sm text-[#8B9E6B] hover:underline"
+                    className="flex items-center gap-2 text-sm text-[#4A7FA5] hover:underline"
                   >
                     <Mail className="h-4 w-4" />
                     benjamin@systemklar.dk
                   </a>
                   <a
                     href="tel:+4522631013"
-                    className="flex items-center gap-2 text-sm text-[#8B9E6B] hover:underline"
+                    className="flex items-center gap-2 text-sm text-[#4A7FA5] hover:underline"
                   >
                     <Phone className="h-4 w-4" />
                     +45 22 63 10 13
@@ -103,13 +103,13 @@ export default function OmOsPage() {
 
               <AnimatedSection direction="right">
                 <div className="flex justify-center">
-                  <div className="flex h-64 w-64 flex-col items-center justify-center rounded-3xl border border-[#D4C9A8] bg-gradient-to-br from-[#EEF2E6] to-[#EEF2E6] shadow-sm">
-                    <div className="mb-3 flex h-20 w-20 items-center justify-center rounded-full bg-[#8B9E6B] text-3xl font-bold text-white">
+                  <div className="flex h-64 w-64 flex-col items-center justify-center rounded-3xl border border-[#C8D8E4] bg-gradient-to-br from-[#EAF1F7] to-[#EAF1F7] shadow-sm">
+                    <div className="mb-3 flex h-20 w-20 items-center justify-center rounded-full bg-[#4A7FA5] text-3xl font-bold text-white">
                       BS
                     </div>
-                    <p className="text-base font-semibold text-[#2C3020]">Benjamin Sørensen</p>
-                    <p className="text-sm text-[#5C5A48]">Grundlægger, systemklar</p>
-                    <p className="mt-1 text-xs text-[#5C5A48]">CVR 46431596</p>
+                    <p className="text-base font-semibold text-[#1E3448]">Benjamin Sørensen</p>
+                    <p className="text-sm text-[#4A6478]">Grundlægger, systemklar</p>
+                    <p className="mt-1 text-xs text-[#4A6478]">CVR 46431596</p>
                   </div>
                 </div>
               </AnimatedSection>
@@ -117,7 +117,7 @@ export default function OmOsPage() {
           </div>
         </section>
 
-        <section className="bg-[#EEF2E6] py-12 md:py-14">
+        <section className="bg-[#EAF1F7] py-12 md:py-14">
           <div className="mx-auto grid max-w-2xl grid-cols-1 gap-6 px-6 sm:grid-cols-3">
             {[
               { tal: "100%", label: "Dansk support" },
@@ -125,19 +125,19 @@ export default function OmOsPage() {
               { tal: "0", label: "Binding" },
             ].map(({ tal, label }) => (
               <div key={label} className="text-center">
-                <p className="text-3xl font-extrabold text-[#8B9E6B] md:text-4xl">{tal}</p>
-                <p className="mt-2 text-sm text-[#5C5A48]">{label}</p>
+                <p className="text-3xl font-extrabold text-[#4A7FA5] md:text-4xl">{tal}</p>
+                <p className="mt-2 text-sm text-[#4A6478]">{label}</p>
               </div>
             ))}
           </div>
         </section>
 
-        <section className="bg-[#EEF2E6] py-16 md:py-20">
+        <section className="bg-[#EAF1F7] py-16 md:py-20">
           <div className="mx-auto max-w-5xl px-6">
             <AnimatedSection direction="up">
               <div className="mb-10 text-center md:mb-12">
-                <h2 className="text-2xl font-bold tracking-tight text-[#2C3020] md:text-3xl">Det vi tror på</h2>
-                <p className="mx-auto mt-3 max-w-xl text-base text-[#5C5A48]">
+                <h2 className="text-2xl font-bold tracking-tight text-[#1E3448] md:text-3xl">Det vi tror på</h2>
+                <p className="mx-auto mt-3 max-w-xl text-base text-[#4A6478]">
                   Tre principper der styrer alt hvad vi bygger og gør.
                 </p>
               </div>
@@ -149,46 +149,46 @@ export default function OmOsPage() {
                   direction="up"
                   delay={(i * 100) as 0 | 100 | 200}
                 >
-                  <div className="h-full rounded-2xl border border-[#D4C9A8] bg-white p-6 shadow-sm">
-                    <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-xl bg-[#EEF2E6]">
-                      <Icon className="h-5 w-5 text-[#8B9E6B]" />
+                  <div className="h-full rounded-2xl border border-[#C8D8E4] bg-white p-6 shadow-sm">
+                    <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-xl bg-[#EAF1F7]">
+                      <Icon className="h-5 w-5 text-[#4A7FA5]" />
                     </div>
-                    <h3 className="text-lg font-semibold text-[#2C3020]">{title}</h3>
-                    <p className="mt-2 text-sm leading-relaxed text-[#5C5A48]">{desc}</p>
+                    <h3 className="text-lg font-semibold text-[#1E3448]">{title}</h3>
+                    <p className="mt-2 text-sm leading-relaxed text-[#4A6478]">{desc}</p>
                   </div>
                 </AnimatedSection>
               ))}
             </div>
             <AnimatedSection direction="up">
-              <div className="mx-auto my-10 max-w-2xl rounded-3xl bg-[#2C3E2A] p-6 text-center md:my-12 md:p-8">
-                <div className="mb-4 font-serif text-4xl text-[#C8A96E]">&ldquo;</div>
+              <div className="mx-auto my-10 max-w-2xl rounded-3xl bg-[#1E3448] p-6 text-center md:my-12 md:p-8">
+                <div className="mb-4 font-serif text-4xl text-[#E8D8C4]">&ldquo;</div>
                 <p className="text-base italic leading-relaxed text-white/90 md:text-lg">
                   Vi byggede systemklar fordi SMV&apos;er fortjener samme IT-overblik som store virksomheder
                   – uden at betale for en hel IT-afdeling.
                 </p>
-                <p className="mt-4 text-sm text-[#C8D4A8]">– Benjamin Sørensen, Grundlægger</p>
+                <p className="mt-4 text-sm text-[#A8C8E0]">– Benjamin Sørensen, Grundlægger</p>
               </div>
             </AnimatedSection>
           </div>
         </section>
 
-        <section className="border-t border-[#D4C9A8] bg-white py-16">
+        <section className="border-t border-[#C8D8E4] bg-white py-16">
           <div className="mx-auto max-w-lg px-6">
             <AnimatedSection direction="up">
-              <div className="rounded-2xl border border-[#D4C9A8] bg-[#EEF2E6] p-8 text-center">
-                <h3 className="mb-2 text-xl font-bold text-[#2C3020]">Tag fat i os direkte</h3>
-                <p className="mb-6 text-sm text-[#5C5A48]">Vi svarer normalt inden for én hverdag.</p>
+              <div className="rounded-2xl border border-[#C8D8E4] bg-[#EAF1F7] p-8 text-center">
+                <h3 className="mb-2 text-xl font-bold text-[#1E3448]">Tag fat i os direkte</h3>
+                <p className="mb-6 text-sm text-[#4A6478]">Vi svarer normalt inden for én hverdag.</p>
                 <div className="flex flex-col justify-center gap-3 sm:flex-row">
                   <a
                     href="mailto:benjamin@systemklar.dk"
-                    className="flex items-center justify-center gap-2 rounded-full bg-[#8B9E6B] px-6 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-[#7A8A5A]"
+                    className="flex items-center justify-center gap-2 rounded-full bg-[#4A7FA5] px-6 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-[#3A6F95]"
                   >
                     <Mail className="h-4 w-4" />
                     Send en email
                   </a>
                   <a
                     href="tel:+4522631013"
-                    className="flex items-center justify-center gap-2 rounded-full border border-[#D4C9A8] px-6 py-2.5 text-sm font-semibold text-[#7A8A5A] transition-colors hover:bg-[#EEF2E6]"
+                    className="flex items-center justify-center gap-2 rounded-full border border-[#C8D8E4] px-6 py-2.5 text-sm font-semibold text-[#3A6F95] transition-colors hover:bg-[#EAF1F7]"
                   >
                     <Phone className="h-4 w-4" />
                     +45 22 63 10 13

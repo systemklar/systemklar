@@ -65,7 +65,7 @@ export function RotatingFeatureList() {
   return (
     <div className="mt-8">
       <ul
-        className="space-y-4 text-base text-[#EEF2E6] transition-[opacity,transform]"
+        className="space-y-4 text-base text-[#EAF1F7] transition-[opacity,transform]"
         style={{
           opacity: isEntered ? 1 : 0,
           transform: listTransform,
@@ -76,7 +76,7 @@ export function RotatingFeatureList() {
       >
         {FEATURE_SETS[activeIndex].map((bullet) => (
           <li key={bullet} className="flex items-start gap-3">
-            <CheckCircle className="mt-0.5 h-5 w-5 shrink-0 text-[#C8D4A8]" />
+            <CheckCircle className="mt-0.5 h-5 w-5 shrink-0 text-[#A8C8E0]" />
             <span>{bullet}</span>
           </li>
         ))}

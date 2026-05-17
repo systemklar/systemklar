@@ -106,7 +106,7 @@ function AdminLoginForm() {
               value={email}
               onChange={(event) => setEmail(event.target.value)}
               required
-              className="w-full rounded-xl border border-[#D4C9A8] px-4 py-3 text-base outline-none transition focus:ring-2 focus:ring-[#8B9E6B] md:text-sm"
+              className="w-full rounded-xl border border-[#C8D8E4] px-4 py-3 text-base outline-none transition focus:ring-2 focus:ring-[#4A7FA5] md:text-sm"
               placeholder="din@email.dk"
               autoComplete="email"
             />
@@ -122,7 +122,7 @@ function AdminLoginForm() {
               value={password}
               onChange={(event) => setPassword(event.target.value)}
               required
-              className="w-full rounded-xl border border-[#D4C9A8] px-4 py-3 text-base outline-none transition focus:ring-2 focus:ring-[#8B9E6B] md:text-sm"
+              className="w-full rounded-xl border border-[#C8D8E4] px-4 py-3 text-base outline-none transition focus:ring-2 focus:ring-[#4A7FA5] md:text-sm"
               placeholder="••••••••"
               autoComplete="current-password"
             />
@@ -144,13 +144,13 @@ function AdminLoginForm() {
           <button
             type="submit"
             disabled={isLoading}
-            className="w-full rounded-full bg-[#8B9E6B] py-3 font-semibold text-white transition hover:bg-[#7A8A5A] disabled:opacity-60"
+            className="w-full rounded-full bg-[#4A7FA5] py-3 font-semibold text-white transition hover:bg-[#3A6F95] disabled:opacity-60"
           >
             {isLoading ? "Logger ind..." : "Log ind"}
           </button>
       </form>
 
-      <Link href="/login" className="mt-6 inline-block text-sm font-semibold text-[#8B9E6B] hover:underline">
+      <Link href="/login" className="mt-6 inline-block text-sm font-semibold text-[#4A7FA5] hover:underline">
         Gå til kunde-login
       </Link>
     </AuthSplitLayout>

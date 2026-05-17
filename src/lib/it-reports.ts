@@ -57,10 +57,10 @@ export function normalizeMonitoringStatusForDisplay(raw: string): string {
 
 export function statusColorClass(raw: string): string {
   const s = (raw ?? "").toLowerCase();
-  if (s === "ok") return "text-[#6A8F5A]";
+  if (s === "ok") return "text-[#5A9A6A]";
   if (s === "advarsel") return "text-[#C4A84F]";
   if (s === "fejl") return "text-[#B85C4A]";
-  return "text-[#5C5A48]";
+  return "text-[#4A6478]";
 }
 
 type MonRow = { system_name: string; status: string; checked_at: string };
@@ -154,15 +154,15 @@ export type ItReportHtmlInput = {
 };
 
 const DS = {
-  accent: "#8B9E6B",
-  navy: "#2C3E2A",
-  pageBg: "#F5F0E8",
+  accent: "#4A7FA5",
+  navy: "#1E3448",
+  pageBg: "#F7F4EF",
   card: "#FFFFFF",
-  text: "#2C3020",
-  textSecondary: "#5C5A48",
-  helper: "#8C8A78",
-  border: "#D4C9A8",
-  ok: "#6A8F5A",
+  text: "#1E3448",
+  textSecondary: "#4A6478",
+  helper: "#7A9AB0",
+  border: "#C8D8E4",
+  ok: "#5A9A6A",
   warn: "#C4A84F",
   err: "#B85C4A",
 } as const;
@@ -238,11 +238,11 @@ export function buildItReportHtmlDocument(input: ItReportHtmlInput): string {
   <title>${escapeHtml(organisationName)} — IT-statusrapport</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;600;700&display=swap" rel="stylesheet" />
   <style>
     ${printCss}
     * { box-sizing: border-box; }
-    body { font-family: Inter, ui-sans-serif, system-ui, sans-serif; margin: 0; color: ${DS.text}; background: ${DS.pageBg}; }
+    body { font-family: 'DM Sans', ui-sans-serif, system-ui, sans-serif; margin: 0; color: ${DS.text}; background: ${DS.pageBg}; }
     .header { background: ${DS.navy}; color: #fff; padding: 18px 24px; display: flex; align-items: center; justify-content: space-between; gap: 20px; }
     .header-brandline { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
     .header-brandline img { height: 32px; width: auto; display: block; filter: brightness(0) invert(1); }

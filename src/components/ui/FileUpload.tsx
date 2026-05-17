@@ -141,7 +141,7 @@ export function FileUpload({
         type="button"
         onClick={pickFile}
         disabled={disabled || busy}
-        className="inline-flex items-center gap-1.5 text-sm text-[#5C5A48] transition hover:text-[#8B9E6B] disabled:opacity-50"
+        className="inline-flex items-center gap-1.5 text-sm text-[#4A6478] transition hover:text-[#4A7FA5] disabled:opacity-50"
       >
         {busy ? <Loader2 className="h-4 w-4 shrink-0 animate-spin" aria-hidden /> : <Paperclip className="h-4 w-4 shrink-0" aria-hidden />}
         Vedhæft fil

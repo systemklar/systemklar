@@ -79,7 +79,7 @@ export function AdminSidebar({ activeNav, open = false, onClose }: AdminSidebarP
         <button
           type="button"
           onClick={onClose}
-          className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-lg text-[#C8D4A8] hover:bg-white/10 lg:hidden"
+          className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-lg text-[#A8C8E0] hover:bg-white/10 lg:hidden"
           aria-label="Luk menu"
         >
           <X className="h-5 w-5" />
