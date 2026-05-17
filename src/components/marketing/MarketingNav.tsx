@@ -8,8 +8,8 @@ import { SystemklarLogo } from "@/components/SystemklarLogo";
 import { StableNavLink } from "./StableNavLink";
 
 const NAV = [
-  { href: "/#funktioner", label: "Funktioner", match: () => false },
-  { href: "/#priser", label: "Priser", match: (p: string) => p === "/priser" },
+  { href: "/funktioner", label: "Funktioner", match: (p: string) => p === "/funktioner" },
+  { href: "/priser", label: "Priser", match: (p: string) => p === "/priser" },
   { href: "/om-os", label: "Om os", match: (p: string) => p === "/om-os" },
   { href: "/kontakt", label: "Kontakt", match: (p: string) => p === "/kontakt" },
 ] as const;

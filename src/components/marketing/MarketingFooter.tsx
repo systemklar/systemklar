@@ -3,8 +3,9 @@ import { SystemklarLogo } from "@/components/SystemklarLogo";
 import { MARKETING_CONTACT_EMAIL } from "@/lib/marketing-contact";
 
 const FOOTER_LINKS = [
-  { href: "/#funktioner", label: "Funktioner" },
-  { href: "/#priser", label: "Priser" },
+  { href: "/funktioner", label: "Funktioner" },
+  { href: "/priser", label: "Priser" },
+  { href: "/om-os", label: "Om os" },
   { href: "/kontakt", label: "Kontakt" },
   { href: "/login", label: "Log ind" },
   { href: "/privatlivspolitik", label: "Privatlivspolitik" },
